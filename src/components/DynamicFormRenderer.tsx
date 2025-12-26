@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Upload } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -40,6 +41,7 @@ interface DynamicFormRendererProps {
 export function DynamicFormRenderer({ schema, formData, onFormDataChange, role = 'avocat', userId }: DynamicFormRendererProps) {
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, File[]>>({});
   const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string}>>([]);
+  const [clientModes, setClientModes] = useState<Record<string, 'existing' | 'manual'>>({});
 
   // Charger les clients
   useEffect(() => {
@@ -150,23 +152,118 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
         );
 
       case 'client_select':
+        const mode = clientModes[field.id] || 'existing';
+        const manualPrefix = `${field.id}_manual_`;
+        
         return (
-          <div key={field.id} className="space-y-2">
-            <Label htmlFor={field.id}>
-              {field.label} {field.required && <span className="text-red-500">*</span>}
-            </Label>
-            <Select value={value} onValueChange={(val) => updateFormData(field.id, val)}>
-              <SelectTrigger id={field.id}>
-                <SelectValue placeholder="Sélectionner un client..." />
-              </SelectTrigger>
-              <SelectContent>
-                {clients.map((client) => (
-                  <SelectItem key={client.id} value={client.id}>
-                    {client.nom} {client.prenom}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div key={field.id} className="space-y-4 bg-blue-50 dark:bg-blue-950 p-4 rounded-lg border-2 border-blue-200">
+            <div className="space-y-2">
+              <Label htmlFor={field.id}>
+                {field.label} {field.required && <span className="text-red-500">*</span>}
+              </Label>
+              
+              <RadioGroup 
+                value={mode} 
+                onValueChange={(val: 'existing' | 'manual') => {
+                  setClientModes(prev => ({ ...prev, [field.id]: val }));
+                  // Réinitialiser les données selon le mode
+                  if (val === 'existing') {
+                    // Supprimer les champs manuels
+                    const newFormData = { ...formData };
+                    delete newFormData[`${manualPrefix}nom`];
+                    delete newFormData[`${manualPrefix}prenom`];
+                    delete newFormData[`${manualPrefix}email`];
+                    delete newFormData[`${manualPrefix}telephone`];
+                    delete newFormData[`${manualPrefix}adresse`];
+                    onFormDataChange(newFormData);
+                  } else {
+                    // Supprimer l'ID client
+                    const newFormData = { ...formData };
+                    delete newFormData[field.id];
+                    onFormDataChange(newFormData);
+                  }
+                }}
+                className="flex gap-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="existing" id={`${field.id}_existing`} />
+                  <Label htmlFor={`${field.id}_existing`} className="cursor-pointer">Client existant</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="manual" id={`${field.id}_manual`} />
+                  <Label htmlFor={`${field.id}_manual`} className="cursor-pointer">Nouvelle personne</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {mode === 'existing' ? (
+              <Select value={formData[field.id] || ''} onValueChange={(val) => updateFormData(field.id, val)}>
+                <SelectTrigger id={field.id}>
+                  <SelectValue placeholder="Sélectionner un client..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {clients.map((client) => (
+                    <SelectItem key={client.id} value={client.id}>
+                      {client.nom} {client.prenom}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="space-y-3 bg-white dark:bg-gray-900 p-3 rounded">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor={`${manualPrefix}nom`}>Nom *</Label>
+                    <Input
+                      id={`${manualPrefix}nom`}
+                      value={formData[`${manualPrefix}nom`] || ''}
+                      onChange={(e) => updateFormData(`${manualPrefix}nom`, e.target.value)}
+                      placeholder="Nom"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor={`${manualPrefix}prenom`}>Prénom *</Label>
+                    <Input
+                      id={`${manualPrefix}prenom`}
+                      value={formData[`${manualPrefix}prenom`] || ''}
+                      onChange={(e) => updateFormData(`${manualPrefix}prenom`, e.target.value)}
+                      placeholder="Prénom"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor={`${manualPrefix}email`}>Email</Label>
+                  <Input
+                    id={`${manualPrefix}email`}
+                    type="email"
+                    value={formData[`${manualPrefix}email`] || ''}
+                    onChange={(e) => updateFormData(`${manualPrefix}email`, e.target.value)}
+                    placeholder="email@exemple.fr"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`${manualPrefix}telephone`}>Téléphone</Label>
+                  <Input
+                    id={`${manualPrefix}telephone`}
+                    type="tel"
+                    value={formData[`${manualPrefix}telephone`] || ''}
+                    onChange={(e) => updateFormData(`${manualPrefix}telephone`, e.target.value)}
+                    placeholder="06 12 34 56 78"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`${manualPrefix}adresse`}>Adresse complète</Label>
+                  <Textarea
+                    id={`${manualPrefix}adresse`}
+                    value={formData[`${manualPrefix}adresse`] || ''}
+                    onChange={(e) => updateFormData(`${manualPrefix}adresse`, e.target.value)}
+                    placeholder="Adresse, code postal, ville"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            )}
+            
             {field.description && (
               <p className="text-sm text-muted-foreground">{field.description}</p>
             )}
