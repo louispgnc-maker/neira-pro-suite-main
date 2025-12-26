@@ -13,15 +13,21 @@ serve(async (req) => {
   }
 
   try {
-    const { contractType, description, role } = await req.json()
+    const requestBody = await req.json()
+    console.log('📦 Requête reçue:', JSON.stringify(requestBody))
+    
+    const { contractType, description, role } = requestBody
 
     console.log('📋 Génération formulaire pour:', { contractType, role })
     console.log('📝 Description:', description)
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
     if (!openaiApiKey) {
+      console.error('❌ OPENAI_API_KEY manquante')
       throw new Error('OPENAI_API_KEY non configurée')
     }
+    
+    console.log('✅ OPENAI_API_KEY présente:', openaiApiKey.substring(0, 10) + '...')
 
     // Prompt pour générer le schéma du formulaire
     const systemPrompt = `Tu es un expert juridique spécialisé dans la génération de formulaires de contrats.
@@ -80,6 +86,7 @@ Génère le schéma JSON du formulaire optimal pour ce contrat.
 Retourne UNIQUEMENT le JSON, sans texte avant ou après.`
 
     // Appel à OpenAI
+    console.log('🤖 Appel OpenAI avec model: gpt-4o')
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -97,10 +104,11 @@ Retourne UNIQUEMENT le JSON, sans texte avant ou après.`
       }),
     })
 
+    console.log('📡 Réponse OpenAI status:', response.status)
     if (!response.ok) {
       const error = await response.text()
       console.error('❌ Erreur OpenAI:', error)
-      throw new Error(`OpenAI API error: ${response.status}`)
+      throw new Error(`OpenAI API error: ${response.status} - ${error}`)
     }
 
     const data = await response.json()
