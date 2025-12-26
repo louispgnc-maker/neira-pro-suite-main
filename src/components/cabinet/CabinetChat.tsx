@@ -537,6 +537,8 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
       // Load sender profiles WITH emails from cabinet_members
       const senderIds = [...new Set(data?.map(m => m.sender_id) || [])];
       
+      console.log('Messages - Sender IDs to load:', senderIds);
+      
       // Get profiles
       const { data: profilesData, error: profileError } = await supabase
         .from('profiles')
