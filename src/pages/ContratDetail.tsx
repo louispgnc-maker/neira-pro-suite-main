@@ -347,8 +347,7 @@ export default function ContratDetail() {
                     <Button 
                       onClick={cancelEditingInfo} 
                       size="sm"
-                      variant="outline"
-                      className="gap-2"
+                      className="gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700"
                     >
                       <X className="h-4 w-4" />
                       Annuler
@@ -489,8 +488,7 @@ export default function ContratDetail() {
                         <Button 
                           onClick={cancelEditingContent} 
                           size="sm"
-                          variant="outline"
-                          className="gap-2"
+                          className="gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700"
                         >
                           <X className="h-4 w-4" />
                           Annuler
