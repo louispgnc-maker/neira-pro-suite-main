@@ -112,16 +112,30 @@ Retourne UNIQUEMENT le JSON, sans texte avant ou après.`
     }
 
     const data = await response.json()
-    const generatedSchema = data.choices[0].message.content
+    let generatedSchema = data.choices[0].message.content
 
-    console.log('✅ Schéma généré:', generatedSchema.substring(0, 200))
+    console.log('✅ Schéma brut reçu (200 premiers chars):', generatedSchema.substring(0, 200))
+
+    // Nettoyer le JSON si GPT l'a entouré de markdown
+    generatedSchema = generatedSchema.trim()
+    
+    // Supprimer les marqueurs markdown ```json et ```
+    if (generatedSchema.startsWith('```json')) {
+      generatedSchema = generatedSchema.replace(/^```json\s*/, '').replace(/\s*```$/, '')
+    } else if (generatedSchema.startsWith('```')) {
+      generatedSchema = generatedSchema.replace(/^```\s*/, '').replace(/\s*```$/, '')
+    }
+    
+    generatedSchema = generatedSchema.trim()
+    console.log('🧹 Schéma nettoyé (200 premiers chars):', generatedSchema.substring(0, 200))
 
     // Parser le JSON
     let schema
     try {
       schema = JSON.parse(generatedSchema)
     } catch (parseError) {
-      console.error('❌ Erreur parsing JSON:', generatedSchema)
+      console.error('❌ Erreur parsing JSON:', parseError)
+      console.error('📄 Schéma complet qui a échoué:', generatedSchema)
       throw new Error('Le schéma généré n\'est pas un JSON valide')
     }
 
