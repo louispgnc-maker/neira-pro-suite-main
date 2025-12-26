@@ -25,13 +25,21 @@ export async function generateContractWithAI({
   try {
     console.log(`🤖 Génération IA pour: ${contractType}`);
     
+    // Timeout plus long pour l'IA (60 secondes)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+    
     const { data: aiResponse, error: aiError } = await supabase.functions.invoke('generate-contract-ai', {
       body: {
         contractType,
         formData,
         clientInfo
-      }
+      },
+      // @ts-ignore - options non typées
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     if (aiError) {
       console.error('❌ Erreur génération IA:', aiError);
