@@ -34,7 +34,16 @@ serve(async (req) => {
 Ton rôle est de créer un schéma de formulaire JSON optimal pour un type de contrat donné.
 
 RÈGLES CRITIQUES:
-1. ⚠️ OBLIGATOIRE - PREMIER CHAMP : Un champ "client_id" de type "client_select" pour sélectionner le client (TOUJOURS EN PREMIER)
+1. ⚠️ OBLIGATOIRE - PARTIES DU CONTRAT : TOUJOURS commencer par des champs "client_select" pour TOUTES les parties prenantes
+   Exemples selon le type de contrat:
+   - Vente immobilière → vendeur_id + acheteur_id
+   - Bail d'habitation → bailleur_id + locataire_id
+   - Contrat de travail → employeur_id + employe_id
+   - Compromis de vente → vendeur_id + acquereur_id
+   - Prêt → preteur_id + emprunteur_id
+   - Mandat → mandant_id + mandataire_id
+   → ADAPTE les parties selon le type de contrat, mais TOUJOURS inclure les champs client_select pour CHAQUE partie
+
 2. 🚫 INTERDICTION ABSOLUE : NE JAMAIS inclure de champs pour signatures, tampons, ou validation électronique
 3. MINIMALISME : Ne demande QUE les informations ESSENTIELLES et LÉGALEMENT REQUISES
 4. DOCUMENTS : Ajoute des champs "file" pour les documents importants (identité, justificatifs, diagnostics)
@@ -46,11 +55,18 @@ Structure du schéma JSON à retourner:
 {
   "fields": [
     {
-      "id": "client_id",
-      "label": "Client concerné",
+      "id": "vendeur_id",
+      "label": "Vendeur",
       "type": "client_select",
       "required": true,
-      "description": "Sélectionnez le client pour ce contrat"
+      "description": "Sélectionnez le client vendeur"
+    },
+    {
+      "id": "acheteur_id",
+      "label": "Acheteur",
+      "type": "client_select",
+      "required": true,
+      "description": "Sélectionnez le client acheteur"
     },
     {
       "id": "unique_field_id",
@@ -66,14 +82,18 @@ Structure du schéma JSON à retourner:
   ],
   "sections": [
     {
-      "title": "Titre de la section",
+      "title": "Parties au contrat",
+      "fields": ["vendeur_id", "acheteur_id"]
+    },
+    {
+      "title": "Informations du bien",
       "fields": ["field_id_1", "field_id_2"]
     }
   ]
 }
 
 Types de champs disponibles:
-- client_select: Sélection du client (OBLIGATOIRE EN PREMIER)
+- client_select: Sélection du client (OBLIGATOIRE pour chaque partie du contrat)
 - text: Champ texte court
 - textarea: Texte long
 - number: Nombre
@@ -83,7 +103,8 @@ Types de champs disponibles:
 - file: Upload de fichier(s)
 
 IMPORTANT:
-- ✅ Le premier champ DOIT TOUJOURS être "client_id" de type "client_select"
+- ✅ Les PREMIERS champs DOIVENT TOUJOURS être des "client_select" pour identifier TOUTES les parties (vendeur/acheteur, bailleur/locataire, etc.)
+- ✅ Crée une section "Parties au contrat" ou "Identité des parties" en premier avec ces champs
 - 🚫 N'INCLUS JAMAIS de champs pour : signature, paraphe, tampon, validation électronique, ou toute mention de signature
 - 📎 Si le contrat nécessite des pièces jointes (documents d'identité, diagnostics, justificatifs, etc.), ajoute des champs "file"
 - 📑 Organise en sections logiques pour faciliter la saisie
