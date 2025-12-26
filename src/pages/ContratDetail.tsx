@@ -77,13 +77,8 @@ export default function ContratDetail() {
   useEffect(() => {
     let mounted = true;
     async function load() {
-      if (!user || !id) {
-        console.log('⚠️ ContratDetail: user ou id manquant', { user: !!user, id });
-        return;
-      }
+      if (!user || !id) return;
       setLoading(true);
-
-      console.log('🔍 Chargement contrat:', { id, role, userId: user.id });
 
       // Try loading as owner first
       const { data: cData, error } = await supabase
@@ -94,12 +89,7 @@ export default function ContratDetail() {
         .eq('id', id)
         .maybeSingle();
 
-      if (error) {
-        console.error('❌ Erreur chargement contrat:', error);
-      }
-
       if (!error && cData && mounted) {
-        console.log('✅ Contrat chargé:', cData.name);
         setContrat(cData as Contrat);
       } else {
         // Fallback: maybe this contract was shared to the cabinet. Try cabinet_contrats (visible to active members)
