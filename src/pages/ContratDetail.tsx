@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { ArrowLeft, RefreshCw, Edit, Save, X } from "lucide-react";
@@ -21,6 +22,7 @@ interface Contrat {
   content?: string | null;
   created_at?: string | null;
   contenu_json?: any;
+  client_id?: string | null;
 }
 
 export default function ContratDetail() {
@@ -44,6 +46,7 @@ export default function ContratDetail() {
   const [editedCategory, setEditedCategory] = useState("");
   const [editedType, setEditedType] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
+  const [editedClientId, setEditedClientId] = useState("");
   
   // États pour l'édition du contenu
   const [editingContent, setEditingContent] = useState(false);
@@ -118,6 +121,7 @@ export default function ContratDetail() {
     if (!contrat) return;
     setEditedName(contrat.name);
     setEditedCategory(contrat.category || "");
+    setEditedClientId(contrat.client_id || "");
     setEditedType(contrat.type || "");
     setEditedDescription(contrat.description || "");
     setEditingInfo(true);
@@ -134,7 +138,8 @@ export default function ContratDetail() {
           name: editedName,
           category: editedCategory || null,
           type: editedType || null,
-          description: editedDescription || null
+          description: editedDescription || null,
+          client_id: editedClientId || null
         })
         .eq('id', contrat.id);
 
@@ -146,7 +151,8 @@ export default function ContratDetail() {
         name: editedName,
         category: editedCategory || null,
         type: editedType || null,
-        description: editedDescription || null
+        description: editedDescription || null,
+        client_id: editedClientId || null
       });
       
       setEditingInfo(false);
@@ -223,7 +229,7 @@ export default function ContratDetail() {
       // Try loading as owner first
       const { data: cData, error } = await supabase
         .from('contrats')
-        .select('id,name,category,type,created_at,description,content,contenu_json')
+        .select('id,name,category,type,created_at,description,content,contenu_json,client_id')
         .eq('owner_id', user.id)
         .eq('role', role)
         .eq('id', id)
@@ -315,8 +321,11 @@ export default function ContratDetail() {
                   <Button 
                     onClick={startEditingInfo} 
                     size="sm"
-                    variant="outline"
-                    className="gap-2"
+                    className={`gap-2 text-white ${
+                      role === 'notaire' 
+                        ? 'bg-orange-600 hover:bg-orange-700' 
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
                   >
                     <Edit className="h-4 w-4" />
                     Modifier
@@ -360,6 +369,14 @@ export default function ContratDetail() {
                         {contrat.category || '—'}
                       </Badge>
                     </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Client assigné</div>
+                      <div className="font-medium">
+                        {contrat.client_id ? (
+                          clients.find(c => c.id === contrat.client_id)?.nom || '—'
+                        ) : '—'}
+                      </div>
+                    </div>
                     <div className="md:col-span-2">
                       <div className="text-sm text-muted-foreground">Type</div>
                       <div className="font-medium">{contrat.type || '—'}</div>
@@ -392,6 +409,22 @@ export default function ContratDetail() {
                         placeholder="Catégorie"
                         className="mt-1"
                       />
+                    </div>
+                    <div>
+                      <label className="text-sm text-muted-foreground">Client assigné</label>
+                      <Select value={editedClientId} onValueChange={setEditedClientId}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Sélectionner un client" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">— Aucun client —</SelectItem>
+                          {clients.map(client => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.nom} {client.prenom || ''}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div>
                       <label className="text-sm text-muted-foreground">Type</label>
@@ -429,8 +462,11 @@ export default function ContratDetail() {
                       <Button 
                         onClick={startEditingContent} 
                         size="sm"
-                        variant="outline"
-                        className="gap-2"
+                        className={`gap-2 text-white ${
+                          role === 'notaire' 
+                            ? 'bg-orange-600 hover:bg-orange-700' 
+                            : 'bg-blue-600 hover:bg-blue-700'
+                        }`}
                       >
                         <Edit className="h-4 w-4" />
                         Modifier
