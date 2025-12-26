@@ -40,7 +40,9 @@ const fetchWithTimeout = (timeoutMs = 7000) => {
 // sessionStorage is isolated per-tab, enabling simultaneous login with different accounts.
 // Note: Sessions will be lost when closing the tab (not persisted across browser restarts).
 export const supabase = createClient(supabaseUrl, supabaseKey, {
-  global: { fetch: fetchWithTimeout(7000) },
+  global: { 
+    fetch: fetchWithTimeout(30000) // 30 secondes pour les Edge Functions (OpenAI peut être lent)
+  },
   auth: { 
     persistSession: true, 
     detectSessionInUrl: true, 
