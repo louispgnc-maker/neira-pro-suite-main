@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { ArrowLeft, RefreshCw, Edit, Save, X } from "lucide-react";
+import { ArrowLeft, RefreshCw, Edit, Save, X, FileEdit } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -512,19 +512,36 @@ export default function ContratDetail() {
                         </Button>
                       </>
                     ) : (
-                      <Button 
-                        onClick={handleRegenerate} 
-                        disabled={regenerating}
-                        size="sm"
-                        className={`gap-2 text-white ${
-                          role === 'notaire' 
-                            ? 'bg-orange-600 hover:bg-orange-700' 
-                            : 'bg-blue-600 hover:bg-blue-700'
-                        }`}
-                      >
-                        <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
-                        {regenerating ? 'Régénération...' : 'Régénérer avec l\'IA'}
-                      </Button>
+                      <>
+                        <Button 
+                          onClick={() => navigate(role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats', { 
+                            state: { scrollToType: contrat.type } 
+                          })}
+                          size="sm"
+                          variant="outline"
+                          className={`gap-2 ${
+                            role === 'notaire' 
+                              ? 'border-orange-300 text-orange-700 hover:bg-orange-50' 
+                              : 'border-blue-300 text-blue-700 hover:bg-blue-50'
+                          }`}
+                        >
+                          <FileEdit className="h-4 w-4" />
+                          Retour au formulaire
+                        </Button>
+                        <Button 
+                          onClick={handleRegenerate} 
+                          disabled={regenerating}
+                          size="sm"
+                          className={`gap-2 text-white ${
+                            role === 'notaire' 
+                              ? 'bg-orange-600 hover:bg-orange-700' 
+                              : 'bg-blue-600 hover:bg-blue-700'
+                          }`}
+                        >
+                          <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
+                          {regenerating ? 'Régénération...' : 'Régénérer avec l\'IA'}
+                        </Button>
+                      </>
                     )}
                   </div>
                 </CardHeader>
