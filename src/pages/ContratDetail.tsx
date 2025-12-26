@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
+import { generateContractWithAI } from "@/lib/contractAIHelper";
 
 interface Contrat {
   id: string;
@@ -30,6 +32,46 @@ export default function ContratDetail() {
   const [contrat, setContrat] = useState<Contrat | null>(null);
   const [sharedBy, setSharedBy] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [regenerating, setRegenerating] = useState(false);
+
+  // Fonction pour régénérer le contrat avec l'IA
+  const handleRegenerate = async () => {
+    if (!user || !contrat) return;
+    
+    setRegenerating(true);
+    toast.info("Régénération du contrat avec l'IA...");
+    
+    try {
+      // Générer le nouveau contenu avec l'IA
+      const generatedContract = await generateContractWithAI({
+        contractType: contrat.type || contrat.name,
+        formData: {}, // Les données sont déjà dans la BDD
+        clientInfo: {},
+        user
+      });
+
+      // Mettre à jour le contrat dans la base de données
+      const { error } = await supabase
+        .from('contrats')
+        .update({ content: generatedContract })
+        .eq('id', contrat.id);
+
+      if (error) throw error;
+
+      // Mettre à jour l'état local
+      setContrat({ ...contrat, content: generatedContract });
+      
+      toast.success("✅ Contrat régénéré avec succès !");
+      
+    } catch (error) {
+      console.error('Erreur régénération:', error);
+      toast.error("Erreur lors de la régénération", {
+        description: error instanceof Error ? error.message : "Veuillez réessayer"
+      });
+    } finally {
+      setRegenerating(false);
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -157,8 +199,20 @@ export default function ContratDetail() {
 
             {contrat.content && (
               <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0">
                   <CardTitle>2. Contenu du contrat</CardTitle>
+                  {(contrat.content.includes('[Erreur') || contrat.content.includes('ERREUR')) && (
+                    <Button 
+                      onClick={handleRegenerate} 
+                      disabled={regenerating}
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
+                      {regenerating ? 'Régénération...' : 'Régénérer avec l\'IA'}
+                    </Button>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <div className="prose prose-sm max-w-none whitespace-pre-wrap bg-gray-50 p-6 rounded-lg border">
