@@ -18,6 +18,7 @@ interface Contrat {
   description?: string | null;
   content?: string | null;
   created_at?: string | null;
+  contenu_json?: any;
 }
 
 export default function ContratDetail() {
@@ -42,10 +43,10 @@ export default function ContratDetail() {
     toast.info("Régénération du contrat avec l'IA...");
     
     try {
-      // Générer le nouveau contenu avec l'IA
+      // Générer le nouveau contenu avec l'IA en utilisant les données du formulaire
       const generatedContract = await generateContractWithAI({
         contractType: contrat.type || contrat.name,
-        formData: {}, // Les données sont déjà dans la BDD
+        formData: contrat.contenu_json || {}, // Récupérer les données du formulaire
         clientInfo: {},
         user
       });
@@ -82,7 +83,7 @@ export default function ContratDetail() {
       // Try loading as owner first
       const { data: cData, error } = await supabase
         .from('contrats')
-        .select('id,name,category,type,created_at,description,content')
+        .select('id,name,category,type,created_at,description,content,contenu_json')
         .eq('owner_id', user.id)
         .eq('role', role)
         .eq('id', id)
