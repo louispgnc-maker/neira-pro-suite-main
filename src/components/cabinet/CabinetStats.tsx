@@ -160,8 +160,6 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
     documents: acc.documents + member.documents
   }), { dossiers: 0, clients: 0, signatures: 0, documents: 0 });
 
-  const totalStorageGB = (totalStats.documents * 0.5) / 1024;
-
   const getUsagePercentage = (used: number, limit: number) => {
     if (limit >= 999999) return 0;
     return Math.min((used / limit) * 100, 100);
@@ -228,12 +226,9 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           <div className="bg-muted/50 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
               <HardDrive className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground">Stockage</span>
+              <span className="text-xs font-medium text-muted-foreground">Documents</span>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className={`text-2xl font-bold ${colorClass}`}>{totalStorageGB.toFixed(1)}</span>
-              <span className="text-xs text-muted-foreground">Go</span>
-            </div>
+            <span className={`text-2xl font-bold ${colorClass}`}>{totalStats.documents}</span>
           </div>
         </div>
 
