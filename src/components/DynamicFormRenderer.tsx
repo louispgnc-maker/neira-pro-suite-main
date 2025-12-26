@@ -40,9 +40,9 @@ interface DynamicFormRendererProps {
 
 export function DynamicFormRenderer({ schema, formData, onFormDataChange, role = 'avocat', userId }: DynamicFormRendererProps) {
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, File[]>>({});
-  const [clients, setClients] = useState<Array<{id: string, nom: string, prenom: string}>>([]);
+  const [clients, setClients] = useState<Array<{id: string, name: string, nom?: string, prenom?: string}>>([]);
   const [clientModes, setClientModes] = useState<Record<string, 'existing' | 'manual'>>({});
-
+  const [personTypes, setPersonTypes] = useState<Record<string, 'physique' | 'morale'>>({});
   // Charger les clients
   useEffect(() => {
     if (!userId) {
@@ -54,9 +54,9 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
       console.log('🔍 Chargement des clients pour userId:', userId);
       const { data, error } = await supabase
         .from('clients')
-        .select('id, nom, prenom')
-        .eq('user_id', userId)
-        .order('nom', { ascending: true });
+        .select('id, name, nom, prenom')
+        .eq('owner_id', userId)
+        .order('name', { ascending: true });
       
       if (error) {
         console.error('❌ Erreur chargement clients:', error);
@@ -213,7 +213,7 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
                     {clients.length > 0 ? (
                       clients.map((client) => (
                         <SelectItem key={client.id} value={client.id}>
-                          {client.nom} {client.prenom}
+                          {client.name || `${client.nom || ''} ${client.prenom || ''}`.trim()}
                         </SelectItem>
                       ))
                     ) : (
@@ -231,6 +231,132 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
               </div>
             ) : (
               <div className="space-y-3 bg-white dark:bg-gray-900 p-3 rounded">
+                {/* Choix Personne physique / Société */}
+                <div className="space-y-2">
+                  <Label>Type</Label>
+                  <RadioGroup 
+                    value={personTypes[field.id] || 'physique'} 
+                    onValueChange={(val: 'physique' | 'morale') => {
+                      setPersonTypes(prev => ({ ...prev, [field.id]: val }));
+                      // Réinitialiser les champs selon le type
+                      const newFormData = { ...formData };
+                      if (val === 'physique') {
+                        // Supprimer champs société
+                        delete newFormData[`${manualPrefix}raison_sociale`];
+                        delete newFormData[`${manualPrefix}siret`];
+                        delete newFormData[`${manualPrefix}forme_juridique`];
+                        delete newFormData[`${manualPrefix}representant_nom`];
+                        delete newFormData[`${manualPrefix}representant_prenom`];
+                      } else {
+                        // Supprimer champs personne physique
+                        delete newFormData[`${manualPrefix}nom`];
+                        delete newFormData[`${manualPrefix}prenom`];
+                      }
+                      onFormDataChange(newFormData);
+                    }}
+                    className="flex gap-4"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="physique" id={`${field.id}_physique`} />
+                      <Label htmlFor={`${field.id}_physique`} className="cursor-pointer">Personne physique</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="morale" id={`${field.id}_morale`} />
+                      <Label htmlFor={`${field.id}_morale`} className="cursor-pointer">Société</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                {personTypes[field.id] === 'morale' ? (
+                  /* Formulaire Société */
+                  <>
+                    <div>
+                      <Label htmlFor={`${manualPrefix}raison_sociale`}>Raison sociale *</Label>
+                      <Input
+                        id={`${manualPrefix}raison_sociale`}
+                        value={formData[`${manualPrefix}raison_sociale`] || ''}
+                        onChange={(e) => updateFormData(`${manualPrefix}raison_sociale`, e.target.value)}
+                        placeholder="SARL Exemple, SAS MonEntreprise..."
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor={`${manualPrefix}siret`}>SIRET</Label>
+                        <Input
+                          id={`${manualPrefix}siret`}
+                          value={formData[`${manualPrefix}siret`] || ''}
+                          onChange={(e) => updateFormData(`${manualPrefix}siret`, e.target.value)}
+                          placeholder="123 456 789 00010"
+                          maxLength={14}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor={`${manualPrefix}forme_juridique`}>Forme juridique</Label>
+                        <Input
+                          id={`${manualPrefix}forme_juridique`}
+                          value={formData[`${manualPrefix}forme_juridique`] || ''}
+                          onChange={(e) => updateFormData(`${manualPrefix}forme_juridique`, e.target.value)}
+                          placeholder="SARL, SAS, SA, EURL..."
+                        />
+                      </div>
+                    </div>
+                    <div className="border-t pt-3 mt-2">
+                      <Label className="text-sm font-semibold">Représentant légal</Label>
+                      <div className="grid grid-cols-2 gap-3 mt-2">
+                        <div>
+                          <Label htmlFor={`${manualPrefix}representant_nom`}>Nom</Label>
+                          <Input
+                            id={`${manualPrefix}representant_nom`}
+                            value={formData[`${manualPrefix}representant_nom`] || ''}
+                            onChange={(e) => updateFormData(`${manualPrefix}representant_nom`, e.target.value)}
+                            placeholder="Nom"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`${manualPrefix}representant_prenom`}>Prénom</Label>
+                          <Input
+                            id={`${manualPrefix}representant_prenom`}
+                            value={formData[`${manualPrefix}representant_prenom`] || ''}
+                            onChange={(e) => updateFormData(`${manualPrefix}representant_prenom`, e.target.value)}
+                            placeholder="Prénom"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor={`${manualPrefix}email`}>Email de contact</Label>
+                      <Input
+                        id={`${manualPrefix}email`}
+                        type="email"
+                        value={formData[`${manualPrefix}email`] || ''}
+                        onChange={(e) => updateFormData(`${manualPrefix}email`, e.target.value)}
+                        placeholder="contact@entreprise.fr"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`${manualPrefix}telephone`}>Téléphone</Label>
+                      <Input
+                        id={`${manualPrefix}telephone`}
+                        type="tel"
+                        value={formData[`${manualPrefix}telephone`] || ''}
+                        onChange={(e) => updateFormData(`${manualPrefix}telephone`, e.target.value)}
+                        placeholder="01 23 45 67 89"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`${manualPrefix}adresse`}>Siège social</Label>
+                      <Textarea
+                        id={`${manualPrefix}adresse`}
+                        value={formData[`${manualPrefix}adresse`] || ''}
+                        onChange={(e) => updateFormData(`${manualPrefix}adresse`, e.target.value)}
+                        placeholder="Adresse complète du siège social"
+                        rows={2}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  /* Formulaire Personne Physique */
+                  <>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label htmlFor={`${manualPrefix}nom`}>Nom *</Label>
@@ -281,6 +407,8 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
                     rows={2}
                   />
                 </div>
+                  </>
+                )}
               </div>
             )}
             
