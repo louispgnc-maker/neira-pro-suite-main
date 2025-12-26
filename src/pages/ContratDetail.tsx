@@ -139,7 +139,7 @@ export default function ContratDetail() {
           category: editedCategory || null,
           type: editedType || null,
           description: editedDescription || null,
-          client_id: editedClientId || null
+          client_id: editedClientId === 'none' ? null : (editedClientId || null)
         })
         .eq('id', contrat.id);
 
@@ -152,7 +152,7 @@ export default function ContratDetail() {
         category: editedCategory || null,
         type: editedType || null,
         description: editedDescription || null,
-        client_id: editedClientId || null
+        client_id: editedClientId === 'none' ? null : (editedClientId || null)
       });
       
       setEditingInfo(false);
@@ -412,12 +412,12 @@ export default function ContratDetail() {
                     </div>
                     <div>
                       <label className="text-sm text-muted-foreground">Client assigné</label>
-                      <Select value={editedClientId} onValueChange={setEditedClientId}>
+                      <Select value={editedClientId || "none"} onValueChange={setEditedClientId}>
                         <SelectTrigger className="mt-1">
                           <SelectValue placeholder="Sélectionner un client" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">— Aucun client —</SelectItem>
+                          <SelectItem value="none">— Aucun client —</SelectItem>
                           {clients.map(client => (
                             <SelectItem key={client.id} value={client.id}>
                               {client.nom} {client.prenom || ''}
