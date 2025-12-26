@@ -518,11 +518,10 @@ export default function ContratDetail() {
                             state: { scrollToType: contrat.type } 
                           })}
                           size="sm"
-                          variant="outline"
-                          className={`gap-2 ${
+                          className={`gap-2 text-white ${
                             role === 'notaire' 
-                              ? 'border-orange-300 text-orange-700 hover:bg-orange-50' 
-                              : 'border-blue-300 text-blue-700 hover:bg-blue-50'
+                              ? 'bg-orange-600 hover:bg-orange-700' 
+                              : 'bg-blue-600 hover:bg-blue-700'
                           }`}
                         >
                           <FileEdit className="h-4 w-4" />
