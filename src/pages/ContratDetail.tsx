@@ -515,7 +515,10 @@ export default function ContratDetail() {
                       <>
                         <Button 
                           onClick={() => navigate(role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats', { 
-                            state: { scrollToType: contrat.type } 
+                            state: { 
+                              scrollToType: contrat.type,
+                              contratData: contrat.contenu_json 
+                            } 
                           })}
                           size="sm"
                           className={`gap-2 text-white ${
