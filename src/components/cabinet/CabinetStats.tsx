@@ -410,8 +410,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
 
         {/* Alertes */}
         {(getUsagePercentage(totalStats.dossiers, limits.dossiers) >= 80 ||
-          getUsagePercentage(totalStats.clients, limits.clients) >= 80 ||
-          getUsagePercentage(totalStorageGB, limits.storage) >= 80) && (
+          getUsagePercentage(totalStats.clients, limits.clients) >= 80) && (
           <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
