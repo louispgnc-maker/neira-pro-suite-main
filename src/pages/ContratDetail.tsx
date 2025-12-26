@@ -2,9 +2,11 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import { ArrowLeft, RefreshCw, Edit, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -35,6 +37,17 @@ export default function ContratDetail() {
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
   const [clients, setClients] = useState<any[]>([]);
+  
+  // États pour l'édition des informations
+  const [editingInfo, setEditingInfo] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const [editedCategory, setEditedCategory] = useState("");
+  const [editedType, setEditedType] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
+  
+  // États pour l'édition du contenu
+  const [editingContent, setEditingContent] = useState(false);
+  const [editedContent, setEditedContent] = useState("");
 
   // Fonction pour régénérer le contrat avec l'IA
   const handleRegenerate = async () => {
@@ -98,6 +111,92 @@ export default function ContratDetail() {
     } finally {
       setRegenerating(false);
     }
+  };
+
+  // Fonction pour commencer l'édition des informations
+  const startEditingInfo = () => {
+    if (!contrat) return;
+    setEditedName(contrat.name);
+    setEditedCategory(contrat.category || "");
+    setEditedType(contrat.type || "");
+    setEditedDescription(contrat.description || "");
+    setEditingInfo(true);
+  };
+
+  // Fonction pour sauvegarder les informations
+  const saveInfo = async () => {
+    if (!contrat || !user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('contrats')
+        .update({
+          name: editedName,
+          category: editedCategory || null,
+          type: editedType || null,
+          description: editedDescription || null
+        })
+        .eq('id', contrat.id);
+
+      if (error) throw error;
+
+      // Mettre à jour l'état local
+      setContrat({
+        ...contrat,
+        name: editedName,
+        category: editedCategory || null,
+        type: editedType || null,
+        description: editedDescription || null
+      });
+      
+      setEditingInfo(false);
+      toast.success("Informations mises à jour");
+      
+    } catch (error) {
+      console.error('Erreur sauvegarde:', error);
+      toast.error("Erreur lors de la sauvegarde");
+    }
+  };
+
+  // Fonction pour annuler l'édition des informations
+  const cancelEditingInfo = () => {
+    setEditingInfo(false);
+  };
+
+  // Fonction pour commencer l'édition du contenu
+  const startEditingContent = () => {
+    if (!contrat) return;
+    setEditedContent(contrat.content || "");
+    setEditingContent(true);
+  };
+
+  // Fonction pour sauvegarder le contenu
+  const saveContent = async () => {
+    if (!contrat || !user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('contrats')
+        .update({ content: editedContent })
+        .eq('id', contrat.id);
+
+      if (error) throw error;
+
+      // Mettre à jour l'état local
+      setContrat({ ...contrat, content: editedContent });
+      
+      setEditingContent(false);
+      toast.success("Contenu mis à jour");
+      
+    } catch (error) {
+      console.error('Erreur sauvegarde:', error);
+      toast.error("Erreur lors de la sauvegarde");
+    }
+  };
+
+  // Fonction pour annuler l'édition du contenu
+  const cancelEditingContent = () => {
+    setEditingContent(false);
   };
 
   useEffect(() => {
@@ -210,32 +309,114 @@ export default function ContratDetail() {
         ) : (
           <div className="space-y-6">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle>1. Informations du contrat</CardTitle>
+                {!editingInfo ? (
+                  <Button 
+                    onClick={startEditingInfo} 
+                    size="sm"
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Modifier
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={saveInfo} 
+                      size="sm"
+                      className={`gap-2 text-white ${
+                        role === 'notaire' 
+                          ? 'bg-orange-600 hover:bg-orange-700' 
+                          : 'bg-blue-600 hover:bg-blue-700'
+                      }`}
+                    >
+                      <Save className="h-4 w-4" />
+                      Enregistrer
+                    </Button>
+                    <Button 
+                      onClick={cancelEditingInfo} 
+                      size="sm"
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <X className="h-4 w-4" />
+                      Annuler
+                    </Button>
+                  </div>
+                )}
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <div className="text-sm text-muted-foreground">Nom</div>
-                  <div className="font-medium">{contrat.name}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Catégorie</div>
-                  <Badge variant="outline" className={role === 'notaire' ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
-                    {contrat.category || '—'}
-                  </Badge>
-                </div>
-                <div className="md:col-span-2">
-                  <div className="text-sm text-muted-foreground">Type</div>
-                  <div className="font-medium">{contrat.type || '—'}</div>
-                </div>
-                <div className="md:col-span-2">
-                  <div className="text-sm text-muted-foreground">Description</div>
-                  <div className="font-medium whitespace-pre-wrap">{contrat.description || '—'}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Créé le</div>
-                  <div className="font-medium">{contrat.created_at ? new Date(contrat.created_at).toLocaleDateString() : '—'}</div>
-                </div>
+                {!editingInfo ? (
+                  <>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Nom</div>
+                      <div className="font-medium">{contrat.name}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Catégorie</div>
+                      <Badge variant="outline" className={role === 'notaire' ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
+                        {contrat.category || '—'}
+                      </Badge>
+                    </div>
+                    <div className="md:col-span-2">
+                      <div className="text-sm text-muted-foreground">Type</div>
+                      <div className="font-medium">{contrat.type || '—'}</div>
+                    </div>
+                    <div className="md:col-span-2">
+                      <div className="text-sm text-muted-foreground">Description</div>
+                      <div className="font-medium whitespace-pre-wrap">{contrat.description || '—'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Créé le</div>
+                      <div className="font-medium">{contrat.created_at ? new Date(contrat.created_at).toLocaleDateString() : '—'}</div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="md:col-span-2">
+                      <label className="text-sm text-muted-foreground">Nom *</label>
+                      <Input 
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        placeholder="Nom du contrat"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm text-muted-foreground">Catégorie</label>
+                      <Input 
+                        value={editedCategory}
+                        onChange={(e) => setEditedCategory(e.target.value)}
+                        placeholder="Catégorie"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm text-muted-foreground">Type</label>
+                      <Input 
+                        value={editedType}
+                        onChange={(e) => setEditedType(e.target.value)}
+                        placeholder="Type de contrat"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-sm text-muted-foreground">Description</label>
+                      <Textarea 
+                        value={editedDescription}
+                        onChange={(e) => setEditedDescription(e.target.value)}
+                        placeholder="Description du contrat"
+                        className="mt-1 min-h-[100px]"
+                      />
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Créé le</div>
+                      <div className="font-medium">{contrat.created_at ? new Date(contrat.created_at).toLocaleDateString() : '—'}</div>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -243,24 +424,72 @@ export default function ContratDetail() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0">
                   <CardTitle>2. Contenu du contrat</CardTitle>
-                  <Button 
-                    onClick={handleRegenerate} 
-                    disabled={regenerating}
-                    size="sm"
-                    className={`gap-2 text-white ${
-                      role === 'notaire' 
-                        ? 'bg-orange-600 hover:bg-orange-700' 
-                        : 'bg-blue-600 hover:bg-blue-700'
-                    }`}
-                  >
-                    <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
-                    {regenerating ? 'Régénération...' : 'Régénérer avec l\'IA'}
-                  </Button>
+                  <div className="flex gap-2">
+                    {!editingContent && (
+                      <Button 
+                        onClick={startEditingContent} 
+                        size="sm"
+                        variant="outline"
+                        className="gap-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                        Modifier
+                      </Button>
+                    )}
+                    {editingContent ? (
+                      <>
+                        <Button 
+                          onClick={saveContent} 
+                          size="sm"
+                          className={`gap-2 text-white ${
+                            role === 'notaire' 
+                              ? 'bg-orange-600 hover:bg-orange-700' 
+                              : 'bg-blue-600 hover:bg-blue-700'
+                          }`}
+                        >
+                          <Save className="h-4 w-4" />
+                          Enregistrer
+                        </Button>
+                        <Button 
+                          onClick={cancelEditingContent} 
+                          size="sm"
+                          variant="outline"
+                          className="gap-2"
+                        >
+                          <X className="h-4 w-4" />
+                          Annuler
+                        </Button>
+                      </>
+                    ) : (
+                      <Button 
+                        onClick={handleRegenerate} 
+                        disabled={regenerating}
+                        size="sm"
+                        className={`gap-2 text-white ${
+                          role === 'notaire' 
+                            ? 'bg-orange-600 hover:bg-orange-700' 
+                            : 'bg-blue-600 hover:bg-blue-700'
+                        }`}
+                      >
+                        <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
+                        {regenerating ? 'Régénération...' : 'Régénérer avec l\'IA'}
+                      </Button>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="prose prose-sm max-w-none whitespace-pre-wrap bg-gray-50 p-6 rounded-lg border">
-                    {contrat.content}
-                  </div>
+                  {!editingContent ? (
+                    <div className="prose prose-sm max-w-none whitespace-pre-wrap bg-gray-50 p-6 rounded-lg border">
+                      {contrat.content}
+                    </div>
+                  ) : (
+                    <Textarea 
+                      value={editedContent}
+                      onChange={(e) => setEditedContent(e.target.value)}
+                      placeholder="Contenu du contrat"
+                      className="min-h-[500px] font-mono text-sm"
+                    />
+                  )}
                 </CardContent>
               </Card>
             )}
