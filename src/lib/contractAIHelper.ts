@@ -96,18 +96,38 @@ export function getClientInfo(clientId: string, clients: any[]): any {
   const client = clients.find(c => c.id === clientId);
   if (!client) return {};
   
+  // Extraire situation_familiale si c'est un objet JSON
+  let situationFamiliale = client.situation_familiale;
+  if (typeof situationFamiliale === 'object' && situationFamiliale !== null) {
+    situationFamiliale = {
+      regime_matrimonial: situationFamiliale.regime_matrimonial,
+      nombre_enfants: situationFamiliale.nombre_enfants,
+      personne_a_charge: situationFamiliale.personne_a_charge
+    };
+  }
+  
   return {
+    // Identité
     nom: client.nom,
     prenom: client.prenom,
-    adresse: client.adresse,
-    telephone: client.telephone,
-    email: client.email,
     date_naissance: client.date_naissance,
     lieu_naissance: client.lieu_naissance,
     nationalite: client.nationalite,
+    
+    // Contact
+    adresse: client.adresse,
+    telephone: client.telephone,
+    email: client.email,
+    
+    // Situation
     profession: client.profession,
-    situation_matrimoniale: client.situation_matrimoniale,
-    situation_familiale: client.situation_familiale,
     etat_civil: client.etat_civil,
+    situation_matrimoniale: client.situation_matrimoniale,
+    situation_familiale: situationFamiliale,
+    
+    // Identité administrative
+    type_identite: client.type_identite,
+    numero_identite: client.numero_identite,
+    date_expiration_identite: client.date_expiration_identite,
   };
 }

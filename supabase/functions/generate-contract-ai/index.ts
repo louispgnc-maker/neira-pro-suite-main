@@ -101,13 +101,17 @@ function getSystemPrompt(contractType: string): string {
 
 RÈGLES ABSOLUES:
 1. Rédige en français juridique formel et précis
-2. Si un champ n'est pas fourni, écris "[À COMPLÉTER]" à sa place
-3. Respecte scrupuleusement le droit français en vigueur
-4. Structure le document avec des articles numérotés
-5. Inclus tous les éléments obligatoires selon le type de document
-6. Utilise un ton professionnel et juridiquement approprié
-7. Ajoute les clauses de protection nécessaires
-8. Format: texte brut prêt à l'impression (pas de markdown)`;
+2. N'INVENTE AUCUNE INFORMATION - utilise UNIQUEMENT les données fournies dans le formulaire et les informations client
+3. Si un champ n'est pas fourni ou est vide, écris EXACTEMENT "[À COMPLÉTER]" à sa place
+4. Ne mets JAMAIS de valeurs d'exemple, de placeholders fictifs, ou d'informations génériques
+5. Respecte scrupuleusement le droit français en vigueur
+6. Structure le document avec des articles numérotés
+7. Inclus tous les éléments obligatoires selon le type de document
+8. Utilise un ton professionnel et juridiquement approprié
+9. Ajoute les clauses de protection nécessaires
+10. Format: texte brut prêt à l'impression (pas de markdown)
+
+IMPORTANT: Tu ne dois utiliser QUE les informations présentes dans DONNÉES DU FORMULAIRE et INFORMATIONS CLIENT. Toute autre information doit être remplacée par "[À COMPLÉTER]".`;
 
   const contractPrompts: { [key: string]: string } = {
     "Contrat de développement web/application": `${basePrompt}
@@ -916,13 +920,18 @@ function buildUserPrompt(contractType: string, formData: any, clientInfo: any): 
   }
   
   prompt += `INSTRUCTIONS FINALES:
-- Utilise TOUTES les données fournies
-- Pour chaque champ vide, manquant ou undefined: écris "[À COMPLÉTER]"
+- Utilise UNIQUEMENT les données présentes dans "DONNÉES DU FORMULAIRE" et "INFORMATIONS CLIENT"
+- N'INVENTE AUCUNE information, même pour rendre le document plus complet
+- Pour CHAQUE champ vide, manquant ou undefined: écris EXACTEMENT "[À COMPLÉTER]"
+- Ne mets JAMAIS de valeurs d'exemple (ex: "Jean Dupont", "Paris", "01/01/2000", etc.)
+- Ne génère JAMAIS de données fictives ou de placeholders génériques
 - Structure le document de manière professionnelle
 - Respecte le formalisme juridique français
 - Ne demande JAMAIS de confirmation, génère directement le document complet
 - Format: texte brut (pas de markdown, pas de balises)
-- Le document doit être prêt à l'impression/signature`;
+- Le document doit être prêt à l'impression/signature
+
+RAPPEL CRITIQUE: Si une information n'est PAS dans les données fournies ci-dessus, tu DOIS écrire "[À COMPLÉTER]". Ne génère RIEN de ton imagination.`;
 
   return prompt;
 }
