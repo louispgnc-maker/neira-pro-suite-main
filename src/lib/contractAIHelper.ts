@@ -3,7 +3,29 @@
  * Util depuis n'importe quel handler de contrat
  */
 
-import { supabase } from './supabaseClient';
+import { createClient } from '@supabase/supabase-js';
+
+// Client Supabase spécial pour les Edge Functions avec timeout de 90s
+const supabaseUrl = import.meta?.env?.VITE_SUPABASE_URL || 'https://elysrdqujzlbvnjfilvh.supabase.co';
+const supabaseKey = import.meta?.env?.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA';
+
+// Fetch avec timeout de 90s pour l'IA (génération peut être longue)
+const fetchWithTimeout = (timeoutMs = 90000) => {
+  return async (input: RequestInfo | URL, init: RequestInit = {}) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const resp = await fetch(input, { ...init, signal: controller.signal });
+      return resp;
+    } finally {
+      clearTimeout(id);
+    }
+  };
+};
+
+const supabaseAI = createClient(supabaseUrl, supabaseKey, {
+  global: { fetch: fetchWithTimeout(90000) },
+});
 
 interface GenerateContractParams {
   contractType: string;
@@ -25,21 +47,13 @@ export async function generateContractWithAI({
   try {
     console.log(`🤖 Génération IA pour: ${contractType}`);
     
-    // Timeout plus long pour l'IA (60 secondes)
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000);
-    
-    const { data: aiResponse, error: aiError } = await supabase.functions.invoke('generate-contract-ai', {
+    const { data: aiResponse, error: aiError } = await supabaseAI.functions.invoke('generate-contract-ai', {
       body: {
         contractType,
         formData,
         clientInfo
-      },
-      // @ts-ignore - options non typées
-      signal: controller.signal
+      }
     });
-    
-    clearTimeout(timeoutId);
 
     if (aiError) {
       console.error('❌ Erreur génération IA:', aiError);
