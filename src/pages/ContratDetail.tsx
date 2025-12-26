@@ -202,21 +202,19 @@ export default function ContratDetail() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0">
                   <CardTitle>2. Contenu du contrat</CardTitle>
-                  {(contrat.content.includes('[Erreur') || contrat.content.includes('ERREUR')) && (
-                    <Button 
-                      onClick={handleRegenerate} 
-                      disabled={regenerating}
-                      size="sm"
-                      className={`gap-2 text-white ${
-                        role === 'notaire' 
-                          ? 'bg-orange-600 hover:bg-orange-700' 
-                          : 'bg-blue-600 hover:bg-blue-700'
-                      }`}
-                    >
-                      <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
-                      {regenerating ? 'Régénération...' : 'Régénérer avec l\'IA'}
-                    </Button>
-                  )}
+                  <Button 
+                    onClick={handleRegenerate} 
+                    disabled={regenerating}
+                    size="sm"
+                    className={`gap-2 text-white ${
+                      role === 'notaire' 
+                        ? 'bg-orange-600 hover:bg-orange-700' 
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
+                  >
+                    <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
+                    {regenerating ? 'Régénération...' : 'Régénérer avec l\'IA'}
+                  </Button>
                 </CardHeader>
                 <CardContent>
                   <div className="prose prose-sm max-w-none whitespace-pre-wrap bg-gray-50 p-6 rounded-lg border">
