@@ -26,11 +26,17 @@ Deno.serve(async (req) => {
       throw new Error('OPENAI_API_KEY non configurée');
     }
 
+    // Logs détaillés pour déboguer
+    console.log('📋 Génération du contrat:', contractType);
+    console.log('📦 Données du formulaire:', JSON.stringify(formData, null, 2));
+    console.log('👤 Infos client:', JSON.stringify(clientInfo, null, 2));
+    console.log('📊 Nombre de champs:', Object.keys(formData).length);
+
     // Construction du prompt selon le type de contrat
     const systemPrompt = getSystemPrompt(contractType);
     const userPrompt = buildUserPrompt(contractType, formData, clientInfo);
 
-    console.log('Génération du contrat:', contractType);
+    console.log('💬 Prompt utilisateur (premier 500 chars):', userPrompt.substring(0, 500));
 
     // Appel à OpenAI (ChatGPT)
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
