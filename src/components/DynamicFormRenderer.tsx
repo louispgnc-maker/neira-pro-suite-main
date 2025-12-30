@@ -261,137 +261,129 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
     }
   };
 
-  // Rendu de la section fixe client (toujours en haut)
+  // Rendu de la section fixe client (toujours en haut) - Design aligné sur les formulaires legacy
   const renderClientSection = () => (
-    <div className="space-y-4 bg-blue-50 dark:bg-blue-950 p-6 rounded-lg border-2 border-blue-200 mb-6">
-      <h3 className="text-xl font-semibold flex items-center gap-2">
-        <span>👤</span> Votre Client
+    <div className="space-y-4 bg-blue-50 dark:bg-blue-950 p-4 rounded-lg border-2 border-blue-200 mb-6">
+      <h3 className="font-semibold text-lg flex items-center gap-2">
+        <span>👤</span> Votre Client *
       </h3>
       
-      {/* Choix entre client existant ou saisie manuelle */}
-      <RadioGroup 
-        value={clientMode} 
-        onValueChange={(val: 'existing' | 'manual') => {
-          setClientMode(val);
-          if (val === 'manual') {
-            // Supprimer l'ID du client
-            const newData = { ...formData };
-            delete newData['main_client_id'];
-            onFormDataChange(newData);
-          }
-        }}
-        className="flex gap-4"
-      >
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="existing" id="client_existing" />
-          <Label htmlFor="client_existing" className="cursor-pointer font-medium">Client existant</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="manual" id="client_manual" />
-          <Label htmlFor="client_manual" className="cursor-pointer font-medium">Nouvelle personne</Label>
-        </div>
-      </RadioGroup>
-
-      {clientMode === 'existing' ? (
-        /* Mode: Client existant */
-        <div className="space-y-4">
-          <Select 
-            value={formData['main_client_id'] || ''} 
-            onValueChange={(val) => updateFormData('main_client_id', val)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={clients.length > 0 ? "Sélectionner votre client..." : "Aucun client enregistré"} />
-            </SelectTrigger>
-            <SelectContent>
-              {clients.length > 0 ? (
-                clients.map((client) => (
-                  <SelectItem key={client.id} value={client.id}>
-                    {client.name || `${client.nom || ''} ${client.prenom || ''}`.trim()}
-                  </SelectItem>
-                ))
-              ) : (
-                <div className="p-2 text-sm text-muted-foreground">
-                  Aucun client trouvé. Créez d'abord un client dans la section "Clients".
-                </div>
-              )}
-            </SelectContent>
-          </Select>
-
-          {/* Affichage des informations du client sélectionné */}
-          {selectedClientData && (
-            <div className="bg-white dark:bg-gray-900 p-4 rounded border space-y-3">
-              <h4 className="font-semibold text-sm text-blue-700 dark:text-blue-300">Informations du client</h4>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                {selectedClientData.nom && selectedClientData.prenom && (
-                  <div>
-                    <span className="font-medium">Nom complet :</span> {selectedClientData.nom} {selectedClientData.prenom}
-                  </div>
-                )}
-                {selectedClientData.date_naissance && (
-                  <div>
-                    <span className="font-medium">Né(e) le :</span> {selectedClientData.date_naissance}
-                  </div>
-                )}
-                {selectedClientData.adresse && (
-                  <div className="col-span-2">
-                    <span className="font-medium">Adresse :</span> {selectedClientData.adresse}
-                  </div>
-                )}
-                {selectedClientData.email && (
-                  <div>
-                    <span className="font-medium">Email :</span> {selectedClientData.email}
-                  </div>
-                )}
-                {selectedClientData.telephone && (
-                  <div>
-                    <span className="font-medium">Tél :</span> {selectedClientData.telephone}
-                  </div>
-                )}
-              </div>
-
-              {/* Pièce d'identité */}
-              <div className="border-t pt-3">
-                <Label className="text-sm font-medium">📎 Pièce d'identité</Label>
-                {clientIdentiteUrl ? (
-                  <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded mt-2">
-                    <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="bg-green-600 hover:bg-green-700 text-white h-8"
-                      onClick={() => window.open(clientIdentiteUrl, '_blank')}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded mt-2">
-                    <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {clients.length === 0 && (
-            <p className="text-xs text-orange-600">
-              💡 Créez vos clients dans la section "Clients" ou utilisez "Nouvelle personne"
-            </p>
+      {/* Select client avec bouton "Saisie manuelle" (comme ClientSelector) */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="main-client-select">
+            Sélectionner votre client
+          </Label>
+          {formData['main_client_id'] && (
+            <button
+              type="button"
+              onClick={() => {
+                setClientMode('manual');
+                const newData = { ...formData };
+                delete newData['main_client_id'];
+                onFormDataChange(newData);
+              }}
+              className="text-xs text-blue-600 hover:text-blue-800 underline font-medium"
+            >
+              Saisie manuelle
+            </button>
           )}
         </div>
-      ) : (
-        /* Mode: Saisie manuelle */
-        <div className="space-y-4 bg-white dark:bg-gray-900 p-4 rounded">
+        
+        {clientMode === 'existing' ? (
+          <>
+            {clients.length === 0 ? (
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-md">
+                <p className="text-sm text-amber-800">
+                  ⚠️ Aucun client disponible. Utilisez la <button 
+                    type="button"
+                    onClick={() => setClientMode('manual')}
+                    className="underline font-medium hover:text-amber-900"
+                  >saisie manuelle</button> ou créez un client depuis la section "Clients".
+                </p>
+              </div>
+            ) : (
+              <>
+                <Select 
+                  value={formData['main_client_id'] || ''} 
+                  onValueChange={(val) => updateFormData('main_client_id', val)}
+                >
+                  <SelectTrigger id="main-client-select">
+                    <SelectValue placeholder="Choisir un client" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clients.map((client) => (
+                      <SelectItem key={client.id} value={client.id}>
+                        {client.prenom} {client.nom}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Affichage des informations du client sélectionné (comme legacy) */}
+                {selectedClientData && (
+                  <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                    <p><strong>Nom complet:</strong> {selectedClientData.nom} {selectedClientData.prenom}</p>
+                    {selectedClientData.adresse && (
+                      <p><strong>Adresse:</strong> {selectedClientData.adresse}</p>
+                    )}
+                    {selectedClientData.telephone && (
+                      <p><strong>Téléphone:</strong> {selectedClientData.telephone}</p>
+                    )}
+                    {selectedClientData.email && (
+                      <p><strong>Email:</strong> {selectedClientData.email}</p>
+                    )}
+                    {selectedClientData.date_naissance && (
+                      <p><strong>Date de naissance:</strong> {new Date(selectedClientData.date_naissance).toLocaleDateString('fr-FR')}</p>
+                    )}
+                    {selectedClientData.nationalite && (
+                      <p><strong>Nationalité:</strong> {selectedClientData.nationalite}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Pièce d'identité (design legacy) */}
+                {formData['main_client_id'] && (
+                  <div className="space-y-2">
+                    <Label>📎 Pièce d'identité</Label>
+                    {clientIdentiteUrl ? (
+                      <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                        <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          onClick={() => window.open(clientIdentiteUrl, '_blank')}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                        <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        ) : null}
+      </div>
+
+      {/* Mode: Saisie manuelle - Affiché quand on clique sur "Saisie manuelle" */}
+      {clientMode === 'manual' && (
+        <div className="space-y-4 bg-white dark:bg-gray-900 p-4 rounded border">
           {/* Choix Personne physique / Société */}
           <div className="space-y-2">
-            <Label className="font-medium">Type de personne</Label>
+            <Label className="font-medium">Type de personne *</Label>
             <RadioGroup 
               value={personType} 
               onValueChange={(val: 'physique' | 'morale') => {
