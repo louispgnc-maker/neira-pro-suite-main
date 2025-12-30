@@ -19,6 +19,10 @@ interface FormField {
   multiple?: boolean;
   accept?: string;
   description?: string;
+  conditional_on?: {
+    field: string;
+    value: string | boolean;
+  };
 }
 
 interface FormSection {
@@ -27,6 +31,7 @@ interface FormSection {
 }
 
 interface FormSchema {
+  client_roles?: string[]; // Rôles possibles du client (ex: ["Le vendeur", "L'acquéreur"])
   fields: FormField[];
   sections?: FormSection[];
 }
@@ -46,6 +51,7 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
   const [personType, setPersonType] = useState<'physique' | 'morale'>('physique');
   const [selectedClientData, setSelectedClientData] = useState<any>(null);
   const [clientIdentiteUrl, setClientIdentiteUrl] = useState<string | null>(null);
+  const [clientRole, setClientRole] = useState<string>(''); // Rôle du client dans le contrat
   
   // Charger les clients avec leurs pièces d'identité
   useEffect(() => {
@@ -104,6 +110,15 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
 
     loadClientDetails();
   }, [formData['main_client_id'], clientMode, clients]);
+
+  // Initialiser le rôle client avec la première option si disponible
+  useEffect(() => {
+    if (schema.client_roles && schema.client_roles.length > 0 && !clientRole && !formData['client_role']) {
+      const firstRole = schema.client_roles[0];
+      setClientRole(firstRole);
+      updateFormData('client_role', firstRole);
+    }
+  }, [schema.client_roles]);
 
   const updateFormData = (fieldId: string, value: any) => {
     onFormDataChange({
@@ -259,6 +274,14 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
       default:
         return null;
     }
+  };
+
+  // Vérifier si un champ doit être affiché selon ses conditions
+  const shouldShowField = (field: FormField): boolean => {
+    if (!field.conditional_on) return true;
+    
+    const dependentFieldValue = formData[field.conditional_on.field];
+    return dependentFieldValue === field.conditional_on.value;
   };
 
   // Rendu de la section fixe client (toujours en haut) - Design aligné sur les formulaires legacy
@@ -549,6 +572,35 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
           )}
         </div>
       )}
+
+      {/* Choix du rôle du client (si défini dans le schéma) */}
+      {schema.client_roles && schema.client_roles.length > 0 && (
+        <div className="space-y-2 mt-4 pt-4 border-t">
+          <Label className="font-medium text-base">Qui est votre client ? *</Label>
+          <RadioGroup 
+            value={clientRole} 
+            onValueChange={(val) => {
+              setClientRole(val);
+              updateFormData('client_role', val);
+            }}
+            className="space-y-2"
+          >
+            {schema.client_roles.map((role, idx) => (
+              <div key={idx} className="flex items-center space-x-2">
+                <RadioGroupItem value={role} id={`role-${idx}`} />
+                <Label htmlFor={`role-${idx}`} className="cursor-pointer font-normal">
+                  {role}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+          {!clientRole && (
+            <p className="text-xs text-orange-600 mt-1">
+              ⚠️ Sélectionnez qui est votre client pour personnaliser le contrat
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -568,7 +620,8 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {section.fields.map((fieldId) => {
                 const field = schema.fields.find(f => f.id === fieldId);
-                return field ? renderField(field) : null;
+                // Afficher uniquement si le champ existe ET respecte ses conditions
+                return field && shouldShowField(field) ? renderField(field) : null;
               })}
             </div>
           </div>
@@ -585,7 +638,7 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
       
       {/* Champs dynamiques */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {schema.fields.map(renderField)}
+        {schema.fields.filter(shouldShowField).map(renderField)}
       </div>
     </div>
   );

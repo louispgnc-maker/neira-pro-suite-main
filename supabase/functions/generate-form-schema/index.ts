@@ -34,25 +34,38 @@ serve(async (req) => {
 Ton rôle est de créer un schéma de formulaire JSON optimal pour un type de contrat donné.
 
 RÈGLES CRITIQUES:
-1. ⚠️ NE PAS INCLURE de champs pour sélectionner les clients/parties
+1. 🎯 RÔLE DU CLIENT : Tu DOIS définir les parties possibles du contrat dans "client_roles"
+   → Exemple: Compromis de vente → ["Le vendeur", "L'acquéreur"]
+   → Exemple: Bail → ["Le bailleur (propriétaire)", "Le locataire"]
+   → Exemple: Contrat de franchise → ["Le franchiseur", "Le franchisé"]
+   → Le professionnel choisira quelle partie il représente
+   → ADAPTE LES PARTIES AU TYPE DE CONTRAT DE MANIÈRE LOGIQUE ET RÉALISTE
+
+2. ⚠️ NE PAS INCLURE de champs pour saisir les informations personnelles des parties
    → Le système gère déjà une section fixe pour le client principal
    → Tu dois UNIQUEMENT générer les champs spécifiques AU CONTRAT lui-même
    
-2. 🚫 INTERDICTION ABSOLUE : NE JAMAIS inclure de champs pour signatures, tampons, ou validation électronique
+3. 🔄 CHAMPS CONDITIONNELS : Utilise "conditional_on" pour les champs qui dépendent d'autres
+   → Exemple: Si "clause_non_concurrence" = "Oui" → afficher "details_non_concurrence"
+   → Format: { "field": "clause_non_concurrence", "value": "Oui" }
+   → Permet des formulaires intelligents qui s'adaptent aux réponses
 
-3. MINIMALISME : Ne demande QUE les informations ESSENTIELLES et LÉGALEMENT REQUISES pour LE CONTRAT
+4. 🚫 INTERDICTION ABSOLUE : NE JAMAIS inclure de champs pour signatures, tampons, ou validation électronique
 
-4. DOCUMENTS : Ajoute des champs "file" pour les documents importants LIÉS AU CONTRAT (diagnostics, justificatifs, annexes techniques, etc.)
+5. MINIMALISME : Ne demande QUE les informations ESSENTIELLES et LÉGALEMENT REQUISES pour LE CONTRAT
+
+6. DOCUMENTS : Ajoute des champs "file" pour les documents importants LIÉS AU CONTRAT (diagnostics, justificatifs, annexes techniques, etc.)
    ⚠️ NE PAS demander de pièce d'identité (déjà dans la section fixe)
 
-5. PERTINENCE : Adapte-toi à la description fournie par le professionnel
+7. PERTINENCE : Adapte-toi à la description fournie par le professionnel
 
-6. CLARTÉ : Champs avec labels clairs en français
+8. CLARTÉ : Champs avec labels clairs en français
 
-7. VALIDATION : Marque les champs obligatoires
+9. VALIDATION : Marque les champs obligatoires
 
 Structure du schéma JSON à retourner:
 {
+  "client_roles": ["Partie 1 (description)", "Partie 2 (description)"], // OBLIGATOIRE - Définir les rôles possibles du client
   "fields": [
     {
       "id": "unique_field_id",
@@ -63,7 +76,8 @@ Structure du schéma JSON à retourner:
       "options": ["option1", "option2"], // Pour les select
       "multiple": true|false, // Pour les fichiers
       "accept": ".pdf,.jpg,.png", // Pour les fichiers
-      "description": "Explication juridique si nécessaire"
+      "description": "Explication juridique si nécessaire",
+      "conditional_on": { "field": "autre_field_id", "value": "valeur_declencheur" } // OPTIONNEL - Champ affiché conditionnellement
     }
   ],
   "sections": [
@@ -84,6 +98,8 @@ Types de champs disponibles:
 - file: Upload de fichier(s)
 
 IMPORTANT:
+- 🎯 TOUJOURS définir "client_roles" avec les parties pertinentes du contrat
+- 🔄 Utilise "conditional_on" pour créer des formulaires intelligents et adaptatifs
 - 🚫 NE JAMAIS inclure de champs client/parties (vendeur, acheteur, bailleur, locataire, etc.) - déjà géré par le système
 - 🚫 NE JAMAIS inclure de pièce d'identité - déjà dans section fixe
 - 🚫 N'INCLUS JAMAIS de champs pour : signature, paraphe, tampon, validation électronique
@@ -94,10 +110,38 @@ IMPORTANT:
 - 🇫🇷 Adapte-toi au contexte français et à la législation française
 - ⚠️ Les signatures seront ajoutées APRÈS, ne t'en préoccupe PAS dans le formulaire
 
-EXEMPLES de ce qu'il faut générer:
-- Compromis de vente → adresse bien, surface, prix, date signature promesse, conditions suspensives, délai rétractation
-- Bail d'habitation → adresse logement, loyer, charges, dépôt garantie, durée bail, date effet
-- Contrat de travail → poste, salaire, horaires, lieu de travail, date début, type contrat (CDI/CDD)`
+EXEMPLES CONCRETS de ce qu'il faut générer:
+
+COMPROMIS DE VENTE:
+{
+  "client_roles": ["Le vendeur", "L'acquéreur"],
+  "fields": [
+    { "id": "adresse_bien", "label": "Adresse du bien", "type": "textarea", "required": true },
+    { "id": "prix_vente", "label": "Prix de vente (€)", "type": "number", "required": true },
+    { "id": "clause_suspensive", "label": "Clause suspensive d'obtention de prêt", "type": "select", "options": ["Oui", "Non"], "required": true },
+    { "id": "details_pret", "label": "Détails du prêt", "type": "textarea", "conditional_on": { "field": "clause_suspensive", "value": "Oui" } }
+  ]
+}
+
+BAIL D'HABITATION:
+{
+  "client_roles": ["Le bailleur (propriétaire)", "Le locataire"],
+  "fields": [
+    { "id": "adresse_logement", "label": "Adresse du logement", "type": "textarea", "required": true },
+    { "id": "loyer_mensuel", "label": "Loyer mensuel (€)", "type": "number", "required": true },
+    { "id": "meuble", "label": "Logement meublé", "type": "select", "options": ["Oui", "Non"], "required": true },
+    { "id": "inventaire_meubles", "label": "Inventaire des meubles", "type": "textarea", "conditional_on": { "field": "meuble", "value": "Oui" } }
+  ]
+}
+
+CONTRAT DE TRAVAIL:
+{
+  "client_roles": ["L'employeur", "Le salarié"],
+  "fields": [
+    { "id": "type_contrat", "label": "Type de contrat", "type": "select", "options": ["CDI", "CDD", "Alternance"], "required": true },
+    { "id": "duree_cdd", "label": "Durée du CDD", "type": "text", "conditional_on": { "field": "type_contrat", "value": "CDD" } }
+  ]
+}`
 
     const userPrompt = `Type de contrat: ${contractType}
 Rôle du professionnel: ${role === 'notaire' ? 'Notaire' : 'Avocat'}
