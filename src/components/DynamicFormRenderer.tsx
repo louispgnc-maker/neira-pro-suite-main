@@ -53,6 +53,12 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
   const [clientIdentiteUrl, setClientIdentiteUrl] = useState<string | null>(null);
   const [clientRole, setClientRole] = useState<string>(''); // Rôle du client dans le contrat
   
+  // States pour l'autre partie
+  const [otherPartyMode, setOtherPartyMode] = useState<'existing' | 'manual'>('existing');
+  const [otherPartyPersonType, setOtherPartyPersonType] = useState<'physique' | 'morale'>('physique');
+  const [selectedOtherPartyData, setSelectedOtherPartyData] = useState<any>(null);
+  const [otherPartyIdentiteUrl, setOtherPartyIdentiteUrl] = useState<string | null>(null);
+  
   // Charger les clients avec leurs pièces d'identité
   useEffect(() => {
     if (!userId) {
@@ -110,6 +116,38 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
 
     loadClientDetails();
   }, [formData['main_client_id'], clientMode, clients]);
+
+  // Charger les détails de l'autre partie si un client est sélectionné
+  useEffect(() => {
+    const loadOtherPartyDetails = async () => {
+      const otherPartyId = formData['other_party_id'];
+      if (!otherPartyId) {
+        setSelectedOtherPartyData(null);
+        setOtherPartyIdentiteUrl(null);
+        return;
+      }
+
+      const otherParty = clients.find(c => c.id === otherPartyId);
+      if (otherParty) {
+        setSelectedOtherPartyData(otherParty);
+        
+        // Charger l'URL de la pièce d'identité si elle existe
+        if (otherParty.id_doc_path) {
+          const { data } = await supabase.storage
+            .from('documents')
+            .createSignedUrl(otherParty.id_doc_path, 3600);
+          
+          if (data) {
+            setOtherPartyIdentiteUrl(data.signedUrl);
+          }
+        } else {
+          setOtherPartyIdentiteUrl(null);
+        }
+      }
+    };
+
+    loadOtherPartyDetails();
+  }, [formData['other_party_id'], otherPartyMode, clients]);
 
   // Initialiser le rôle client avec la première option si disponible
   useEffect(() => {
@@ -604,12 +642,326 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
     </div>
   );
 
+  // Fonction pour obtenir le label de l'autre partie (celle qui n'est PAS notre client)
+  const getOtherPartyLabel = (): string => {
+    if (!schema.client_roles || schema.client_roles.length < 2 || !clientRole) {
+      return "Autre partie";
+    }
+    
+    const otherRole = schema.client_roles.find(r => r !== clientRole);
+    return otherRole || "Autre partie";
+  };
+
+  // Rendu de la section "Autre partie" (la partie qui N'EST PAS notre client)
+  const renderOtherPartySection = () => {
+    if (!schema.client_roles || schema.client_roles.length < 2) {
+      return null; // Pas besoin d'autre partie si moins de 2 rôles
+    }
+
+    const otherPartyLabel = getOtherPartyLabel();
+
+    return (
+      <div className="space-y-4 bg-purple-50 dark:bg-purple-950 p-4 rounded-lg border-2 border-purple-200 mb-6">
+        <h3 className="font-semibold text-lg flex items-center gap-2">
+          <span>👥</span> {otherPartyLabel} *
+        </h3>
+        
+        {/* Select autre partie avec bouton "Saisie manuelle" */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="other-party-select">
+              Sélectionner depuis vos clients ou saisir manuellement
+            </Label>
+            {formData['other_party_id'] && (
+              <button
+                type="button"
+                onClick={() => {
+                  setOtherPartyMode('manual');
+                  const newData = { ...formData };
+                  delete newData['other_party_id'];
+                  onFormDataChange(newData);
+                }}
+                className="text-xs text-purple-600 hover:text-purple-800 underline font-medium"
+              >
+                Saisie manuelle
+              </button>
+            )}
+          </div>
+          
+          {otherPartyMode === 'existing' ? (
+            <>
+              <Select 
+                value={formData['other_party_id'] || ''} 
+                onValueChange={(val) => updateFormData('other_party_id', val)}
+              >
+                <SelectTrigger id="other-party-select">
+                  <SelectValue placeholder="Choisir un client ou laisser vide pour saisie manuelle" />
+                </SelectTrigger>
+                <SelectContent>
+                  {clients.length > 0 ? (
+                    clients.map((client) => (
+                      <SelectItem key={client.id} value={client.id}>
+                        {client.prenom} {client.nom}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <div className="p-2 text-sm text-muted-foreground">
+                      Aucun client trouvé
+                    </div>
+                  )}
+                </SelectContent>
+              </Select>
+
+              {!formData['other_party_id'] && (
+                <button
+                  type="button"
+                  onClick={() => setOtherPartyMode('manual')}
+                  className="text-sm text-purple-600 hover:text-purple-800 underline"
+                >
+                  → Cliquez ici pour remplir manuellement
+                </button>
+              )}
+
+              {/* Affichage des informations de l'autre partie sélectionnée */}
+              {selectedOtherPartyData && (
+                <div className="p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
+                  <p><strong>Nom complet:</strong> {selectedOtherPartyData.nom} {selectedOtherPartyData.prenom}</p>
+                  {selectedOtherPartyData.adresse && (
+                    <p><strong>Adresse:</strong> {selectedOtherPartyData.adresse}</p>
+                  )}
+                  {selectedOtherPartyData.telephone && (
+                    <p><strong>Téléphone:</strong> {selectedOtherPartyData.telephone}</p>
+                  )}
+                  {selectedOtherPartyData.email && (
+                    <p><strong>Email:</strong> {selectedOtherPartyData.email}</p>
+                  )}
+                  {selectedOtherPartyData.date_naissance && (
+                    <p><strong>Date de naissance:</strong> {new Date(selectedOtherPartyData.date_naissance).toLocaleDateString('fr-FR')}</p>
+                  )}
+                  {selectedOtherPartyData.nationalite && (
+                    <p><strong>Nationalité:</strong> {selectedOtherPartyData.nationalite}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Pièce d'identité de l'autre partie */}
+              {formData['other_party_id'] && (
+                <div className="space-y-2">
+                  <Label>📎 Pièce d'identité</Label>
+                  {otherPartyIdentiteUrl ? (
+                    <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                      <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="text-sm flex-1 text-green-700">Pièce d'identité chargée depuis le profil client</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                        onClick={() => window.open(otherPartyIdentiteUrl, '_blank')}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                      <svg className="w-4 h-4 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <span className="text-sm flex-1 text-orange-700">Aucune pièce d'identité dans le profil client</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          ) : null}
+        </div>
+
+      {/* Mode: Saisie manuelle pour l'autre partie */}
+      {otherPartyMode === 'manual' && (
+        <div className="space-y-4 bg-white dark:bg-gray-900 p-4 rounded border">
+          {/* Choix Personne physique / Société */}
+          <div className="space-y-2">
+            <Label className="font-medium">Type de personne *</Label>
+            <RadioGroup 
+              value={otherPartyPersonType} 
+              onValueChange={(val: 'physique' | 'morale') => {
+                setOtherPartyPersonType(val);
+                // Nettoyer les champs de l'autre type
+                const newData = { ...formData };
+                if (val === 'physique') {
+                  delete newData['other_party_raison_sociale'];
+                  delete newData['other_party_siret'];
+                  delete newData['other_party_forme_juridique'];
+                  delete newData['other_party_representant_nom'];
+                  delete newData['other_party_representant_prenom'];
+                } else {
+                  delete newData['other_party_nom'];
+                  delete newData['other_party_prenom'];
+                }
+                onFormDataChange(newData);
+              }}
+              className="flex gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="physique" id="other_type_physique" />
+                <Label htmlFor="other_type_physique" className="cursor-pointer">Personne physique</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="morale" id="other_type_morale" />
+                <Label htmlFor="other_type_morale" className="cursor-pointer">Société</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          {otherPartyPersonType === 'morale' ? (
+            /* Formulaire Société pour l'autre partie */
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="other_party_raison_sociale">Raison sociale *</Label>
+                <Input
+                  id="other_party_raison_sociale"
+                  value={formData['other_party_raison_sociale'] || ''}
+                  onChange={(e) => updateFormData('other_party_raison_sociale', e.target.value)}
+                  placeholder="SARL Exemple, SAS MonEntreprise..."
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="other_party_siret">SIRET</Label>
+                  <Input
+                    id="other_party_siret"
+                    value={formData['other_party_siret'] || ''}
+                    onChange={(e) => updateFormData('other_party_siret', e.target.value)}
+                    placeholder="123 456 789 00010"
+                    maxLength={14}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="other_party_forme_juridique">Forme juridique</Label>
+                  <Input
+                    id="other_party_forme_juridique"
+                    value={formData['other_party_forme_juridique'] || ''}
+                    onChange={(e) => updateFormData('other_party_forme_juridique', e.target.value)}
+                    placeholder="SARL, SAS, SA..."
+                  />
+                </div>
+              </div>
+              <div className="border-t pt-3">
+                <Label className="text-sm font-semibold">Représentant légal</Label>
+                <div className="grid grid-cols-2 gap-3 mt-2">
+                  <div>
+                    <Label htmlFor="other_party_representant_nom">Nom</Label>
+                    <Input
+                      id="other_party_representant_nom"
+                      value={formData['other_party_representant_nom'] || ''}
+                      onChange={(e) => updateFormData('other_party_representant_nom', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="other_party_representant_prenom">Prénom</Label>
+                    <Input
+                      id="other_party_representant_prenom"
+                      value={formData['other_party_representant_prenom'] || ''}
+                      onChange={(e) => updateFormData('other_party_representant_prenom', e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="other_party_email">Email</Label>
+                <Input
+                  id="other_party_email"
+                  type="email"
+                  value={formData['other_party_email'] || ''}
+                  onChange={(e) => updateFormData('other_party_email', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="other_party_telephone">Téléphone</Label>
+                <Input
+                  id="other_party_telephone"
+                  type="tel"
+                  value={formData['other_party_telephone'] || ''}
+                  onChange={(e) => updateFormData('other_party_telephone', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="other_party_adresse">Siège social</Label>
+                <Textarea
+                  id="other_party_adresse"
+                  value={formData['other_party_adresse'] || ''}
+                  onChange={(e) => updateFormData('other_party_adresse', e.target.value)}
+                  rows={2}
+                />
+              </div>
+            </div>
+          ) : (
+            /* Formulaire Personne Physique pour l'autre partie */
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="other_party_nom">Nom *</Label>
+                  <Input
+                    id="other_party_nom"
+                    value={formData['other_party_nom'] || ''}
+                    onChange={(e) => updateFormData('other_party_nom', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="other_party_prenom">Prénom *</Label>
+                  <Input
+                    id="other_party_prenom"
+                    value={formData['other_party_prenom'] || ''}
+                    onChange={(e) => updateFormData('other_party_prenom', e.target.value)}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="other_party_email">Email</Label>
+                <Input
+                  id="other_party_email"
+                  type="email"
+                  value={formData['other_party_email'] || ''}
+                  onChange={(e) => updateFormData('other_party_email', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="other_party_telephone">Téléphone</Label>
+                <Input
+                  id="other_party_telephone"
+                  type="tel"
+                  value={formData['other_party_telephone'] || ''}
+                  onChange={(e) => updateFormData('other_party_telephone', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="other_party_adresse">Adresse complète</Label>
+                <Textarea
+                  id="other_party_adresse"
+                  value={formData['other_party_adresse'] || ''}
+                  onChange={(e) => updateFormData('other_party_adresse', e.target.value)}
+                  rows={2}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+    );
+  };
+
   // Si des sections sont définies, afficher par section
   if (schema.sections && schema.sections.length > 0) {
     return (
       <div className="space-y-8">
         {/* Section fixe client en premier */}
         {renderClientSection()}
+        
+        {/* Section autre partie */}
+        {renderOtherPartySection()}
         
         {/* Sections dynamiques */}
         {schema.sections.map((section, idx) => (
@@ -635,6 +987,9 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
     <div className="space-y-8">
       {/* Section fixe client en premier */}
       {renderClientSection()}
+      
+      {/* Section autre partie */}
+      {renderOtherPartySection()}
       
       {/* Champs dynamiques */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
