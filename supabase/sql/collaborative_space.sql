@@ -141,6 +141,16 @@ create policy "cabinet_members_insert_contrats" on public.cabinet_contrats
     )
   );
 
+-- Policy: Seul celui qui a partagé peut modifier son contrat
+drop policy if exists "cabinet_sharer_update_contrats" on public.cabinet_contrats;
+create policy "cabinet_sharer_update_contrats" on public.cabinet_contrats
+  for update using (
+    shared_by = auth.uid()
+  )
+  with check (
+    shared_by = auth.uid()
+  );
+
 -- Policy: Seul celui qui a partagé peut supprimer son élément partagé
 -- Ensure we drop any older policy names and the current intended name to avoid "policy already exists" errors
 drop policy if exists "cabinet_owner_delete_documents" on public.cabinet_documents;

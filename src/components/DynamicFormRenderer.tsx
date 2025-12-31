@@ -442,6 +442,33 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
       {/* Mode: Saisie manuelle - Affiché quand on clique sur "Saisie manuelle" */}
       {clientMode === 'manual' && (
         <div className="space-y-4 bg-white dark:bg-gray-900 p-4 rounded border">
+          {/* Bouton pour revenir au mode client existant */}
+          <div className="flex justify-between items-center pb-3 border-b">
+            <h4 className="font-semibold">Saisie manuelle</h4>
+            <button
+              type="button"
+              onClick={() => {
+                setClientMode('existing');
+                // Nettoyer les champs manuels
+                const newData = { ...formData };
+                delete newData['manual_nom'];
+                delete newData['manual_prenom'];
+                delete newData['manual_email'];
+                delete newData['manual_telephone'];
+                delete newData['manual_adresse'];
+                delete newData['manual_raison_sociale'];
+                delete newData['manual_siret'];
+                delete newData['manual_forme_juridique'];
+                delete newData['manual_representant_nom'];
+                delete newData['manual_representant_prenom'];
+                onFormDataChange(newData);
+              }}
+              className="text-sm text-blue-600 hover:text-blue-800 underline font-medium flex items-center gap-1"
+            >
+              ← Choisir un client
+            </button>
+          </div>
+
           {/* Choix Personne physique / Société */}
           <div className="space-y-2">
             <Label className="font-medium">Type de personne *</Label>
@@ -781,6 +808,34 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
       {/* Mode: Saisie manuelle pour l'autre partie */}
       {otherPartyMode === 'manual' && (
         <div className="space-y-4 bg-white dark:bg-gray-900 p-4 rounded border">
+          {/* Header avec bouton retour */}
+          <div className="flex items-center justify-between mb-4">
+            <Label className="font-medium">Saisie manuelle</Label>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setOtherPartyMode('existing');
+                // Nettoyer toutes les données manuelles de l'autre partie
+                const newData = { ...formData };
+                delete newData['other_party_nom'];
+                delete newData['other_party_prenom'];
+                delete newData['other_party_raison_sociale'];
+                delete newData['other_party_siret'];
+                delete newData['other_party_forme_juridique'];
+                delete newData['other_party_representant_nom'];
+                delete newData['other_party_representant_prenom'];
+                delete newData['other_party_email'];
+                delete newData['other_party_telephone'];
+                delete newData['other_party_adresse'];
+                onFormDataChange(newData);
+              }}
+            >
+              ← Revenir à la sélection client
+            </Button>
+          </div>
+          
           {/* Choix Personne physique / Société */}
           <div className="space-y-2">
             <Label className="font-medium">Type de personne *</Label>
