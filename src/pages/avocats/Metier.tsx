@@ -91,7 +91,10 @@ export default function AvocatsMetier() {
                 <p className="text-muted-foreground mt-1">Rôles et permissions dans l'espace collaboratif</p>
               </div>
             </div>
-          <Button onClick={() => navigate(-1)} className="bg-blue-600 hover:bg-blue-700 text-white">Retour</Button>
+            <Button onClick={() => navigate(-1)} className="bg-blue-600 hover:bg-blue-700 text-white">Retour</Button>
+          </div>
+        </div>
+
         {/* Roles Container */}
         <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-8">
           <h2 className="text-2xl font-bold mb-6">Rôles et permissions</h2>
