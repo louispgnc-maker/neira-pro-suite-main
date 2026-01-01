@@ -25,16 +25,25 @@ interface ContractCreationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   role?: 'avocat' | 'notaire';
+  preSelectedType?: string; // Type pré-sélectionné depuis le menu
+  preSelectedCategory?: string; // Catégorie pré-sélectionnée
 }
 
-export function ContractCreationDialog({ open, onOpenChange, role = 'avocat' }: ContractCreationDialogProps) {
-  const [contractType, setContractType] = useState("");
+export function ContractCreationDialog({ open, onOpenChange, role = 'avocat', preSelectedType, preSelectedCategory }: ContractCreationDialogProps) {
+  const [contractType, setContractType] = useState(preSelectedType || "");
   const [description, setDescription] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
   // Détecter le rôle depuis l'URL si non fourni
   const detectedRole = location.pathname.includes('/notaires') ? 'notaire' : location.pathname.includes('/avocats') ? 'avocat' : role;
+
+  // Mettre à jour le type si preSelectedType change
+  useState(() => {
+    if (preSelectedType) {
+      setContractType(preSelectedType);
+    }
+  });
 
   const selectItemClass = detectedRole === 'notaire' 
     ? 'cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white'
@@ -50,14 +59,16 @@ export function ContractCreationDialog({ open, onOpenChange, role = 'avocat' }: 
       return;
     }
 
-    // Trouver la catégorie du contrat sélectionné
-    const categories = detectedRole === 'notaire' ? NOTAIRE_CONTRACT_CATEGORIES : AVOCAT_CONTRACT_CATEGORIES;
-    let categoryKey = '';
+    // Utiliser la catégorie pré-sélectionnée ou la trouver
+    let categoryKey = preSelectedCategory || '';
     
-    for (const cat of categories) {
-      if (cat.contracts.includes(contractType)) {
-        categoryKey = cat.key;
-        break;
+    if (!categoryKey) {
+      const categories = detectedRole === 'notaire' ? NOTAIRE_CONTRACT_CATEGORIES : AVOCAT_CONTRACT_CATEGORIES;
+      for (const cat of categories) {
+        if (cat.contracts.includes(contractType)) {
+          categoryKey = cat.key;
+          break;
+        }
       }
     }
 
