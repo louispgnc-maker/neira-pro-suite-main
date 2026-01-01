@@ -12,6 +12,7 @@ import {
   Mail,
   BarChart3,
   Lock,
+  Settings,
 } from "lucide-react";
 import {
   Sidebar,
@@ -46,15 +47,25 @@ import { useUnreadEmailCount } from '@/hooks/useUnreadEmailCount';
 
 function getMenuItems(role: 'avocat' | 'notaire') {
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
-  return [
-    { title: "Tableau de bord", url: `${prefix}/dashboard`, icon: LayoutDashboard },
-    { title: "Documents", url: `${prefix}/documents`, icon: FileText },
-    { title: "Dossiers", url: `${prefix}/dossiers`, icon: Folder },
-    { title: role === 'notaire' ? "Actes" : "Contrats", url: `${prefix}/contrats`, icon: FolderPlus },
-    { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool },
-    { title: "Clients", url: `${prefix}/clients`, icon: Users },
-    { title: "Mon cabinet", url: `${prefix}/espace-collaboratif?tab=dashboard`, icon: Users },
-  ];
+  return {
+    navigation: [
+      { title: "Tableau de bord", url: `${prefix}/dashboard`, icon: LayoutDashboard },
+    ],
+    activiteJuridique: [
+      { title: "Dossiers", url: `${prefix}/dossiers`, icon: Folder },
+      { title: role === 'notaire' ? "Actes" : "Contrats", url: `${prefix}/contrats`, icon: FolderPlus },
+      { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool },
+      { title: "Documents", url: `${prefix}/documents`, icon: FileText },
+    ],
+    clientsCabinet: [
+      { title: "Clients", url: `${prefix}/clients`, icon: Users },
+      { title: "Mon cabinet", url: `${prefix}/espace-collaboratif?tab=dashboard`, icon: Users },
+    ],
+    outils: [
+      { title: "Statistiques", url: `${prefix}/statistiques`, icon: BarChart3 },
+      { title: "Paramètres", url: `${prefix}/profile`, icon: Settings },
+    ],
+  };
 }
 
 export function AppSidebar() {
@@ -69,8 +80,6 @@ export function AppSidebar() {
   if (location.pathname.includes('/avocats')) role = 'avocat';
   
   const menuItems = getMenuItems(role);
-  const primaryItems = menuItems.filter((m) => ["Tableau de bord", "Mon cabinet"].includes(m.title));
-  const secondaryItems = menuItems.filter((m) => !["Tableau de bord", "Mon cabinet"].includes(m.title));
   const isActive = (path: string) => location.pathname === path;
 
   const { user, profile } = useAuth();
@@ -258,7 +267,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {primaryItems.map((item) => (
+              {menuItems.navigation.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3">
@@ -269,9 +278,50 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
-            <Separator className="my-2" />
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Activité juridique</SidebarGroupLabel>
+          <SidebarGroupContent>
             <SidebarMenu>
-              {secondaryItems.map((item) => (
+              {menuItems.activiteJuridique.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                    <NavLink to={item.url} className="flex items-center gap-3">
+                      <item.icon className="h-4 w-4" />
+                      {!isCollapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Clients & cabinet</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.clientsCabinet.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                    <NavLink to={item.url} className="flex items-center gap-3">
+                      <item.icon className="h-4 w-4" />
+                      {!isCollapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Outils</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.outils.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3">
@@ -306,13 +356,6 @@ export function AppSidebar() {
             title="Tâches"
           >
             <CheckSquare className="h-4 w-4 text-white" />
-          </button>
-          <button
-            className={`h-8 w-8 flex items-center justify-center rounded-md flex-shrink-0 transition-colors ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
-            onClick={() => navigate(role === 'notaire' ? '/notaires/statistiques' : '/avocats/statistiques')}
-            title="Statistiques"
-          >
-            <BarChart3 className="h-4 w-4 text-white" />
           </button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
