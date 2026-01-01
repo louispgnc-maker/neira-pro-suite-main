@@ -496,11 +496,11 @@ export default function CreateClientNotaire() {
           <Card>
             <CardHeader>
               <CardTitle>4.6 Mandat et représentation</CardTitle>
-              <CardDescription>Agissez-vous pour votre propre compte ?</CardDescription>
+              <CardDescription>Le client agit-il pour son propre compte ?</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Je représente :</Label>
+              <div className="space-y-3">
+                <Label>Le client représente :</Label>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input 
@@ -511,7 +511,7 @@ export default function CreateClientNotaire() {
                       onChange={() => setAgitNomPropre(true)} 
                       className="h-4 w-4" 
                     />
-                    <span className="text-sm">Moi-même (mon propre compte)</span>
+                    <span className="text-sm">Lui-même (son propre compte)</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input 
@@ -552,7 +552,7 @@ export default function CreateClientNotaire() {
           <Card>
             <CardHeader>
               <CardTitle>5. Préférences de communication</CardTitle>
-              <CardDescription>Comment souhaitez-vous être contacté ?</CardDescription>
+              <CardDescription>Comment le client souhaite-t-il être contacté ?</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -627,7 +627,7 @@ export default function CreateClientNotaire() {
               <div className="flex items-start space-x-2">
                 <Checkbox id="rgpd" checked={consentementRGPD} onCheckedChange={c => setConsentementRGPD(c as boolean)} />
                 <div className="grid gap-1.5 leading-none">
-                  <Label htmlFor="rgpd" className="text-sm font-medium">J'accepte le traitement des données (RGPD) *</Label>
+                  <Label htmlFor="rgpd" className="text-sm font-medium">Le client accepte le traitement de ses données (RGPD) *</Label>
                   <p className="text-xs text-muted-foreground">Utilisation strictement liée à la préparation et la rédaction de l'acte.</p>
                 </div>
               </div>
@@ -635,7 +635,7 @@ export default function CreateClientNotaire() {
               <div className="flex items-start space-x-2">
                 <Checkbox id="cgu" checked={acceptationCGU} onCheckedChange={c => setAcceptationCGU(c as boolean)} />
                 <div className="grid gap-1.5 leading-none">
-                  <Label htmlFor="cgu" className="text-sm font-medium">J'accepte les Conditions Générales d'Utilisation *</Label>
+                  <Label htmlFor="cgu" className="text-sm font-medium">Le client accepte les Conditions Générales d'Utilisation *</Label>
                   <p className="text-xs text-muted-foreground">Consultables sur le site du cabinet.</p>
                 </div>
               </div>
@@ -643,7 +643,7 @@ export default function CreateClientNotaire() {
               <div className="flex items-start space-x-2">
                 <Checkbox id="conservation" checked={acceptationConservation} onCheckedChange={c => setAcceptationConservation(c as boolean)} />
                 <div className="grid gap-1.5 leading-none">
-                  <Label htmlFor="conservation" className="text-sm font-medium">J'accepte la conservation de mes données pendant la durée légale *</Label>
+                  <Label htmlFor="conservation" className="text-sm font-medium">Le client accepte la conservation de ses données pendant la durée légale *</Label>
                   <p className="text-xs text-muted-foreground">Conservation pendant la durée du dossier + délais légaux.</p>
                 </div>
               </div>
@@ -651,15 +651,15 @@ export default function CreateClientNotaire() {
               <div className="flex items-start space-x-2">
                 <Checkbox id="contact" checked={autorisationContact} onCheckedChange={c => setAutorisationContact(c as boolean)} />
                 <div className="grid gap-1.5 leading-none">
-                  <Label htmlFor="contact" className="text-sm font-medium">J'autorise le cabinet à me recontacter pour ce dossier *</Label>
-                  <p className="text-xs text-muted-foreground">Par email, téléphone ou courrier selon votre préférence.</p>
+                  <Label htmlFor="contact" className="text-sm font-medium">Le client autorise le cabinet à le recontacter pour ce dossier *</Label>
+                  <p className="text-xs text-muted-foreground">Par email, téléphone ou courrier selon sa préférence.</p>
                 </div>
               </div>
               
               <div className="flex items-start space-x-2">
                 <Checkbox id="mandat" checked={signatureMandat} onCheckedChange={c => setSignatureMandat(c as boolean)} />
                 <div className="grid gap-1.5 leading-none">
-                  <Label htmlFor="mandat" className="text-sm font-medium">Signature électronique du mandat / engagement</Label>
+                  <Label htmlFor="mandat" className="text-sm font-medium">Le client signe électroniquement le mandat / engagement</Label>
                   <p className="text-xs text-muted-foreground">Confirmation de la relation client avec le notaire.</p>
                 </div>
               </div>
