@@ -132,46 +132,54 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
             </button>
           )}
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="min-w-[360px] max-h-[420px] overflow-y-auto" align="end">
+        <DropdownMenuContent className="min-w-[280px]" align="end">
           <DropdownMenuItem className="focus:bg-blue-600 focus:text-white" onClick={() => window.location.href = '/avocats/documents?openImport=1'}>
             <Upload className="mr-2 h-4 w-4" />
             Importer depuis mon appareil
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <div className="px-2 py-2 border-b border-muted flex items-center gap-2 sticky top-0 bg-background z-10">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher un contrat..."
-              className="w-full bg-background outline-none text-sm px-2 py-1"
-              autoFocus
-            />
-          </div>
-          <DropdownMenuSeparator />
-          {filteredCategories.length === 0 ? (
-            <DropdownMenuLabel className="text-muted-foreground text-center py-4">Aucun contrat trouvé</DropdownMenuLabel>
-          ) : (
-            filteredCategories.map((cat) => (
-              <DropdownMenuSub key={cat.key}>
-                <DropdownMenuSubTrigger className="font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white data-[state=open]:bg-blue-600 data-[state=open]:text-white">
-                  {cat.label}
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  {cat.contracts.map((contract) => (
-                    <DropdownMenuItem
-                      key={contract}
-                      className="cursor-pointer hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white"
-                      onClick={() => handleContractSelect(contract, cat.key)}
-                    >
-                      {contract}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-            ))
-          )}
+          
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white data-[state=open]:bg-blue-600 data-[state=open]:text-white">
+              <FileText className="mr-2 h-4 w-4" />
+              Créer un contrat
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="min-w-[360px] max-h-[420px] overflow-y-auto">
+              <div className="px-2 py-2 border-b border-muted flex items-center gap-2 sticky top-0 bg-background z-10">
+                <Search className="h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Rechercher un contrat..."
+                  className="w-full bg-background outline-none text-sm px-2 py-1"
+                  autoFocus
+                />
+              </div>
+              <DropdownMenuSeparator />
+              {filteredCategories.length === 0 ? (
+                <DropdownMenuLabel className="text-muted-foreground text-center py-4">Aucun contrat trouvé</DropdownMenuLabel>
+              ) : (
+                filteredCategories.map((cat) => (
+                  <DropdownMenuSub key={cat.key}>
+                    <DropdownMenuSubTrigger className="font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white data-[state=open]:bg-blue-600 data-[state=open]:text-white">
+                      {cat.label}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      {cat.contracts.map((contract) => (
+                        <DropdownMenuItem
+                          key={contract}
+                          className="cursor-pointer hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white"
+                          onClick={() => handleContractSelect(contract, cat.key)}
+                        >
+                          {contract}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                ))
+              )}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
         </DropdownMenuContent>
       </DropdownMenu>
 
