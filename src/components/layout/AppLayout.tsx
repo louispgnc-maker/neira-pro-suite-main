@@ -1,4 +1,4 @@
-import { ReactNode, useState, useCallback } from "react";
+import { ReactNode, useState, useCallback, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
@@ -10,7 +10,16 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // Récupère l'état initial du sidebar depuis le cookie
+  const getInitialSidebarState = () => {
+    const cookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('sidebar:state='));
+    return cookie ? cookie.split('=')[1] === 'true' : true;
+  };
+  
+  const [sidebarOpen, setSidebarOpen] = useState(getInitialSidebarState);
   
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -30,7 +39,6 @@ export function AppLayout({ children }: AppLayoutProps) {
     <SidebarProvider 
       open={sidebarOpen} 
       onOpenChange={handleSidebarChange}
-      defaultOpen={false}
     >
       <div 
         className="min-h-screen flex w-full bg-background" 
