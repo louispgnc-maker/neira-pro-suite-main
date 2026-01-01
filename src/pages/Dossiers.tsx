@@ -101,6 +101,16 @@ export default function Dossiers() {
   const [selectedContrats, setSelectedContrats] = useState<string[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
+  // Edit mode states
+  const [editMode, setEditMode] = useState(false);
+  const [editingDossierId, setEditingDossierId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editStatus, setEditStatus] = useState('En cours');
+  const [editSelectedClients, setEditSelectedClients] = useState<string[]>([]);
+  const [editSelectedContrats, setEditSelectedContrats] = useState<string[]>([]);
+  const [editSelectedDocuments, setEditSelectedDocuments] = useState<string[]>([]);
+
   const handleStatusChange = async (dossierId: string, newStatus: string) => {
     try {
       const { error } = await supabase
@@ -351,6 +361,137 @@ export default function Dossiers() {
     }
   };
 
+  const handleEdit = async (dossier: DossierRow) => {
+    if (!user) return;
+    setEditingDossierId(dossier.id);
+    setEditTitle(dossier.title);
+    setEditDescription(''); // Will be loaded
+    setEditStatus(dossier.status);
+    
+    // Load full dossier details including associations
+    try {
+      const { data: details } = await supabase
+        .from('dossiers')
+        .select('description')
+        .eq('id', dossier.id)
+        .single();
+      
+      if (details) {
+        setEditDescription((details as Record<string, unknown>)['description'] as string || '');
+      }
+
+      // Load associations
+      const [clientsRes, contratsRes, documentsRes] = await Promise.all([
+        supabase.from('dossier_clients').select('client_id').eq('dossier_id', dossier.id),
+        supabase.from('dossier_contrats').select('contrat_id').eq('dossier_id', dossier.id),
+        supabase.from('dossier_documents').select('document_id').eq('dossier_id', dossier.id),
+      ]);
+
+      setEditSelectedClients((clientsRes.data || []).map((r) => String((r as Record<string, unknown>)['client_id'] ?? '')));
+      setEditSelectedContrats((contratsRes.data || []).map((r) => String((r as Record<string, unknown>)['contrat_id'] ?? '')));
+      setEditSelectedDocuments((documentsRes.data || []).map((r) => String((r as Record<string, unknown>)['document_id'] ?? '')));
+
+      setEditMode(true);
+    } catch (err: unknown) {
+      console.error('Erreur chargement dossier:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur chargement', { description: message });
+    }
+  };
+
+  const saveEdit = async () => {
+    if (!user || !editingDossierId) return;
+    if (!editTitle.trim()) {
+      toast.error('Titre requis');
+      return;
+    }
+
+    try {
+      // Update dossier
+      const { error: updateError } = await supabase
+        .from('dossiers')
+        .update({ title: editTitle, description: editDescription, status: editStatus })
+        .eq('id', editingDossierId)
+        .eq('owner_id', user.id);
+
+      if (updateError) throw updateError;
+
+      // Update associations: delete all then re-insert
+      await supabase.from('dossier_clients').delete().eq('dossier_id', editingDossierId);
+      await supabase.from('dossier_contrats').delete().eq('dossier_id', editingDossierId);
+      await supabase.from('dossier_documents').delete().eq('dossier_id', editingDossierId);
+
+      const inserts: Promise<unknown>[] = [];
+      if (editSelectedClients.length > 0) {
+        const rows = editSelectedClients.map((client_id) => ({ owner_id: user.id, dossier_id: editingDossierId, client_id, role }));
+        inserts.push(supabase.from('dossier_clients').insert(rows));
+      }
+      if (editSelectedContrats.length > 0) {
+        const rows = editSelectedContrats.map((contrat_id) => ({ owner_id: user.id, dossier_id: editingDossierId, contrat_id, role }));
+        inserts.push(supabase.from('dossier_contrats').insert(rows));
+      }
+      if (editSelectedDocuments.length > 0) {
+        const rows = editSelectedDocuments.map((document_id) => ({ owner_id: user.id, dossier_id: editingDossierId, document_id, role }));
+        inserts.push(supabase.from('dossier_documents').insert(rows));
+      }
+      await Promise.all(inserts);
+
+      // Synchronisation: lier clients <-> contrats
+      if (editSelectedClients.length > 0 && editSelectedContrats.length > 0) {
+        const { data: existing } = await supabase
+          .from('client_contrats')
+          .select('client_id,contrat_id')
+          .eq('owner_id', user.id)
+          .eq('role', role)
+          .in('client_id', editSelectedClients)
+          .in('contrat_id', editSelectedContrats);
+        const existingSet = new Set((existing || []).map((r) => {
+          const row = r as Record<string, unknown>;
+          return `${String(row['client_id'] ?? '')}|${String(row['contrat_id'] ?? '')}`;
+        }));
+        const toInsert = [] as { owner_id: string; client_id: string; contrat_id: string; role: string }[];
+        for (const cId of editSelectedClients) {
+          for (const kId of editSelectedContrats) {
+            const key = `${cId}|${kId}`;
+            if (!existingSet.has(key)) toInsert.push({ owner_id: user.id, client_id: cId, contrat_id: kId, role });
+          }
+        }
+        if (toInsert.length > 0) {
+          await supabase.from('client_contrats').insert(toInsert);
+        }
+      }
+
+      toast.success('Dossier mis à jour');
+      setEditMode(false);
+      setEditingDossierId(null);
+      
+      // Refresh list
+      const { data: refreshed } = await supabase
+        .from('dossiers')
+        .select('id,title,status,created_at')
+        .eq('owner_id', user.id)
+        .eq('role', role)
+        .order('created_at', { ascending: false });
+      setDossiers((refreshed || []) as DossierRow[]);
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (err: unknown) {
+      console.error('Erreur mise à jour dossier:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error('Erreur mise à jour', { description: message });
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditMode(false);
+    setEditingDossierId(null);
+    setEditTitle('');
+    setEditDescription('');
+    setEditStatus('En cours');
+    setEditSelectedClients([]);
+    setEditSelectedContrats([]);
+    setEditSelectedDocuments([]);
+  };
+
   return (
     <AppLayout>
       <div className="p-6 space-y-6">
@@ -462,6 +603,100 @@ export default function Dossiers() {
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Annuler</Button>
                   <Button className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'} onClick={createDossier}>Créer</Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Edit Dialog */}
+          <Dialog open={editMode} onOpenChange={(v) => { 
+            if (!v) cancelEdit(); 
+          }}>
+            <DialogContent className="max-w-3xl">
+              <DialogHeader>
+                <DialogTitle>Modifier le dossier</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Titre</label>
+                    <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Ex: Litige commercial - DUPONT" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Statut</label>
+                    <Select value={editStatus} onValueChange={setEditStatus}>
+                      <SelectTrigger><SelectValue placeholder="Statut" /></SelectTrigger>
+                      <SelectContent className={selectContentClass}>
+                        <SelectItem className={selectItemClass} value="Prospect">Prospect</SelectItem>
+                        <SelectItem className={selectItemClass} value="Nouveau">Nouveau</SelectItem>
+                        <SelectItem className={selectItemClass} value="En cours">En cours</SelectItem>
+                        <SelectItem className={selectItemClass} value="En attente de signature">En attente de signature</SelectItem>
+                        <SelectItem className={selectItemClass} value="À traiter">À traiter</SelectItem>
+                        <SelectItem className={selectItemClass} value="Terminé">Terminé</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Description</label>
+                  <Textarea rows={3} value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Clients</label>
+                    <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                      {clients.length === 0 ? (
+                        <div className="text-sm text-foreground px-1">Aucun client</div>
+                      ) : clients.map((c) => {
+                        const checked = editSelectedClients.includes(c.id);
+                        return (
+                          <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                            <input type="checkbox" className="h-4 w-4" checked={checked} onChange={(e) => setEditSelectedClients((prev) => e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id))} />
+                            <span>{c.name}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Contrats</label>
+                    <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                      {contrats.length === 0 ? (
+                        <div className="text-sm text-foreground px-1">Aucun contrat</div>
+                      ) : contrats.map((c) => {
+                        const checked = editSelectedContrats.includes(c.id);
+                        return (
+                          <label key={c.id} className="flex items-start gap-2 text-sm cursor-pointer">
+                            <input type="checkbox" className="mt-1 h-4 w-4" checked={checked} onChange={(e) => setEditSelectedContrats((prev) => e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id))} />
+                            <span>
+                              <span className="font-medium">{c.name}</span>
+                              <span className="text-foreground"> — {c.category}</span>
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Documents</label>
+                    <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                      {documents.length === 0 ? (
+                        <div className="text-sm text-foreground px-1">Aucun document</div>
+                      ) : documents.map((d) => {
+                        const checked = editSelectedDocuments.includes(d.id);
+                        return (
+                          <label key={d.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                            <input type="checkbox" className="h-4 w-4" checked={checked} onChange={(e) => setEditSelectedDocuments((prev) => e.target.checked ? [...prev, d.id] : prev.filter((id) => id !== d.id))} />
+                            <span>{d.name}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={cancelEdit}>Annuler</Button>
+                  <Button className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'} onClick={saveEdit}>Enregistrer</Button>
                 </div>
               </div>
             </DialogContent>
@@ -593,6 +828,12 @@ export default function Dossiers() {
                                     <Eye className="mr-2 h-4 w-4" />
                                     Voir
                                   </DropdownMenuItem>
+                                    {(((d as unknown) as Record<string, unknown>)['_shared']) !== true && (
+                                      <DropdownMenuItem className={menuItemClass} onClick={(e) => { e.stopPropagation(); handleEdit(d); }}>
+                                        <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                        Modifier
+                                      </DropdownMenuItem>
+                                    )}
                                     {currentUserRole && canDeleteResources(currentUserRole) && (((d as unknown) as Record<string, unknown>)['_shared']) !== true && (
                                       <DropdownMenuItem className={`text-destructive ${menuItemClass}`} onClick={() => handleDelete(d)}>
                                         <Trash2 className="mr-2 h-4 w-4" />
