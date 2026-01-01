@@ -279,7 +279,6 @@ export default function DossierDetail() {
                   <div className="space-y-4">
                     {contrats.map(k => {
                       const hasContent = k.content || k.contenu_json;
-                      const preview = k.content ? k.content.substring(0, 300) : '';
                       
                       return (
                         <div 
@@ -304,15 +303,21 @@ export default function DossierDetail() {
                             </div>
                           </div>
                           
-                          {hasContent && (
+                          {hasContent && k.content && (
                             <div className="p-4 bg-muted/30">
-                              <div className="text-sm font-medium mb-2">Aperçu du contrat :</div>
+                              <div className="text-sm font-medium mb-3">Contrat rédigé :</div>
                               <div 
-                                className="text-sm text-muted-foreground prose prose-sm max-w-none"
+                                className="text-sm prose prose-sm max-w-none"
                                 dangerouslySetInnerHTML={{ 
-                                  __html: preview ? preview + '...' : '<em>Contenu disponible dans la vue complète</em>' 
+                                  __html: k.content 
                                 }}
                               />
+                            </div>
+                          )}
+                          {hasContent && !k.content && k.contenu_json && (
+                            <div className="p-4 bg-muted/30">
+                              <div className="text-sm font-medium mb-2">Formulaire rempli</div>
+                              <div className="text-xs text-muted-foreground">Cliquez sur "Voir le contrat" pour consulter les détails</div>
                             </div>
                           )}
                         </div>
