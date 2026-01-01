@@ -49,21 +49,25 @@ function getMenuItems(role: 'avocat' | 'notaire') {
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
   return {
     navigation: [
-      { title: "Tableau de bord", url: `${prefix}/dashboard`, icon: LayoutDashboard },
+      { title: "Tableau de bord", url: `${prefix}/dashboard`, icon: LayoutDashboard, color: "text-blue-500" },
     ],
     activiteJuridique: [
-      { title: "Dossiers", url: `${prefix}/dossiers`, icon: Folder },
-      { title: role === 'notaire' ? "Actes" : "Contrats", url: `${prefix}/contrats`, icon: FolderPlus },
-      { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool },
-      { title: "Documents", url: `${prefix}/documents`, icon: FileText },
+      { title: "Dossiers", url: `${prefix}/dossiers`, icon: Folder, color: "text-yellow-500" },
+      { title: role === 'notaire' ? "Actes" : "Contrats", url: `${prefix}/contrats`, icon: FolderPlus, color: "text-purple-500" },
+      { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool, color: "text-green-500" },
+      { title: "Documents", url: `${prefix}/documents`, icon: FileText, color: "text-orange-500" },
+    ],
+    organisationSuivi: [
+      { title: "Messagerie", url: `${prefix}/messagerie`, icon: Mail, color: "text-blue-500", badge: true },
+      { title: "Tâches", url: `${prefix}/tasks`, icon: CheckSquare, color: "text-pink-500" },
     ],
     clientsCabinet: [
-      { title: "Clients", url: `${prefix}/clients`, icon: Users },
-      { title: "Mon cabinet", url: `${prefix}/espace-collaboratif?tab=dashboard`, icon: Users },
+      { title: "Clients", url: `${prefix}/clients`, icon: Users, color: "text-indigo-500" },
+      { title: "Mon cabinet", url: `${prefix}/espace-collaboratif?tab=dashboard`, icon: Users, color: "text-cyan-500" },
     ],
     outils: [
-      { title: "Statistiques", url: `${prefix}/statistiques`, icon: BarChart3 },
-      { title: "Paramètres", url: `${prefix}/profile`, icon: Settings },
+      { title: "Statistiques", url: `${prefix}/statistiques`, icon: BarChart3, color: "text-teal-500" },
+      { title: "Paramètres", url: `${prefix}/profile`, icon: Settings, color: "text-gray-500" },
     ],
   };
 }
@@ -271,7 +275,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3">
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -289,7 +293,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3">
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -299,15 +303,36 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Clients & cabinet</SidebarGroupLabel>
+        <SidebarGroup>          <SidebarGroupLabel>Organisation et suivi</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.organisationSuivi.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                    <NavLink to={item.url} className="flex items-center gap-3 relative">
+                      <item.icon className={`h-4 w-4 ${item.color}`} />
+                      {!isCollapsed && <span>{item.title}</span>}
+                      {item.badge && unreadEmailCount > 0 && (
+                        <Badge className="ml-auto bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                          {unreadEmailCount > 99 ? '99+' : unreadEmailCount}
+                        </Badge>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>          <SidebarGroupLabel>Clients & cabinet</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.clientsCabinet.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3">
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -325,7 +350,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3">
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -335,59 +360,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter className={`border-t border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
-        <div className={`flex ${isCollapsed ? 'flex-col items-center' : 'items-center justify-start'} gap-2`}> 
-          <button
-            className={`h-8 w-8 flex items-center justify-center rounded-md flex-shrink-0 transition-colors relative ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
-            onClick={() => navigate(role === 'notaire' ? '/notaires/messagerie' : '/avocats/messagerie')}
-            title="Messagerie"
-          >
-            <Mail className="h-4 w-4 text-white" />
-            {unreadEmailCount > 0 && (
-              <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-600 rounded-full flex items-center justify-center text-[10px] text-white">
-                {unreadEmailCount > 9 ? '9+' : unreadEmailCount}
-              </span>
-            )}
-          </button>
-          <button
-            className={`h-8 w-8 flex items-center justify-center rounded-md flex-shrink-0 transition-colors ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
-            onClick={() => navigate(role === 'notaire' ? '/notaires/tasks' : '/avocats/tasks')}
-            title="Tâches"
-          >
-            <CheckSquare className="h-4 w-4 text-white" />
-          </button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className={`h-8 w-8 p-0 flex items-center justify-center rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
-              >
-                <UserCircle2 className="h-4 w-4 text-white" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" side="top" className={role === 'notaire' ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}>
-              <div className="px-2 py-1.5 text-xs text-muted-foreground">Connecté</div>
-              <DropdownMenuItem className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white' : 'focus:bg-blue-600 focus:text-white'} disabled>
-                {profileEmail}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className={role === 'notaire' ? 'focus:bg-orange-600 focus:text-white hover:bg-orange-600 hover:text-white' : 'focus:bg-blue-600 focus:text-white hover:bg-blue-600 hover:text-white'}
-                onClick={() => navigate(role === 'notaire' ? '/notaires/profile' : '/avocats/profile')}
-              >
-                Ouvrir le profil
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
-                onClick={() => (window.location.href = '/')}
-              >
-                <LogOut className="mr-2 h-4 w-4" /> Déconnexion
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 }
