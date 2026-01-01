@@ -194,7 +194,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
           );
         })}
         {/* Remplace 'Lien de collecte' par menu Fiche client avec même contenu */}
-        <div className={`${hasCollaborative ? 'md:col-span-1 [&>button]:w-full [&>button]:py-4 [&>button]:text-sm [&>button]:gap-2' : 'md:col-span-1 [&>button]:w-full [&>button]:py-6 [&>button]:text-base [&>button]:gap-3'}`}>
+        <div className={`${hasCollaborative ? 'md:col-span-1 [&>button]:w-full [&>button]:h-auto [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:py-4 [&>button]:gap-2' : 'md:col-span-1 [&>button]:w-full [&>button]:h-auto [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:py-6 [&>button]:gap-3'}`}>
           <FicheClientMenu
             variant="vertical"
             colorClass={primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')}
