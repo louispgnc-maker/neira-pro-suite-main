@@ -325,13 +325,7 @@ export default function ContratDetail() {
   }, [user, id, role]);
 
   const goBack = () => {
-    // If opened from the collaborative space, return to previous page
-    const fromCollaboratif = Boolean(((location.state as unknown) as Record<string, unknown>)?.fromCollaboratif);
-    if (fromCollaboratif) {
-      navigate(-1);
-      return;
-    }
-    navigate(role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats');
+    navigate(-1);
   };
 
   return (

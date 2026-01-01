@@ -131,11 +131,11 @@ export default function CheckoutCabinetPlus() {
       
       <div className="container mx-auto px-4 py-24">
         <button 
-          onClick={() => navigate('/solution')} 
+          onClick={() => navigate(-1)} 
           className="flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
-          Retour aux offres
+          Retour
         </button>
 
         <div className="max-w-7xl mx-auto">

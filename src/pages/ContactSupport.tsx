@@ -116,11 +116,11 @@ export default function ContactSupport() {
         {/* Bouton retour */}
         <div className="mb-8">
           <Button
-            onClick={() => navigate(`${prefix}/subscription`)}
+            onClick={() => navigate(-1)}
             className="bg-orange-500 hover:bg-orange-600 text-white"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour à l'espace abonnement
+            Retour
           </Button>
         </div>
 

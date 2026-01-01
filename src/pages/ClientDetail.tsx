@@ -279,16 +279,7 @@ export default function ClientDetail() {
   };
 
   const goBack = () => {
-    // Determine if we should return to the collaborative clients tab. Prefer location.state
-    // but fall back to URL query params so the value survives a page refresh.
-    const searchParams = new URLSearchParams(location.search || '');
-  const fromCollaboratif = Boolean(((location.state as unknown) as Record<string, unknown>)?.fromCollaboratif) || (searchParams.get('fromCollaboratif') === '1');
-    if (fromCollaboratif) {
-      // Explicitly return to the collaborative clients tab instead of the personal clients list
-      navigate(`/${role}s/espace-collaboratif?tab=clients`);
-      return;
-    }
-    navigate(role === 'notaire' ? '/notaires/clients' : '/avocats/clients');
+    navigate(-1);
   };
   const onEdit = () => navigate(role === 'notaire' ? `/notaires/clients/${id}/edit` : `/avocats/clients/${id}/edit`);
 

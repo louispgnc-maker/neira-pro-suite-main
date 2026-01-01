@@ -198,7 +198,7 @@ export default function ManageMembersCount() {
     <AppLayout>
       <div className="container mx-auto p-8 max-w-4xl">
         <Button
-          onClick={() => navigate(`${prefix}/subscription`)}
+          onClick={() => navigate(-1)}
           className={`mb-6 text-white ${
             role === 'notaire' 
               ? 'bg-orange-600 hover:bg-orange-700' 
@@ -206,7 +206,7 @@ export default function ManageMembersCount() {
           }`}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Retour à l'abonnement
+          Retour
         </Button>
 
         <Card>

@@ -231,7 +231,7 @@ export default function CreateClientNotaire() {
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={() => navigate('/notaires/clients')}
+            onClick={() => navigate(-1)}
             className="hover:bg-orange-100 hover:text-orange-600"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -676,7 +676,7 @@ export default function CreateClientNotaire() {
           </Card>
 
           <div className="flex justify-end gap-4">
-            <Button type="button" className="bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/notaires/clients')} disabled={loading}>Annuler</Button>
+            <Button type="button" className="bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate(-1)} disabled={loading}>Annuler</Button>
             <Button type="submit" className={mainButtonColor} disabled={loading}>{loading ? 'Création...' : 'Créer la fiche client'}</Button>
           </div>
         </form>
