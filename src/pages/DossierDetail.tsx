@@ -2,10 +2,11 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DocumentViewer } from "@/components/ui/document-viewer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
@@ -20,6 +21,20 @@ interface Dossier {
 interface AssocClient { id: string; name: string }
 interface AssocContrat { id: string; name: string; category: string; content?: string | null; contenu_json?: any }
 interface AssocDocument { id: string; name: string; file_url?: string | null; file_name?: string | null }
+
+interface ClientDetails {
+  id: string;
+  nom: string | null;
+  prenom: string | null;
+  email: string | null;
+  telephone: string | null;
+  adresse: string | null;
+  date_naissance: string | null;
+  lieu_naissance: string | null;
+  nationalite: string | null;
+  profession: string | null;
+  type_dossier: string | null;
+}
 
 export default function DossierDetail() {
   const { user } = useAuth();
@@ -38,6 +53,9 @@ export default function DossierDetail() {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerUrl, setViewerUrl] = useState("");
   const [viewerDocName, setViewerDocName] = useState("");
+  const [clientModalOpen, setClientModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<ClientDetails | null>(null);
+  const [loadingClient, setLoadingClient] = useState(false);
 
   const mainColor = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
 
@@ -190,6 +208,27 @@ export default function DossierDetail() {
     }
   };
 
+  const openClientModal = async (clientId: string) => {
+    setLoadingClient(true);
+    setClientModalOpen(true);
+    
+    try {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('id, nom, prenom, email, telephone, adresse, date_naissance, lieu_naissance, nationalite, profession, type_dossier')
+        .eq('id', clientId)
+        .single();
+      
+      if (error) throw error;
+      setSelectedClient(data as ClientDetails);
+    } catch (e) {
+      console.error('Erreur chargement client:', e);
+      setSelectedClient(null);
+    } finally {
+      setLoadingClient(false);
+    }
+  };
+
 
   const goBack = () => {
     // If opened from the collaborative space, return to previous page
@@ -268,7 +307,7 @@ export default function DossierDetail() {
                         key={c.id} 
                         variant="secondary"
                         className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                        onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${c.id}` : `/avocats/clients/${c.id}`)}
+                        onClick={() => openClientModal(c.id)}
                       >
                         {c.name}
                       </Badge>
@@ -376,6 +415,91 @@ export default function DossierDetail() {
         documentName={viewerDocName}
         role={role}
       />
+      
+      {/* Client Modal */}
+      <Dialog open={clientModalOpen} onOpenChange={setClientModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span>Fiche client</span>
+              {selectedClient && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => {
+                    setClientModalOpen(false);
+                    navigate(role === 'notaire' ? `/notaires/clients/${selectedClient.id}` : `/avocats/clients/${selectedClient.id}`);
+                  }}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Voir la fiche complète
+                </Button>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {loadingClient ? (
+            <div className="flex items-center justify-center h-[200px]">
+              <p className="text-muted-foreground">Chargement...</p>
+            </div>
+          ) : !selectedClient ? (
+            <div className="text-muted-foreground">Client introuvable</div>
+          ) : (
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Informations personnelles</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-sm text-muted-foreground">Nom</div>
+                    <div className="font-medium">{selectedClient.nom || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Prénom</div>
+                    <div className="font-medium">{selectedClient.prenom || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Email</div>
+                    <div className="font-medium">{selectedClient.email || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Téléphone</div>
+                    <div className="font-medium">{selectedClient.telephone || '—'}</div>
+                  </div>
+                  <div className="md:col-span-2">
+                    <div className="text-sm text-muted-foreground">Adresse</div>
+                    <div className="font-medium">{selectedClient.adresse || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Date de naissance</div>
+                    <div className="font-medium">{selectedClient.date_naissance ? new Date(selectedClient.date_naissance).toLocaleDateString() : '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Lieu de naissance</div>
+                    <div className="font-medium">{selectedClient.lieu_naissance || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Nationalité</div>
+                    <div className="font-medium">{selectedClient.nationalite || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Profession</div>
+                    <div className="font-medium">{selectedClient.profession || '—'}</div>
+                  </div>
+                  {selectedClient.type_dossier && (
+                    <div className="md:col-span-2">
+                      <div className="text-sm text-muted-foreground">Type de dossier</div>
+                      <div className="font-medium">{selectedClient.type_dossier}</div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
