@@ -15,14 +15,14 @@ import { Upload, ArrowLeft } from "lucide-react";
 
 interface ChildEntry { nom: string; prenom: string; sexe: string; date_naissance: string; }
 
-export default function CreateClientAvocat() {
+export default function CreateClientNotaire() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const role = 'avocat' as const;
-  const mainButtonColor = 'bg-blue-600 hover:bg-blue-700 text-white';
-  const itemHover = 'cursor-pointer hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white';
+  const role = 'notaire' as const;
+  const mainButtonColor = 'bg-orange-600 hover:bg-orange-700 text-white';
+  const itemHover = 'cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white';
 
   const [loading, setLoading] = useState(false);
   const [idDocFile, setIdDocFile] = useState<File | null>(null);
@@ -225,7 +225,7 @@ export default function CreateClientAvocat() {
       if (insertErr) throw insertErr;
 
       toast.success('Fiche client créée avec succès');
-      navigate('/avocats/clients');
+      navigate('/notaires/clients');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       console.error(err);
@@ -242,13 +242,13 @@ export default function CreateClientAvocat() {
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={() => navigate('/avocats/clients')}
-            className="hover:bg-blue-100 hover:text-blue-600"
+            onClick={() => navigate('/notaires/clients')}
+            className="hover:bg-orange-100 hover:text-orange-600"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Créer une fiche client (Avocat)</h1>
+            <h1 className="text-3xl font-bold">Créer une fiche client (Notaire)</h1>
             <p className="text-muted-foreground mt-1">Renseignez les informations nécessaires à l'acte.</p>
           </div>
         </div>
@@ -321,7 +321,7 @@ export default function CreateClientAvocat() {
                 <Label htmlFor="sexe">Sexe (facultatif - donnée sensible RGPD)</Label>
                 <Select value={sexe} onValueChange={setSexe}>
                   <SelectTrigger id="sexe"><SelectValue placeholder="Non renseigné" /></SelectTrigger>
-                  <SelectContent className="bg-blue-50 border-blue-200">
+                  <SelectContent className="bg-orange-50 border-orange-200">
                     <SelectItem className={itemHover} value="Homme">Homme</SelectItem>
                     <SelectItem className={itemHover} value="Femme">Femme</SelectItem>
                     <SelectItem className={itemHover} value="Autre">Autre</SelectItem>
@@ -344,7 +344,7 @@ export default function CreateClientAvocat() {
                   <Label htmlFor="typeIdentite">Type de pièce d'identité</Label>
                   <Select value={typeIdentite} onValueChange={setTypeIdentite}>
                     <SelectTrigger id="typeIdentite"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                    <SelectContent className="bg-blue-50 border-blue-200">
+                    <SelectContent className="bg-orange-50 border-orange-200">
                       <SelectItem className={itemHover} value="CNI">Carte Nationale d'Identité</SelectItem>
                       <SelectItem className={itemHover} value="Passeport">Passeport</SelectItem>
                       <SelectItem className={itemHover} value="Titre de séjour">Titre de séjour</SelectItem>
@@ -390,7 +390,7 @@ export default function CreateClientAvocat() {
               <div className="space-y-2">
                 <Label>Scan ou photo du document</Label>
                 <input ref={fileInputRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleFileChange} />
-                <Button type="button" variant="outline" onClick={handleFileSelect} className="w-full bg-blue-50 hover:bg-blue-100 text-blue-900 border-blue-200">
+                <Button type="button" variant="outline" onClick={handleFileSelect} className="w-full bg-orange-50 hover:bg-orange-100 text-orange-900 border-orange-200">
                   <Upload className="mr-2 h-4 w-4" />
                   {idDocFile ? idDocFile.name : 'Choisir un fichier'}
                 </Button>
@@ -410,7 +410,7 @@ export default function CreateClientAvocat() {
                 <Label htmlFor="etatCivil">Situation familiale</Label>
                 <Select value={etatCivil} onValueChange={setEtatCivil}>
                   <SelectTrigger id="etatCivil"><SelectValue placeholder="Non renseigné" /></SelectTrigger>
-                  <SelectContent className="bg-blue-50 border-blue-200">
+                  <SelectContent className="bg-orange-50 border-orange-200">
                     <SelectItem className={itemHover} value="Célibataire">Célibataire</SelectItem>
                     <SelectItem className={itemHover} value="Marié(e)">Marié(e)</SelectItem>
                     <SelectItem className={itemHover} value="Pacsé(e)">Pacsé(e)</SelectItem>
@@ -440,7 +440,7 @@ export default function CreateClientAvocat() {
                   <Label htmlFor="statutPro">Statut professionnel</Label>
                   <Select value={statutPro} onValueChange={setStatutPro}>
                     <SelectTrigger id="statutPro"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                    <SelectContent className="bg-blue-50 border-blue-200">
+                    <SelectContent className="bg-orange-50 border-orange-200">
                       <SelectItem className={itemHover} value="salarie">Salarié(e)</SelectItem>
                       <SelectItem className={itemHover} value="independant">Indépendant(e)</SelectItem>
                       <SelectItem className={itemHover} value="retraite">Retraité(e)</SelectItem>
@@ -570,7 +570,7 @@ export default function CreateClientAvocat() {
                 <Label htmlFor="modeContact">Mode de contact privilégié *</Label>
                 <Select value={modeContact} onValueChange={setModeContact}>
                   <SelectTrigger id="modeContact"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                  <SelectContent className="bg-blue-50 border-blue-200">
+                  <SelectContent className="bg-orange-50 border-orange-200">
                     <SelectItem className={itemHover} value="email">Email</SelectItem>
                     <SelectItem className={itemHover} value="telephone">Téléphone</SelectItem>
                     <SelectItem className={itemHover} value="whatsapp">WhatsApp</SelectItem>
@@ -596,7 +596,7 @@ export default function CreateClientAvocat() {
                 <Label htmlFor="plageHoraire">Plage horaire préférée (optionnel)</Label>
                 <Select value={plageHoraire} onValueChange={setPlageHoraire}>
                   <SelectTrigger id="plageHoraire"><SelectValue placeholder="Aucune préférence" /></SelectTrigger>
-                  <SelectContent className="bg-blue-50 border-blue-200">
+                  <SelectContent className="bg-orange-50 border-orange-200">
                     <SelectItem className={itemHover} value="matin">Matin (9h-12h)</SelectItem>
                     <SelectItem className={itemHover} value="apres-midi">Après-midi (14h-18h)</SelectItem>
                     <SelectItem className={itemHover} value="soir">Soir (18h-20h)</SelectItem>
@@ -671,14 +671,14 @@ export default function CreateClientAvocat() {
                 <Checkbox id="mandat" checked={signatureMandat} onCheckedChange={c => setSignatureMandat(c as boolean)} />
                 <div className="grid gap-1.5 leading-none">
                   <Label htmlFor="mandat" className="text-sm font-medium">Signature électronique du mandat / engagement</Label>
-                  <p className="text-xs text-muted-foreground">Confirmation de la relation client avec le avocat.</p>
+                  <p className="text-xs text-muted-foreground">Confirmation de la relation client avec le notaire.</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <div className="flex justify-end gap-4">
-            <Button type="button" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/avocats/clients')} disabled={loading}>Annuler</Button>
+            <Button type="button" className="bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/notaires/clients')} disabled={loading}>Annuler</Button>
             <Button type="submit" className={mainButtonColor} disabled={loading}>{loading ? 'Création...' : 'Créer la fiche client'}</Button>
           </div>
         </form>
