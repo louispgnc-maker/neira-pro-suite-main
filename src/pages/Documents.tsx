@@ -523,8 +523,6 @@ export default function Documents() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Nom du document</TableHead>
-                  <TableHead>Client</TableHead>
-                  <TableHead>Statut</TableHead>
                   <TableHead>Modifié</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
@@ -537,12 +535,6 @@ export default function Documents() {
                     className="cursor-pointer"
                   >
                     <TableCell className="font-medium">{doc.name}</TableCell>
-                    <TableCell className="text-foreground">{doc.client_name ?? "—"}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={(role === 'notaire' ? statusColorsNotaire[doc.status] : statusColorsAvocat[doc.status]) ?? "bg-muted text-foreground border-border"}>
-                        {doc.status}
-                      </Badge>
-                    </TableCell>
                     <TableCell className="text-foreground text-sm">
                       {doc.updated_at ? new Date(doc.updated_at).toLocaleDateString() : "—"}
                     </TableCell>
