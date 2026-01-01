@@ -1,22 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuGroup,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-} from "@/components/ui/dropdown-menu";
-import { FileText, Search } from "lucide-react";
-import { supabase } from "@/lib/supabaseClient";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { FileText } from "lucide-react";
+import { ContractCreationDialog } from "./ContractCreationDialog";
+import { useLocation } from "react-router-dom";
 
 // Catégories spécifiques espace avocat (exportées pour réutilisation)
 export const AVOCAT_CONTRACT_CATEGORIES = [
@@ -90,10 +77,8 @@ interface ContractSelectorAvocatProps {
 }
 
 export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer un contrat', colorClass, onContractCreated }: ContractSelectorAvocatProps) {
-  const [search, setSearch] = useState("");
-  const { user } = useAuth();
+  const [dialogOpen, setDialogOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -105,74 +90,24 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
   const verticalBtn = `${base} ${color} h-auto flex-col py-4`;
   const horizontalBtn = `${base} ${color} text-sm px-4 py-2 h-auto flex items-center`;
 
-  const filteredCategories = AVOCAT_CONTRACT_CATEGORIES.map((cat) => ({
-    ...cat,
-    contracts: cat.contracts.filter((c) =>
-      c.toLowerCase().includes(search.toLowerCase())
-    ),
-  })).filter((cat) => cat.contracts.length > 0);
-
-  const handleContractSelect = async (contractType: string, categoryKey: string) => {
-    if (!user) {
-      toast.error("Connexion requise");
-      return;
-    }
-
-    // Toujours rediriger vers la page Contrats avec le système de préformulaires et IA
-    const basePath = role === 'notaire' ? '/notaires' : '/avocats';
-    navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
-  };
-
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        {variant === 'vertical' ? (
-          <button type="button" className={verticalBtn}>
-            <FileText className="h-5 w-5" />
-            <span className="text-xs">{label}</span>
-          </button>
-        ) : (
-          <button type="button" className={horizontalBtn}>
-            {label}
-          </button>
-        )}
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-[360px] max-h-[420px] overflow-y-auto" align="end">
-        <div className="px-2 py-2 border-b border-muted flex items-center gap-2 sticky top-0 bg-background z-10">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher un contrat..."
-            className="w-full bg-background outline-none text-sm px-2 py-1"
-            autoFocus
-          />
-        </div>
-        <DropdownMenuSeparator />
-        {filteredCategories.length === 0 ? (
-          <DropdownMenuLabel className="text-muted-foreground text-center py-4">Aucun contrat trouvé</DropdownMenuLabel>
-        ) : (
-          filteredCategories.map((cat) => (
-            <DropdownMenuSub key={cat.key}>
-              <DropdownMenuSubTrigger className="font-semibold hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white data-[state=open]:bg-blue-600 data-[state=open]:text-white">
-                {cat.label}
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                {cat.contracts.map((contract) => (
-                  <DropdownMenuItem
-                    key={contract}
-                    className="cursor-pointer hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white"
-                    onClick={() => handleContractSelect(contract, cat.key)}
-                  >
-                    {contract}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-          ))
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      {variant === 'vertical' ? (
+        <button type="button" className={verticalBtn} onClick={() => setDialogOpen(true)}>
+          <FileText className="h-5 w-5" />
+          <span className="text-xs">{label}</span>
+        </button>
+      ) : (
+        <button type="button" className={horizontalBtn} onClick={() => setDialogOpen(true)}>
+          {label}
+        </button>
+      )}
+
+      <ContractCreationDialog 
+        open={dialogOpen} 
+        onOpenChange={setDialogOpen}
+        role={role}
+      />
+    </>
   );
 }
