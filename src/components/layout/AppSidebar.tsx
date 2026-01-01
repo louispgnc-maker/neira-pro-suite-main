@@ -74,7 +74,7 @@ function getMenuItems(role: 'avocat' | 'notaire') {
 }
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
   const isCollapsed = state === "collapsed";
@@ -86,6 +86,15 @@ export function AppSidebar() {
   
   const menuItems = getMenuItems(role);
   const isActive = (path: string) => location.pathname === path;
+
+  // Fonction pour gérer le clic sur un lien du menu
+  const handleMenuItemClick = () => {
+    // Sur mobile, fermer le sidebar après le clic
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+    // Sur desktop, ne rien faire - le sidebar reste dans son état actuel
+  };
 
   const { user, profile } = useAuth();
   const profileEmail = user?.email || '—';
@@ -275,7 +284,7 @@ export function AppSidebar() {
               {menuItems.navigation.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url} className="flex items-center gap-3">
+                    <NavLink to={item.url} className="flex items-center gap-3" onClick={handleMenuItemClick}>
                       <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
@@ -293,7 +302,7 @@ export function AppSidebar() {
               {menuItems.activiteJuridique.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url} className="flex items-center gap-3">
+                    <NavLink to={item.url} className="flex items-center gap-3" onClick={handleMenuItemClick}>
                       <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
@@ -310,7 +319,7 @@ export function AppSidebar() {
               {menuItems.organisationSuivi.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url} className="flex items-center gap-3 relative">
+                    <NavLink to={item.url} className="flex items-center gap-3 relative" onClick={handleMenuItemClick}>
                       <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span>{item.title}</span>}
                       {item.badge && unreadEmailCount > 0 && (
@@ -332,7 +341,7 @@ export function AppSidebar() {
               {menuItems.clientsCabinet.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url} className="flex items-center gap-3">
+                    <NavLink to={item.url} className="flex items-center gap-3" onClick={handleMenuItemClick}>
                       <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
@@ -350,7 +359,7 @@ export function AppSidebar() {
               {menuItems.outils.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url} className="flex items-center gap-3">
+                    <NavLink to={item.url} className="flex items-center gap-3" onClick={handleMenuItemClick}>
                       <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
