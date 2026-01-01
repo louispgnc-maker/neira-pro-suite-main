@@ -2,6 +2,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { DocumentViewer } from "@/components/ui/document-viewer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { ArrowLeft } from "lucide-react";
@@ -34,6 +35,9 @@ export default function DossierDetail() {
   const [contrats, setContrats] = useState<AssocContrat[]>([]);
   const [documents, setDocuments] = useState<AssocDocument[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerUrl, setViewerUrl] = useState("");
+  const [viewerDocName, setViewerDocName] = useState("");
 
   const mainColor = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
 
@@ -153,16 +157,20 @@ export default function DossierDetail() {
       return;
     }
     const raw = (fileUrl || '').trim();
+    
+    // Si c'est une URL complète HTTP, on peut l'utiliser directement
     if (/^https?:\/\//i.test(raw)) {
-      window.open(raw, '_blank');
+      setViewerUrl(raw);
+      setViewerDocName(name || 'Document');
+      setViewerOpen(true);
       return;
     }
 
-    // treat as storage path
+    // Traiter comme un chemin de stockage
     let storagePath = raw.replace(/^\/+/, '');
     let bucket = 'documents';
     if (storagePath.startsWith('shared_documents/') || storagePath.startsWith('shared-documents/')) {
-      // normalize to canonical 'shared-documents' bucket
+      // Normaliser vers le bucket canonique 'shared-documents'
       bucket = 'shared-documents';
       storagePath = storagePath.replace(/^shared[-_]documents\//, '');
     }
@@ -174,7 +182,9 @@ export default function DossierDetail() {
         console.error('getPublicUrl failed for', bucket, storagePath);
         return;
       }
-      window.open(publicData.publicUrl, '_blank');
+      setViewerUrl(publicData.publicUrl);
+      setViewerDocName(name || 'Document');
+      setViewerOpen(true);
     } catch (e) {
       console.error('Erreur ouverture pièce jointe partagée:', e);
     }
@@ -359,6 +369,13 @@ export default function DossierDetail() {
           </div>
         )}
       </div>
+      <DocumentViewer
+        open={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        documentUrl={viewerUrl}
+        documentName={viewerDocName}
+        role={role}
+      />
     </AppLayout>
   );
 }
