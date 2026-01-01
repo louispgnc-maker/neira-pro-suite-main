@@ -47,27 +47,28 @@ import { useUnreadEmailCount } from '@/hooks/useUnreadEmailCount';
 
 function getMenuItems(role: 'avocat' | 'notaire') {
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
+  const iconColor = role === 'notaire' ? 'text-orange-600' : 'text-blue-600';
   return {
     navigation: [
-      { title: "Tableau de bord", url: `${prefix}/dashboard`, icon: LayoutDashboard, color: "text-blue-500" },
+      { title: "Tableau de bord", url: `${prefix}/dashboard`, icon: LayoutDashboard, color: iconColor },
     ],
     activiteJuridique: [
-      { title: "Dossiers", url: `${prefix}/dossiers`, icon: Folder, color: "text-yellow-500" },
-      { title: role === 'notaire' ? "Actes" : "Contrats", url: `${prefix}/contrats`, icon: FolderPlus, color: "text-purple-500" },
-      { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool, color: "text-green-500" },
-      { title: "Documents", url: `${prefix}/documents`, icon: FileText, color: "text-orange-500" },
+      { title: "Dossiers", url: `${prefix}/dossiers`, icon: Folder, color: iconColor },
+      { title: role === 'notaire' ? "Actes" : "Contrats", url: `${prefix}/contrats`, icon: FolderPlus, color: iconColor },
+      { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool, color: iconColor },
+      { title: "Documents", url: `${prefix}/documents`, icon: FileText, color: iconColor },
     ],
     organisationSuivi: [
-      { title: "Messagerie", url: `${prefix}/messagerie`, icon: Mail, color: "text-blue-500", badge: true },
-      { title: "Tâches", url: `${prefix}/tasks`, icon: CheckSquare, color: "text-pink-500" },
+      { title: "Messagerie", url: `${prefix}/messagerie`, icon: Mail, color: iconColor, badge: true },
+      { title: "Tâches", url: `${prefix}/tasks`, icon: CheckSquare, color: iconColor },
     ],
     clientsCabinet: [
-      { title: "Clients", url: `${prefix}/clients`, icon: Users, color: "text-indigo-500" },
-      { title: "Mon cabinet", url: `${prefix}/espace-collaboratif?tab=dashboard`, icon: Users, color: "text-cyan-500" },
+      { title: "Clients", url: `${prefix}/clients`, icon: Users, color: iconColor },
+      { title: "Mon cabinet", url: `${prefix}/espace-collaboratif?tab=dashboard`, icon: Users, color: iconColor },
     ],
     outils: [
-      { title: "Statistiques", url: `${prefix}/statistiques`, icon: BarChart3, color: "text-teal-500" },
-      { title: "Paramètres", url: `${prefix}/profile`, icon: Settings, color: "text-gray-500" },
+      { title: "Statistiques", url: `${prefix}/statistiques`, icon: BarChart3, color: iconColor },
+      { title: "Paramètres", url: `${prefix}/profile`, icon: Settings, color: iconColor },
     ],
   };
 }
