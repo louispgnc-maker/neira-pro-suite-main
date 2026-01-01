@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Dialog,
@@ -39,11 +39,11 @@ export function ContractCreationDialog({ open, onOpenChange, role = 'avocat', pr
   const detectedRole = location.pathname.includes('/notaires') ? 'notaire' : location.pathname.includes('/avocats') ? 'avocat' : role;
 
   // Mettre à jour le type si preSelectedType change
-  useState(() => {
+  useEffect(() => {
     if (preSelectedType) {
       setContractType(preSelectedType);
     }
-  });
+  }, [preSelectedType]);
 
   const selectItemClass = detectedRole === 'notaire' 
     ? 'cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white'
