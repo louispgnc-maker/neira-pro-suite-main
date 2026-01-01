@@ -91,10 +91,7 @@ export default function NotairesMetier() {
                 <p className="text-muted-foreground mt-1">Rôles et permissions dans l'espace collaboratif</p>
               </div>
             </div>
-            <Button onClick={() => navigate('/')} className="bg-orange-600 hover:bg-orange-700 text-white">Retour</Button>
-          </div>
-        </div>
-
+          <Button onClick={() => navigate(-1)} className="bg-orange-600 hover:bg-orange-700 text-white">Retour</Button>
         {/* Roles Container */}
         <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-8">
           <h2 className="text-2xl font-bold mb-6">Rôles et permissions</h2>

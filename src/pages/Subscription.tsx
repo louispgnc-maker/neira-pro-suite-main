@@ -314,7 +314,7 @@ export default function Subscription() {
           {/* Bouton retour */}
           <div className="mb-8">
             <Button
-              onClick={() => cabinetId ? navigate(`${prefix}/cabinet?id=${cabinetId}`) : navigate(`${prefix}/dashboard`)}
+              onClick={() => navigate(-1)}
               className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />

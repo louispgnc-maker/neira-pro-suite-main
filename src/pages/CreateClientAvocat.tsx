@@ -231,7 +231,7 @@ export default function CreateClientAvocat() {
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={() => navigate('/avocats/clients')}
+            onClick={() => navigate(-1)}
             className="hover:bg-blue-100 hover:text-blue-600"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -667,7 +667,7 @@ export default function CreateClientAvocat() {
           </Card>
 
           <div className="flex justify-end gap-4">
-            <Button type="button" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/avocats/clients')} disabled={loading}>Annuler</Button>
+            <Button type="button" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate(-1)} disabled={loading}>Annuler</Button>
             <Button type="submit" className={mainButtonColor} disabled={loading}>{loading ? 'Création...' : 'Créer la fiche client'}</Button>
           </div>
         </form>

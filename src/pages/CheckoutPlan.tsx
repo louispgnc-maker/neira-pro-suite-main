@@ -232,7 +232,7 @@ export default function CheckoutPlan() {
       <div className="container mx-auto p-8 max-w-7xl">
         <div className="mb-6">
           <Button
-            onClick={() => navigate(`${prefix}/subscription`)}
+            onClick={() => navigate(-1)}
             className={`text-white ${
               role === 'notaire'
                 ? 'bg-orange-500 hover:bg-orange-600'
@@ -240,7 +240,7 @@ export default function CheckoutPlan() {
             }`}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour à l'espace abonnement
+            Retour
           </Button>
         </div>
 
