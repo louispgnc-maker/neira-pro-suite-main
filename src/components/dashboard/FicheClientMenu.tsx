@@ -57,7 +57,7 @@ export function FicheClientMenu({ variant = 'vertical', colorClass = '', label =
   };
 
   // Base button style copied from buttonVariants root (without any color / hover so we can fully control)
-  const base = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+  const base = "inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
   // Role-based fallback color if no colorClass provided (ensures consistent hover color per space)
   // Bouton: on ne change pas la couleur ici (reste mappé par défaut)
   const fallback = role === 'notaire'
@@ -65,8 +65,8 @@ export function FicheClientMenu({ variant = 'vertical', colorClass = '', label =
     : 'bg-blue-600 hover:bg-blue-700 text-white';
   const color = colorClass || fallback;
 
-  const verticalClasses = `${base} ${color} h-auto flex-col gap-2 py-4 px-4`;
-  const horizontalClasses = `${base} ${color} h-10 px-4 py-2`;
+  const verticalClasses = `${base} ${color} w-full h-auto flex-col gap-2 py-4`;
+  const horizontalClasses = `${base} ${color} h-10 px-4 py-2 text-sm gap-2`;
 
   return (
     <DropdownMenu>
