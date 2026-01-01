@@ -23,6 +23,7 @@ type ContratStats = {
   signes: number;
   enAttente: number;
   avgTimeToSignature: number; // en jours
+  byType: Record<string, number>; // Types de contrats
 };
 
 type ClientStats = {
@@ -67,6 +68,7 @@ export default function Statistiques() {
     signes: 0,
     enAttente: 0,
     avgTimeToSignature: 0,
+    byType: {},
   });
   const [clientStats, setClientStats] = useState<ClientStats>({
     total: 0,
@@ -130,7 +132,7 @@ export default function Statistiques() {
         // 2. Contrats stats
         const { data: contrats } = await supabase
           .from('contrats')
-          .select('id, name, created_at, updated_at')
+          .select('id, name, type, created_at, updated_at')
           .eq('owner_id', user.id)
           .eq('role', role);
 
@@ -149,11 +151,19 @@ export default function Statistiques() {
           });
           const avgTimeToSignature = contrats.length > 0 ? Math.floor(totalDays / contrats.length) : 0;
 
+          // Comptage par type de contrat
+          const byType: Record<string, number> = {};
+          contrats.forEach(c => {
+            const type = c.type || 'Non défini';
+            byType[type] = (byType[type] || 0) + 1;
+          });
+
           setContratStats({
             total: contrats.length,
             signes,
             enAttente,
             avgTimeToSignature,
+            byType,
           });
         }
 
@@ -370,19 +380,22 @@ export default function Statistiques() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Dossiers par statut</CardTitle>
-                <FolderOpen className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">Types de contrats</CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {Object.entries(dossierStats.byStatus).map(([status, count]) => (
-                    <div key={status} className="flex items-center justify-between">
-                      <span className="text-sm">{status}</span>
-                      <span className="text-sm font-medium">{count}</span>
-                    </div>
-                  ))}
-                  {Object.keys(dossierStats.byStatus).length === 0 && (
-                    <p className="text-xs text-muted-foreground">Aucun dossier</p>
+                  {Object.entries(contratStats.byType)
+                    .sort((a, b) => b[1] - a[1]) // Trier par nombre décroissant
+                    .slice(0, 5) // Afficher les 5 plus fréquents
+                    .map(([type, count]) => (
+                      <div key={type} className="flex items-center justify-between">
+                        <span className="text-sm truncate pr-2">{type}</span>
+                        <span className="text-sm font-medium">{count}</span>
+                      </div>
+                    ))}
+                  {Object.keys(contratStats.byType).length === 0 && (
+                    <p className="text-xs text-muted-foreground">Aucun contrat</p>
                   )}
                 </div>
               </CardContent>
