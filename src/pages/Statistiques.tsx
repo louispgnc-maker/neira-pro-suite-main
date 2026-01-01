@@ -322,8 +322,8 @@ export default function Statistiques() {
 
             <Card className="relative">
               <div className="absolute inset-0 backdrop-blur-sm bg-white/30 z-10 rounded-lg flex flex-col items-center justify-center">
-                <Lock className="h-12 w-12 text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground font-medium">En cours de développement</p>
+                <Lock className="h-12 w-12 text-gray-700 mb-2" />
+                <p className="text-sm text-gray-700 font-semibold">En cours de développement</p>
               </div>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Chiffre d'affaires</CardTitle>
