@@ -105,18 +105,7 @@ export default function CreateClientNotaire() {
     setKycStatus('Valide');
   }, [typeIdentite, numeroIdentite, dateExpiration]);
 
-  const handleAddChild = () => setEnfants(prev => [...prev, { nom: '', prenom: '', sexe: '', date_naissance: '' }]);
-  const handleChildChange = (index: number, field: keyof ChildEntry, value: string) => {
-    setEnfants(prev => prev.map((c,i) => i === index ? { ...c, [field]: value } : c));
-  };
-  const handleRemoveChild = (index: number) => setEnfants(prev => prev.filter((_,i) => i !== index));
-
-  const handleAddChild = () => setEnfants(prev => [...prev, { nom: '', prenom: '', sexe: '', date_naissance: '' }]);
-  const handleChildChange = (index: number, field: keyof ChildEntry, value: string) => {
-    setEnfants(prev => prev.map((c,i) => i === index ? { ...c, [field]: value } : c));
-  };
-  const handleRemoveChild = (index: number) => setEnfants(prev => prev.filter((_,i) => i !== index));
-
+  // Fonctions utilitaires pour compatibilité (non utilisées dans formulaire simplifié)
   const handleAddChild = () => setEnfants(prev => [...prev, { nom: '', prenom: '', sexe: '', date_naissance: '' }]);
   const handleChildChange = (index: number, field: keyof ChildEntry, value: string) => {
     setEnfants(prev => prev.map((c,i) => i === index ? { ...c, [field]: value } : c));
