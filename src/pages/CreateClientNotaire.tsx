@@ -11,18 +11,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Upload, ArrowLeft, Plus, X } from "lucide-react";
-import { NOTAIRE_CONTRACT_CATEGORIES } from "@/components/dashboard/ContractSelectorNotaire";
-import { FAMILY_OPTIONS } from "@/lib/familyOptions";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import { Upload, ArrowLeft } from "lucide-react";
 
 interface ChildEntry { nom: string; prenom: string; sexe: string; date_naissance: string; }
-interface ContratOption { id: string; name: string; type: string; category: string; }
 
 export default function CreateClientNotaire() {
   const { user } = useAuth();
@@ -50,39 +41,24 @@ export default function CreateClientNotaire() {
   const [email, setEmail] = useState("");
   const [nationalite, setNationalite] = useState("");
   const [sexe, setSexe] = useState("");
-  const [etatCivil, setEtatCivil] = useState("");
-  const [regimeMatrimonial, setRegimeMatrimonial] = useState("");
-  const [aEnfants, setAEnfants] = useState("non");
 
   // 2. Identification officielle
   const [typeIdentite, setTypeIdentite] = useState("");
   const [numeroIdentite, setNumeroIdentite] = useState("");
   const [dateExpiration, setDateExpiration] = useState("");
+  const [paysDelivrance, setPaysDelivrance] = useState("France");
+  const [kycStatus, setKycStatus] = useState<'Valide' | 'Expiré' | 'Incomplet' | ''>('');
 
   // 3. Situation familiale
-  // Situation matrimoniale supprimée sur demande
-  const [selectedFamily, setSelectedFamily] = useState<string[]>([]);
-  const [familySearch, setFamilySearch] = useState("");
-  const [enfants, setEnfants] = useState<ChildEntry[]>([]);
-  const [situationFamilialeStatus, setSituationFamilialeStatus] = useState("");
-  const [nombreEnfants, setNombreEnfants] = useState("0");
-  const [personneACharge, setPersonneACharge] = useState("");
+  const [etatCivil, setEtatCivil] = useState("");
+  
+  // Gardé pour compatibilité base de données (non affiché dans le formulaire)
+  const [enfants] = useState<ChildEntry[]>([]);
 
-  // 4. Situation professionnelle et financière
+  // 4. Situation professionnelle
   const [profession, setProfession] = useState("");
   const [statutPro, setStatutPro] = useState("");
   const [employeur, setEmployeur] = useState("");
-  const [telephonePro, setTelephonePro] = useState("");
-  const [adressePro, setAdressePro] = useState("");
-  const [emailPro, setEmailPro] = useState("");
-  const [codePostalPro, setCodePostalPro] = useState("");
-  const [villePro, setVillePro] = useState("");
-  const [revenus, setRevenus] = useState("");
-  const [situationFiscale, setSituationFiscale] = useState("");
-  const [patrimoineImmobilier, setPatrimoineImmobilier] = useState("non");
-  const [justificatifsFinanciers, setJustificatifsFinanciers] = useState("");
-  const [comptesBancairesRaw, setComptesBancairesRaw] = useState(""); // multiline -> split lines
-  const [creditsEnCours, setCreditsEnCours] = useState("");
 
   // 5. Facturation
   const [adresseFacturationIdentique, setAdresseFacturationIdentique] = useState(true);
@@ -94,56 +70,52 @@ export default function CreateClientNotaire() {
   const [agitNomPropre, setAgitNomPropre] = useState(true);
   const [representant, setRepresentant] = useState("");
 
-  // 7. Documents liés à l'objet du dossier / Situation juridique
-  const [typeDossier, setTypeDossier] = useState("");
-  const [objetPrecis, setObjetPrecis] = useState("");
-  const [descriptionBesoin, setDescriptionBesoin] = useState("");
-  const [historiqueLitiges, setHistoriqueLitiges] = useState("");
-  const [niveauUrgence, setNiveauUrgence] = useState("normal");
-  const [dateLimite, setDateLimite] = useState("");
-  const [contratSouhaite, setContratSouhaite] = useState("");
-  const [documentsObjetRaw, setDocumentsObjetRaw] = useState(""); // multiline -> JSON array
-  const [justificatifDomicile, setJustificatifDomicile] = useState<File | null>(null);
-  const [autresDocuments, setAutresDocuments] = useState<File[]>([]);
-
-  // 9. Préférences de communication
+  // 7. Préférences de communication
   const [modeContact, setModeContact] = useState("email");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [plageHoraire, setPlageHoraire] = useState("");
 
-  // 10. Informations complémentaires
+  // 8. Informations complémentaires
   const [notes, setNotes] = useState("");
 
-  // Multi-contrat association
-  const [contrats, setContrats] = useState<ContratOption[]>([]);
-  const [selectedContrats, setSelectedContrats] = useState<string[]>([]);
-
-  // 11. Consentements
+  // 9. Consentements
+  // 9. Consentements
   const [consentementRGPD, setConsentementRGPD] = useState(false);
   const [acceptationCGU, setAcceptationCGU] = useState(false);
   const [acceptationConservation, setAcceptationConservation] = useState(false);
   const [autorisationContact, setAutorisationContact] = useState(false);
   const [signatureMandat, setSignatureMandat] = useState(false);
 
+  // Calcul automatique du statut KYC
   useEffect(() => {
-    let mounted = true;
-    async function loadContrats() {
-      if (!user) return;
-      const { data, error } = await supabase
-        .from('contrats')
-        .select('id,name,type,category')
-        .eq('owner_id', user.id)
-        .eq('role', role)
-        .order('created_at', { ascending: false });
-      if (!mounted) return;
-      if (error) {
-        console.error('Erreur chargement contrats:', error);
-        setContrats([]);
-      } else {
-        setContrats((data || []) as ContratOption[]);
+    if (!typeIdentite || !numeroIdentite) {
+      setKycStatus('Incomplet');
+      return;
+    }
+    
+    if (dateExpiration) {
+      const expDate = new Date(dateExpiration);
+      const today = new Date();
+      if (expDate < today) {
+        setKycStatus('Expiré');
+        return;
       }
     }
-    loadContrats();
-    return () => { mounted = false; };
-  }, [user, role]);
+    
+    setKycStatus('Valide');
+  }, [typeIdentite, numeroIdentite, dateExpiration]);
+
+  const handleAddChild = () => setEnfants(prev => [...prev, { nom: '', prenom: '', sexe: '', date_naissance: '' }]);
+  const handleChildChange = (index: number, field: keyof ChildEntry, value: string) => {
+    setEnfants(prev => prev.map((c,i) => i === index ? { ...c, [field]: value } : c));
+  };
+  const handleRemoveChild = (index: number) => setEnfants(prev => prev.filter((_,i) => i !== index));
+
+  const handleAddChild = () => setEnfants(prev => [...prev, { nom: '', prenom: '', sexe: '', date_naissance: '' }]);
+  const handleChildChange = (index: number, field: keyof ChildEntry, value: string) => {
+    setEnfants(prev => prev.map((c,i) => i === index ? { ...c, [field]: value } : c));
+  };
+  const handleRemoveChild = (index: number) => setEnfants(prev => prev.filter((_,i) => i !== index));
 
   const handleAddChild = () => setEnfants(prev => [...prev, { nom: '', prenom: '', sexe: '', date_naissance: '' }]);
   const handleChildChange = (index: number, field: keyof ChildEntry, value: string) => {
@@ -185,18 +157,8 @@ export default function CreateClientNotaire() {
         idDocPath = fileName;
       }
 
-      const comptesBancaires = comptesBancairesRaw.trim() ? comptesBancairesRaw.split(/\n+/).map(l => l.trim()).filter(Boolean) : [];
-      const documentsObjet = documentsObjetRaw.trim() ? documentsObjetRaw.split(/\n+/).map(l => l.trim()).filter(Boolean) : [];
-      const enfantsClean = enfants.filter(c => c.nom || c.date_naissance);
-
-      // Préparer la situation familiale complète avec la nouvelle structure
-      const situationFamilialeData = {
-        situation_familiale: etatCivil || null,
-        regime_matrimonial: regimeMatrimonial || null,
-        nombre_enfants: nombreEnfants || '0',
-        personne_a_charge: personneACharge || null,
-        autres_details: selectedFamily.length > 0 ? selectedFamily : null
-      };
+      // Situation familiale simplifiée
+      const situationFamilialeData = etatCivil ? { situation_familiale: etatCivil } : null;
 
       const { data: inserted, error: insertErr } = await supabase.from('clients').insert({
         owner_id: user.id,
@@ -218,54 +180,51 @@ export default function CreateClientNotaire() {
         type_identite: typeIdentite || null,
         numero_identite: numeroIdentite || null,
         date_expiration_identite: dateExpiration || null,
+        pays_delivrance_identite: paysDelivrance || 'France',
         id_doc_path: idDocPath,
+        kyc_status: kycStatus || 'Incomplet',
         situation_familiale: situationFamilialeData,
-        enfants: enfantsClean.length ? enfantsClean : null,
+        enfants: null,
         profession: profession || null,
         statut_professionnel: statutPro || null,
         employeur: employeur || null,
-        adresse_professionnelle: adressePro || null,
-        telephone_professionnel: telephonePro || null,
-        email_professionnel: emailPro || null,
-        revenus: revenus || null,
-        situation_fiscale: situationFiscale || null,
-        patrimoine_immobilier: patrimoineImmobilier || null,
-        credits_en_cours: creditsEnCours || null,
-        justificatifs_financiers: justificatifsFinanciers || null,
-        comptes_bancaires: comptesBancaires.length ? comptesBancaires : null,
+        adresse_professionnelle: null,
+        telephone_professionnel: null,
+        email_professionnel: null,
+        revenus: null,
+        situation_fiscale: null,
+        patrimoine_immobilier: null,
+        credits_en_cours: null,
+        justificatifs_financiers: null,
+        comptes_bancaires: null,
         adresse_facturation_identique: adresseFacturationIdentique,
         adresse_facturation: adresseFacturationIdentique ? null : (adresseFacturation || null),
         numero_tva: numeroTVA || null,
         siret: siret || null,
         agit_nom_propre: agitNomPropre,
         nom_representant: agitNomPropre ? null : (representant || null),
-        type_dossier: typeDossier || null,
-        objet_dossier: objetPrecis || null,
-        description_besoin: descriptionBesoin || null,
-        historique_litiges: historiqueLitiges || null,
-        urgence: niveauUrgence || 'normal',
-        date_limite: dateLimite || null,
-        contrat_souhaite: contratSouhaite || null,
-        documents_objet: documentsObjet.length ? documentsObjet : null,
+        type_dossier: null,
+        objet_dossier: null,
+        description_besoin: null,
+        historique_litiges: null,
+        urgence: null,
+        date_limite: null,
+        contrat_souhaite: null,
+        documents_objet: null,
         preference_communication: modeContact || 'email',
+        whatsapp: whatsapp || null,
+        plage_horaire: plageHoraire || null,
         notes: notes || null,
         consentement_rgpd: consentementRGPD,
         acceptation_conservation: acceptationConservation,
         autorisation_contact: autorisationContact,
         signature_mandat: signatureMandat,
-        kyc_status: (nom && prenom && email && consentementRGPD) ? 'Complet' : 'Partiel',
         source: 'manuel'
       }).select('id').single();
 
       if (insertErr) throw insertErr;
 
-      if (inserted?.id && selectedContrats.length > 0) {
-        const rows = selectedContrats.map(cid => ({ owner_id: user.id, client_id: inserted.id, contrat_id: cid, role }));
-        const { error: linkErr } = await supabase.from('client_contrats').insert(rows);
-        if (linkErr) toast.error('Erreur association contrats', { description: linkErr.message });
-      }
-
-      toast.success('Fiche client notaire créée');
+      toast.success('Fiche client créée avec succès');
       navigate('/notaires/clients');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
@@ -313,17 +272,17 @@ export default function CreateClientNotaire() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="nomNaissance">Nom de naissance</Label>
-                <Input id="nomNaissance" value={nomNaissance} onChange={e => setNomNaissance(e.target.value)} />
+                <Label htmlFor="nomNaissance">Nom de naissance (optionnel)</Label>
+                <Input id="nomNaissance" value={nomNaissance} onChange={e => setNomNaissance(e.target.value)} placeholder="Si différent du nom actuel" />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="dateNaissance">Date de naissance</Label>
-                  <Input id="dateNaissance" type="date" value={dateNaissance} onChange={e => setDateNaissance(e.target.value)} />
+                  <Label htmlFor="dateNaissance">Date de naissance *</Label>
+                  <Input id="dateNaissance" type="date" value={dateNaissance} onChange={e => setDateNaissance(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lieuNaissance">Lieu de naissance</Label>
-                  <Input id="lieuNaissance" value={lieuNaissance} onChange={e => setLieuNaissance(e.target.value)} />
+                  <Label htmlFor="lieuNaissance">Lieu de naissance *</Label>
+                  <Input id="lieuNaissance" value={lieuNaissance} onChange={e => setLieuNaissance(e.target.value)} placeholder="Ville, Pays" required />
                 </div>
               </div>
               <div className="space-y-2">
@@ -354,22 +313,21 @@ export default function CreateClientNotaire() {
                   <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@exemple.fr" required />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="nationalite">Nationalité *</Label>
-                  <Input id="nationalite" value={nationalite} onChange={e => setNationalite(e.target.value)} placeholder="Française" required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sexe">Sexe</Label>
-                  <Select value={sexe} onValueChange={setSexe}>
-                    <SelectTrigger id="sexe"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                    <SelectContent className="bg-orange-50 border-orange-200">
-                      <SelectItem className={itemHover} value="Homme">Homme</SelectItem>
-                      <SelectItem className={itemHover} value="Femme">Femme</SelectItem>
-                      <SelectItem className={itemHover} value="Autre">Autre</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="nationalite">Nationalité *</Label>
+                <Input id="nationalite" value={nationalite} onChange={e => setNationalite(e.target.value)} placeholder="Française" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sexe">Sexe (facultatif - donnée sensible RGPD)</Label>
+                <Select value={sexe} onValueChange={setSexe}>
+                  <SelectTrigger id="sexe"><SelectValue placeholder="Non renseigné" /></SelectTrigger>
+                  <SelectContent className="bg-orange-50 border-orange-200">
+                    <SelectItem className={itemHover} value="Homme">Homme</SelectItem>
+                    <SelectItem className={itemHover} value="Femme">Femme</SelectItem>
+                    <SelectItem className={itemHover} value="Autre">Autre</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">Cette information est facultative conformément au RGPD</p>
               </div>
             </CardContent>
           </Card>
@@ -377,8 +335,8 @@ export default function CreateClientNotaire() {
           {/* 2. Identification officielle */}
           <Card>
             <CardHeader>
-              <CardTitle>2. Identification officielle</CardTitle>
-              <CardDescription>Pièce d'identité (KYC)</CardDescription>
+              <CardTitle>2. Identification officielle (KYC)</CardTitle>
+              <CardDescription>Pièce d'identité et vérification LCB-FT</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -398,12 +356,39 @@ export default function CreateClientNotaire() {
                   <Input id="numeroIdentite" value={numeroIdentite} onChange={e => setNumeroIdentite(e.target.value)} />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="dateExpiration">Date d'expiration</Label>
-                <Input id="dateExpiration" type="date" value={dateExpiration} onChange={e => setDateExpiration(e.target.value)} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="dateExpiration">Date d'expiration</Label>
+                  <Input id="dateExpiration" type="date" value={dateExpiration} onChange={e => setDateExpiration(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="paysDelivrance">Pays de délivrance</Label>
+                  <Input id="paysDelivrance" value={paysDelivrance} onChange={e => setPaysDelivrance(e.target.value)} placeholder="France" />
+                </div>
               </div>
+              
+              {kycStatus && (
+                <div className="p-3 bg-gray-50 rounded-lg border">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-700">Statut KYC:</span>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      kycStatus === 'Valide' ? 'bg-green-100 text-green-800' :
+                      kycStatus === 'Expiré' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {kycStatus}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {kycStatus === 'Valide' && 'Document valide et conforme'}
+                    {kycStatus === 'Expiré' && 'Document expiré - mise à jour requise'}
+                    {kycStatus === 'Incomplet' && 'Veuillez renseigner le type et le numéro'}
+                  </p>
+                </div>
+              )}
+              
               <div className="space-y-2">
-                <Label>Scan ou photo</Label>
+                <Label>Scan ou photo du document</Label>
                 <input ref={fileInputRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleFileChange} />
                 <Button type="button" variant="outline" onClick={handleFileSelect} className="w-full bg-orange-50 hover:bg-orange-100 text-orange-900 border-orange-200">
                   <Upload className="mr-2 h-4 w-4" />
@@ -417,170 +402,39 @@ export default function CreateClientNotaire() {
           {/* 3. Situation familiale */}
           <Card>
             <CardHeader>
-              <CardTitle>3. Situation familiale</CardTitle>
-              <CardDescription>Mariage / PACS / Enfants</CardDescription>
+              <CardTitle>3. Situation familiale (optionnel)</CardTitle>
+              <CardDescription>Informations basiques sur la situation familiale</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="etatCivil">Situation familiale *</Label>
-                  <Select value={etatCivil} onValueChange={setEtatCivil}>
-                    <SelectTrigger id="etatCivil"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                    <SelectContent className="bg-orange-50 border-orange-200">
-                      <SelectItem className={itemHover} value="Célibataire">Célibataire</SelectItem>
-                      <SelectItem className={itemHover} value="Marié(e)">Marié(e)</SelectItem>
-                      <SelectItem className={itemHover} value="Pacsé(e)">Pacsé(e)</SelectItem>
-                      <SelectItem className={itemHover} value="Divorcé(e)">Divorcé(e)</SelectItem>
-                      <SelectItem className={itemHover} value="Veuf(ve)">Veuf(ve)</SelectItem>
-                      <SelectItem className={itemHover} value="Concubinage">Concubinage</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {(etatCivil === "Marié(e)" || etatCivil === "Pacsé(e)") && (
-                  <div className="space-y-2">
-                    <Label htmlFor="regimeMatrimonial">Régime matrimonial</Label>
-                    <Select value={regimeMatrimonial} onValueChange={setRegimeMatrimonial}>
-                      <SelectTrigger id="regimeMatrimonial"><SelectValue placeholder="Si marié(e)..." /></SelectTrigger>
-                      <SelectContent className="bg-orange-50 border-orange-200">
-                        <SelectItem className={itemHover} value="Communauté réduite aux acquêts">Communauté réduite aux acquêts</SelectItem>
-                        <SelectItem className={itemHover} value="Séparation de biens">Séparation de biens</SelectItem>
-                        <SelectItem className={itemHover} value="Communauté universelle">Communauté universelle</SelectItem>
-                        <SelectItem className={itemHover} value="Participation aux acquêts">Participation aux acquêts</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              </div>
               <div className="space-y-2">
-                <Label>Options (multi-sélection)</Label>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button type="button" variant="secondary" className="justify-between w-full bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200">
-                      {selectedFamily.length > 0 ? `${selectedFamily.length} sélection(s)` : 'Sélectionner des options'}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="min-w-[340px] bg-orange-50 border-orange-200" align="start">
-                    <div className="px-2 py-2 border-b border-orange-200 sticky top-0 bg-orange-50 z-10 flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={familySearch}
-                        onChange={(e) => setFamilySearch(e.target.value)}
-                        placeholder="Rechercher..."
-                        className="w-full bg-white/70 outline-none text-sm px-2 py-1 rounded border border-orange-200 focus:border-orange-400"
-                      />
-                    </div>
-                    <div className="max-h-64 overflow-y-auto">
-                      {FAMILY_OPTIONS.filter(opt => opt.label.toLowerCase().includes(familySearch.toLowerCase())).map(opt => {
-                        const checked = selectedFamily.includes(opt.label);
-                        return (
-                          <DropdownMenuItem
-                            key={opt.key}
-                            className="cursor-pointer hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white"
-                            onSelect={(e) => {
-                              e.preventDefault();
-                              setSelectedFamily(prev => checked ? prev.filter(l => l !== opt.label) : [...prev, opt.label]);
-                            }}
-                          >
-                            <div className="flex items-center gap-2">
-                              <input type="checkbox" className="h-4 w-4" checked={checked} readOnly />
-                              <span className="text-sm">{opt.label}</span>
-                            </div>
-                          </DropdownMenuItem>
-                        );
-                      })}
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <p className="text-xs text-muted-foreground">Barre de recherche incluse. Cochez plusieurs options si nécessaire.</p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="nombreEnfants">Nombre d'enfants</Label>
-                  <Input 
-                    id="nombreEnfants" 
-                    type="number" 
-                    min="0"
-                    value={nombreEnfants} 
-                    onChange={(e) => setNombreEnfants(e.target.value)} 
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="personneACharge">Personnes à charge</Label>
-                  <Textarea 
-                    id="personneACharge" 
-                    rows={2}
-                    value={personneACharge}
-                    onChange={(e) => setPersonneACharge(e.target.value)}
-                    placeholder="Indiquez les personnes à charge..."
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label>Enfants</Label>
-                  <Button type="button" size="sm" variant="outline" onClick={handleAddChild} className="bg-orange-50 hover:bg-orange-100 text-orange-900 border-orange-200">
-                    <Plus className="h-4 w-4 mr-1" /> Ajouter
-                  </Button>
-                </div>
-                {enfants.length === 0 && <p className="text-sm text-muted-foreground">Aucun enfant ajouté.</p>}
-                <div className="space-y-3">
-                  {enfants.map((child, idx) => (
-                    <div key={idx} className="grid grid-cols-12 gap-2 items-end">
-                      <div className="col-span-3 space-y-1">
-                        <Label className="text-xs">Nom</Label>
-                        <Input value={child.nom} onChange={e => handleChildChange(idx,'nom',e.target.value)} className="border-orange-200" />
-                      </div>
-                      <div className="col-span-3 space-y-1">
-                        <Label className="text-xs">Prénom</Label>
-                        <Input value={child.prenom} onChange={e => handleChildChange(idx,'prenom',e.target.value)} className="border-orange-200" />
-                      </div>
-                      <div className="col-span-2 space-y-1">
-                        <Label className="text-xs">Sexe</Label>
-                        <Select value={child.sexe} onValueChange={v => handleChildChange(idx,'sexe',v)}>
-                          <SelectTrigger className="border-orange-200">
-                            <SelectValue placeholder="Sexe" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-orange-50 border-orange-200">
-                            <SelectItem value="M" className="hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white">M</SelectItem>
-                            <SelectItem value="F" className="hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white">F</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="col-span-3 space-y-1">
-                        <Label className="text-xs">Date de naissance</Label>
-                        <Input type="date" value={child.date_naissance} onChange={e => handleChildChange(idx,'date_naissance',e.target.value)} className="border-orange-200" />
-                      </div>
-                      <div className="col-span-1 flex justify-end">
-                        <Button 
-                          type="button" 
-                          size="sm" 
-                          variant="ghost" 
-                          onClick={() => handleRemoveChild(idx)}
-                          className="hover:bg-orange-100 hover:text-orange-600"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <Label htmlFor="etatCivil">Situation familiale</Label>
+                <Select value={etatCivil} onValueChange={setEtatCivil}>
+                  <SelectTrigger id="etatCivil"><SelectValue placeholder="Non renseigné" /></SelectTrigger>
+                  <SelectContent className="bg-orange-50 border-orange-200">
+                    <SelectItem className={itemHover} value="Célibataire">Célibataire</SelectItem>
+                    <SelectItem className={itemHover} value="Marié(e)">Marié(e)</SelectItem>
+                    <SelectItem className={itemHover} value="Pacsé(e)">Pacsé(e)</SelectItem>
+                    <SelectItem className={itemHover} value="Divorcé(e)">Divorcé(e)</SelectItem>
+                    <SelectItem className={itemHover} value="Veuf(ve)">Veuf(ve)</SelectItem>
+                    <SelectItem className={itemHover} value="Concubinage">Concubinage</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">Cette information est facultative et ne sera utilisée que si nécessaire pour le dossier juridique</p>
               </div>
             </CardContent>
           </Card>
 
-          {/* 4. Situation professionnelle et financière */}
+          {/* 4. Situation professionnelle */}
           <Card>
             <CardHeader>
-              <CardTitle>4. Situation professionnelle & financière</CardTitle>
-              <CardDescription>Emploi, revenus et justificatifs</CardDescription>
+              <CardTitle>4. Situation professionnelle (optionnel)</CardTitle>
+              <CardDescription>Informations professionnelles de base</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="profession">Profession</Label>
-                  <Input id="profession" value={profession} onChange={e => setProfession(e.target.value)} />
+                  <Input id="profession" value={profession} onChange={e => setProfession(e.target.value)} placeholder="Ex: Ingénieur, Médecin..." />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="statutPro">Statut professionnel</Label>
@@ -596,76 +450,10 @@ export default function CreateClientNotaire() {
                   </Select>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="employeur">Employeur</Label>
-                  <Input id="employeur" value={employeur} onChange={e => setEmployeur(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="telephonePro">Téléphone professionnel</Label>
-                  <Input id="telephonePro" type="tel" value={telephonePro} onChange={e => setTelephonePro(e.target.value)} placeholder="+33 6 12 34 56 78" />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="emailPro">Email professionnel</Label>
-                  <Input id="emailPro" type="email" value={emailPro} onChange={e => setEmailPro(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="adressePro">Adresse professionnelle</Label>
-                  <Input id="adressePro" value={adressePro} onChange={e => setAdressePro(e.target.value)} />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="revenus">Revenus annuels</Label>
-                  <Select value={revenus} onValueChange={setRevenus}>
-                    <SelectTrigger id="revenus"><SelectValue placeholder="Sélectionner une tranche" /></SelectTrigger>
-                    <SelectContent className="bg-orange-50 border-orange-200">
-                      <SelectItem className={itemHover} value="moins_20k">Moins de 20 000 €</SelectItem>
-                      <SelectItem className={itemHover} value="20k_40k">20 000 € - 40 000 €</SelectItem>
-                      <SelectItem className={itemHover} value="40k_60k">40 000 € - 60 000 €</SelectItem>
-                      <SelectItem className={itemHover} value="60k_100k">60 000 € - 100 000 €</SelectItem>
-                      <SelectItem className={itemHover} value="plus_100k">Plus de 100 000 €</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="situationFiscale">Situation fiscale</Label>
-                  <Select value={situationFiscale} onValueChange={setSituationFiscale}>
-                    <SelectTrigger id="situationFiscale"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                    <SelectContent className="bg-orange-50 border-orange-200">
-                      <SelectItem className={itemHover} value="imposition_commune">Imposition commune</SelectItem>
-                      <SelectItem className={itemHover} value="imposition_separee">Imposition séparée</SelectItem>
-                      <SelectItem className={itemHover} value="non_imposable">Non imposable</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
               <div className="space-y-2">
-                <Label>Patrimoine immobilier</Label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="patrimoine" value="oui" checked={patrimoineImmobilier === "oui"} onChange={(e) => setPatrimoineImmobilier(e.target.value)} className="h-4 w-4" />
-                    <span className="text-sm">Oui</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="patrimoine" value="non" checked={patrimoineImmobilier === "non"} onChange={(e) => setPatrimoineImmobilier(e.target.value)} className="h-4 w-4" />
-                    <span className="text-sm">Non</span>
-                  </label>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="creditsEnCours">Crédits en cours</Label>
-                <Textarea id="creditsEnCours" rows={2} value={creditsEnCours} onChange={e => setCreditsEnCours(e.target.value)} placeholder="Ex: Crédit immobilier, crédit consommation..." />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="justificatifsFinanciers">Justificatifs financiers (résumé)</Label>
-                <Textarea id="justificatifsFinanciers" rows={2} value={justificatifsFinanciers} onChange={e => setJustificatifsFinanciers(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="comptesBancaires">Comptes bancaires / IBAN (un par ligne)</Label>
-                <Textarea id="comptesBancaires" rows={2} value={comptesBancairesRaw} onChange={e => setComptesBancairesRaw(e.target.value)} />
+                <Label htmlFor="employeur">Employeur (optionnel)</Label>
+                <Input id="employeur" value={employeur} onChange={e => setEmployeur(e.target.value)} placeholder="Nom de l'entreprise ou organisation" />
+                <p className="text-xs text-muted-foreground">Les informations financières détaillées seront demandées dans le dossier si nécessaire</p>
               </div>
             </CardContent>
           </Card>
@@ -745,244 +533,105 @@ export default function CreateClientNotaire() {
                       onChange={() => setAgitNomPropre(false)} 
                       className="h-4 w-4" 
                     />
-                    <span className="text-sm">Une autre personne</span>
+                    <span className="text-sm">Une autre personne / entité</span>
                   </label>
                 </div>
               </div>
               
               {!agitNomPropre && (
                 <div className="space-y-2 pt-2">
-                  <Label htmlFor="representant">Nom de la personne représentée</Label>
+                  <Label htmlFor="representant">Nom de la personne/entité représentée</Label>
                   <Input 
                     id="representant" 
                     value={representant} 
                     onChange={e => setRepresentant(e.target.value)} 
-                    placeholder="Nom et prénom"
+                    placeholder="Nom complet ou raison sociale"
                   />
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+                    <p className="text-sm text-blue-900">
+                      💡 <strong>Conseil :</strong> Si cette personne ou entité n'a pas encore de fiche client, 
+                      vous pourrez créer une fiche dédiée après l'enregistrement de ce client. 
+                      Cela permet de gérer les représentations familiales, sociétés, ou mandats spécifiques.
+                    </p>
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* 5. Documents liés & Contrats */}
+          {/* 5. Préférences de communication */}
           <Card>
             <CardHeader>
-              <CardTitle>5. Dossier & documents liés</CardTitle>
-              <CardDescription>Type d'acte, objet précis et pièces justificatives</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="typeDossier">Type d'acte / dossier</Label>
-                <Select value={typeDossier} onValueChange={(val) => { setTypeDossier(val); setContratSouhaite(''); }}>
-                  <SelectTrigger id="typeDossier"><SelectValue placeholder="Choisir une catégorie" /></SelectTrigger>
-                  <SelectContent className="bg-orange-50 border-orange-200">
-                    {NOTAIRE_CONTRACT_CATEGORIES.map(cat => (
-                      <SelectItem className={itemHover} key={cat.key} value={cat.key}>{cat.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="contratSouhaite">Acte/Contrat précis</Label>
-                <Select value={contratSouhaite} onValueChange={setContratSouhaite} disabled={!typeDossier}>
-                  <SelectTrigger id="contratSouhaite"><SelectValue placeholder={typeDossier ? 'Sélectionner...' : 'Choisir une catégorie d\'abord'} /></SelectTrigger>
-                  <SelectContent className="bg-orange-50 border-orange-200">
-                    {(NOTAIRE_CONTRACT_CATEGORIES.find(c => c.key === typeDossier)?.contracts || []).map(c => (
-                      <SelectItem className={itemHover} key={c} value={c}>{c}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="objetPrecis">Objet précis du dossier</Label>
-                <Input 
-                  id="objetPrecis" 
-                  value={objetPrecis} 
-                  onChange={e => setObjetPrecis(e.target.value)} 
-                  placeholder="Ex: Vente appartement 3 pièces à Paris 15e"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="descriptionBesoin">Description détaillée du besoin</Label>
-                <Textarea 
-                  id="descriptionBesoin" 
-                  rows={4} 
-                  value={descriptionBesoin} 
-                  onChange={e => setDescriptionBesoin(e.target.value)} 
-                  placeholder="Décrivez votre situation et vos besoins..."
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="historiqueLitiges">Historique de litiges ou contentieux antérieurs</Label>
-                <Textarea 
-                  id="historiqueLitiges" 
-                  rows={3} 
-                  value={historiqueLitiges} 
-                  onChange={e => setHistoriqueLitiges(e.target.value)} 
-                  placeholder="Indiquez si le client a déjà été impliqué dans des litiges, contentieux ou procédures juridiques similaires..."
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Niveau d'urgence</Label>
-                  <div className="flex flex-col gap-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="urgence" value="normal" checked={niveauUrgence === "normal"} onChange={(e) => setNiveauUrgence(e.target.value)} className="h-4 w-4" />
-                      <span className="text-sm">Normal</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="urgence" value="urgent" checked={niveauUrgence === "urgent"} onChange={(e) => setNiveauUrgence(e.target.value)} className="h-4 w-4" />
-                      <span className="text-sm">Urgent</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="urgence" value="tres_urgent" checked={niveauUrgence === "tres_urgent"} onChange={(e) => setNiveauUrgence(e.target.value)} className="h-4 w-4" />
-                      <span className="text-sm">Très urgent</span>
-                    </label>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dateLimite">Date limite souhaitée</Label>
-                  <Input 
-                    id="dateLimite" 
-                    type="date" 
-                    value={dateLimite} 
-                    onChange={e => setDateLimite(e.target.value)} 
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="documentsObjetRaw">Documents liés (description)</Label>
-                <Textarea id="documentsObjetRaw" rows={3} value={documentsObjetRaw} onChange={e => setDocumentsObjetRaw(e.target.value)} placeholder="Ex: Compromis de vente\nTitre de propriété\nDiagnostics immobiliers" />
-                <p className="text-xs text-muted-foreground">Décrivez les documents nécessaires ou déjà en votre possession.</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Ajouter des fichiers</Label>
-                <input
-                  type="file"
-                  multiple
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  className="hidden"
-                  id="autresDocsInput"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files || []);
-                    setAutresDocuments(prev => [...prev, ...files]);
-                    toast.success(`${files.length} fichier(s) ajouté(s)`);
-                  }}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => document.getElementById('autresDocsInput')?.click()}
-                  className="w-full bg-orange-50 hover:bg-orange-100 text-orange-900 border-orange-200"
-                >
-                  <Upload className="mr-2 h-4 w-4" />
-                  Choisir des fichiers
-                </Button>
-                {autresDocuments.length > 0 && (
-                  <div className="border rounded-md p-2 space-y-1">
-                    {autresDocuments.map((file, idx) => (
-                      <div key={idx} className="flex items-center justify-between text-sm">
-                        <span className="truncate">{file.name}</span>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setAutresDocuments(prev => prev.filter((_, i) => i !== idx))}
-                          className="hover:bg-orange-100 hover:text-orange-600"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <p className="text-xs text-muted-foreground">PDF, Word, Images acceptés. Plusieurs fichiers possibles.</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Acte(s)/Contrat(s) déjà enregistrés et associés</Label>
-                <div className="border rounded-md p-2 max-h-56 overflow-y-auto">
-                  {contrats.length === 0 ? (
-                    <p className="text-sm text-muted-foreground px-1">Aucun acte enregistré.</p>
-                  ) : (
-                    <div className="grid grid-cols-1 gap-2">
-                      {contrats.filter(c => !typeDossier || c.category === typeDossier).map(c => {
-                        const checked = selectedContrats.includes(c.id);
-                        return (
-                          <label key={c.id} className="flex items-start gap-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              className="mt-1 h-4 w-4"
-                              checked={checked}
-                              onChange={e => {
-                                const isChecked = e.target.checked;
-                                setSelectedContrats(prev => isChecked ? [...prev, c.id] : prev.filter(id => id !== c.id));
-                              }}
-                            />
-                            <span className="text-sm"><span className="font-medium">{c.name}</span> <span className="text-muted-foreground">— {c.category}</span></span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">Sélectionner les actes existants liés à ce dossier.</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 5.5 Préférences de communication */}
-          <Card>
-            <CardHeader>
-              <CardTitle>5.5 Préférences de communication</CardTitle>
+              <CardTitle>5. Préférences de communication</CardTitle>
               <CardDescription>Comment souhaitez-vous être contacté ?</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="modeContact">Mode de contact privilégié</Label>
+                <Label htmlFor="modeContact">Mode de contact privilégié *</Label>
                 <Select value={modeContact} onValueChange={setModeContact}>
                   <SelectTrigger id="modeContact"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                   <SelectContent className="bg-orange-50 border-orange-200">
                     <SelectItem className={itemHover} value="email">Email</SelectItem>
                     <SelectItem className={itemHover} value="telephone">Téléphone</SelectItem>
+                    <SelectItem className={itemHover} value="whatsapp">WhatsApp</SelectItem>
                     <SelectItem className={itemHover} value="sms">SMS</SelectItem>
                     <SelectItem className={itemHover} value="courrier">Courrier postal</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp">Numéro WhatsApp (optionnel)</Label>
+                <Input 
+                  id="whatsapp" 
+                  type="tel"
+                  value={whatsapp} 
+                  onChange={e => setWhatsapp(e.target.value)} 
+                  placeholder="+33 6 12 34 56 78"
+                />
+                <p className="text-xs text-muted-foreground">Si vous souhaitez être contacté par WhatsApp</p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="plageHoraire">Plage horaire préférée (optionnel)</Label>
+                <Select value={plageHoraire} onValueChange={setPlageHoraire}>
+                  <SelectTrigger id="plageHoraire"><SelectValue placeholder="Aucune préférence" /></SelectTrigger>
+                  <SelectContent className="bg-orange-50 border-orange-200">
+                    <SelectItem className={itemHover} value="matin">Matin (9h-12h)</SelectItem>
+                    <SelectItem className={itemHover} value="apres-midi">Après-midi (14h-18h)</SelectItem>
+                    <SelectItem className={itemHover} value="soir">Soir (18h-20h)</SelectItem>
+                    <SelectItem className={itemHover} value="flexible">Flexible</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </CardContent>
           </Card>
 
-          {/* 5.6 Notes et informations complémentaires */}
+          {/* 6. Notes et informations complémentaires */}
           <Card>
             <CardHeader>
-              <CardTitle>5.6 Notes et informations complémentaires</CardTitle>
-              <CardDescription>Informations additionnelles utiles</CardDescription>
+              <CardTitle>6. Notes et informations complémentaires</CardTitle>
+              <CardDescription>Informations générales sur le client</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="notes">Notes ou précisions</Label>
+                <Label htmlFor="notes">Notes libres</Label>
                 <Textarea 
                   id="notes" 
                   rows={4} 
                   value={notes} 
                   onChange={e => setNotes(e.target.value)} 
-                  placeholder="Toute information complémentaire utile pour le dossier..."
+                  placeholder="Toute information complémentaire utile concernant ce client..."
                 />
+                <p className="text-xs text-muted-foreground">Les notes liées à une affaire spécifique doivent être ajoutées dans le dossier correspondant</p>
               </div>
             </CardContent>
           </Card>
 
-          {/* 6. Consentements */}
+          {/* 7. Consentements et mentions légales */}
           <Card>
             <CardHeader>
-              <CardTitle>6. Consentements et mentions légales</CardTitle>
+              <CardTitle>7. Consentements et mentions légales</CardTitle>
               <CardDescription>Acceptations obligatoires</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

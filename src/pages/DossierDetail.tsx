@@ -34,7 +34,7 @@ interface ClientDetails {
   nationalite: string | null;
   sexe: string | null;
   etat_civil: string | null;
-  situation_familiale: string[] | null;
+  situation_familiale: any;
   situation_matrimoniale: string | null;
   type_identite: string | null;
   numero_identite: string | null;
@@ -45,12 +45,18 @@ interface ClientDetails {
   siret: string | null;
   situation_fiscale: string | null;
   revenus: string | null;
+  comptes_bancaires: string[] | null;
+  justificatifs_financiers: string | null;
   type_dossier: string | null;
   contrat_souhaite: string | null;
   historique_litiges: string | null;
+  documents_objet: string[] | null;
   enfants: { nom: string; prenom?: string; sexe?: string; date_naissance: string | null }[] | null;
   source: string | null;
   kyc_status: string | null;
+  consentement_rgpd: boolean | null;
+  signature_mandat: boolean | null;
+  created_at: string | null;
 }
 
 export default function DossierDetail() {
@@ -523,6 +529,35 @@ export default function DossierDetail() {
                 </CardContent>
               </Card>
 
+              {/* Situation familiale détaillée */}
+              {selectedClient.situation_familiale && typeof selectedClient.situation_familiale === 'object' && !Array.isArray(selectedClient.situation_familiale) && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Situation familiale détaillée</CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedClient.situation_familiale.regime_matrimonial && (
+                      <div>
+                        <div className="text-sm text-muted-foreground">Régime matrimonial</div>
+                        <div className="font-medium">{selectedClient.situation_familiale.regime_matrimonial}</div>
+                      </div>
+                    )}
+                    {selectedClient.situation_familiale.nombre_enfants !== undefined && (
+                      <div>
+                        <div className="text-sm text-muted-foreground">Nombre d'enfants</div>
+                        <div className="font-medium">{selectedClient.situation_familiale.nombre_enfants}</div>
+                      </div>
+                    )}
+                    {selectedClient.situation_familiale.personne_a_charge !== undefined && (
+                      <div>
+                        <div className="text-sm text-muted-foreground">Personnes à charge</div>
+                        <div className="font-medium">{selectedClient.situation_familiale.personne_a_charge}</div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Identification */}
               <Card>
                 <CardHeader>
@@ -582,6 +617,24 @@ export default function DossierDetail() {
                     <div className="text-sm text-muted-foreground">Revenus</div>
                     <div className="font-medium">{selectedClient.revenus || '—'}</div>
                   </div>
+                  {selectedClient.comptes_bancaires && selectedClient.comptes_bancaires.length > 0 && (
+                    <div className="md:col-span-2">
+                      <div className="text-sm text-muted-foreground mb-2">Comptes bancaires</div>
+                      <div className="space-y-1">
+                        {selectedClient.comptes_bancaires.map((compte, idx) => (
+                          <div key={idx} className="p-2 bg-muted rounded text-sm font-mono">
+                            {compte}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {selectedClient.justificatifs_financiers && (
+                    <div className="md:col-span-2">
+                      <div className="text-sm text-muted-foreground">Justificatifs financiers</div>
+                      <div className="font-medium whitespace-pre-wrap">{selectedClient.justificatifs_financiers}</div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -605,10 +658,71 @@ export default function DossierDetail() {
                       <div className="font-medium whitespace-pre-wrap">{selectedClient.historique_litiges}</div>
                     </div>
                   )}
+                  {selectedClient.documents_objet && selectedClient.documents_objet.length > 0 && (
+                    <div className="md:col-span-2">
+                      <div className="text-sm text-muted-foreground mb-2">Documents objet du dossier</div>
+                      <div className="space-y-1">
+                        {selectedClient.documents_objet.map((doc, idx) => (
+                          <div key={idx} className="p-2 bg-muted rounded text-sm">
+                            {doc}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   {selectedClient.source && (
                     <div>
                       <div className="text-sm text-muted-foreground">Source</div>
                       <div className="font-medium">{selectedClient.source}</div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Consentements */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Consentements et informations complémentaires</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-sm text-muted-foreground">Source</div>
+                    <div>
+                      {selectedClient.source ? (
+                        <Badge variant="outline">{selectedClient.source}</Badge>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Consentement RGPD</div>
+                    <div>
+                      <Badge variant={selectedClient.consentement_rgpd ? 'default' : 'secondary'}>
+                        {selectedClient.consentement_rgpd ? 'Oui' : 'Non'}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Signature du mandat</div>
+                    <div>
+                      <Badge variant={selectedClient.signature_mandat ? 'default' : 'secondary'}>
+                        {selectedClient.signature_mandat ? 'Oui' : 'Non'}
+                      </Badge>
+                    </div>
+                  </div>
+                  {selectedClient.created_at && (
+                    <div>
+                      <div className="text-sm text-muted-foreground">Date de création</div>
+                      <div className="font-medium">
+                        {new Date(selectedClient.created_at).toLocaleDateString('fr-FR', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </div>
                     </div>
                   )}
                 </CardContent>
