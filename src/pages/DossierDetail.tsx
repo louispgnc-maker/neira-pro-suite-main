@@ -306,12 +306,9 @@ export default function DossierDetail() {
                           {hasContent && k.content && (
                             <div className="p-4 bg-muted/30">
                               <div className="text-sm font-medium mb-3">Contrat rédigé :</div>
-                              <div 
-                                className="text-sm prose prose-sm max-w-none"
-                                dangerouslySetInnerHTML={{ 
-                                  __html: k.content 
-                                }}
-                              />
+                              <div className="prose prose-sm max-w-none whitespace-pre-wrap bg-gray-50 p-6 rounded-lg border">
+                                {k.content}
+                              </div>
                             </div>
                           )}
                           {hasContent && !k.content && k.contenu_json && (
