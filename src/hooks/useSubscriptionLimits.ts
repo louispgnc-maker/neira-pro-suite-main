@@ -91,6 +91,7 @@ export function useSubscriptionLimits(role: 'avocat' | 'notaire'): SubscriptionL
         // Utiliser les valeurs de la base de données, avec fallback sur PLAN_LIMITS
         const planLimits = PLAN_LIMITS[plan] || PLAN_LIMITS.essentiel;
         
+
         // Récupérer l'addon de signatures pour CE membre spécifique + date d'expiration
         const { data: memberData } = await supabase
           .from('cabinet_members')

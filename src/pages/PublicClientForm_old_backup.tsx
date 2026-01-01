@@ -38,7 +38,9 @@ export default function PublicClientForm() {
   
   // Upload files
   const [pieceIdentiteFiles, setPieceIdentiteFiles] = useState<FileList | null>(null);
+  const [justificatifDomicileFile, setJustificatifDomicileFile] = useState<File | null>(null);
   const [mandatFile, setMandatFile] = useState<File | null>(null);
+  const [autresDocuments, setAutresDocuments] = useState<FileList | null>(null);
 
   const [formData, setFormData] = useState({
     // 1) Informations personnelles
@@ -58,6 +60,9 @@ export default function PublicClientForm() {
     telephone: '',
     email: '',
     situation_familiale: '',
+    enfants: 'non',
+    enfants_details: '',
+    personne_a_charge: '',
     
     // 2) Identité
     type_piece_identite: '',
@@ -67,7 +72,18 @@ export default function PublicClientForm() {
     // 3) Coordonnées professionnelles
     profession: '',
     employeur: '',
+    adresse_professionnelle: '',
+    telephone_professionnel: '',
+    email_professionnel: '',
     statut_professionnel: '',
+    
+    // 4) Situation financière
+    revenu_annuel: '',
+    patrimoine_immobilier: 'non',
+    patrimoine_immobilier_details: '',
+    comptes_bancaires: '',
+    credits_en_cours: '',
+    situation_fiscale: '',
     
     // 5) Adresse de facturation
     facturation_identique: true,
@@ -84,7 +100,17 @@ export default function PublicClientForm() {
     prenom_personne_representee: '',
     lien_representation: '',
     
-    // 7) Préférences de communication
+    // 7) Objet du dossier
+    type_dossier: '',
+    objet_dossier: '',
+    description_besoin: '',
+    historique_litiges: '',
+    urgence: 'normal',
+    date_limite: '',
+    type_acte_notaire: '',
+    infos_complementaires_acte: '',
+    
+    // 9) Préférences de communication
     preference_communication: 'email',
     
     // 11) Consentements
@@ -94,6 +120,8 @@ export default function PublicClientForm() {
     autorisation_contact: false,
     
     // Autres
+    regime_matrimonial: '',
+    nombre_enfants: '0',
     notes: ''
   });
 
@@ -527,11 +555,148 @@ export default function PublicClientForm() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="regime_matrimonial">Régime matrimonial</Label>
+                  <Select value={formData.regime_matrimonial}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, regime_matrimonial: value }))}>
+                    <SelectTrigger><SelectValue placeholder="Si marié(e)..." /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="communaute_legale">Communauté légale</SelectItem>
+                      <SelectItem value="communaute_universelle">Communauté universelle</SelectItem>
+                      <SelectItem value="separation_biens">Séparation de biens</SelectItem>
+                      <SelectItem value="participation_acquets">Participation aux acquêts</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <p className="text-xs text-muted-foreground mt-2">
-                Cette information est facultative. Les informations détaillées (enfants, régime matrimonial) seront collectées dans le dossier si nécessaire.
-              </p>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="enfants">Avez-vous des enfants ? *</Label>
+                  <Select value={formData.enfants} required
+                    onValueChange={(value) => {
+                      setFormData(prev => ({ ...prev, enfants: value }));
+                      if (value === 'non') {
+                        setEnfantsList([]);
+                      }
+                    }}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="oui">Oui</SelectItem>
+                      <SelectItem value="non">Non</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {formData.enfants === 'oui' && (
+                  <div className="space-y-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-base font-semibold">Identité des enfants</Label>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => setEnfantsList([...enfantsList, { nom: '', prenom: '', sexe: '', date_naissance: '' }])}
+                        className="bg-orange-600 hover:bg-orange-700 text-white"
+                      >
+                        <Plus className="mr-2 h-4 w-4" />
+                        Ajouter un enfant
+                      </Button>
+                    </div>
+
+                    {enfantsList.map((enfant, index) => (
+                      <div key={index} className="p-4 bg-white rounded-lg border space-y-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-sm text-orange-600">Enfant {index + 1}</span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setEnfantsList(enfantsList.filter((_, i) => i !== index))}
+                            className="hover:bg-orange-100 hover:text-orange-600"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-nom-${index}`}>Nom *</Label>
+                            <Input
+                              id={`enfant-nom-${index}`}
+                              value={enfant.nom}
+                              onChange={(e) => {
+                                const newList = [...enfantsList];
+                                newList[index].nom = e.target.value;
+                                setEnfantsList(newList);
+                              }}
+                              placeholder="Nom de l'enfant"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-prenom-${index}`}>Prénom *</Label>
+                            <Input
+                              id={`enfant-prenom-${index}`}
+                              value={enfant.prenom}
+                              onChange={(e) => {
+                                const newList = [...enfantsList];
+                                newList[index].prenom = e.target.value;
+                                setEnfantsList(newList);
+                              }}
+                              placeholder="Prénom de l'enfant"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-sexe-${index}`}>Sexe *</Label>
+                            <Select
+                              value={enfant.sexe}
+                              onValueChange={(value) => {
+                                const newList = [...enfantsList];
+                                newList[index].sexe = value;
+                                setEnfantsList(newList);
+                              }}
+                            >
+                              <SelectTrigger id={`enfant-sexe-${index}`}>
+                                <SelectValue placeholder="Sélectionnez..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="M">Masculin</SelectItem>
+                                <SelectItem value="F">Féminin</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`enfant-date-${index}`}>Date de naissance *</Label>
+                            <Input
+                              id={`enfant-date-${index}`}
+                              type="date"
+                              value={enfant.date_naissance}
+                              onChange={(e) => {
+                                const newList = [...enfantsList];
+                                newList[index].date_naissance = e.target.value;
+                                setEnfantsList(newList);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {enfantsList.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        Cliquez sur "Ajouter un enfant" pour renseigner les informations de vos enfants
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="personne_a_charge">Personnes à charge</Label>
+                <Textarea id="personne_a_charge" rows={2}
+                  placeholder="Indiquez si vous avez des personnes à charge (enfants, parents, etc.) et leur situation..."
+                  value={formData.personne_a_charge}
+                  onChange={(e) => setFormData(prev => ({ ...prev, personne_a_charge: e.target.value }))} />
+              </div>
             </div>
 
             {/* 2) IDENTITÉ / VÉRIFICATION */}
@@ -629,18 +794,103 @@ export default function PublicClientForm() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="employeur">Employeur</Label>
+                  <Input id="employeur" value={formData.employeur}
+                    onChange={(e) => setFormData(prev => ({ ...prev, employeur: e.target.value }))} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telephone_professionnel">Téléphone professionnel</Label>
+                  <Input id="telephone_professionnel" type="tel" value={formData.telephone_professionnel}
+                    onChange={(e) => setFormData(prev => ({ ...prev, telephone_professionnel: e.target.value }))} />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="employeur">Employeur</Label>
-                <Input id="employeur" value={formData.employeur}
-                  onChange={(e) => setFormData(prev => ({ ...prev, employeur: e.target.value }))} />
+                <Label htmlFor="adresse_professionnelle">Adresse professionnelle</Label>
+                <Input id="adresse_professionnelle" value={formData.adresse_professionnelle}
+                  onChange={(e) => setFormData(prev => ({ ...prev, adresse_professionnelle: e.target.value }))} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email_professionnel">E-mail professionnel</Label>
+                <Input id="email_professionnel" type="email" value={formData.email_professionnel}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email_professionnel: e.target.value }))} />
               </div>
             </div>
 
-
-
-            {/* 4) ADRESSE DE FACTURATION */}
+            {/* 4) SITUATION FINANCIÈRE */}
             <div className="space-y-4 p-6 bg-white rounded-lg border">
-              <h3 className="text-xl font-bold text-orange-600 mb-4">4. Adresse de facturation</h3>
+              <h3 className="text-xl font-bold text-orange-600 mb-4">4. Situation financière</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="revenu_annuel">Revenu annuel estimé *</Label>
+                  <Select value={formData.revenu_annuel} required
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, revenu_annuel: value }))}>
+                    <SelectTrigger><SelectValue placeholder="Sélectionnez..." /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="moins_20k">Moins de 20 000€</SelectItem>
+                      <SelectItem value="20k_40k">20 000€ - 40 000€</SelectItem>
+                      <SelectItem value="40k_60k">40 000€ - 60 000€</SelectItem>
+                      <SelectItem value="60k_100k">60 000€ - 100 000€</SelectItem>
+                      <SelectItem value="100k_plus">Plus de 100 000€</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="situation_fiscale">Résidence fiscale *</Label>
+                  <Select value={formData.situation_fiscale} required
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, situation_fiscale: value }))}>
+                    <SelectTrigger><SelectValue placeholder="Sélectionnez..." /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="france">Résident fiscal France</SelectItem>
+                      <SelectItem value="etranger">Autre pays</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="patrimoine_immobilier">Avez-vous un patrimoine immobilier ? *</Label>
+                <Select value={formData.patrimoine_immobilier} required
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, patrimoine_immobilier: value }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="oui">Oui</SelectItem>
+                    <SelectItem value="non">Non</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {formData.patrimoine_immobilier === 'oui' && (
+                <div className="space-y-2">
+                  <Label htmlFor="patrimoine_immobilier_details">Détails du patrimoine immobilier</Label>
+                  <Textarea id="patrimoine_immobilier_details" placeholder="Ex: Résidence principale à Paris, appartement locatif à Lyon..."
+                    value={formData.patrimoine_immobilier_details}
+                    onChange={(e) => setFormData(prev => ({ ...prev, patrimoine_immobilier_details: e.target.value }))} />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="comptes_bancaires">Comptes bancaires (Banque + pays)</Label>
+                <Textarea id="comptes_bancaires" placeholder="Ex: BNP Paribas (France), Credit Suisse (Suisse)..."
+                  value={formData.comptes_bancaires}
+                  onChange={(e) => setFormData(prev => ({ ...prev, comptes_bancaires: e.target.value }))} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="credits_en_cours">Crédits en cours</Label>
+                <Textarea id="credits_en_cours" placeholder="Ex: Crédit immobilier 200k€, crédit auto 15k€..."
+                  value={formData.credits_en_cours}
+                  onChange={(e) => setFormData(prev => ({ ...prev, credits_en_cours: e.target.value }))} />
+              </div>
+            </div>
+
+            {/* 5) ADRESSE DE FACTURATION */}
+            <div className="space-y-4 p-6 bg-white rounded-lg border">
+              <h3 className="text-xl font-bold text-orange-600 mb-4">5. Adresse de facturation</h3>
               
               <div className="flex items-center space-x-2">
                 <Checkbox id="facturation_identique" 
@@ -690,9 +940,9 @@ export default function PublicClientForm() {
               </div>
             </div>
 
-            {/* 5) MANDAT / REPRÉSENTATION */}
+            {/* 6) MANDAT / REPRÉSENTATION */}
             <div className="space-y-4 p-6 bg-white rounded-lg border">
-              <h3 className="text-xl font-bold text-orange-600 mb-4">5. Mandat / Représentation</h3>
+              <h3 className="text-xl font-bold text-orange-600 mb-4">6. Mandat / Représentation</h3>
               
               <div className="flex items-center space-x-2">
                 <Checkbox id="agit_nom_propre" 
@@ -751,11 +1001,183 @@ export default function PublicClientForm() {
               )}
             </div>
 
-
-
-            {/* 6) PRÉFÉRENCES DE COMMUNICATION */}
+            {/* 7) OBJET DU DOSSIER */}
             <div className="space-y-4 p-6 bg-white rounded-lg border">
-              <h3 className="text-xl font-bold text-orange-600 mb-4">6. Préférences de communication</h3>
+              <h3 className="text-xl font-bold text-orange-600 mb-4">7. Objet du dossier / Besoin</h3>
+              
+              <div className="space-y-2">
+                <Label htmlFor="type_dossier">Type de dossier *</Label>
+                <Select value={formData.type_dossier} required
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, type_dossier: value }))}>
+                  <SelectTrigger><SelectValue placeholder="Sélectionnez..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="divorce">Divorce</SelectItem>
+                    <SelectItem value="contrat">Contrat</SelectItem>
+                    <SelectItem value="vente_immobiliere">Vente immobilière</SelectItem>
+                    <SelectItem value="achat_immobilier">Achat immobilier</SelectItem>
+                    <SelectItem value="succession">Succession</SelectItem>
+                    <SelectItem value="donation">Donation</SelectItem>
+                    <SelectItem value="litige">Litige</SelectItem>
+                    <SelectItem value="creation_societe">Création de société</SelectItem>
+                    <SelectItem value="mariage">Mariage</SelectItem>
+                    <SelectItem value="pacs">PACS</SelectItem>
+                    <SelectItem value="autre">Autre</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="objet_dossier">Objet précis du dossier *</Label>
+                <Input id="objet_dossier" required placeholder="Ex: Divorce amiable, Vente appartement Paris 11e..."
+                  value={formData.objet_dossier}
+                  onChange={(e) => setFormData(prev => ({ ...prev, objet_dossier: e.target.value }))} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description_besoin">Description de votre besoin *</Label>
+                <Textarea id="description_besoin" required rows={5}
+                  placeholder="Décrivez en détail votre situation et vos besoins..."
+                  value={formData.description_besoin}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description_besoin: e.target.value }))} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="historique_litiges">Historique de litiges ou contentieux antérieurs</Label>
+                <Textarea id="historique_litiges" rows={4}
+                  placeholder="Indiquez si vous avez déjà été impliqué dans des litiges, contentieux ou procédures juridiques similaires..."
+                  value={formData.historique_litiges}
+                  onChange={(e) => setFormData(prev => ({ ...prev, historique_litiges: e.target.value }))} />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="urgence">Niveau d'urgence *</Label>
+                  <Select value={formData.urgence} required
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, urgence: value }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="faible">Faible</SelectItem>
+                      <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="urgent">Urgent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="date_limite">Date limite (si applicable)</Label>
+                  <Input id="date_limite" type="date" value={formData.date_limite}
+                    onChange={(e) => setFormData(prev => ({ ...prev, date_limite: e.target.value }))} />
+                </div>
+              </div>
+
+              {/* Pour les notaires */}
+              {(formData.type_dossier === 'vente_immobiliere' || formData.type_dossier === 'achat_immobilier' || 
+                formData.type_dossier === 'succession' || formData.type_dossier === 'donation' ||
+                formData.type_dossier === 'mariage' || formData.type_dossier === 'pacs') && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="type_acte_notaire">Type d'acte notarié</Label>
+                    <Select value={formData.type_acte_notaire}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, type_acte_notaire: value }))}>
+                      <SelectTrigger><SelectValue placeholder="Sélectionnez..." /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="vente">Vente</SelectItem>
+                        <SelectItem value="achat">Achat</SelectItem>
+                        <SelectItem value="succession">Succession</SelectItem>
+                        <SelectItem value="donation">Donation</SelectItem>
+                        <SelectItem value="mariage">Contrat de mariage</SelectItem>
+                        <SelectItem value="pacs">Convention de PACS</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="infos_complementaires_acte">Informations complémentaires sur l'acte</Label>
+                    <Textarea id="infos_complementaires_acte" rows={3}
+                      placeholder="Ex: Adresse du bien, noms des vendeurs, montant de la transaction..."
+                      value={formData.infos_complementaires_acte}
+                      onChange={(e) => setFormData(prev => ({ ...prev, infos_complementaires_acte: e.target.value }))} />
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* 8) DOCUMENTS À FOURNIR */}
+            <div className="space-y-4 p-6 bg-white rounded-lg border">
+              <h3 className="text-xl font-bold text-orange-600 mb-4">8. Documents à fournir</h3>
+              
+              <div className="space-y-2">
+                <Label htmlFor="justificatif_domicile">Justificatif de domicile (- 3 mois) *</Label>
+                <Input 
+                  id="justificatif_domicile" 
+                  type="file" 
+                  accept="image/*,.pdf"
+                  required
+                  onChange={(e) => setJustificatifDomicileFile(e.target.files?.[0] || null)}
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-muted-foreground">Facture électricité, eau, gaz, internet, avis d'imposition...</p>
+                {justificatifDomicileFile && (
+                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <span className="text-sm text-gray-700">{justificatifDomicileFile.name}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setJustificatifDomicileFile(null)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      ✕
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="autres_documents">Autres documents (RIB, livret de famille, etc.)</Label>
+                <Input 
+                  id="autres_documents" 
+                  type="file" 
+                  accept="image/*,.pdf"
+                  multiple
+                  onChange={(e) => setAutresDocuments(e.target.files)}
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-muted-foreground">Vous pouvez uploader plusieurs fichiers (RIB, livret de famille, contrats...)</p>
+                {autresDocuments && autresDocuments.length > 0 && (
+                  <div className="mt-2 space-y-2">
+                    {Array.from(autresDocuments).map((file, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span className="text-sm text-gray-700">{file.name}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const dt = new DataTransfer();
+                            Array.from(autresDocuments)
+                              .filter((_, i) => i !== index)
+                              .forEach(f => dt.items.add(f));
+                            setAutresDocuments(dt.files.length > 0 ? dt.files : null);
+                          }}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="p-4 bg-blue-50 rounded border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  💡 <strong>Conseil :</strong> Préparez tous vos documents au format numérique avant de commencer. Formats acceptés : JPG, PNG, PDF.
+                </p>
+              </div>
+            </div>
+
+            {/* 9) PRÉFÉRENCES DE COMMUNICATION */}
+            <div className="space-y-4 p-6 bg-white rounded-lg border">
+              <h3 className="text-xl font-bold text-orange-600 mb-4">9. Préférences de communication</h3>
               
               <div className="space-y-2">
                 <Label htmlFor="preference_communication">Comment souhaitez-vous être contacté ? *</Label>
@@ -771,9 +1193,9 @@ export default function PublicClientForm() {
               </div>
             </div>
 
-            {/* 7) NOTES COMPLÉMENTAIRES */}
+            {/* 10) NOTES COMPLÉMENTAIRES */}
             <div className="space-y-4 p-6 bg-white rounded-lg border">
-              <h3 className="text-xl font-bold text-orange-600 mb-4">7. Informations complémentaires</h3>
+              <h3 className="text-xl font-bold text-orange-600 mb-4">10. Informations complémentaires</h3>
               <div className="space-y-2">
                 <Label htmlFor="notes">Notes ou remarques</Label>
                 <Textarea id="notes" rows={4}
@@ -783,9 +1205,9 @@ export default function PublicClientForm() {
               </div>
             </div>
 
-            {/* 8) CONSENTEMENTS & RGPD */}
+            {/* 11) CONSENTEMENTS & RGPD */}
             <div className="space-y-4 p-6 bg-orange-50 rounded-lg border-2 border-orange-300">
-              <h3 className="text-xl font-bold text-orange-700 mb-4">8. Consentements obligatoires *</h3>
+              <h3 className="text-xl font-bold text-orange-700 mb-4">11. Consentements obligatoires *</h3>
               
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">

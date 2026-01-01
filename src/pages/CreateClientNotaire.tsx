@@ -11,7 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Upload, ArrowLeft } from "lucide-react";
+import { Upload, ArrowLeft, Plus, X } from "lucide-react";
 
 interface ChildEntry { nom: string; prenom: string; sexe: string; date_naissance: string; }
 
@@ -51,9 +51,6 @@ export default function CreateClientNotaire() {
 
   // 3. Situation familiale
   const [etatCivil, setEtatCivil] = useState("");
-  
-  // Gardé pour compatibilité base de données (non affiché dans le formulaire)
-  const [enfants] = useState<ChildEntry[]>([]);
 
   // 4. Situation professionnelle
   const [profession, setProfession] = useState("");
@@ -155,6 +152,7 @@ export default function CreateClientNotaire() {
         name: `${prenom} ${nom}`,
         nom,
         prenom,
+        nom_naissance: nomNaissance || null,
         date_naissance: dateNaissance || null,
         lieu_naissance: lieuNaissance || null,
         adresse: adresse || null,
@@ -166,6 +164,7 @@ export default function CreateClientNotaire() {
         nationalite: nationalite || null,
         sexe: sexe || null,
         etat_civil: etatCivil || null,
+        regime_matrimonial: regimeMatrimonial || null,
         type_identite: typeIdentite || null,
         numero_identite: numeroIdentite || null,
         date_expiration_identite: dateExpiration || null,
@@ -174,6 +173,7 @@ export default function CreateClientNotaire() {
         kyc_status: kycStatus || 'Incomplet',
         situation_familiale: situationFamilialeData,
         enfants: null,
+        personnes_a_charge: null,
         profession: profession || null,
         statut_professionnel: statutPro || null,
         employeur: employeur || null,
@@ -396,7 +396,7 @@ export default function CreateClientNotaire() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="etatCivil">Situation familiale</Label>
+                <Label htmlFor="etatCivil">Situation familiale (optionnel)</Label>
                 <Select value={etatCivil} onValueChange={setEtatCivil}>
                   <SelectTrigger id="etatCivil"><SelectValue placeholder="Non renseigné" /></SelectTrigger>
                   <SelectContent className="bg-orange-50 border-orange-200">
@@ -408,7 +408,10 @@ export default function CreateClientNotaire() {
                     <SelectItem className={itemHover} value="Concubinage">Concubinage</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">Cette information est facultative et ne sera utilisée que si nécessaire pour le dossier juridique</p>
+                <p className="text-xs text-muted-foreground">
+                  Cette information est facultative et ne sera utilisée que si nécessaire pour le dossier juridique.
+                  Les informations détaillées (enfants, régime matrimonial) seront collectées dans le dossier si besoin.
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -432,6 +435,8 @@ export default function CreateClientNotaire() {
                     <SelectContent className="bg-orange-50 border-orange-200">
                       <SelectItem className={itemHover} value="salarie">Salarié(e)</SelectItem>
                       <SelectItem className={itemHover} value="independant">Indépendant(e)</SelectItem>
+                      <SelectItem className={itemHover} value="fonctionnaire">Fonctionnaire</SelectItem>
+                      <SelectItem className={itemHover} value="dirigeant">Dirigeant</SelectItem>
                       <SelectItem className={itemHover} value="retraite">Retraité(e)</SelectItem>
                       <SelectItem className={itemHover} value="sans_emploi">Sans emploi</SelectItem>
                       <SelectItem className={itemHover} value="etudiant">Étudiant(e)</SelectItem>
@@ -439,18 +444,22 @@ export default function CreateClientNotaire() {
                   </Select>
                 </div>
               </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="employeur">Employeur (optionnel)</Label>
                 <Input id="employeur" value={employeur} onChange={e => setEmployeur(e.target.value)} placeholder="Nom de l'entreprise ou organisation" />
-                <p className="text-xs text-muted-foreground">Les informations financières détaillées seront demandées dans le dossier si nécessaire</p>
               </div>
+
+              <p className="text-xs text-muted-foreground bg-blue-50 border border-blue-200 rounded-lg p-3">
+                💡 Les informations professionnelles détaillées (adresse, coordonnées pro) et financières (revenus, patrimoine) seront collectées dans le dossier si nécessaire
+              </p>
             </CardContent>
           </Card>
 
-          {/* 4.5 Adresse de facturation */}
+          {/* 5. Adresse de facturation */}
           <Card>
             <CardHeader>
-              <CardTitle>4.5 Adresse de facturation</CardTitle>
+              <CardTitle>5. Adresse de facturation</CardTitle>
               <CardDescription>Informations de facturation</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -492,10 +501,10 @@ export default function CreateClientNotaire() {
             </CardContent>
           </Card>
 
-          {/* 4.6 Mandat et représentation */}
+          {/* 6. Mandat et représentation */}
           <Card>
             <CardHeader>
-              <CardTitle>4.6 Mandat et représentation</CardTitle>
+              <CardTitle>6. Mandat et représentation</CardTitle>
               <CardDescription>Le client agit-il pour son propre compte ?</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -548,10 +557,10 @@ export default function CreateClientNotaire() {
             </CardContent>
           </Card>
 
-          {/* 5. Préférences de communication */}
+          {/* 7. Préférences de communication */}
           <Card>
             <CardHeader>
-              <CardTitle>5. Préférences de communication</CardTitle>
+              <CardTitle>7. Préférences de communication</CardTitle>
               <CardDescription>Comment le client souhaite-t-il être contacté ?</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -596,10 +605,10 @@ export default function CreateClientNotaire() {
             </CardContent>
           </Card>
 
-          {/* 6. Notes et informations complémentaires */}
+          {/* 8. Notes et informations complémentaires */}
           <Card>
             <CardHeader>
-              <CardTitle>6. Notes et informations complémentaires</CardTitle>
+              <CardTitle>8. Notes et informations complémentaires</CardTitle>
               <CardDescription>Informations générales sur le client</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -617,10 +626,10 @@ export default function CreateClientNotaire() {
             </CardContent>
           </Card>
 
-          {/* 7. Consentements et mentions légales */}
+          {/* 9. Consentements et mentions légales */}
           <Card>
             <CardHeader>
-              <CardTitle>7. Consentements et mentions légales</CardTitle>
+              <CardTitle>9. Consentements et mentions légales</CardTitle>
               <CardDescription>Acceptations obligatoires</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
