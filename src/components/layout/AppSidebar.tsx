@@ -13,6 +13,7 @@ import {
   BarChart3,
   Lock,
   Settings,
+  Power,
 } from "lucide-react";
 import {
   Sidebar,
@@ -94,6 +95,17 @@ export function AppSidebar() {
       setOpenMobile(false);
     }
     // Sur desktop, l'état du sidebar est maintenant contrôlé et ne change que via le bouton toggle
+  };
+
+  // Fonction de déconnexion
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate('/login');
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
   };
 
   const { user, profile } = useAuth();
@@ -370,6 +382,17 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter className="border-t border-sidebar-border p-4">
+        <Button
+          onClick={handleLogout}
+          variant="ghost"
+          className={`w-full justify-start gap-3 ${role === 'notaire' ? 'hover:bg-orange-50 hover:text-orange-700' : 'hover:bg-blue-50 hover:text-blue-700'}`}
+        >
+          <Power className="h-4 w-4" />
+          {!isCollapsed && <span>Déconnexion</span>}
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

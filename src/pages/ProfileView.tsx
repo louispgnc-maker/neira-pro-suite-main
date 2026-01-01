@@ -449,39 +449,6 @@ export default function ProfileView() {
                     {sendingContact ? 'Envoi en cours...' : 'Envoyer le message'}
                   </Button>
                 </div>
-
-                <div className="pt-6 border-t space-y-4">
-                  <h3 className="font-semibold">Autres moyens de nous contacter</h3>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <Mail className={`w-5 h-5 mt-0.5 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} />
-                      <div>
-                        <div className="text-sm font-medium">Email</div>
-                        <div className="text-sm text-muted-foreground">support@neira.fr</div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <Phone className={`w-5 h-5 mt-0.5 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} />
-                      <div>
-                        <div className="text-sm font-medium">Téléphone</div>
-                        <div className="text-sm text-muted-foreground">01 23 45 67 89</div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <MapPin className={`w-5 h-5 mt-0.5 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} />
-                      <div>
-                        <div className="text-sm font-medium">Adresse</div>
-                        <div className="text-sm text-muted-foreground">
-                          123 Avenue des Champs-Élysées<br />
-                          75008 Paris, France
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </TabsContent>
