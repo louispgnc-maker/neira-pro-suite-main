@@ -437,24 +437,24 @@ export default function DossierDetail() {
       <Dialog open={clientModalOpen} onOpenChange={setClientModalOpen}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <span>Fiche client</span>
-              {selectedClient && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-2"
-                  onClick={() => {
-                    setClientModalOpen(false);
-                    navigate(role === 'notaire' ? `/notaires/clients/${selectedClient.id}` : `/avocats/clients/${selectedClient.id}`);
-                  }}
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Voir la fiche complète
-                </Button>
-              )}
-            </DialogTitle>
+            <DialogTitle>Fiche client</DialogTitle>
           </DialogHeader>
+          {selectedClient && (
+            <div className="mb-4 -mt-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className={`gap-2 ${role === 'notaire' ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-200' : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200'}`}
+                onClick={() => {
+                  setClientModalOpen(false);
+                  navigate(role === 'notaire' ? `/notaires/clients/${selectedClient.id}` : `/avocats/clients/${selectedClient.id}`);
+                }}
+              >
+                <ExternalLink className="h-4 w-4" />
+                Voir la fiche complète
+              </Button>
+            </div>
+          )}
           
           {loadingClient ? (
             <div className="flex items-center justify-center h-[200px]">
