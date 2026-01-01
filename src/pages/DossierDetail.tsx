@@ -3,12 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DocumentViewer } from "@/components/ui/document-viewer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink, Edit } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 interface Dossier {
   id: string;
@@ -80,7 +84,23 @@ export default function DossierDetail() {
   const [selectedClient, setSelectedClient] = useState<ClientDetails | null>(null);
   const [loadingClient, setLoadingClient] = useState(false);
 
+  // États pour le dialogue de modification
+  const [editMode, setEditMode] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editStatus, setEditStatus] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editSelectedClients, setEditSelectedClients] = useState<string[]>([]);
+  const [editSelectedContrats, setEditSelectedContrats] = useState<string[]>([]);
+  const [editSelectedDocuments, setEditSelectedDocuments] = useState<string[]>([]);
+  
+  // Listes complètes pour les sélecteurs
+  const [allClients, setAllClients] = useState<AssocClient[]>([]);
+  const [allContrats, setAllContrats] = useState<AssocContrat[]>([]);
+  const [allDocuments, setAllDocuments] = useState<AssocDocument[]>([]);
+
   const mainColor = role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
+  const selectContentClass = role === 'notaire' ? 'bg-card text-card-foreground border-orange-200' : 'bg-card text-card-foreground border-blue-200';
+  const selectItemClass = role === 'notaire' ? 'focus:bg-orange-600 focus:text-white cursor-pointer' : 'focus:bg-blue-600 focus:text-white cursor-pointer';
 
   useEffect(() => {
     let mounted = true;
@@ -183,6 +203,41 @@ export default function DossierDetail() {
           });
           setDocuments(docList);
         }
+
+        // Charger toutes les listes pour le dialogue de modification
+        const { data: allClientsData } = await supabase
+          .from('clients')
+          .select('id, nom, prenom')
+          .eq('owner_id', user.id)
+          .eq('role', role);
+        
+        if (allClientsData && mounted) {
+          const clientsList = allClientsData.map((c: any) => ({
+            id: c.id,
+            name: c.prenom ? `${c.prenom} ${c.nom}` : c.nom
+          }));
+          setAllClients(clientsList);
+        }
+
+        const { data: allContratsData } = await supabase
+          .from('contrats')
+          .select('id, name, category')
+          .eq('owner_id', user.id)
+          .eq('role', role);
+        
+        if (allContratsData && mounted) {
+          setAllContrats(allContratsData as AssocContrat[]);
+        }
+
+        const { data: allDocumentsData } = await supabase
+          .from('documents')
+          .select('id, name')
+          .eq('owner_id', user.id)
+          .eq('role', role);
+        
+        if (allDocumentsData && mounted) {
+          setAllDocuments(allDocumentsData as AssocDocument[]);
+        }
       } catch (e) {
         console.error('Error loading dossier:', e);
       } finally {
@@ -252,6 +307,78 @@ export default function DossierDetail() {
     }
   };
 
+  const openEditDialog = () => {
+    if (!dossier) return;
+    setEditTitle(dossier.title);
+    setEditStatus(dossier.status);
+    setEditDescription(dossier.description || "");
+    setEditSelectedClients(clients.map(c => c.id));
+    setEditSelectedContrats(contrats.map(c => c.id));
+    setEditSelectedDocuments(documents.map(d => d.id));
+    setEditMode(true);
+  };
+
+  const cancelEdit = () => {
+    setEditMode(false);
+    setEditTitle("");
+    setEditStatus("");
+    setEditDescription("");
+    setEditSelectedClients([]);
+    setEditSelectedContrats([]);
+    setEditSelectedDocuments([]);
+  };
+
+  const saveDossier = async () => {
+    if (!user || !dossier) return;
+    if (!editTitle.trim()) {
+      toast.error("Le titre est obligatoire");
+      return;
+    }
+
+    try {
+      // Mettre à jour les infos du dossier
+      const { error: updateError } = await supabase
+        .from('dossiers')
+        .update({
+          title: editTitle,
+          status: editStatus,
+          description: editDescription
+        })
+        .eq('id', dossier.id);
+
+      if (updateError) throw updateError;
+
+      // Mettre à jour les associations clients
+      await supabase.from('dossier_clients').delete().eq('dossier_id', dossier.id);
+      if (editSelectedClients.length > 0) {
+        const clientLinks = editSelectedClients.map(cid => ({ dossier_id: dossier.id, client_id: cid }));
+        await supabase.from('dossier_clients').insert(clientLinks);
+      }
+
+      // Mettre à jour les associations contrats
+      await supabase.from('dossier_contrats').delete().eq('dossier_id', dossier.id);
+      if (editSelectedContrats.length > 0) {
+        const contratLinks = editSelectedContrats.map(cid => ({ dossier_id: dossier.id, contrat_id: cid }));
+        await supabase.from('dossier_contrats').insert(contratLinks);
+      }
+
+      // Mettre à jour les associations documents
+      await supabase.from('dossier_documents').delete().eq('dossier_id', dossier.id);
+      if (editSelectedDocuments.length > 0) {
+        const docLinks = editSelectedDocuments.map(did => ({ dossier_id: dossier.id, document_id: did }));
+        await supabase.from('dossier_documents').insert(docLinks);
+      }
+
+      toast.success("Dossier modifié avec succès");
+      setEditMode(false);
+      
+      // Recharger les données
+      window.location.reload();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error("Erreur lors de la modification", { description: message });
+    }
+  };
 
   const goBack = () => {
     navigate(-1);
@@ -274,6 +401,12 @@ export default function DossierDetail() {
             <h1 className="text-3xl font-bold">Dossier</h1>
             {dossier?.title && <p className="text-muted-foreground mt-1">{dossier.title}</p>}
           </div>
+          {dossier && (
+            <Button onClick={openEditDialog} className={mainColor}>
+              <Edit className="h-4 w-4 mr-2" />
+              Modifier
+            </Button>
+          )}
         </div>
 
         {loading ? (
@@ -747,6 +880,98 @@ export default function DossierDetail() {
               )}
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={editMode} onOpenChange={(v) => { 
+        if (!v) cancelEdit(); 
+      }}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Modifier le dossier</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Titre</label>
+                <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Ex: Litige commercial - DUPONT" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Statut</label>
+                <Select value={editStatus} onValueChange={setEditStatus}>
+                  <SelectTrigger><SelectValue placeholder="Statut" /></SelectTrigger>
+                  <SelectContent className={selectContentClass}>
+                    <SelectItem className={selectItemClass} value="Nouveau">Nouveau</SelectItem>
+                    <SelectItem className={selectItemClass} value="En cours">En cours</SelectItem>
+                    <SelectItem className={selectItemClass} value="En attente de signature">En attente de signature</SelectItem>
+                    <SelectItem className={selectItemClass} value="Terminé">Terminé</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Description</label>
+              <Textarea rows={3} value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Clients</label>
+                <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                  {allClients.length === 0 ? (
+                    <div className="text-sm text-foreground px-1">Aucun client</div>
+                  ) : allClients.map((c) => {
+                    const checked = editSelectedClients.includes(c.id);
+                    return (
+                      <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" className="h-4 w-4" checked={checked} onChange={(e) => setEditSelectedClients((prev) => e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id))} />
+                        <span>{c.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Contrats</label>
+                <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                  {allContrats.length === 0 ? (
+                    <div className="text-sm text-foreground px-1">Aucun contrat</div>
+                  ) : allContrats.map((c) => {
+                    const checked = editSelectedContrats.includes(c.id);
+                    return (
+                      <label key={c.id} className="flex items-start gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" className="mt-1 h-4 w-4" checked={checked} onChange={(e) => setEditSelectedContrats((prev) => e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id))} />
+                        <span>
+                          <span className="font-medium">{c.name}</span>
+                          <span className="text-foreground"> — {c.category}</span>
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Documents</label>
+                <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
+                  {allDocuments.length === 0 ? (
+                    <div className="text-sm text-foreground px-1">Aucun document</div>
+                  ) : allDocuments.map((d) => {
+                    const checked = editSelectedDocuments.includes(d.id);
+                    return (
+                      <label key={d.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" className="h-4 w-4" checked={checked} onChange={(e) => setEditSelectedDocuments((prev) => e.target.checked ? [...prev, d.id] : prev.filter((id) => id !== d.id))} />
+                        <span>{d.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={cancelEdit}>Annuler</Button>
+              <Button className={mainColor} onClick={saveDossier}>Enregistrer</Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </AppLayout>
