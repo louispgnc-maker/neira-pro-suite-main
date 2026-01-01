@@ -320,7 +320,11 @@ export default function Statistiques() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="relative">
+              <div className="absolute inset-0 backdrop-blur-sm bg-white/30 z-10 rounded-lg flex flex-col items-center justify-center">
+                <Lock className="h-12 w-12 text-muted-foreground mb-2" />
+                <p className="text-sm text-muted-foreground font-medium">En cours de développement</p>
+              </div>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Chiffre d'affaires</CardTitle>
                 <Lock className="h-4 w-4 text-muted-foreground" />
@@ -397,35 +401,6 @@ export default function Statistiques() {
                     <p className="text-xs text-muted-foreground">Aucun contrat</p>
                   )}
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Temps moyen entre création et signature</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold mb-2">{contratStats.avgTimeToSignature} jours</div>
-                <p className="text-xs text-success flex items-center gap-1">
-                  {contratStats.avgTimeToSignature <= 3 ? 'Excellent délai' : contratStats.avgTimeToSignature <= 7 ? 'Bon délai' : 'À optimiser'}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="md:col-span-2 lg:col-span-3">
-              <CardHeader>
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  Temps moyen entre création et signature
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold mb-2">{contratStats.avgTimeToSignature} jours</div>
-                <Progress value={Math.min((contratStats.avgTimeToSignature / 30) * 100, 100)} className="h-2" />
-                <p className="text-xs text-muted-foreground mt-2">
-                  {contratStats.avgTimeToSignature < 7 ? 'Excellent délai' : contratStats.avgTimeToSignature < 15 ? 'Bon délai' : 'À optimiser'}
-                </p>
               </CardContent>
             </Card>
           </div>
