@@ -11,7 +11,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
-import { FileText, Search } from "lucide-react";
+import { FileText, Search, Upload } from "lucide-react";
 import { ContractCreationDialog } from "./ContractCreationDialog";
 import { useLocation } from "react-router-dom";
 
@@ -133,6 +133,11 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent className="min-w-[360px] max-h-[420px] overflow-y-auto" align="end">
+          <DropdownMenuItem className="focus:bg-blue-600 focus:text-white" onClick={() => window.location.href = '/avocats/documents?openImport=1'}>
+            <Upload className="mr-2 h-4 w-4" />
+            Importer depuis mon appareil
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <div className="px-2 py-2 border-b border-muted flex items-center gap-2 sticky top-0 bg-background z-10">
             <Search className="h-4 w-4 text-muted-foreground" />
             <input
