@@ -49,14 +49,11 @@ function getMenuItems(role: 'avocat' | 'notaire') {
   return [
     { title: "Tableau de bord", url: `${prefix}/dashboard`, icon: LayoutDashboard },
     { title: "Documents", url: `${prefix}/documents`, icon: FileText },
-    { title: "Messagerie", url: `${prefix}/messagerie`, icon: Mail },
     { title: "Dossiers", url: `${prefix}/dossiers`, icon: Folder },
     { title: role === 'notaire' ? "Actes" : "Contrats", url: `${prefix}/contrats`, icon: FolderPlus },
     { title: "Signatures", url: `${prefix}/signatures`, icon: PenTool },
     { title: "Clients", url: `${prefix}/clients`, icon: Users },
-    { title: "Tâches", url: `${prefix}/tasks`, icon: CheckSquare },
     { title: "Mon cabinet", url: `${prefix}/espace-collaboratif?tab=dashboard`, icon: Users },
-    { title: "Statistiques", url: `${prefix}/statistiques`, icon: BarChart3 },
   ];
 }
 
@@ -280,11 +277,6 @@ export function AppSidebar() {
                     <NavLink to={item.url} className="flex items-center gap-3">
                       <item.icon className="h-4 w-4" />
                       {!isCollapsed && <span>{item.title}</span>}
-                      {item.title === "Messagerie" && unreadEmailCount > 0 && (
-                        <Badge className="ml-auto bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                          {unreadEmailCount > 99 ? '99+' : unreadEmailCount}
-                        </Badge>
-                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -296,6 +288,25 @@ export function AppSidebar() {
 
       <SidebarFooter className={`border-t border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
         <div className={`flex ${isCollapsed ? 'flex-col items-center' : 'items-center justify-start'} gap-2`}> 
+          <button
+            className={`h-8 w-8 flex items-center justify-center rounded-md flex-shrink-0 transition-colors relative ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+            onClick={() => navigate(role === 'notaire' ? '/notaires/messagerie' : '/avocats/messagerie')}
+            title="Messagerie"
+          >
+            <Mail className="h-4 w-4 text-white" />
+            {unreadEmailCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-600 rounded-full flex items-center justify-center text-[10px] text-white">
+                {unreadEmailCount > 9 ? '9+' : unreadEmailCount}
+              </span>
+            )}
+          </button>
+          <button
+            className={`h-8 w-8 flex items-center justify-center rounded-md flex-shrink-0 transition-colors ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+            onClick={() => navigate(role === 'notaire' ? '/notaires/tasks' : '/avocats/tasks')}
+            title="Tâches"
+          >
+            <CheckSquare className="h-4 w-4 text-white" />
+          </button>
           <button
             className={`h-8 w-8 flex items-center justify-center rounded-md flex-shrink-0 transition-colors ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
             onClick={() => navigate(role === 'notaire' ? '/notaires/statistiques' : '/avocats/statistiques')}
