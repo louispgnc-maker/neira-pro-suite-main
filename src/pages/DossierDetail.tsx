@@ -17,7 +17,7 @@ interface Dossier {
 }
 
 interface AssocClient { id: string; name: string }
-interface AssocContrat { id: string; name: string; category: string }
+interface AssocContrat { id: string; name: string; category: string; content?: string | null; contenu_json?: any }
 interface AssocDocument { id: string; name: string; file_url?: string | null; file_name?: string | null }
 
 export default function DossierDetail() {
@@ -97,14 +97,16 @@ export default function DossierDetail() {
         // Charger les contrats liés
         const { data: contratLinks } = await supabase
           .from('dossier_contrats')
-          .select('contrat_id, contrats(id, name, category)')
+          .select('contrat_id, contrats(id, name, category, content, contenu_json)')
           .eq('dossier_id', id);
         
         if (contratLinks && mounted) {
           const contratList = contratLinks.map((link: any) => ({
             id: link.contrats.id,
             name: link.contrats.name,
-            category: link.contrats.category
+            category: link.contrats.category,
+            content: link.contrats.content,
+            contenu_json: link.contrats.contenu_json
           }));
           setContrats(contratList);
         }
@@ -274,17 +276,48 @@ export default function DossierDetail() {
                 {contrats.length === 0 ? (
                   <div className="text-sm text-muted-foreground">Aucun contrat</div>
                 ) : (
-                  <div className="space-y-2">
-                    {contrats.map(k => (
-                      <div 
-                        key={k.id} 
-                        className="text-sm p-3 rounded-lg border border-border hover:border-primary hover:bg-primary/5 cursor-pointer transition-colors"
-                        onClick={() => navigate(role === 'notaire' ? `/notaires/contrats/${k.id}` : `/avocats/contrats/${k.id}`)}
-                      >
-                        <div className="font-medium">{k.name}</div>
-                        <div className="text-muted-foreground text-xs mt-1">{k.category}</div>
-                      </div>
-                    ))}
+                  <div className="space-y-4">
+                    {contrats.map(k => {
+                      const hasContent = k.content || k.contenu_json;
+                      const preview = k.content ? k.content.substring(0, 300) : '';
+                      
+                      return (
+                        <div 
+                          key={k.id} 
+                          className="rounded-lg border border-border"
+                        >
+                          <div 
+                            className="p-3 hover:border-primary hover:bg-primary/5 cursor-pointer transition-colors border-b"
+                            onClick={() => navigate(role === 'notaire' ? `/notaires/contrats/${k.id}` : `/avocats/contrats/${k.id}`)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="font-medium">{k.name}</div>
+                                <div className="text-muted-foreground text-xs mt-1">{k.category}</div>
+                              </div>
+                              <Button 
+                                size="sm"
+                                className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}
+                              >
+                                Voir le contrat
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          {hasContent && (
+                            <div className="p-4 bg-muted/30">
+                              <div className="text-sm font-medium mb-2">Aperçu du contrat :</div>
+                              <div 
+                                className="text-sm text-muted-foreground prose prose-sm max-w-none"
+                                dangerouslySetInnerHTML={{ 
+                                  __html: preview ? preview + '...' : '<em>Contenu disponible dans la vue complète</em>' 
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
