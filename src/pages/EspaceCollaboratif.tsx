@@ -568,6 +568,31 @@ export default function EspaceCollaboratif() {
     }
   }, [cabinetRole, navigate, toast]);
 
+  const navigateToContrat = useCallback(async (contrat: SharedContrat) => {
+    try {
+      // Utiliser contrat_id pour naviguer vers le contrat original
+      const contratId = contrat.contrat_id || contrat.id;
+      if (contratId) {
+        navigate(`/${cabinetRole}s/contrats/${contratId}`, { state: { fromCollaboratif: true } });
+        return;
+      }
+
+      // Fallback si pas d'ID
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'ouvrir ce contrat',
+        variant: 'destructive',
+      });
+    } catch (error) {
+      console.error('Erreur navigation contrat:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'ouvrir ce contrat',
+        variant: 'destructive',
+      });
+    }
+  }, [cabinetRole, navigate, toast]);
+
   const loadCabinetData = useCallback(async () => {
     setLoading(true);
     try {
@@ -993,7 +1018,7 @@ export default function EspaceCollaboratif() {
           } else if (type === 'cabinet_contrat' || type === 'contrat') {
             const found = contrats.find(c => c.id === id || c.contrat_id === id);
             if (found) {
-              navigate(`/${cabinetRole}s/contrats/${found.id}`);
+              navigateToContrat(found as SharedContrat);
               return;
             }
             navigate(`/${cabinetRole}s/contrats`);
@@ -1016,7 +1041,7 @@ export default function EspaceCollaboratif() {
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [loading, location.state, documents, dossiers, contrats, collabTasks, handleViewDocument, handleTabChange, navigateToDossier, cabinetRole, navigate, location.pathname]);
+  }, [loading, location.state, documents, dossiers, contrats, collabTasks, handleViewDocument, handleTabChange, navigateToDossier, navigateToContrat, cabinetRole, navigate, location.pathname]);
 
   // Prepare filtered & sorted lists
   const _combinedActivity: CombinedActivity[] = [
@@ -1342,16 +1367,9 @@ export default function EspaceCollaboratif() {
                           if (item.type === 'Document' && 'file_url' in item) {
                             handleViewDocument(item as SharedDocument);
                           } else if (item.type === 'Dossier') {
-                            // switch to dossiers tab (controlled)
-                            handleTabChange('dossiers');
-                          } else if (item.type === 'Contrat') {
-                            // switch to documents tab (controlled)
-                            handleTabChange('documents');
-                          }
-                        }}
-                        onDoubleClick={() => {
-                          if (item.type === 'Dossier') {
                             navigateToDossier(item as SharedDossier);
+                          } else if (item.type === 'Contrat') {
+                            navigateToContrat(item as SharedContrat);
                           }
                         }}
                       >
@@ -1580,7 +1598,8 @@ export default function EspaceCollaboratif() {
                         return (
                           <div
                             key={contrat.id}
-                            className={`p-3 border rounded-lg transition-all bg-white hover:bg-gray-50`}
+                            className={`p-3 border rounded-lg transition-all cursor-pointer bg-white hover:bg-gray-50`}
+                            onClick={() => navigateToContrat(contrat)}
                           >
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
