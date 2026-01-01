@@ -296,21 +296,6 @@ export function AppSidebar() {
 
       <SidebarFooter className={`border-t border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
         <div className={`flex ${isCollapsed ? 'flex-col items-center' : 'items-center justify-start'} gap-2`}> 
-          <button
-            className={`h-8 w-8 flex items-center justify-center rounded-md flex-shrink-0 relative transition-colors ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
-            onClick={() => navigate(`${role === 'notaire' ? '/notaires' : '/avocats'}/espace-collaboratif?tab=discussion`)}
-            title="Messages"
-          >
-            <Mail className="h-4 w-4 text-white" />
-            {totalUnreadCount > 0 && (
-              <Badge 
-                className="absolute -top-1 -right-1 h-4 min-w-4 flex items-center justify-center p-0.5 bg-red-600 text-white text-[10px] font-bold"
-              >
-                {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
-              </Badge>
-            )}
-          </button>
-          <NotificationBell role={role} compact={true} cabinetId={currentCabinetId} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
