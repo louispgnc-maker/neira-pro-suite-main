@@ -182,7 +182,47 @@ export default function EmailInbox() {
     }
   }, [selectedAccount]);
 
-  // Auto-sync every 5 minutes
+  // Fast refresh: reload emails from database every 30 seconds (without API sync)
+  useEffect(() => {
+    if (!selectedAccount || currentFolder === 'drafts') return;
+
+    const fastRefresh = async () => {
+      try {
+        // Just reload from database, no API call
+        let query = supabase
+          .from('emails')
+          .select('*')
+          .eq('account_id', selectedAccount);
+
+        if (currentFolder === 'inbox') {
+          query = query.or('folder.is.null,folder.eq.inbox');
+        } else if (currentFolder === 'sent') {
+          query = query.or('labels.cs.{SENT},folder.eq.sent');
+        } else if (currentFolder === 'archive') {
+          query = query.eq('folder', 'archive');
+        } else if (currentFolder === 'trash') {
+          query = query.eq('folder', 'trash');
+        }
+
+        const { data, error } = await query
+          .order('received_at', { ascending: false })
+          .limit(100);
+
+        if (!error && data) {
+          setEmails(data as Email[]);
+        }
+      } catch (error) {
+        console.log('[Fast refresh] Error:', error);
+      }
+    };
+
+    // Fast refresh every 30 seconds
+    const interval = setInterval(fastRefresh, 30 * 1000);
+
+    return () => clearInterval(interval);
+  }, [selectedAccount, currentFolder]);
+
+  // Auto-sync every 2 minutes (optimized for faster updates)
   useEffect(() => {
     if (!selectedAccount) return;
 
@@ -272,11 +312,11 @@ export default function EmailInbox() {
       }
     };
 
-    // Initial sync after 5 seconds
-    const initialTimeout = setTimeout(autoSync, 5000);
+    // Initial sync after 2 seconds (faster initial load)
+    const initialTimeout = setTimeout(autoSync, 2000);
 
-    // Then sync every 5 minutes
-    const interval = setInterval(autoSync, 5 * 60 * 1000);
+    // Then sync every 2 minutes (more frequent updates)
+    const interval = setInterval(autoSync, 2 * 60 * 1000);
 
     return () => {
       clearTimeout(initialTimeout);
