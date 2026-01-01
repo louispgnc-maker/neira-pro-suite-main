@@ -32,8 +32,25 @@ interface ClientDetails {
   date_naissance: string | null;
   lieu_naissance: string | null;
   nationalite: string | null;
+  sexe: string | null;
+  etat_civil: string | null;
+  situation_familiale: string[] | null;
+  situation_matrimoniale: string | null;
+  type_identite: string | null;
+  numero_identite: string | null;
+  date_expiration_identite: string | null;
   profession: string | null;
+  employeur: string | null;
+  adresse_professionnelle: string | null;
+  siret: string | null;
+  situation_fiscale: string | null;
+  revenus: string | null;
   type_dossier: string | null;
+  contrat_souhaite: string | null;
+  historique_litiges: string | null;
+  enfants: { nom: string; prenom?: string; sexe?: string; date_naissance: string | null }[] | null;
+  source: string | null;
+  kyc_status: string | null;
 }
 
 export default function DossierDetail() {
@@ -215,7 +232,7 @@ export default function DossierDetail() {
     try {
       const { data, error } = await supabase
         .from('clients')
-        .select('id, nom, prenom, email, telephone, adresse, date_naissance, lieu_naissance, nationalite, profession, type_dossier')
+        .select('*')
         .eq('id', clientId)
         .single();
       
@@ -446,7 +463,8 @@ export default function DossierDetail() {
           ) : !selectedClient ? (
             <div className="text-muted-foreground">Client introuvable</div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4">
+              {/* Informations personnelles */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">Informations personnelles</CardTitle>
@@ -485,17 +503,140 @@ export default function DossierDetail() {
                     <div className="font-medium">{selectedClient.nationalite || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Profession</div>
-                    <div className="font-medium">{selectedClient.profession || '—'}</div>
+                    <div className="text-sm text-muted-foreground">Sexe</div>
+                    <div className="font-medium">{selectedClient.sexe || '—'}</div>
                   </div>
-                  {selectedClient.type_dossier && (
+                  <div>
+                    <div className="text-sm text-muted-foreground">État civil</div>
+                    <div className="font-medium">{selectedClient.etat_civil || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Situation matrimoniale</div>
+                    <div className="font-medium">{selectedClient.situation_matrimoniale || '—'}</div>
+                  </div>
+                  {selectedClient.situation_familiale && selectedClient.situation_familiale.length > 0 && (
                     <div className="md:col-span-2">
-                      <div className="text-sm text-muted-foreground">Type de dossier</div>
-                      <div className="font-medium">{selectedClient.type_dossier}</div>
+                      <div className="text-sm text-muted-foreground">Situation familiale</div>
+                      <div className="font-medium">{selectedClient.situation_familiale.join(', ')}</div>
                     </div>
                   )}
                 </CardContent>
               </Card>
+
+              {/* Identification */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Identification</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-sm text-muted-foreground">Type de pièce d'identité</div>
+                    <div className="font-medium">{selectedClient.type_identite || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Numéro</div>
+                    <div className="font-medium">{selectedClient.numero_identite || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Date d'expiration</div>
+                    <div className="font-medium">{selectedClient.date_expiration_identite ? new Date(selectedClient.date_expiration_identite).toLocaleDateString() : '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Statut KYC</div>
+                    <div className="font-medium">
+                      <Badge variant={selectedClient.kyc_status === 'complete' ? 'default' : 'secondary'}>
+                        {selectedClient.kyc_status || 'Non défini'}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Informations professionnelles */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Informations professionnelles</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-sm text-muted-foreground">Profession</div>
+                    <div className="font-medium">{selectedClient.profession || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Employeur</div>
+                    <div className="font-medium">{selectedClient.employeur || '—'}</div>
+                  </div>
+                  <div className="md:col-span-2">
+                    <div className="text-sm text-muted-foreground">Adresse professionnelle</div>
+                    <div className="font-medium">{selectedClient.adresse_professionnelle || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">SIRET</div>
+                    <div className="font-medium">{selectedClient.siret || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Situation fiscale</div>
+                    <div className="font-medium">{selectedClient.situation_fiscale || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Revenus</div>
+                    <div className="font-medium">{selectedClient.revenus || '—'}</div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Informations juridiques */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Informations juridiques</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-sm text-muted-foreground">Type de dossier</div>
+                    <div className="font-medium">{selectedClient.type_dossier || '—'}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Contrat souhaité</div>
+                    <div className="font-medium">{selectedClient.contrat_souhaite || '—'}</div>
+                  </div>
+                  {selectedClient.historique_litiges && (
+                    <div className="md:col-span-2">
+                      <div className="text-sm text-muted-foreground">Historique des litiges</div>
+                      <div className="font-medium whitespace-pre-wrap">{selectedClient.historique_litiges}</div>
+                    </div>
+                  )}
+                  {selectedClient.source && (
+                    <div>
+                      <div className="text-sm text-muted-foreground">Source</div>
+                      <div className="font-medium">{selectedClient.source}</div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Enfants */}
+              {selectedClient.enfants && selectedClient.enfants.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Enfants</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {selectedClient.enfants.map((enfant, idx) => (
+                        <div key={idx} className="p-3 bg-muted rounded-lg">
+                          <div className="font-medium">
+                            {enfant.prenom ? `${enfant.prenom} ${enfant.nom}` : enfant.nom}
+                          </div>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            {enfant.sexe && <span>{enfant.sexe} • </span>}
+                            {enfant.date_naissance && <span>Né(e) le {new Date(enfant.date_naissance).toLocaleDateString()}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           )}
         </DialogContent>
