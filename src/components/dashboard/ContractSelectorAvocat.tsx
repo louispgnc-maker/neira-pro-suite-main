@@ -118,75 +118,9 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
       return;
     }
 
-    // Liste des contrats avocats avec formulaires spécifiques - rediriger vers page Contrats
-    const contratsAvecFormulaires = [
-      "Contrat de prestation de services",
-      "Contrat de vente B2B / distribution",
-      "Conditions Générales de Vente (CGV)",
-      "Conditions Générales d'Utilisation (CGU) — SaaS / site web",
-      "Contrat d'agence commerciale",
-      "Contrat de franchise",
-      "Contrat de partenariat / coopération",
-      "Contrat de sous-traitance",
-      "NDA (Accord de confidentialité)",
-      "Cession de marque / cession de droits de propriété intellectuelle",
-      "Contrat de travail (CDD/CDI)",
-      "Convention de stage",
-      "Rupture conventionnelle",
-      "Avenants au contrat de travail",
-      "Accords de confidentialité employé",
-      "Politique RGPD interne (annexes)",
-      "Bail d'habitation vide",
-      "Bail d'habitation meublé",
-      "Bail commercial",
-      "État des lieux (annexe)",
-      "Mise en demeure de payer le loyer / autres obligations",
-      "Pacte de concubinage",
-      "Convention parentale",
-      "Reconnaissance de dettes",
-      "Mandat de protection future sous seing privé",
-      "Testament olographe + accompagnement au dépôt",
-      "Contrat de cession de droits d'auteur",
-      "Licence logicielle",
-      "Contrat de développement web / application",
-      "Politique de confidentialité / mentions légales / RGPD"
-    ];
-
-    console.log('🔍 ContractSelector - contractType:', JSON.stringify(contractType));
-    console.log('🔍 ContractSelector - dans liste?:', contratsAvecFormulaires.includes(contractType));
-    console.log('🔍 ContractSelector - includes CGU?:', contractType.includes("CGU"));
-
-    // Si c'est un contrat avec formulaire, rediriger vers la page Contrats
-    if (contratsAvecFormulaires.includes(contractType) || (contractType.includes("CGU") && contractType.toLowerCase().includes("saas"))) {
-      const basePath = role === 'notaire' ? '/notaires' : '/avocats';
-      // Pour "Bail commercial", utiliser le type normalisé "Bail commercial / professionnel"
-      const typeToUse = contractType === "Bail commercial" ? "Bail commercial / professionnel" : contractType;
-      navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(typeToUse)}&category=${encodeURIComponent(categoryKey)}`);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('contrats')
-        .insert({
-          owner_id: user.id,
-          name: contractType,
-          type: contractType,
-          category: categoryKey,
-          role: role,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      toast.success('Contrat créé', { description: contractType });
-      if (onContractCreated) onContractCreated();
-    } catch (err: unknown) {
-      console.error('Erreur création contrat:', err);
-      const message = err instanceof Error ? err.message : String(err);
-      toast.error('Erreur lors de la création', { description: message });
-    }
+    // Toujours rediriger vers la page Contrats avec le système de préformulaires et IA
+    const basePath = role === 'notaire' ? '/notaires' : '/avocats';
+    navigate(`${basePath}/contrats?create=true&type=${encodeURIComponent(contractType)}&category=${encodeURIComponent(categoryKey)}`);
   };
 
   return (
