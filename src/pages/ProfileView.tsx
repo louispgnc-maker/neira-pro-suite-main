@@ -116,15 +116,37 @@ export default function ProfileView() {
 
     setSendingContact(true);
     try {
-      // Ici vous pouvez implémenter l'envoi via une fonction Edge ou un service email
-      // Pour l'instant, on simule juste l'envoi
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch(
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-contact-email',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName: profile?.first_name || '',
+            lastName: profile?.last_name || '',
+            email: user?.email || '',
+            company: cabinetName || '',
+            subject: contactForm.subject,
+            message: contactForm.message,
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'envoi du message');
+      }
       
-      toast.success('Votre message a été envoyé avec succès');
+      toast.success('Votre message a été envoyé avec succès', {
+        description: 'Nous vous répondrons dans les plus brefs délais.'
+      });
       setContactForm({ subject: '', message: '' });
     } catch (error) {
       console.error('Erreur envoi contact:', error);
-      toast.error('Erreur lors de l\'envoi du message');
+      toast.error('Erreur lors de l\'envoi du message', {
+        description: 'Veuillez réessayer plus tard ou nous contacter directement à support@neira.fr'
+      });
     } finally {
       setSendingContact(false);
     }
