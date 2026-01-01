@@ -11,10 +11,11 @@ import { Progress } from "@/components/ui/progress";
 
 type DossierStats = {
   total: number;
+  nouveau: number;
   enCours: number;
-  urgents: number;
-  enRetard: number;
-  byType: Record<string, number>;
+  enAttenteSignature: number;
+  termine: number;
+  byStatus: Record<string, number>;
 };
 
 type ContratStats = {
@@ -55,10 +56,11 @@ export default function Statistiques() {
   // Stats states
   const [dossierStats, setDossierStats] = useState<DossierStats>({
     total: 0,
+    nouveau: 0,
     enCours: 0,
-    urgents: 0,
-    enRetard: 0,
-    byType: {},
+    enAttenteSignature: 0,
+    termine: 0,
+    byStatus: {},
   });
   const [contratStats, setContratStats] = useState<ContratStats>({
     total: 0,
@@ -103,39 +105,25 @@ export default function Statistiques() {
           .eq('role', role);
 
         if (dossiers) {
-          const enCours = dossiers.filter(d => d.status === 'Ouvert' || d.status === 'En cours').length;
-          const urgents = dossiers.filter(d => d.status === 'Urgent').length;
-          const enRetard = dossiers.filter(d => d.status === 'En retard').length;
+          const nouveau = dossiers.filter(d => d.status === 'Nouveau').length;
+          const enCours = dossiers.filter(d => d.status === 'En cours').length;
+          const enAttenteSignature = dossiers.filter(d => d.status === 'En attente de signature').length;
+          const termine = dossiers.filter(d => d.status === 'Terminé').length;
           
-          // Détection simple du type depuis le titre
-          const byType: Record<string, number> = {};
+          // Comptage par statut pour affichage
+          const byStatus: Record<string, number> = {};
           dossiers.forEach(d => {
-            const title = (d.title || '').toLowerCase();
-            let type = 'Autre';
-            
-            if (role === 'notaire') {
-              if (title.includes('immobilier') || title.includes('vente') || title.includes('achat')) type = 'Immobilier';
-              else if (title.includes('succession') || title.includes('héritage')) type = 'Succession';
-              else if (title.includes('entreprise') || title.includes('société') || title.includes('commercial')) type = 'Entreprise';
-              else if (title.includes('famille') || title.includes('mariage') || title.includes('divorce')) type = 'Famille';
-              else if (title.includes('testament') || title.includes('donation')) type = 'Testament/Donation';
-            } else {
-              if (title.includes('pénal') || title.includes('criminel')) type = 'Pénal';
-              else if (title.includes('civil') || title.includes('litige')) type = 'Civil';
-              else if (title.includes('famille') || title.includes('divorce')) type = 'Famille';
-              else if (title.includes('commercial') || title.includes('entreprise')) type = 'Commercial';
-              else if (title.includes('travail') || title.includes('emploi')) type = 'Droit du travail';
-            }
-            
-            byType[type] = (byType[type] || 0) + 1;
+            const status = d.status || 'Non défini';
+            byStatus[status] = (byStatus[status] || 0) + 1;
           });
 
           setDossierStats({
             total: dossiers.length,
+            nouveau,
             enCours,
-            urgents,
-            enRetard,
-            byType,
+            enAttenteSignature,
+            termine,
+            byStatus,
           });
         }
 
@@ -354,21 +342,27 @@ export default function Statistiques() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm flex items-center gap-1">
-                      <Minus className="h-3 w-3 text-blue-500" /> En cours
+                      <Minus className="h-3 w-3 text-blue-500" /> Nouveau
+                    </span>
+                    <span className="text-sm font-medium">{dossierStats.nouveau}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3 text-orange-500" /> En cours
                     </span>
                     <span className="text-sm font-medium">{dossierStats.enCours}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3 text-orange-500" /> Urgents
+                      <Clock className="h-3 w-3 text-purple-500" /> En attente de signature
                     </span>
-                    <span className="text-sm font-medium">{dossierStats.urgents}</span>
+                    <span className="text-sm font-medium">{dossierStats.enAttenteSignature}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm flex items-center gap-1">
-                      <XCircle className="h-3 w-3 text-destructive" /> En retard
+                      <CheckCircle className="h-3 w-3 text-green-500" /> Terminé
                     </span>
-                    <span className="text-sm font-medium">{dossierStats.enRetard}</span>
+                    <span className="text-sm font-medium">{dossierStats.termine}</span>
                   </div>
                 </div>
               </CardContent>
@@ -376,18 +370,18 @@ export default function Statistiques() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Dossiers par type</CardTitle>
+                <CardTitle className="text-sm font-medium">Dossiers par statut</CardTitle>
                 <FolderOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {Object.entries(dossierStats.byType).slice(0, 4).map(([type, count]) => (
-                    <div key={type} className="flex items-center justify-between">
-                      <span className="text-sm">{type}</span>
+                  {Object.entries(dossierStats.byStatus).map(([status, count]) => (
+                    <div key={status} className="flex items-center justify-between">
+                      <span className="text-sm">{status}</span>
                       <span className="text-sm font-medium">{count}</span>
                     </div>
                   ))}
-                  {Object.keys(dossierStats.byType).length === 0 && (
+                  {Object.keys(dossierStats.byStatus).length === 0 && (
                     <p className="text-xs text-muted-foreground">Aucun dossier</p>
                   )}
                 </div>
