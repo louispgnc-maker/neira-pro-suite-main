@@ -323,13 +323,12 @@ export default function Statistiques() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Chiffre d'affaires</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <Lock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{ca.toLocaleString('fr-FR')} €</div>
-                <p className="text-xs text-success flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3" />
-                  +{caEvolution}% vs mois précédent
+                <div className="text-2xl font-bold text-muted-foreground">— €</div>
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  En cours de développement
                 </p>
               </CardContent>
             </Card>
@@ -403,25 +402,14 @@ export default function Statistiques() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{role === 'notaire' ? 'Actes' : 'Contrats'}</CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">Temps moyen entre création et signature</CardTitle>
+                <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold mb-2">{contratStats.total}</div>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="flex items-center gap-1">
-                      <CheckCircle className="h-3 w-3 text-success" /> Signés
-                    </span>
-                    <span className="font-medium">{contratStats.signes}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3 text-orange-500" /> En attente
-                    </span>
-                    <span className="font-medium">{contratStats.enAttente}</span>
-                  </div>
-                </div>
+                <div className="text-2xl font-bold mb-2">{contratStats.avgTimeToSignature} jours</div>
+                <p className="text-xs text-success flex items-center gap-1">
+                  {contratStats.avgTimeToSignature <= 3 ? 'Excellent délai' : contratStats.avgTimeToSignature <= 7 ? 'Bon délai' : 'À optimiser'}
+                </p>
               </CardContent>
             </Card>
 
