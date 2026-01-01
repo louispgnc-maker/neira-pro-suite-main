@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
@@ -10,6 +10,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -20,8 +21,17 @@ export function AppLayout({ children }: AppLayoutProps) {
     ? 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Fond%20orange.png)'
     : 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Fond%20bleu%20avocat.png)';
   
+  // Gestionnaire pour le toggle du sidebar - seulement via le bouton
+  const handleSidebarChange = useCallback((open: boolean) => {
+    setSidebarOpen(open);
+  }, []);
+  
   return (
-    <SidebarProvider>
+    <SidebarProvider 
+      open={sidebarOpen} 
+      onOpenChange={handleSidebarChange}
+      defaultOpen={false}
+    >
       <div 
         className="min-h-screen flex w-full bg-background" 
         style={{ 
