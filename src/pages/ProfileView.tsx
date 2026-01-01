@@ -40,7 +40,7 @@ export default function ProfileView() {
     try {
       const { data, error } = await supabase
         .from('cabinet_members')
-        .select('cabinets(nom, role, id, created_by), role_cabinet')
+        .select('cabinets(nom, role, id, owner_id), role_cabinet')
         .eq('user_id', user.id)
         .eq('status', 'accepted')
         .limit(1)
@@ -62,10 +62,10 @@ export default function ProfileView() {
         if (cabinetRole === role) {
           setCabinetName(cabinetData?.nom || null);
           setCabinetFonction(data.role_cabinet || null);
-          setIsFounder(cabinetData?.created_by === user.id);
+          setIsFounder(cabinetData?.owner_id === user.id);
           
           // Charger les infos d'abonnement si fondateur
-          if (cabinetData?.created_by === user.id && cabinetData?.id) {
+          if (cabinetData?.owner_id === user.id && cabinetData?.id) {
             loadSubscriptionInfo(cabinetData.id);
           }
         } else {
