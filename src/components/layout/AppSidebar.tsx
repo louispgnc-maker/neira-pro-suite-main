@@ -74,7 +74,7 @@ function getMenuItems(role: 'avocat' | 'notaire') {
 }
 
 export function AppSidebar() {
-  const { state, isMobile, setOpenMobile } = useSidebar();
+  const { state, isMobile, setOpenMobile, setOpen } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
   const isCollapsed = state === "collapsed";
@@ -88,12 +88,23 @@ export function AppSidebar() {
   const isActive = (path: string) => location.pathname === path;
 
   // Fonction pour gérer le clic sur un lien du menu
-  const handleMenuItemClick = () => {
+  const handleMenuItemClick = (e: React.MouseEvent) => {
     // Sur mobile, fermer le sidebar après le clic
     if (isMobile) {
       setOpenMobile(false);
+    } else {
+      // Sur desktop, si le sidebar est replié, le garder replié
+      if (isCollapsed) {
+        e.preventDefault();
+        const target = e.currentTarget as HTMLAnchorElement;
+        const url = target.getAttribute('href');
+        if (url) {
+          navigate(url);
+        }
+        // Force le sidebar à rester fermé
+        setTimeout(() => setOpen(false), 0);
+      }
     }
-    // Sur desktop, ne rien faire - le sidebar reste dans son état actuel
   };
 
   const { user, profile } = useAuth();
