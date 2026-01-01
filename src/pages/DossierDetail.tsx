@@ -252,7 +252,14 @@ export default function DossierDetail() {
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {clients.map(c => (
-                      <Badge key={c.id} variant="secondary">{c.name}</Badge>
+                      <Badge 
+                        key={c.id} 
+                        variant="secondary"
+                        className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                        onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${c.id}` : `/avocats/clients/${c.id}`)}
+                      >
+                        {c.name}
+                      </Badge>
                     ))}
                   </div>
                 )}
@@ -267,11 +274,15 @@ export default function DossierDetail() {
                 {contrats.length === 0 ? (
                   <div className="text-sm text-muted-foreground">Aucun contrat</div>
                 ) : (
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     {contrats.map(k => (
-                      <div key={k.id} className="text-sm">
-                        <span className="font-medium">{k.name}</span>
-                        <span className="text-muted-foreground"> — {k.category}</span>
+                      <div 
+                        key={k.id} 
+                        className="text-sm p-3 rounded-lg border border-border hover:border-primary hover:bg-primary/5 cursor-pointer transition-colors"
+                        onClick={() => navigate(role === 'notaire' ? `/notaires/contrats/${k.id}` : `/avocats/contrats/${k.id}`)}
+                      >
+                        <div className="font-medium">{k.name}</div>
+                        <div className="text-muted-foreground text-xs mt-1">{k.category}</div>
                       </div>
                     ))}
                   </div>
@@ -287,12 +298,22 @@ export default function DossierDetail() {
                 {documents.length === 0 ? (
                   <div className="text-sm text-muted-foreground">Aucun document</div>
                 ) : (
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     {documents.map(d => (
-                      <div key={d.id} className="text-sm flex items-center justify-between">
-                        <div>{d.name}</div>
+                      <div 
+                        key={d.id} 
+                        className="text-sm p-3 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors flex items-center justify-between"
+                      >
+                        <div className="font-medium">{d.name}</div>
                         {d.file_url ? (
-                          <button className="text-sm text-blue-600 hover:underline" onClick={() => openSharedDocument(d.file_url, d.file_name || d.name)}>Ouvrir</button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            className={role === 'notaire' ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50' : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'}
+                            onClick={() => openSharedDocument(d.file_url, d.file_name || d.name)}
+                          >
+                            Ouvrir
+                          </Button>
                         ) : null}
                       </div>
                     ))}
