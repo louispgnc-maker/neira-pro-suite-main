@@ -119,6 +119,18 @@ export default function ProfileView() {
       // Récupérer la clé anon depuis le client Supabase
       const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA';
       
+      // Préparer les données avec valeurs par défaut si vide
+      const requestData = {
+        firstName: profile?.first_name || profile?.nom || 'Utilisateur',
+        lastName: profile?.last_name || profile?.prenom || 'Neira',
+        email: user?.email || 'noreply@neira.fr',
+        company: cabinetName || '',
+        subject: contactForm.subject,
+        message: contactForm.message,
+      };
+
+      console.log('Sending contact form with data:', requestData);
+      
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-contact-email',
         {
@@ -128,14 +140,7 @@ export default function ProfileView() {
             'apikey': anonKey,
             'Authorization': `Bearer ${anonKey}`,
           },
-          body: JSON.stringify({
-            firstName: profile?.first_name || '',
-            lastName: profile?.last_name || '',
-            email: user?.email || '',
-            company: cabinetName || '',
-            subject: contactForm.subject,
-            message: contactForm.message,
-          })
+          body: JSON.stringify(requestData)
         }
       );
 
