@@ -533,11 +533,9 @@ export default function Dossiers() {
                     <Select value={status} onValueChange={setStatus}>
                       <SelectTrigger><SelectValue placeholder="Statut" /></SelectTrigger>
                       <SelectContent className={selectContentClass}>
-                        <SelectItem className={selectItemClass} value="Prospect">Prospect</SelectItem>
                         <SelectItem className={selectItemClass} value="Nouveau">Nouveau</SelectItem>
                         <SelectItem className={selectItemClass} value="En cours">En cours</SelectItem>
                         <SelectItem className={selectItemClass} value="En attente de signature">En attente de signature</SelectItem>
-                        <SelectItem className={selectItemClass} value="À traiter">À traiter</SelectItem>
                         <SelectItem className={selectItemClass} value="Terminé">Terminé</SelectItem>
                       </SelectContent>
                     </Select>
@@ -627,11 +625,9 @@ export default function Dossiers() {
                     <Select value={editStatus} onValueChange={setEditStatus}>
                       <SelectTrigger><SelectValue placeholder="Statut" /></SelectTrigger>
                       <SelectContent className={selectContentClass}>
-                        <SelectItem className={selectItemClass} value="Prospect">Prospect</SelectItem>
                         <SelectItem className={selectItemClass} value="Nouveau">Nouveau</SelectItem>
                         <SelectItem className={selectItemClass} value="En cours">En cours</SelectItem>
                         <SelectItem className={selectItemClass} value="En attente de signature">En attente de signature</SelectItem>
-                        <SelectItem className={selectItemClass} value="À traiter">À traiter</SelectItem>
                         <SelectItem className={selectItemClass} value="Terminé">Terminé</SelectItem>
                       </SelectContent>
                     </Select>
@@ -778,22 +774,18 @@ export default function Dossiers() {
                               onValueChange={(newStatus) => handleStatusChange(d.id, newStatus)}
                             >
                               <SelectTrigger className={`h-7 text-xs w-[160px] ${
-                                d.status === 'Prospect' ? 'bg-gray-100 text-gray-700 border-gray-300' :
                                 d.status === 'Nouveau' ? 'bg-blue-100 text-blue-700 border-blue-300' :
                                 d.status === 'En cours' ? 'bg-orange-100 text-orange-700 border-orange-300' :
                                 d.status === 'En attente de signature' ? 'bg-purple-100 text-purple-700 border-purple-300' :
-                                d.status === 'À traiter' ? 'bg-yellow-100 text-yellow-700 border-yellow-300' :
                                 d.status === 'Terminé' ? 'bg-green-100 text-green-700 border-green-300' :
                                 'bg-gray-100 text-gray-700 border-gray-300'
                               }`}>
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="Prospect">Prospect</SelectItem>
                                 <SelectItem value="Nouveau">Nouveau</SelectItem>
                                 <SelectItem value="En cours">En cours</SelectItem>
                                 <SelectItem value="En attente de signature">En attente de signature</SelectItem>
-                                <SelectItem value="À traiter">À traiter</SelectItem>
                                 <SelectItem value="Terminé">Terminé</SelectItem>
                               </SelectContent>
                             </Select>
