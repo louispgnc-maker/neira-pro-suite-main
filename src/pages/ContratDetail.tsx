@@ -36,6 +36,8 @@ export default function ContratDetail() {
 
   const [contrat, setContrat] = useState<Contrat | null>(null);
   const [sharedBy, setSharedBy] = useState<string | null>(null);
+  const [sharedById, setSharedById] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(true); // Par défaut, on suppose que c'est le propriétaire
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
   const [clients, setClients] = useState<any[]>([]);
@@ -254,6 +256,7 @@ export default function ContratDetail() {
 
       if (!error && cData && mounted) {
         setContrat(cData as Contrat);
+        setIsOwner(true); // C'est bien le propriétaire
       } else {
         // Fallback: maybe this contract was shared to the cabinet. Try cabinet_contrats (visible to active members)
         try {
@@ -264,18 +267,44 @@ export default function ContratDetail() {
             .maybeSingle();
 
           if (!sErr && shared && mounted) {
-            setContrat({
-              id: shared.id,
-              name: shared.title,
-              category: shared.category || null,
-              type: shared.contrat_type || null,
-              description: shared.description || null,
-              created_at: shared.shared_at || null,
-            });
+            // Si on a un contrat_id, charger le contrat original pour obtenir le contenu
+            if (shared.contrat_id) {
+              const { data: originalContrat, error: origErr } = await supabase
+                .from('contrats')
+                .select('id, name, category, type, description, content, created_at, contenu_json, client_id')
+                .eq('id', shared.contrat_id)
+                .maybeSingle();
+
+              if (!origErr && originalContrat && mounted) {
+                setContrat(originalContrat as Contrat);
+              } else {
+                // Fallback si le contrat original n'existe plus
+                setContrat({
+                  id: shared.id,
+                  name: shared.title,
+                  category: shared.category || null,
+                  type: shared.contrat_type || null,
+                  description: shared.description || null,
+                  created_at: shared.shared_at || null,
+                });
+              }
+            } else {
+              // Pas de contrat_id, utiliser les données de cabinet_contrats
+              setContrat({
+                id: shared.id,
+                name: shared.title,
+                category: shared.category || null,
+                type: shared.contrat_type || null,
+                description: shared.description || null,
+                created_at: shared.shared_at || null,
+              });
+            }
 
             // Fetch sharer name if possible
             try {
               if (shared.shared_by) {
+                setSharedById(shared.shared_by);
+                setIsOwner(shared.shared_by === user.id); // Vérifier si l'utilisateur actuel est le créateur
                 const { data: p } = await supabase.from('profiles').select('full_name,nom').eq('id', shared.shared_by).maybeSingle();
                 if (p) setSharedBy(p.full_name || p.nom || null);
               }
@@ -334,7 +363,7 @@ export default function ContratDetail() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle>1. Informations du contrat</CardTitle>
-                {!editingInfo ? (
+                {isOwner && !editingInfo ? (
                   <Button 
                     onClick={startEditingInfo} 
                     size="sm"
@@ -347,7 +376,7 @@ export default function ContratDetail() {
                     <Edit className="h-4 w-4" />
                     Modifier
                   </Button>
-                ) : (
+                ) : isOwner && editingInfo ? (
                   <div className="flex gap-2">
                     <Button 
                       onClick={saveInfo} 
@@ -370,7 +399,7 @@ export default function ContratDetail() {
                       Annuler
                     </Button>
                   </div>
-                )}
+                ) : null}
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {!editingInfo ? (
@@ -473,25 +502,11 @@ export default function ContratDetail() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0">
                   <CardTitle>2. Contenu du contrat</CardTitle>
-                  <div className="flex gap-2">
-                    {!editingContent && (
-                      <Button 
-                        onClick={startEditingContent} 
-                        size="sm"
-                        className={`gap-2 text-white ${
-                          role === 'notaire' 
-                            ? 'bg-orange-600 hover:bg-orange-700' 
-                            : 'bg-blue-600 hover:bg-blue-700'
-                        }`}
-                      >
-                        <Edit className="h-4 w-4" />
-                        Modifier
-                      </Button>
-                    )}
-                    {editingContent ? (
-                      <>
+                  {isOwner && (
+                    <div className="flex gap-2">
+                      {!editingContent && (
                         <Button 
-                          onClick={saveContent} 
+                          onClick={startEditingContent} 
                           size="sm"
                           className={`gap-2 text-white ${
                             role === 'notaire' 
@@ -499,16 +514,31 @@ export default function ContratDetail() {
                               : 'bg-blue-600 hover:bg-blue-700'
                           }`}
                         >
-                          <Save className="h-4 w-4" />
-                          Enregistrer
+                          <Edit className="h-4 w-4" />
+                          Modifier
                         </Button>
-                        <Button 
-                          onClick={cancelEditingContent} 
-                          size="sm"
-                          className="gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700"
-                        >
-                          <X className="h-4 w-4" />
-                          Annuler
+                      )}
+                      {editingContent ? (
+                        <>
+                          <Button 
+                            onClick={saveContent} 
+                            size="sm"
+                            className={`gap-2 text-white ${
+                              role === 'notaire' 
+                                ? 'bg-orange-600 hover:bg-orange-700' 
+                                : 'bg-blue-600 hover:bg-blue-700'
+                            }`}
+                          >
+                            <Save className="h-4 w-4" />
+                            Enregistrer
+                          </Button>
+                          <Button 
+                            onClick={cancelEditingContent} 
+                            size="sm"
+                            className="gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700"
+                          >
+                            <X className="h-4 w-4" />
+                            Annuler
                         </Button>
                       </>
                     ) : (
@@ -547,6 +577,7 @@ export default function ContratDetail() {
                       </>
                     )}
                   </div>
+                )}
                 </CardHeader>
                 <CardContent>
                   {!editingContent ? (
@@ -568,10 +599,24 @@ export default function ContratDetail() {
             {sharedBy && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Partagé</CardTitle>
+                  <CardTitle className="flex items-center gap-3">
+                    Partagé
+                    {!isOwner && (
+                      <Badge variant="secondary" className="bg-amber-100 text-amber-700 border-amber-200">
+                        📖 Lecture seule
+                      </Badge>
+                    )}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-sm">Partagé par <span className="font-medium">{sharedBy}</span></div>
+                  <div className="text-sm">
+                    Partagé par <span className="font-medium">{sharedBy}</span>
+                    {!isOwner && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Vous pouvez consulter ce contrat mais seul le créateur peut le modifier.
+                      </p>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             )}
