@@ -231,12 +231,13 @@ export default function ContratDetail() {
       setLoading(true);
 
       // Charger les clients pour la régénération
+      // Charger TOUS les clients accessibles (propres + partagés dans le cabinet)
       try {
         const { data: clientsData } = await supabase
           .from('clients')
           .select('*')
-          .eq('owner_id', user.id)
-          .eq('role', role);
+          .eq('role', role)
+          .order('nom', { ascending: true });
         
         if (clientsData && mounted) {
           setClients(clientsData);
@@ -418,7 +419,10 @@ export default function ContratDetail() {
                       <div className="text-sm text-muted-foreground">Client assigné</div>
                       <div className="font-medium">
                         {contrat.client_id ? (
-                          clients.find(c => c.id === contrat.client_id)?.nom || '—'
+                          (() => {
+                            const client = clients.find(c => c.id === contrat.client_id);
+                            return client ? `${client.nom}${client.prenom ? ' ' + client.prenom : ''}` : '—';
+                          })()
                         ) : '—'}
                       </div>
                     </div>
