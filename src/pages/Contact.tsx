@@ -25,12 +25,16 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
+      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA';
+      
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-contact-email',
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'apikey': anonKey,
+            'Authorization': `Bearer ${anonKey}`,
           },
           body: JSON.stringify({
             firstName: formData.firstName,
