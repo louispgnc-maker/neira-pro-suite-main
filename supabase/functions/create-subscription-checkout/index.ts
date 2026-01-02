@@ -75,10 +75,11 @@ serve(async (req) => {
     // Si customer existant, on l'utilise
     if (customerId) {
       sessionParams.customer = customerId
-    } else {
-      // Sinon, on crée via email
+    } else if (customerEmail) {
+      // Sinon, on crée via email si fourni
       sessionParams.customer_email = customerEmail
     }
+    // Sinon, Stripe demandera l'email pendant le checkout
 
     console.log('Creating Stripe session with params:', sessionParams)
 
