@@ -92,6 +92,7 @@ const App = () => (
             <Route path="/form/:token" element={<PublicClientForm />} />
             
             {/* Routes checkout publiques */}
+            <Route path="/checkout/:planId" element={<CheckoutPlan />} />
             <Route path="/checkout-essentiel" element={<CheckoutEssentiel />} />
             <Route path="/checkout-professionnel" element={<CheckoutProfessionnel />} />
             <Route path="/checkout-cabinet-plus" element={<CheckoutCabinetPlus />} />
