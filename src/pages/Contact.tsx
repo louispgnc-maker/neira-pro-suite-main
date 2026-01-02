@@ -1,4 +1,4 @@
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Mail, ArrowRight } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { supabase } from "@/lib/supabaseClient";
+import emailjs from '@emailjs/browser';
 
 export default function Contact() {
   const navigate = useNavigate();
@@ -20,6 +21,11 @@ export default function Contact() {
     subject: "",
     message: "",
   });
+
+  // Initialize EmailJS
+  useEffect(() => {
+    emailjs.init('5W-s-TGNKX6CkmGu3');
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -44,27 +50,31 @@ export default function Contact() {
         throw dbError;
       }
 
-      // Ensuite, tenter d'envoyer l'email (optionnel, ne bloque pas)
+      // Ensuite, envoyer les emails via EmailJS
       try {
-        const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA';
-        
-        await fetch(
-          'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-contact-email',
+        // Send confirmation email to client
+        await emailjs.send(
+          'service_pplgv88',
+          'template_ss4jq2s',
           {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': anonKey,
-              'Authorization': `Bearer ${anonKey}`,
-            },
-            body: JSON.stringify({
-              firstName: formData.firstName,
-              lastName: formData.lastName,
-              email: formData.email,
-              company: formData.company,
-              subject: formData.subject,
-              message: formData.message,
-            })
+            from_name: `${formData.firstName} ${formData.lastName}`,
+            from_email: formData.email,
+            company: formData.company,
+            subject: formData.subject,
+            message: formData.message,
+          }
+        );
+
+        // Send notification email to Neira team
+        await emailjs.send(
+          'service_pplgv88',
+          'template_u6upq8f',
+          {
+            from_name: `${formData.firstName} ${formData.lastName}`,
+            from_email: formData.email,
+            company: formData.company,
+            subject: formData.subject,
+            message: formData.message,
           }
         );
       } catch (emailError) {

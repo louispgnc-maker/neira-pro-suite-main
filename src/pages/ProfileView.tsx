@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import emailjs from '@emailjs/browser';
 
 export default function ProfileView() {
   const { user, profile } = useAuth();
@@ -104,6 +105,11 @@ export default function ProfileView() {
     loadUserCabinet();
   }, [loadUserCabinet]);
 
+  // Initialize EmailJS
+  useEffect(() => {
+    emailjs.init('5W-s-TGNKX6CkmGu3');
+  }, []);
+
   const handleEditProfile = () => {
     navigate(role === 'notaire' ? '/notaires/profile/edit' : '/avocats/profile/edit');
   };
@@ -135,27 +141,31 @@ export default function ProfileView() {
         throw dbError;
       }
 
-      // Ensuite, tenter d'envoyer l'email (optionnel, ne bloque pas)
+      // Ensuite, envoyer les emails via EmailJS
       try {
-        const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA';
-        
-        await fetch(
-          'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-contact-email',
+        // Send confirmation email to client
+        await emailjs.send(
+          'service_pplgv88',
+          'template_ss4jq2s',
           {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': anonKey,
-              'Authorization': `Bearer ${anonKey}`,
-            },
-            body: JSON.stringify({
-              firstName: profile?.first_name || profile?.nom || '',
-              lastName: profile?.last_name || profile?.prenom || '',
-              email: user?.email || '',
-              company: cabinetName || '',
-              subject: contactForm.subject,
-              message: contactForm.message,
-            })
+            from_name: `${profile?.first_name || ''} ${profile?.last_name || ''}`,
+            from_email: user?.email || '',
+            company: cabinetName || '',
+            subject: contactForm.subject,
+            message: contactForm.message,
+          }
+        );
+
+        // Send notification email to Neira team
+        await emailjs.send(
+          'service_pplgv88',
+          'template_u6upq8f',
+          {
+            from_name: `${profile?.first_name || ''} ${profile?.last_name || ''}`,
+            from_email: user?.email || '',
+            company: cabinetName || '',
+            subject: contactForm.subject,
+            message: contactForm.message,
           }
         );
       } catch (emailError) {
