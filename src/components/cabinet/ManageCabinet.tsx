@@ -902,18 +902,24 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                         )}
                     </TableCell>
                     <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedMemberId(member.user_id || null);
-                          setSignatureDialogOpen(true);
-                        }}
-                        className={`${role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}`}
-                      >
-                        <ShoppingCart className="h-4 w-4 mr-1" />
-                        Acheter
-                      </Button>
+                      {cabinet?.subscription_plan === 'cabinet-plus' ? (
+                        <Badge className="bg-green-600 text-white">
+                          Illimité
+                        </Badge>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedMemberId(member.user_id || null);
+                            setSignatureDialogOpen(true);
+                          }}
+                          className={`${role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}`}
+                        >
+                          <ShoppingCart className="h-4 w-4 mr-1" />
+                          Acheter
+                        </Button>
+                      )}
                     </TableCell>
                     {currentUserRole && canRemoveMembers(currentUserRole) && (
                       <TableCell className="text-right">

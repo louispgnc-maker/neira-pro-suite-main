@@ -277,8 +277,9 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
               <p><strong>Note :</strong> Les statistiques sont calculées individuellement pour chaque membre du cabinet.</p>
             </div>
 
-            {/* Section d'achat de forfaits signatures pour tous les plans */}
-            {(subscriptionPlan === 'essentiel' || subscriptionPlan === 'professionnel' || subscriptionPlan === 'cabinet-plus') && (
+            {/* Section d'achat de forfaits signatures pour plans essentiel et professionnel seulement */}
+            {/* Cabinet+ a déjà signatures illimitées */}
+            {(subscriptionPlan === 'essentiel' || subscriptionPlan === 'professionnel') && (
               <div className="border-t pt-4">
                 <Button
                   onClick={() => setBuyDialogOpen(true)}
@@ -293,6 +294,14 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
                     Acheter des signatures supplémentaires
                   </span>
                 </Button>
+              </div>
+            )}
+            {subscriptionPlan === 'cabinet-plus' && (
+              <div className="border-t pt-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-800">
+                  <p className="font-semibold">✓ Signatures illimitées incluses</p>
+                  <p className="text-xs mt-1">Votre plan Cabinet+ inclut déjà des signatures illimitées pour tous les membres.</p>
+                </div>
               </div>
             )}
           </div>
