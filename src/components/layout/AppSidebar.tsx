@@ -279,7 +279,20 @@ export function AppSidebar() {
   return (
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
       <SidebarHeader className={`border-b border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
-        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-start'} gap-2`}>
+        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} gap-2`}>
+          {!isCollapsed && (
+            <div className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${role === 'notaire' ? 'bg-gradient-to-br from-orange-500 to-orange-600' : 'bg-gradient-to-br from-blue-500 to-blue-600'}`}>
+                <span className="text-white font-bold text-sm">N</span>
+              </div>
+              <div>
+                <h2 className="font-semibold text-sm">Neira</h2>
+                <p className={`text-xs ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
+                  {role === 'notaire' ? 'Espace Notaire' : 'Espace Avocat'}
+                </p>
+              </div>
+            </div>
+          )}
           <SidebarTrigger
             className={
               `h-8 w-8 rounded-md flex-shrink-0 ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`
@@ -290,7 +303,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          {!isCollapsed && <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Navigation</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.navigation.map((item) => (
@@ -298,7 +311,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3" onClick={handleMenuItemClick}>
                       <item.icon className={`h-4 w-4 ${item.color}`} />
-                      {!isCollapsed && <span>{item.title}</span>}
+                      {!isCollapsed && <span className="text-sm">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -308,7 +321,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Activité juridique</SidebarGroupLabel>
+          {!isCollapsed && <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Activité juridique</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.activiteJuridique.map((item) => (
@@ -316,7 +329,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3" onClick={handleMenuItemClick}>
                       <item.icon className={`h-4 w-4 ${item.color}`} />
-                      {!isCollapsed && <span>{item.title}</span>}
+                      {!isCollapsed && <span className="text-sm">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -325,7 +338,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>          <SidebarGroupLabel>Organisation et suivi</SidebarGroupLabel>
+        <SidebarGroup>          {!isCollapsed && <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Organisation et suivi</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.organisationSuivi.map((item) => (
@@ -333,7 +346,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3 relative" onClick={handleMenuItemClick}>
                       <item.icon className={`h-4 w-4 ${item.color}`} />
-                      {!isCollapsed && <span>{item.title}</span>}
+                      {!isCollapsed && <span className="text-sm">{item.title}</span>}
                       {item.badge && unreadEmailCount > 0 && (
                         <Badge className="ml-auto bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
                           {unreadEmailCount > 99 ? '99+' : unreadEmailCount}
@@ -347,7 +360,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>          <SidebarGroupLabel>Clients & cabinet</SidebarGroupLabel>
+        <SidebarGroup>          {!isCollapsed && <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Clients & cabinet</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.clientsCabinet.map((item) => (
@@ -355,7 +368,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3" onClick={handleMenuItemClick}>
                       <item.icon className={`h-4 w-4 ${item.color}`} />
-                      {!isCollapsed && <span>{item.title}</span>}
+                      {!isCollapsed && <span className="text-sm">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -365,7 +378,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Outils</SidebarGroupLabel>
+          {!isCollapsed && <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Outils</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.outils.map((item) => (
@@ -373,7 +386,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink to={item.url} className="flex items-center gap-3" onClick={handleMenuItemClick}>
                       <item.icon className={`h-4 w-4 ${item.color}`} />
-                      {!isCollapsed && <span>{item.title}</span>}
+                      {!isCollapsed && <span className="text-sm">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
