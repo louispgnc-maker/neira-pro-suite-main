@@ -123,9 +123,7 @@ export default function CheckoutPublic() {
       // Create Stripe checkout session without cabinetId (for new users)
       const checkoutUrl = await createStripeCheckoutSession({
         priceId,
-        cabinetId: null, // Pas de cabinet pour les nouveaux utilisateurs
         quantity: numberOfUsers,
-        customerEmail: undefined,
         successUrl: `${window.location.origin}/signup?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${window.location.origin}/checkout/${planId}`
       });
