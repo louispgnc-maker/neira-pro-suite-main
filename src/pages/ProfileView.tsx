@@ -59,7 +59,6 @@ export default function ProfileView() {
         .from('cabinet_members')
         .select('cabinets(nom, role, id, owner_id), role_cabinet, status')
         .eq('user_id', user.id)
-        .eq('status', 'active')
         .limit(1)
         .maybeSingle();
       
