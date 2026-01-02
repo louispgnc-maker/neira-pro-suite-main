@@ -59,6 +59,7 @@ export default function ProfileView() {
         .from('cabinet_members')
         .select('cabinets(nom, role, id, owner_id), role_cabinet, status')
         .eq('user_id', user.id)
+        .eq('status', 'active')
         .limit(1)
         .maybeSingle();
       
@@ -152,9 +153,9 @@ export default function ProfileView() {
         .from('cabinet_members')
         .select('*', { count: 'exact', head: true })
         .eq('cabinet_id', cabinetId)
-        .eq('status', 'accepted');
+        .eq('status', 'active');
       
-      console.log('📊 Member count (accepted only):', { count, error });
+      console.log('📊 Member count (active only):', { count, error });
       if (!error && count !== null) {
         setMemberCount(count);
       }
@@ -170,7 +171,7 @@ export default function ProfileView() {
         .from('cabinet_members')
         .select('signature_addon_quantity, signature_addon_price')
         .eq('cabinet_id', cabinetId)
-        .eq('status', 'accepted')
+        .eq('status', 'active')
         .not('signature_addon_quantity', 'is', null);
       
       console.log('📊 Signature credits data:', { data, error });
