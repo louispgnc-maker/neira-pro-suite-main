@@ -36,7 +36,11 @@ export default function ProfileView() {
   const [sendingContact, setSendingContact] = useState(false);
 
   const loadUserCabinet = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('❌ loadUserCabinet: pas de user');
+      return;
+    }
+    console.log('🚀 loadUserCabinet appelé pour user:', user.id);
     setLoadingCabinet(true);
     try {
       const { data, error } = await supabase
@@ -47,12 +51,15 @@ export default function ProfileView() {
         .limit(1)
         .maybeSingle();
       
+      console.log('📊 Résultat query:', { data, error });
+      
       if (error) {
-        console.error('Error loading cabinet:', error);
+        console.error('❌ Error loading cabinet:', error);
         setCabinetName(null);
         setCabinetFonction(null);
         setIsFounder(false);
       } else if (!data) {
+        console.log('⚠️ Pas de données cabinet trouvées');
         setCabinetName(null);
         setCabinetFonction(null);
         setIsFounder(false);
