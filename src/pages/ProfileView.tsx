@@ -27,6 +27,8 @@ export default function ProfileView() {
   const [loadingCabinet, setLoadingCabinet] = useState(true);
   const [isFounder, setIsFounder] = useState(false);
   const [subscriptionInfo, setSubscriptionInfo] = useState<any>(null);
+  const [cabinetId, setCabinetId] = useState<string | null>(null);
+  const [memberCount, setMemberCount] = useState(0);
   
   // État pour le formulaire de contact
   const [contactForm, setContactForm] = useState({
@@ -84,6 +86,7 @@ export default function ProfileView() {
         if (cabinetRole === role) {
           setCabinetName(cabinetData?.nom || null);
           setCabinetFonction(data.role_cabinet || null);
+          setCabinetId(cabinetData?.id || null);
           // Vérifier si l'utilisateur est fondateur selon le role_cabinet
           const foundateur = data.role_cabinet?.toLowerCase() === 'fondateur';
           console.log('✅ Setting isFounder to:', foundateur);
@@ -92,6 +95,7 @@ export default function ProfileView() {
           // Charger les infos d'abonnement si fondateur
           if (foundateur && cabinetData?.id) {
             loadSubscriptionInfo(cabinetData.id);
+            loadMemberCount(cabinetData.id);
           }
         } else {
           setCabinetName(null);
@@ -122,6 +126,22 @@ export default function ProfileView() {
       }
     } catch (error) {
       console.error('Erreur chargement abonnement:', error);
+    }
+  };
+
+  const loadMemberCount = async (cabinetId: string) => {
+    try {
+      const { count, error } = await supabase
+        .from('cabinet_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('cabinet_id', cabinetId)
+        .eq('status', 'accepted');
+      
+      if (!error && count !== null) {
+        setMemberCount(count);
+      }
+    } catch (error) {
+      console.error('Erreur chargement nombre de membres:', error);
     }
   };
 
@@ -214,13 +234,21 @@ export default function ProfileView() {
   };
 
   const getSubscriptionPrice = (tier: string) => {
-    const prices: Record<string, string> = {
-      'free': '0€',
-      'basic': '29€',
-      'pro': '79€',
-      'enterprise': 'Sur mesure'
+    const prices: Record<string, number> = {
+      'free': 0,
+      'basic': 29,
+      'pro': 79,
+      'enterprise': 0
     };
-    return prices[tier] || '—';
+    return prices[tier] || 0;
+  };
+
+  const calculateMonthlyTotal = () => {
+    const tierPrice = getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free');
+    const membersCost = tierPrice * memberCount;
+    // TODO: Ajouter les crédits signatures payants
+    const signatureCredits = 0;
+    return membersCost + signatureCredits;
   };
 
   console.log('🔷 RENDER ProfileView - isFounder:', isFounder, 'cabinetFonction:', cabinetFonction);
@@ -403,14 +431,24 @@ export default function ProfileView() {
                     </div>
 
                     {/* Détails abonnement */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-4 border rounded-lg bg-white">
                         <div className="text-sm font-medium text-muted-foreground mb-1">Formule d'abonnement</div>
                         <div className="text-2xl font-bold capitalize">
                           {subscriptionInfo?.subscription_tier || 'Free'}
                         </div>
                         <div className="text-sm text-gray-600 mt-1">
-                          {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')}/mois
+                          {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')}€/mois par membre
+                        </div>
+                      </div>
+
+                      <div className="p-4 border rounded-lg bg-white">
+                        <div className="text-sm font-medium text-muted-foreground mb-1">Nombre de membres</div>
+                        <div className="text-2xl font-bold">
+                          {memberCount}
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">
+                          {memberCount > 1 ? 'Membres actifs' : 'Membre actif'}
                         </div>
                       </div>
 
@@ -431,10 +469,10 @@ export default function ProfileView() {
                         <div>
                           <div className="text-sm opacity-90 mb-1">Total mensuel</div>
                           <div className="text-3xl font-bold">
-                            {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')}
+                            {calculateMonthlyTotal()}€
                           </div>
                           <div className="text-sm opacity-90 mt-1">
-                            Abonnement + Crédits signatures
+                            {memberCount} × {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')}€ + Crédits signatures
                           </div>
                         </div>
                         <CreditCard className="w-12 h-12 opacity-50" />
