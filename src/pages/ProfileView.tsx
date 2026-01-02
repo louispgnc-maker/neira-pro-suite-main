@@ -518,36 +518,49 @@ export default function ProfileView() {
                     <CardTitle className="text-sm font-medium text-muted-foreground">Signatures</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">Incluses :</span>
-                        <span className="text-green-600 font-semibold">✔</span>
+                    {subscriptionInfo?.subscription_tier === 'cabinet-plus' ? (
+                      <div className="space-y-1">
+                        <div className="text-2xl font-bold mb-1">Illimitées</div>
+                        <div className="text-sm text-muted-foreground">
+                          Incluses dans l'abonnement
+                        </div>
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        Hors forfait : {signatureCreditsTotal > 0 ? `${signatureCreditsTotal} €` : '0 €'}
+                    ) : (
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">Incluses :</span>
+                          <span className="text-green-600 font-semibold">✔</span>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Hors forfait : {signatureCreditsTotal > 0 ? `${signatureCreditsTotal} €` : '0 €'}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
 
               {/* Détail du calcul - discret */}
-              <div className="text-sm text-muted-foreground space-y-1 pt-2 pb-4 border-t">
-                <div className="flex justify-between">
-                  <span>Abonnement {subscriptionInfo?.subscription_tier || 'Free'}</span>
-                  <span>{getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')} € × {memberCount} = {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free') * memberCount} €</span>
-                </div>
-                {signatureCreditsTotal > 0 && (
-                  <div className="flex justify-between">
-                    <span>Crédits signatures hors forfait</span>
-                    <span>{signatureCreditsTotal} €</span>
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="text-sm text-muted-foreground space-y-2">
+                    <div className="flex justify-between">
+                      <span>Abonnement {subscriptionInfo?.subscription_tier || 'Free'}</span>
+                      <span>{getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')} € × {memberCount} = {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free') * memberCount} €</span>
+                    </div>
+                    {signatureCreditsTotal > 0 && (
+                      <div className="flex justify-between">
+                        <span>Crédits signatures hors forfait</span>
+                        <span>{signatureCreditsTotal} €</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-semibold text-foreground pt-2 border-t">
+                      <span>Total mensuel HT</span>
+                      <span>{calculateMonthlyTotal()} €</span>
+                    </div>
                   </div>
-                )}
-                <div className="flex justify-between font-semibold text-foreground pt-1 border-t">
-                  <span>Total mensuel HT</span>
-                  <span>{calculateMonthlyTotal()} €</span>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
 
               {/* Boutons d'action avec hiérarchie */}
               <div className="flex gap-3">
@@ -561,15 +574,6 @@ export default function ProfileView() {
                 <Button variant="outline" size="lg">
                   Voir les factures
                 </Button>
-              </div>
-
-              {/* Note informative - version courte */}
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-900 leading-relaxed">
-                  ℹ️ Les signatures incluses dans votre abonnement sont comprises.<br />
-                  Les signatures supplémentaires sont facturées uniquement si le quota est dépassé.<br />
-                  <span className="font-medium">Aucun achat automatique sans utilisation.</span>
-                </p>
               </div>
 
             </TabsContent>
