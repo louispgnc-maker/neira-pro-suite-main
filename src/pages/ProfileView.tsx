@@ -63,10 +63,11 @@ export default function ProfileView() {
         if (cabinetRole === role) {
           setCabinetName(cabinetData?.nom || null);
           setCabinetFonction(data.role_cabinet || null);
-          setIsFounder(cabinetData?.owner_id === user.id);
+          // Vérifier si l'utilisateur est fondateur selon le role_cabinet
+          setIsFounder(data.role_cabinet?.toLowerCase() === 'fondateur');
           
           // Charger les infos d'abonnement si fondateur
-          if (cabinetData?.owner_id === user.id && cabinetData?.id) {
+          if (data.role_cabinet?.toLowerCase() === 'fondateur' && cabinetData?.id) {
             loadSubscriptionInfo(cabinetData.id);
           }
         } else {
