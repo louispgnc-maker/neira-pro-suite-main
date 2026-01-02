@@ -9,8 +9,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { canChangeRoles, canInviteMembers, canRemoveMembers, canAssignRole, canModifyMemberRole } from '@/lib/cabinetPermissions';
-import { Copy, RefreshCw, Mail, Users, ChevronDown, Trash2, ArrowRight } from 'lucide-react';
+import { Copy, RefreshCw, Mail, Users, ChevronDown, Trash2, ArrowRight, ShoppingCart } from 'lucide-react';
 import { CabinetStats } from './CabinetStats';
+import { BuySignaturesDialog } from './BuySignaturesDialog';
+import { BuySignaturesDialog } from './BuySignaturesDialog';
 import {
   Table,
   TableBody,
@@ -83,6 +85,8 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
   const [inviteName, setInviteName] = useState('');
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [inviteLoading, setInviteLoading] = useState(false);
+  const [signatureDialogOpen, setSignatureDialogOpen] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -832,6 +836,7 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                   <TableHead>Email</TableHead>
                   <TableHead>Nom</TableHead>
                   <TableHead>Rôle</TableHead>
+                  <TableHead>Signatures</TableHead>
                   {currentUserRole && canRemoveMembers(currentUserRole) && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
@@ -896,6 +901,20 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                           </Badge>
                         )}
                     </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedMemberId(member.user_id || null);
+                          setSignatureDialogOpen(true);
+                        }}
+                        className={`${role === 'notaire' ? 'hover:bg-orange-600 hover:text-white' : 'hover:bg-blue-600 hover:text-white'}`}
+                      >
+                        <ShoppingCart className="h-4 w-4 mr-1" />
+                        Acheter
+                      </Button>
+                    </TableCell>
                     {currentUserRole && canRemoveMembers(currentUserRole) && (
                       <TableCell className="text-right">
                         {member.role_cabinet !== 'owner' && member.role_cabinet !== 'Fondateur' && (
@@ -952,6 +971,18 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
           members={members}
         />
       )}
+
+      <BuySignaturesDialog
+        open={signatureDialogOpen}
+        onOpenChange={setSignatureDialogOpen}
+        subscriptionPlan={(cabinet?.subscription_plan || 'essentiel') as 'essentiel' | 'professionnel' | 'cabinet-plus'}
+        currentMonthlyPrice={
+          cabinet?.subscription_plan === 'essentiel' ? 39 :
+          cabinet?.subscription_plan === 'professionnel' ? 59 : 89
+        }
+        role={role}
+        targetUserId={selectedMemberId}
+      />
       
     </div>
   );
