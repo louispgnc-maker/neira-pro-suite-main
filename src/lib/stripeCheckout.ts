@@ -16,10 +16,17 @@ export async function createStripeCheckoutSession(params: CreateCheckoutSessionP
 
   if (error) {
     console.error('Error creating checkout session:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     throw new Error(error.message || 'Failed to create checkout session');
   }
 
+  if (data?.error) {
+    console.error('Stripe error:', data.error);
+    throw new Error(data.error);
+  }
+
   if (!data?.url) {
+    console.error('No URL in response:', data);
     throw new Error('No checkout URL returned');
   }
 

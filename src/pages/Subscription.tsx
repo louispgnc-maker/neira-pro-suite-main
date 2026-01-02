@@ -292,32 +292,8 @@ export default function Subscription() {
       return;
     }
     
-    // Créer une session Stripe Checkout avec SEPA
-    try {
-      toast.info('Redirection vers le paiement sécurisé...');
-      
-      const priceId = STRIPE_PRICE_IDS[planId as keyof typeof STRIPE_PRICE_IDS];
-      if (!priceId) {
-        throw new Error('Price ID introuvable pour ce plan');
-      }
-
-      const { url } = await createStripeCheckoutSession({
-        priceId,
-        customerEmail: user?.email || '',
-        cabinetId: cabinetId || '',
-        quantity: activeMembersCount, // Nombre de membres actifs
-        successUrl: `${window.location.origin}${prefix}/subscription?success=true`,
-        cancelUrl: `${window.location.origin}${prefix}/subscription?canceled=true`,
-      });
-
-      // Rediriger vers Stripe Checkout
-      window.location.href = url;
-    } catch (error) {
-      console.error('Erreur création session Stripe:', error);
-      toast.error('Erreur lors de la création de la session de paiement', {
-        description: 'Veuillez réessayer ou contacter le support.',
-      });
-    }
+    // Redirect to checkout page with prefix
+    navigate(`${prefix}/checkout/${planId}`);
   };
 
   if (loading) {

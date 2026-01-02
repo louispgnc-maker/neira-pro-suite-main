@@ -36,6 +36,7 @@ import EspaceCollaboratif from "./pages/EspaceCollaboratif";
 import Subscription from "./pages/Subscription";
 import ContactSupport from "./pages/ContactSupport";
 import CheckoutPlan from "./pages/CheckoutPlan";
+import CheckoutPublic from "./pages/CheckoutPublic";
 import ManageMembersCount from "./pages/ManageMembersCount";
 import EmailIntegration from "./pages/EmailIntegration";
 import EmailInbox from "./pages/EmailInbox";
@@ -92,7 +93,7 @@ const App = () => (
             <Route path="/form/:token" element={<PublicClientForm />} />
             
             {/* Routes checkout publiques */}
-            <Route path="/checkout/:planId" element={<CheckoutPlan />} />
+            <Route path="/checkout/:planId" element={<CheckoutPublic />} />
             <Route path="/checkout-essentiel" element={<CheckoutEssentiel />} />
             <Route path="/checkout-professionnel" element={<CheckoutProfessionnel />} />
             <Route path="/checkout-cabinet-plus" element={<CheckoutCabinetPlus />} />
