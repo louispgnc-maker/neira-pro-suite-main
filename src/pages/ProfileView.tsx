@@ -31,6 +31,7 @@ export default function ProfileView() {
   const [memberCount, setMemberCount] = useState(0);
   const [signatureCreditsTotal, setSignatureCreditsTotal] = useState(0);
   const [signatureCreditsCount, setSignatureCreditsCount] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState<{ last4: string; brand: string } | null>(null);
   
   // État pour le formulaire de contact
   const [contactForm, setContactForm] = useState({
@@ -102,12 +103,18 @@ export default function ProfileView() {
     try {
       const { data, error } = await supabase
         .from('cabinets')
-        .select('subscription_tier, subscription_status, subscription_started_at')
+        .select('subscription_tier, subscription_status, subscription_started_at, payment_method_last4, payment_method_brand')
         .eq('id', cabinetId)
         .single();
       
       if (!error && data) {
         setSubscriptionInfo(data);
+        if (data.payment_method_last4) {
+          setPaymentMethod({
+            last4: data.payment_method_last4,
+            brand: data.payment_method_brand || 'Carte bancaire'
+          });
+        }
       }
     } catch (error) {
       console.error('Erreur chargement abonnement:', error);
@@ -467,9 +474,12 @@ export default function ProfileView() {
                     </div>
 
                     <div className="border-t pt-4 mt-4">
-                      <div className="text-sm text-muted-foreground mb-2">Total mensuel</div>
-                      <div className="text-5xl font-bold text-primary mb-3">
-                        {calculateMonthlyTotal()} € <span className="text-xl text-muted-foreground">HT</span>
+                      <div className="text-sm text-muted-foreground mb-2">Total mensuel TTC</div>
+                      <div className={`text-5xl font-bold mb-3 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
+                        {calculateMonthlyTotal()} €
+                      </div>
+                      <div className="text-sm text-muted-foreground mb-3">
+                        Montant HT : {calculateMonthlyTotal()} € · TVA : 0 € (0%)
                       </div>
                       
                       <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
@@ -558,6 +568,46 @@ export default function ProfileView() {
                       <span>Total mensuel HT</span>
                       <span>{calculateMonthlyTotal()} €</span>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Moyen de paiement */}
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm font-medium text-muted-foreground mb-2">Moyen de paiement</div>
+                      {paymentMethod ? (
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-5 h-5 text-muted-foreground" />
+                          <span className="text-base font-medium">
+                            {paymentMethod.brand} se terminant par •••• {paymentMethod.last4}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-5 h-5 text-muted-foreground" />
+                          <span className="text-base text-muted-foreground">
+                            Aucun moyen de paiement enregistré
+                          </span>
+                        </div>
+                      )}
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Prélèvement SEPA automatique
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        toast.info('Redirection vers la gestion des paiements...', {
+                          description: 'Vous allez être redirigé vers Stripe pour mettre à jour vos informations de paiement'
+                        });
+                        // TODO: Intégrer avec Stripe Customer Portal
+                      }}
+                    >
+                      Modifier
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
