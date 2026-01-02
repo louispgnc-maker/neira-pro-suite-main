@@ -594,7 +594,7 @@ export default function ProfileView() {
                         </div>
                       )}
                       <div className="text-xs text-muted-foreground mt-1">
-                        Prélèvement SEPA automatique
+                        Prélèvement automatique SEPA
                       </div>
                     </div>
                     <Button 

@@ -14,6 +14,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { createStripeCheckoutSession } from '@/lib/stripeCheckout';
+import { STRIPE_PRICE_IDS } from '@/lib/stripeConfig';
 
 type SubscriptionData = {
   tier: string;
@@ -269,7 +271,7 @@ export default function Subscription() {
     loadSubscription();
   }, [user, refreshTrigger]);
 
-  const handleUpgrade = (planId: string) => {
+  const handleUpgrade = async (planId: string) => {
     // Vérifier si le plan choisi peut accueillir le nombre actuel de membres
     const planLimits: { [key: string]: number } = {
       'essentiel': 1,
@@ -290,8 +292,31 @@ export default function Subscription() {
       return;
     }
     
-    // Redirect to checkout page with prefix
-    navigate(`${prefix}/checkout/${planId}`);
+    // Créer une session Stripe Checkout avec SEPA
+    try {
+      toast.info('Redirection vers le paiement sécurisé...');
+      
+      const priceId = STRIPE_PRICE_IDS[planId as keyof typeof STRIPE_PRICE_IDS];
+      if (!priceId) {
+        throw new Error('Price ID introuvable pour ce plan');
+      }
+
+      const { url } = await createStripeCheckoutSession({
+        priceId,
+        customerEmail: user?.email || '',
+        cabinetId: cabinetId || '',
+        successUrl: `${window.location.origin}${prefix}/subscription?success=true`,
+        cancelUrl: `${window.location.origin}${prefix}/subscription?canceled=true`,
+      });
+
+      // Rediriger vers Stripe Checkout
+      window.location.href = url;
+    } catch (error) {
+      console.error('Erreur création session Stripe:', error);
+      toast.error('Erreur lors de la création de la session de paiement', {
+        description: 'Veuillez réessayer ou contacter le support.',
+      });
+    }
   };
 
   if (loading) {
