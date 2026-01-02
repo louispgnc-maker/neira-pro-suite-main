@@ -12,7 +12,7 @@ import { canChangeRoles, canInviteMembers, canRemoveMembers, canAssignRole, canM
 import { Copy, RefreshCw, Mail, Users, ChevronDown, Trash2, ArrowRight, ShoppingCart } from 'lucide-react';
 import { CabinetStats } from './CabinetStats';
 import { BuySignaturesDialog } from './BuySignaturesDialog';
-import { BuySignaturesDialog } from './BuySignaturesDialog';
+import { updateSubscriptionQuantity } from '@/lib/stripeQuantity';
 import {
   Table,
   TableBody,
@@ -422,6 +422,16 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
       setInviteName('');
       setInviteDialogOpen(false);
       loadCabinet();
+
+      // Mettre à jour la quantity Stripe
+      if (cabinet?.id) {
+        try {
+          await updateSubscriptionQuantity(cabinet.id);
+        } catch (error) {
+          console.error('Erreur mise à jour quantity Stripe:', error);
+          // Ne pas bloquer l'UX si la mise à jour Stripe échoue
+        }
+      }
     } catch (error: any) {
       console.error('Erreur invitation membre:', error);
       // Gérer les erreurs Supabase qui ont une structure spécifique
@@ -455,6 +465,16 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
 
       // Mettre à jour l'état local
       setMembers(prev => prev.filter(m => m.id !== memberId));
+
+      // Mettre à jour la quantity Stripe
+      if (cabinet?.id) {
+        try {
+          await updateSubscriptionQuantity(cabinet.id);
+        } catch (error) {
+          console.error('Erreur mise à jour quantity Stripe:', error);
+          // Ne pas bloquer l'UX si la mise à jour Stripe échoue
+        }
+      }
     } catch (error: unknown) {
       console.error('Erreur retrait membre:', error);
       const message = error instanceof Error ? error.message : String(error ?? 'Impossible de retirer ce membre');
