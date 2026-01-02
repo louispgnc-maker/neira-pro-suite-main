@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Mail, ArrowRight } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function Contact() {
   const navigate = useNavigate();
@@ -25,30 +26,50 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA';
-      
-      const response = await fetch(
-        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-contact-email',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': anonKey,
-            'Authorization': `Bearer ${anonKey}`,
-          },
-          body: JSON.stringify({
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            company: formData.company,
-            subject: formData.subject,
-            message: formData.message,
-          })
-        }
-      );
+      // D'abord, sauvegarder dans Supabase (prioritaire)
+      const { error: dbError } = await supabase
+        .from('contact_messages')
+        .insert({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          company: formData.company || null,
+          subject: formData.subject,
+          message: formData.message,
+          status: 'new'
+        });
 
-      if (!response.ok) {
-        throw new Error('Erreur lors de l\'envoi du message');
+      if (dbError) {
+        console.error('Error saving to database:', dbError);
+        throw dbError;
+      }
+
+      // Ensuite, tenter d'envoyer l'email (optionnel, ne bloque pas)
+      try {
+        const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA';
+        
+        await fetch(
+          'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-contact-email',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': anonKey,
+              'Authorization': `Bearer ${anonKey}`,
+            },
+            body: JSON.stringify({
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              email: formData.email,
+              company: formData.company,
+              subject: formData.subject,
+              message: formData.message,
+            })
+          }
+        );
+      } catch (emailError) {
+        // L'email a échoué mais le message est sauvegardé dans la DB
+        console.log('Email notification failed (non-critical):', emailError);
       }
 
       toast.success("Message envoyé avec succès !", {

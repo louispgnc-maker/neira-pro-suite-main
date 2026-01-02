@@ -116,30 +116,51 @@ export default function ProfileView() {
 
     setSendingContact(true);
     try {
-      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA';
-      
-      const response = await fetch(
-        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-contact-email',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': anonKey,
-            'Authorization': `Bearer ${anonKey}`,
-          },
-          body: JSON.stringify({
-            firstName: profile?.first_name || profile?.nom || '',
-            lastName: profile?.last_name || profile?.prenom || '',
-            email: user?.email || '',
-            company: cabinetName || '',
-            subject: contactForm.subject,
-            message: contactForm.message,
-          })
-        }
-      );
+      // Stocker le message directement dans Supabase
+      const { error } = await supabase
+        .from('contact_messages')
+        .insert({
+          user_id: user?.id,
+          first_name: profile?.first_name || profile?.nom || '',
+          last_name: profile?.last_name || profile?.prenom || '',
+          email: user?.email || '',
+          company: cabinetName || null,
+          subject: contactForm.subject,
+          message: contactForm.message,
+          status: 'new'
+        });
 
-      if (!response.ok) {
-        throw new Error('Erreur lors de l\'envoi du message');
+      if (error) {
+        console.error('Error saving contact message:', error);
+        throw error;
+      }
+
+      // Optionnel: Tenter d'envoyer l'email via Edge Function (ne bloque pas si ça échoue)
+      try {
+        const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA';
+        
+        await fetch(
+          'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-contact-email',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': anonKey,
+              'Authorization': `Bearer ${anonKey}`,
+            },
+            body: JSON.stringify({
+              firstName: profile?.first_name || profile?.nom || '',
+              lastName: profile?.last_name || profile?.prenom || '',
+              email: user?.email || '',
+              company: cabinetName || '',
+              subject: contactForm.subject,
+              message: contactForm.message,
+            })
+          }
+        );
+      } catch (emailError) {
+        // L'envoi d'email a échoué mais le message est sauvegardé
+        console.log('Email notification failed (non-critical):', emailError);
       }
       
       toast.success('Message envoyé avec succès !', {
