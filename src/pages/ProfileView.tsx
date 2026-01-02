@@ -29,6 +29,8 @@ export default function ProfileView() {
   const [subscriptionInfo, setSubscriptionInfo] = useState<any>(null);
   const [cabinetId, setCabinetId] = useState<string | null>(null);
   const [memberCount, setMemberCount] = useState(0);
+  const [signatureCreditsTotal, setSignatureCreditsTotal] = useState(0);
+  const [signatureCreditsCount, setSignatureCreditsCount] = useState(0);
   
   // État pour le formulaire de contact
   const [contactForm, setContactForm] = useState({
@@ -96,6 +98,7 @@ export default function ProfileView() {
           if (foundateur && cabinetData?.id) {
             loadSubscriptionInfo(cabinetData.id);
             loadMemberCount(cabinetData.id);
+            loadSignatureCredits(cabinetData.id);
           }
         } else {
           setCabinetName(null);
@@ -142,6 +145,31 @@ export default function ProfileView() {
       }
     } catch (error) {
       console.error('Erreur chargement nombre de membres:', error);
+    }
+  };
+
+  const loadSignatureCredits = async (cabinetId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('cabinet_members')
+        .select('signature_addon_quantity, signature_addon_price')
+        .eq('cabinet_id', cabinetId)
+        .eq('status', 'accepted')
+        .not('signature_addon_quantity', 'is', null);
+      
+      if (!error && data) {
+        // Calculer le total des crédits payants
+        const totalPrice = data.reduce((sum, member) => {
+          return sum + (member.signature_addon_price || 0);
+        }, 0);
+        const totalQuantity = data.reduce((sum, member) => {
+          return sum + (member.signature_addon_quantity || 0);
+        }, 0);
+        setSignatureCreditsTotal(totalPrice);
+        setSignatureCreditsCount(totalQuantity);
+      }
+    } catch (error) {
+      console.error('Erreur chargement crédits signatures:', error);
     }
   };
 
@@ -246,9 +274,8 @@ export default function ProfileView() {
   const calculateMonthlyTotal = () => {
     const tierPrice = getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free');
     const membersCost = tierPrice * memberCount;
-    // TODO: Ajouter les crédits signatures payants
-    const signatureCredits = 0;
-    return membersCost + signatureCredits;
+    // Ajouter les crédits signatures payants (montant unique, pas mensuel)
+    return membersCost + signatureCreditsTotal;
   };
 
   console.log('🔷 RENDER ProfileView - isFounder:', isFounder, 'cabinetFonction:', cabinetFonction);
@@ -455,10 +482,10 @@ export default function ProfileView() {
                       <div className="p-4 border rounded-lg bg-white">
                         <div className="text-sm font-medium text-muted-foreground mb-1">Crédits signatures</div>
                         <div className="text-2xl font-bold">
-                          À venir
+                          {signatureCreditsCount > 0 ? signatureCreditsCount : '—'}
                         </div>
                         <div className="text-sm text-gray-600 mt-1">
-                          Crédits additionnels
+                          {signatureCreditsTotal > 0 ? `${signatureCreditsTotal}€ payés` : 'Aucun crédit acheté'}
                         </div>
                       </div>
                     </div>
@@ -472,7 +499,7 @@ export default function ProfileView() {
                             {calculateMonthlyTotal()}€
                           </div>
                           <div className="text-sm opacity-90 mt-1">
-                            {memberCount} × {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')}€ + Crédits signatures
+                            {memberCount} × {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')}€{signatureCreditsTotal > 0 ? ` + ${signatureCreditsTotal}€ (signatures)` : ''}
                           </div>
                         </div>
                         <CreditCard className="w-12 h-12 opacity-50" />
