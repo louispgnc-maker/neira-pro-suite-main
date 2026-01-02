@@ -43,6 +43,14 @@ export default function ProfileView() {
     console.log('🚀 loadUserCabinet appelé pour user:', user.id);
     setLoadingCabinet(true);
     try {
+      // D'abord vérifier quelles lignes existent pour cet utilisateur
+      const { data: allMemberships, error: debugError } = await supabase
+        .from('cabinet_members')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      console.log('🔍 Toutes les lignes cabinet_members:', allMemberships);
+      
       const { data, error } = await supabase
         .from('cabinet_members')
         .select('cabinets(nom, role, id, owner_id), role_cabinet')
