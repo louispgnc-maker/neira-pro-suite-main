@@ -22,25 +22,31 @@ serve(async (req) => {
 
     console.log('Checkout request:', { priceId, cabinetId, quantity, customerEmail })
 
-    if (!priceId || !cabinetId || !quantity) {
-      throw new Error('Price ID, cabinet ID and quantity are required')
+    if (!priceId || !quantity) {
+      throw new Error('Price ID and quantity are required')
     }
 
-    // Vérifier si un customer existe déjà pour ce cabinet
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    let customerId = null
 
-    const { data: cabinet } = await supabase
-      .from('cabinets')
-      .select('stripe_customer_id')
-      .eq('id', cabinetId)
-      .single()
+    // Si cabinetId fourni, vérifier si un customer existe déjà pour ce cabinet
+    if (cabinetId) {
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      )
 
-    let customerId = cabinet?.stripe_customer_id
+      const { data: cabinet } = await supabase
+        .from('cabinets')
+        .select('stripe_customer_id')
+        .eq('id', cabinetId)
+        .single()
 
-    console.log('Existing customer ID:', customerId)
+      customerId = cabinet?.stripe_customer_id
+
+      console.log('Existing customer ID:', customerId)
+    } else {
+      console.log('No cabinetId provided - creating session for new user')
+    }
 
     // Si pas de customer, on laisse Stripe le créer via customer_email
     const sessionParams: any = {
@@ -57,11 +63,11 @@ serve(async (req) => {
       billing_address_collection: 'required',
       locale: 'fr',
       metadata: {
-        cabinet_id: cabinetId,
+        cabinet_id: cabinetId || 'pending',
       },
       subscription_data: {
         metadata: {
-          cabinet_id: cabinetId,
+          cabinet_id: cabinetId || 'pending',
         },
       },
     }

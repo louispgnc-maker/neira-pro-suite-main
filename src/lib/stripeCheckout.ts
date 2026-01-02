@@ -2,14 +2,14 @@ import { supabase } from './supabaseClient';
 
 export interface CreateCheckoutSessionParams {
   priceId: string;
-  customerEmail: string;
-  cabinetId: string;
+  customerEmail?: string;
+  cabinetId?: string | null;
   quantity: number; // Nombre de membres
   successUrl?: string;
   cancelUrl?: string;
 }
 
-export async function createStripeCheckoutSession(params: CreateCheckoutSessionParams): Promise<{ url: string }> {
+export async function createStripeCheckoutSession(params: CreateCheckoutSessionParams): Promise<string> {
   const { data, error } = await supabase.functions.invoke('create-subscription-checkout', {
     body: params
   });
@@ -30,7 +30,7 @@ export async function createStripeCheckoutSession(params: CreateCheckoutSessionP
     throw new Error('No checkout URL returned');
   }
 
-  return { url: data.url };
+  return data.url;
 }
 
 export async function createPortalSession(customerId: string, returnUrl?: string): Promise<{ url: string }> {

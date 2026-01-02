@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CheckCircle2, ArrowLeft, CreditCard, Lock, Zap, Crown, Users, Building2 } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { toast } from "sonner";
+import { createStripeCheckoutSession } from "@/lib/stripeCheckout";
+import { STRIPE_PRICE_IDS } from "@/lib/stripeConfig";
 
 const planConfigs = {
   'essentiel': {
@@ -103,23 +105,39 @@ export default function CheckoutPublic() {
     setLoading(true);
 
     try {
-      // Pour les nouveaux utilisateurs, on redirige vers l'inscription avec les paramètres de l'abonnement
-      const params = new URLSearchParams({
-        plan: planId || '',
-        users: numberOfUsers.toString(),
-        period: billingPeriod
+      // Get price ID for the selected plan
+      const priceId = STRIPE_PRICE_IDS[planId as keyof typeof STRIPE_PRICE_IDS];
+      if (!priceId) {
+        toast.error("Plan invalide");
+        setLoading(false);
+        return;
+      }
+
+      // Store plan info for after payment
+      sessionStorage.setItem('pendingSubscription', JSON.stringify({
+        plan: planId,
+        quantity: numberOfUsers,
+        billingPeriod
+      }));
+
+      // Create Stripe checkout session without cabinetId (for new users)
+      const checkoutUrl = await createStripeCheckoutSession({
+        priceId,
+        cabinetId: null, // Pas de cabinet pour les nouveaux utilisateurs
+        quantity: numberOfUsers,
+        customerEmail: undefined,
+        successUrl: `${window.location.origin}/signup?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/checkout/${planId}`
       });
+
+      // Redirect to Stripe
+      window.location.href = checkoutUrl;
       
-      navigate(`/?${params.toString()}`);
-      toast.success("Redirection vers l'inscription", {
-        description: "Créez votre compte pour finaliser votre abonnement"
-      });
     } catch (error: any) {
-      console.error('Erreur:', error);
-      toast.error("Erreur", {
+      console.error('Error creating checkout session:', error);
+      toast.error("Erreur lors de la création de la session de paiement", {
         description: error.message || "Une erreur est survenue."
       });
-    } finally {
       setLoading(false);
     }
   };
@@ -282,17 +300,17 @@ export default function CheckoutPublic() {
                     disabled={loading}
                   >
                     {loading ? (
-                      "Redirection..."
+                      "Redirection vers le paiement..."
                     ) : (
                       <>
                         <CreditCard className="w-5 h-5 mr-2" />
-                        Créer mon compte - {total}€{billingPeriod === 'yearly' ? '/an' : '/mois'}
+                        Procéder au paiement - {total}€{billingPeriod === 'yearly' ? '/an' : '/mois'}
                       </>
                     )}
                   </Button>
 
                   <p className="text-xs text-center text-gray-500">
-                    En continuant, vous acceptez nos conditions générales d'utilisation et notre politique de confidentialité.
+                    Après le paiement, vous pourrez créer votre compte et accéder à votre abonnement.
                   </p>
                 </form>
               </CardContent>
