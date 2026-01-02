@@ -1,4 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
 import Stripe from 'https://esm.sh/stripe@14.21.0'
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') as string, {
@@ -19,12 +20,13 @@ serve(async (req) => {
   try {
     const { priceId, successUrl, cancelUrl, customerEmail, cabinetId, quantity } = await req.json()
 
+    console.log('Checkout request:', { priceId, cabinetId, quantity, customerEmail })
+
     if (!priceId || !cabinetId || !quantity) {
       throw new Error('Price ID, cabinet ID and quantity are required')
     }
 
     // Vérifier si un customer existe déjà pour ce cabinet
-    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.39.0')
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -37,6 +39,8 @@ serve(async (req) => {
       .single()
 
     let customerId = cabinet?.stripe_customer_id
+
+    console.log('Existing customer ID:', customerId)
 
     // Si pas de customer, on laisse Stripe le créer via customer_email
     const sessionParams: any = {
@@ -70,8 +74,12 @@ serve(async (req) => {
       sessionParams.customer_email = customerEmail
     }
 
+    console.log('Creating Stripe session with params:', sessionParams)
+
     // Create Checkout Session
     const session = await stripe.checkout.sessions.create(sessionParams)
+
+    console.log('Session created:', session.id)
 
     return new Response(
       JSON.stringify({ sessionId: session.id, url: session.url }),
