@@ -387,11 +387,11 @@ export function AppSidebar() {
         <Button
           onClick={handleLogout}
           variant="ghost"
-          className={`w-full gap-3 ${isCollapsed ? 'justify-center p-2' : 'justify-start'} ${role === 'notaire' ? 'hover:bg-orange-50 hover:text-orange-700' : 'hover:bg-blue-50 hover:text-blue-700'}`}
+          className={`w-full gap-3 ${isCollapsed ? 'justify-center p-2' : 'justify-start'} text-red-600 hover:bg-red-50 hover:text-red-700`}
           title={isCollapsed ? 'Déconnexion' : undefined}
         >
           <Power className="h-4 w-4 flex-shrink-0" />
-          {!isCollapsed && <span>Déconnexion</span>}
+          {!isCollapsed && <span className="text-sm">Déconnexion</span>}
         </Button>
       </SidebarFooter>
     </Sidebar>
