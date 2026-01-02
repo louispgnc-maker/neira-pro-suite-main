@@ -140,13 +140,21 @@ export default function ProfileView() {
   const loadMemberCount = async (cabinetId: string) => {
     console.log('👥 loadMemberCount appelé avec cabinetId:', cabinetId);
     try {
+      // D'abord voir tous les membres sans filtre
+      const { data: allMembers, error: debugError } = await supabase
+        .from('cabinet_members')
+        .select('status, user_id')
+        .eq('cabinet_id', cabinetId);
+      
+      console.log('🔍 Tous les membres du cabinet:', allMembers);
+      
       const { count, error } = await supabase
         .from('cabinet_members')
         .select('*', { count: 'exact', head: true })
         .eq('cabinet_id', cabinetId)
         .eq('status', 'accepted');
       
-      console.log('📊 Member count:', { count, error });
+      console.log('📊 Member count (accepted only):', { count, error });
       if (!error && count !== null) {
         setMemberCount(count);
       }
