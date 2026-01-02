@@ -96,9 +96,12 @@ export default function ProfileView() {
           
           // Charger les infos d'abonnement si fondateur
           if (foundateur && cabinetData?.id) {
+            console.log('🚀 Chargement des infos pour cabinet ID:', cabinetData.id);
             loadSubscriptionInfo(cabinetData.id);
             loadMemberCount(cabinetData.id);
             loadSignatureCredits(cabinetData.id);
+          } else {
+            console.log('⚠️ Pas de chargement:', { foundateur, cabinetId: cabinetData?.id });
           }
         } else {
           setCabinetName(null);
@@ -117,6 +120,7 @@ export default function ProfileView() {
   }, [user, role]);
 
   const loadSubscriptionInfo = async (cabinetId: string) => {
+    console.log('📥 loadSubscriptionInfo appelé avec cabinetId:', cabinetId);
     try {
       const { data, error } = await supabase
         .from('cabinets')
@@ -124,6 +128,7 @@ export default function ProfileView() {
         .eq('id', cabinetId)
         .single();
       
+      console.log('📊 Subscription data:', { data, error });
       if (!error && data) {
         setSubscriptionInfo(data);
       }
@@ -133,6 +138,7 @@ export default function ProfileView() {
   };
 
   const loadMemberCount = async (cabinetId: string) => {
+    console.log('👥 loadMemberCount appelé avec cabinetId:', cabinetId);
     try {
       const { count, error } = await supabase
         .from('cabinet_members')
@@ -140,6 +146,7 @@ export default function ProfileView() {
         .eq('cabinet_id', cabinetId)
         .eq('status', 'accepted');
       
+      console.log('📊 Member count:', { count, error });
       if (!error && count !== null) {
         setMemberCount(count);
       }
@@ -149,6 +156,7 @@ export default function ProfileView() {
   };
 
   const loadSignatureCredits = async (cabinetId: string) => {
+    console.log('✍️ loadSignatureCredits appelé avec cabinetId:', cabinetId);
     try {
       const { data, error } = await supabase
         .from('cabinet_members')
@@ -157,6 +165,7 @@ export default function ProfileView() {
         .eq('status', 'accepted')
         .not('signature_addon_quantity', 'is', null);
       
+      console.log('📊 Signature credits data:', { data, error });
       if (!error && data) {
         // Calculer le total des crédits payants
         const totalPrice = data.reduce((sum, member) => {
@@ -165,6 +174,7 @@ export default function ProfileView() {
         const totalQuantity = data.reduce((sum, member) => {
           return sum + (member.signature_addon_quantity || 0);
         }, 0);
+        console.log('💰 Totaux calculés:', { totalPrice, totalQuantity });
         setSignatureCreditsTotal(totalPrice);
         setSignatureCreditsCount(totalQuantity);
       }
