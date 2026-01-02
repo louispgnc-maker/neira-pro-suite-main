@@ -11,6 +11,8 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabaseClient";
+import { createStripeCheckoutSession } from "@/lib/stripeCheckout";
+import { STRIPE_PRICE_IDS } from "@/lib/stripeConfig";
 
 const planConfigs = {
   'essentiel': {
@@ -110,8 +112,13 @@ export default function CheckoutPlan() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     
+    if (!user) {
+      toast.error("Utilisateur non connecté");
+      return;
+    }
+
+    setLoading(true);
     try {
       // Vérifier si l'utilisateur a déjà un cabinet
       const { data: existingCabinets } = await supabase
@@ -121,108 +128,42 @@ export default function CheckoutPlan() {
         .eq('role', role)
         .single();
 
-      // Si cabinet existant, vérifier le nombre de membres
-      if (existingCabinets) {
-        const { data: membersData } = await supabase
-          .rpc('get_cabinet_members_simple', { cabinet_id_param: existingCabinets.id });
-        
-        const activeMembersCount = membersData?.length || 0;
-        const maxMembersForPlan = planId === 'essentiel' ? 1 : numberOfUsers;
-        
-        if (activeMembersCount > maxMembersForPlan) {
-          setLoading(false);
-          toast.error("Nombre de membres insuffisant", {
-            description: `Votre cabinet compte actuellement ${activeMembersCount} membre${activeMembersCount > 1 ? 's' : ''}. Vous devez sélectionner au moins ${activeMembersCount} membre${activeMembersCount > 1 ? 's' : ''} pour ce plan ou retirer des membres avant de changer d'offre.`,
-            duration: 6000
-          });
-          return;
-        }
+      if (!existingCabinets) {
+        toast.error("Cabinet non trouvé", {
+          description: "Vous devez créer un cabinet avant de souscrire à un abonnement."
+        });
+        setLoading(false);
+        return;
       }
 
-      // Définir les limites selon le plan
-      const subscriptionLimits = {
-        essentiel: {
-          max_members: 1,
-          max_storage_go: 20,
-          max_dossiers: 100,
-          max_clients: 30,
-          max_signatures_per_month: 15
-        },
-        professionnel: {
-          max_members: numberOfUsers,
-          max_storage_go: 100,
-          max_dossiers: 600,
-          max_clients: 200,
-          max_signatures_per_month: 80
-        },
-        'cabinet-plus': {
-          max_members: numberOfUsers,
-          max_storage_go: null, // illimité
-          max_dossiers: null, // illimité
-          max_clients: null, // illimité
-          max_signatures_per_month: null // illimité
-        }
-      };
+      const cabinetId = existingCabinets.id;
 
-      const limits = subscriptionLimits[planId as keyof typeof subscriptionLimits];
-
-      if (existingCabinets) {
-        // Mettre à jour le cabinet existant
-        const { error } = await supabase
-          .from('cabinets')
-          .update({
-            subscription_plan: planId,
-            ...limits,
-            billing_period: billingPeriod,
-            subscription_status: 'active',
-            subscription_started_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existingCabinets.id);
-
-        if (error) throw error;
-
-        toast.success("Abonnement mis à jour !", {
-          description: `Votre cabinet est maintenant sur le plan ${planConfig.name}.`
-        });
-
-        // Trigger subscription update event
-        window.dispatchEvent(new Event('subscription-updated'));
-      } else {
-        // Créer un nouveau cabinet
-        const { error } = await supabase
-          .from('cabinets')
-          .insert({
-            role: role,
-            nom: `Cabinet ${user?.email?.split('@')[0] || 'Sans nom'}`,
-            adresse: 'À compléter',
-            owner_id: user?.id,
-            subscription_plan: planId,
-            ...limits,
-            billing_period: billingPeriod,
-            subscription_status: 'active',
-            subscription_started_at: new Date().toISOString()
-          });
-
-        if (error) throw error;
-
-        toast.success("Cabinet créé avec succès !", {
-          description: `Votre cabinet est prêt avec le plan ${planConfig.name}.`
-        });
-
-        // Trigger subscription update event
-        window.dispatchEvent(new Event('subscription-updated'));
+      // Get price ID for the selected plan
+      const priceId = STRIPE_PRICE_IDS[planId as keyof typeof STRIPE_PRICE_IDS];
+      if (!priceId) {
+        toast.error("Plan invalide");
+        setLoading(false);
+        return;
       }
 
-      setTimeout(() => {
-        navigate(`${prefix}/cabinet`);
-      }, 1500);
+      // Create Stripe checkout session
+      const checkoutUrl = await createStripeCheckoutSession({
+        priceId,
+        cabinetId,
+        quantity: numberOfUsers,
+        customerEmail: user.email || undefined,
+        successUrl: `${window.location.origin}${prefix}/subscription?success=true`,
+        cancelUrl: `${window.location.origin}${prefix}/subscription?canceled=true`
+      });
+
+      // Redirect to Stripe
+      window.location.href = checkoutUrl;
+      
     } catch (error: any) {
-      console.error('Erreur lors de la souscription:', error);
-      toast.error("Erreur lors de la souscription", {
+      console.error('Error creating checkout session:', error);
+      toast.error("Erreur lors de la création de la session de paiement", {
         description: error.message || "Une erreur est survenue."
       });
-    } finally {
       setLoading(false);
     }
   };
