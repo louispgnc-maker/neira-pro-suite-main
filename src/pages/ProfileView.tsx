@@ -207,7 +207,7 @@ export default function ProfileView() {
         </div>
 
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className={`grid w-full ${isFounder ? 'grid-cols-4' : 'grid-cols-3'} mb-6`}>
+          <TabsList className={`grid w-full ${isFounder ? 'grid-cols-3' : 'grid-cols-2'} mb-6`}>
             <TabsTrigger value="profile">Profil</TabsTrigger>
             {isFounder && (
               <TabsTrigger value="billing">
@@ -215,10 +215,6 @@ export default function ProfileView() {
                 Facturation
               </TabsTrigger>
             )}
-            <TabsTrigger value="subscription">
-              <CreditCard className="w-4 h-4 mr-2" />
-              Abonnement
-            </TabsTrigger>
             <TabsTrigger value="contact">
               <Mail className="w-4 h-4 mr-2" />
               Contact
@@ -445,97 +441,6 @@ export default function ProfileView() {
               </Card>
             </TabsContent>
           )}
-
-          {/* Onglet Abonnement */}
-          <TabsContent value="subscription" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Abonnement et facturation</CardTitle>
-                <CardDescription>
-                  {isFounder 
-                    ? 'Gérez l\'abonnement de votre cabinet' 
-                    : 'Informations sur l\'abonnement de votre cabinet'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {isFounder ? (
-                  <>
-                    {/* Informations pour le fondateur */}
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <div>
-                          <div className="text-sm font-medium text-green-900">Vous êtes le fondateur du cabinet</div>
-                          <div className="text-sm text-green-700 mt-1">Vous gérez l'abonnement pour tout le cabinet</div>
-                        </div>
-                        <Badge className="bg-green-600">Fondateur</Badge>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="p-4 border rounded-lg">
-                          <div className="text-sm font-medium text-muted-foreground mb-1">Formule actuelle</div>
-                          <div className="text-lg font-semibold capitalize">
-                            {subscriptionInfo?.subscription_tier || 'Free'}
-                          </div>
-                        </div>
-                        
-                        <div className="p-4 border rounded-lg">
-                          <div className="text-sm font-medium text-muted-foreground mb-1">Prix mensuel</div>
-                          <div className="text-lg font-semibold">
-                            {subscriptionInfo ? getSubscriptionPrice(subscriptionInfo.subscription_tier) : '—'}/mois
-                          </div>
-                        </div>
-
-                        <div className="p-4 border rounded-lg">
-                          <div className="text-sm font-medium text-muted-foreground mb-1">Statut</div>
-                          <Badge variant={subscriptionInfo?.subscription_status === 'active' ? 'default' : 'secondary'}>
-                            {subscriptionInfo?.subscription_status === 'active' ? 'Actif' : 'Inactif'}
-                          </Badge>
-                        </div>
-
-                        <div className="p-4 border rounded-lg">
-                          <div className="text-sm font-medium text-muted-foreground mb-1">Cabinet</div>
-                          <div className="text-lg font-semibold">
-                            {cabinetName || '—'}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-3">
-                        <Button 
-                          className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
-                        >
-                          Modifier l'abonnement
-                        </Button>
-                        <Button variant="outline">
-                          Voir les factures
-                        </Button>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {/* Message pour les non-fondateurs */}
-                    <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg text-center space-y-3">
-                      <CreditCard className={`w-12 h-12 mx-auto ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} />
-                      <div>
-                        <h3 className="font-semibold text-lg mb-2">Facturation gérée par le fondateur</h3>
-                        <p className="text-muted-foreground max-w-md mx-auto">
-                          L'abonnement et la facturation de votre cabinet sont gérés par le fondateur du cabinet. 
-                          Pour toute question concernant l'abonnement, veuillez contacter votre administrateur.
-                        </p>
-                      </div>
-                      {cabinetName && (
-                        <div className="mt-4 pt-4 border-t border-blue-200">
-                          <div className="text-sm text-muted-foreground">Votre cabinet</div>
-                          <div className="font-semibold mt-1">{cabinetName}</div>
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
 
           {/* Onglet Contact */}
           <TabsContent value="contact" className="space-y-6">
