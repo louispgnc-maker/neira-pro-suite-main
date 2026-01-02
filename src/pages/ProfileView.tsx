@@ -102,7 +102,7 @@ export default function ProfileView() {
     try {
       const { data, error } = await supabase
         .from('cabinets')
-        .select('subscription_tier, subscription_status')
+        .select('subscription_tier, subscription_status, subscription_started_at')
         .eq('id', cabinetId)
         .single();
       
@@ -260,6 +260,30 @@ export default function ProfileView() {
     const membersCost = tierPrice * memberCount;
     // Ajouter les crédits signatures payants (montant unique, pas mensuel)
     return membersCost + signatureCreditsTotal;
+  };
+
+  const getSubscriptionMonth = () => {
+    if (!subscriptionInfo?.subscription_started_at) return 1;
+    const startDate = new Date(subscriptionInfo.subscription_started_at);
+    const now = new Date();
+    const months = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth()) + 1;
+    return Math.max(1, months);
+  };
+
+  const getNextPaymentDate = () => {
+    if (!subscriptionInfo?.subscription_started_at) return new Date();
+    const startDate = new Date(subscriptionInfo.subscription_started_at);
+    const nextDate = new Date(startDate);
+    nextDate.setMonth(nextDate.getMonth() + getSubscriptionMonth());
+    return nextDate;
+  };
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('fr-FR', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    }).format(date);
   };
 
   return (
@@ -468,6 +492,33 @@ export default function ProfileView() {
                         </div>
                         <div className="text-sm text-gray-600 mt-1">
                           {signatureCreditsTotal > 0 ? `${signatureCreditsTotal}€ payés` : 'Aucun crédit acheté'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Informations de facturation */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="p-4 border rounded-lg bg-blue-50">
+                        <div className="text-sm font-medium text-blue-700 mb-1">Abonnement depuis le</div>
+                        <div className="text-lg font-semibold text-blue-900">
+                          {subscriptionInfo?.subscription_started_at 
+                            ? formatDate(new Date(subscriptionInfo.subscription_started_at))
+                            : '—'
+                          }
+                        </div>
+                      </div>
+
+                      <div className="p-4 border rounded-lg bg-purple-50">
+                        <div className="text-sm font-medium text-purple-700 mb-1">Mensualité en cours</div>
+                        <div className="text-lg font-semibold text-purple-900">
+                          {getSubscriptionMonth()}{getSubscriptionMonth() === 1 ? 'ère' : 'ème'} mensualité
+                        </div>
+                      </div>
+
+                      <div className="p-4 border rounded-lg bg-green-50">
+                        <div className="text-sm font-medium text-green-700 mb-1">Prochain paiement</div>
+                        <div className="text-lg font-semibold text-green-900">
+                          {formatDate(getNextPaymentDate())}
                         </div>
                       </div>
                     </div>
