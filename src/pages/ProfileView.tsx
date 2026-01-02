@@ -148,13 +148,14 @@ export default function ProfileView() {
       
       console.log('🔍 Tous les membres du cabinet:', allMembers);
       
+      // Compter tous les membres sauf ceux rejetés/en attente
       const { count, error } = await supabase
         .from('cabinet_members')
         .select('*', { count: 'exact', head: true })
         .eq('cabinet_id', cabinetId)
-        .eq('status', 'active');
+        .in('status', ['active', 'inactive']);
       
-      console.log('📊 Member count (active only):', { count, error });
+      console.log('📊 Member count (active + inactive):', { count, error });
       if (!error && count !== null) {
         setMemberCount(count);
       }
@@ -170,7 +171,7 @@ export default function ProfileView() {
         .from('cabinet_members')
         .select('signature_addon_quantity, signature_addon_price')
         .eq('cabinet_id', cabinetId)
-        .eq('status', 'active')
+        .in('status', ['active', 'inactive'])
         .not('signature_addon_quantity', 'is', null);
       
       console.log('📊 Signature credits data:', { data, error });
