@@ -209,6 +209,8 @@ export default function ProfileView() {
     return prices[tier] || '—';
   };
 
+  console.log('🔷 RENDER ProfileView - isFounder:', isFounder, 'cabinetFonction:', cabinetFonction);
+
   return (
     <AppLayout>
       <div className="p-6 max-w-5xl mx-auto space-y-6">
