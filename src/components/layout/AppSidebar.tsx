@@ -383,13 +383,14 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-4">
+      <SidebarFooter className={`border-t border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
         <Button
           onClick={handleLogout}
           variant="ghost"
-          className={`w-full justify-start gap-3 ${role === 'notaire' ? 'hover:bg-orange-50 hover:text-orange-700' : 'hover:bg-blue-50 hover:text-blue-700'}`}
+          className={`w-full gap-3 ${isCollapsed ? 'justify-center p-2' : 'justify-start'} ${role === 'notaire' ? 'hover:bg-orange-50 hover:text-orange-700' : 'hover:bg-blue-50 hover:text-blue-700'}`}
+          title={isCollapsed ? 'Déconnexion' : undefined}
         >
-          <Power className="h-4 w-4" />
+          <Power className="h-4 w-4 flex-shrink-0" />
           {!isCollapsed && <span>Déconnexion</span>}
         </Button>
       </SidebarFooter>
