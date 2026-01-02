@@ -49,17 +49,16 @@ export default function ProfileView() {
         .select('*')
         .eq('user_id', user.id);
       
-      console.log('🔍 Toutes les lignes cabinet_members:', allMemberships);
+      console.log('🔍 Toutes les lignes cabinet_members:', JSON.stringify(allMemberships, null, 2));
       
       const { data, error } = await supabase
         .from('cabinet_members')
-        .select('cabinets(nom, role, id, owner_id), role_cabinet')
+        .select('cabinets(nom, role, id, owner_id), role_cabinet, status')
         .eq('user_id', user.id)
-        .eq('status', 'accepted')
         .limit(1)
         .maybeSingle();
       
-      console.log('📊 Résultat query:', { data, error });
+      console.log('📊 Résultat query (sans filtre status):', { data, error });
       
       if (error) {
         console.error('❌ Error loading cabinet:', error);
