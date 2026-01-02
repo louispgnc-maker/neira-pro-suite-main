@@ -102,8 +102,7 @@ export default function CheckoutPlan() {
   const monthlyPrice = planConfig.monthlyPrice * numberOfUsers;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
   const price = billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice;
-  const tva = Math.round(price * 0.2 * 100) / 100;
-  const total = Math.round((price + tva) * 100) / 100;
+  const total = Math.round(price * 100) / 100;
 
   // Détermine si on affiche le sélecteur de membres
   const showUserSelector = planId === 'professionnel' || planId === 'cabinet-plus';

@@ -25,8 +25,7 @@ export default function CheckoutEssentiel() {
   const monthlyPrice = 39;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
   const price = billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice;
-  const tva = Math.round(price * 0.2 * 100) / 100;
-  const total = Math.round((price + tva) * 100) / 100;
+  const total = Math.round(price * 100) / 100;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -293,17 +292,12 @@ export default function CheckoutEssentiel() {
 
                     {/* Récapitulatif */}
                     <div className="border-t pt-4 space-y-2">
-                      <div className="flex justify-between text-sm text-gray-900">
-                        <span>Abonnement {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}</span>
-                        <span>{price}€</span>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-900">
-                        <span>TVA (20%)</span>
-                        <span>{tva}€</span>
-                      </div>
-                      <div className="flex justify-between font-bold text-base border-t pt-2 text-gray-900">
+                      <div className="flex justify-between font-bold text-base text-gray-900">
                         <span>Total</span>
                         <span>{total}€</span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Abonnement {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}
                       </div>
                     </div>
 

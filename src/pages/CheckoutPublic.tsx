@@ -91,8 +91,7 @@ export default function CheckoutPublic() {
   const monthlyPrice = planConfig.monthlyPrice * numberOfUsers;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
   const price = billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice;
-  const tva = Math.round(price * 0.2 * 100) / 100;
-  const total = Math.round((price + tva) * 100) / 100;
+  const total = Math.round(price * 100) / 100;
 
   // Détermine si on affiche le sélecteur de membres
   const showUserSelector = planId === 'professionnel' || planId === 'cabinet-plus';
@@ -254,17 +253,9 @@ export default function CheckoutPublic() {
 
                   {/* Price Summary */}
                   <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Prix HT</span>
-                      <span className="font-medium">{price}€</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">TVA (20%)</span>
-                      <span className="font-medium">{tva}€</span>
-                    </div>
-                    <div className="pt-2 border-t border-gray-300">
+                    <div className="pt-2">
                       <div className="flex justify-between">
-                        <span className="font-bold text-lg">Total TTC</span>
+                        <span className="font-bold text-lg">Total</span>
                         <span className="font-bold text-2xl text-primary">{total}€</span>
                       </div>
                       <p className="text-xs text-gray-500 mt-1">

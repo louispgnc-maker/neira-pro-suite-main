@@ -94,8 +94,7 @@ export default function CheckoutCabinetPlus() {
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
   const basePrice = billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice;
   const price = basePrice * userCount;
-  const tva = Math.round(price * 0.2 * 100) / 100;
-  const total = Math.round((price + tva) * 100) / 100;
+  const total = Math.round(price * 100) / 100;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -445,20 +444,15 @@ export default function CheckoutCabinetPlus() {
                     {/* Récapitulatif */}
                     <div className="border-t pt-4 space-y-2">
                       <div className="flex justify-between text-sm text-gray-900">
-                        <span>Abonnement {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}</span>
-                        <span>{basePrice}€ × {userCount}</span>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-900">
-                        <span>Sous-total</span>
-                        <span>{price}€</span>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-900">
-                        <span>TVA (20%)</span>
-                        <span>{tva}€</span>
+                        <span>Prix unitaire</span>
+                        <span>{basePrice}€ / membre</span>
                       </div>
                       <div className="flex justify-between font-bold text-base border-t pt-2 text-gray-900">
-                        <span>Total</span>
+                        <span>Total ({userCount} membre{userCount > 1 ? 's' : ''})</span>
                         <span>{total}€</span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Facturation {billingPeriod === 'monthly' ? 'mensuelle' : 'annuelle'}
                       </div>
                     </div>
 
