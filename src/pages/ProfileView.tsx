@@ -531,33 +531,23 @@ export default function ProfileView() {
                 </Card>
               </div>
 
-              {/* 🔷 BLOC 3 — CALCUL TRANSPARENT */}
-              <Card className="bg-gradient-to-br from-blue-600 to-purple-600 text-white">
-                <CardContent className="pt-6">
-                  <div className="space-y-3">
-                    <h3 className="font-semibold text-lg mb-4">Détail du calcul</h3>
-                    
-                    <div className="space-y-2 text-sm opacity-95">
-                      <div className="flex justify-between items-center pb-2 border-b border-white/20">
-                        <span>Abonnement {subscriptionInfo?.subscription_tier || 'Free'}</span>
-                        <span className="font-medium">
-                          {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')} € × {memberCount} {memberCount > 1 ? 'membres' : 'membre'} = {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free') * memberCount} €
-                        </span>
-                      </div>
-                      
-                      <div className="flex justify-between items-center pb-3 border-b border-white/20">
-                        <span>Crédits signatures hors forfait</span>
-                        <span className="font-medium">{signatureCreditsTotal} €</span>
-                      </div>
-                      
-                      <div className="flex justify-between items-center text-base font-bold pt-2">
-                        <span>Total mensuel HT</span>
-                        <span className="text-2xl">{calculateMonthlyTotal()} €</span>
-                      </div>
-                    </div>
+              {/* Détail du calcul - discret */}
+              <div className="text-sm text-muted-foreground space-y-1 pt-2 pb-4 border-t">
+                <div className="flex justify-between">
+                  <span>Abonnement {subscriptionInfo?.subscription_tier || 'Free'}</span>
+                  <span>{getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')} € × {memberCount} = {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free') * memberCount} €</span>
+                </div>
+                {signatureCreditsTotal > 0 && (
+                  <div className="flex justify-between">
+                    <span>Crédits signatures hors forfait</span>
+                    <span>{signatureCreditsTotal} €</span>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+                <div className="flex justify-between font-semibold text-foreground pt-1 border-t">
+                  <span>Total mensuel HT</span>
+                  <span>{calculateMonthlyTotal()} €</span>
+                </div>
+              </div>
 
               {/* Boutons d'action avec hiérarchie */}
               <div className="flex gap-3">
