@@ -60,14 +60,23 @@ export default function ProfileView() {
         const cabinetData = data.cabinets as any;
         const cabinetRole = cabinetData?.role;
         
+        console.log('🔍 DEBUG Cabinet:', {
+          cabinetRole,
+          expectedRole: role,
+          role_cabinet: data.role_cabinet,
+          isFounder: data.role_cabinet?.toLowerCase() === 'fondateur'
+        });
+        
         if (cabinetRole === role) {
           setCabinetName(cabinetData?.nom || null);
           setCabinetFonction(data.role_cabinet || null);
           // Vérifier si l'utilisateur est fondateur selon le role_cabinet
-          setIsFounder(data.role_cabinet?.toLowerCase() === 'fondateur');
+          const foundateur = data.role_cabinet?.toLowerCase() === 'fondateur';
+          console.log('✅ Setting isFounder to:', foundateur);
+          setIsFounder(foundateur);
           
           // Charger les infos d'abonnement si fondateur
-          if (data.role_cabinet?.toLowerCase() === 'fondateur' && cabinetData?.id) {
+          if (foundateur && cabinetData?.id) {
             loadSubscriptionInfo(cabinetData.id);
           }
         } else {
