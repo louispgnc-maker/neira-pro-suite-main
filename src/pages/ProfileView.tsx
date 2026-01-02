@@ -298,6 +298,9 @@ export default function ProfileView() {
   };
 
   console.log('🔷 RENDER ProfileView - isFounder:', isFounder, 'cabinetFonction:', cabinetFonction);
+  console.log('💳 subscriptionInfo:', subscriptionInfo);
+  console.log('👥 memberCount:', memberCount);
+  console.log('✍️ signatureCredits:', { total: signatureCreditsTotal, count: signatureCreditsCount });
 
   return (
     <AppLayout>
