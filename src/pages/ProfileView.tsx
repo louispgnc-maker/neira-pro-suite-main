@@ -116,33 +116,40 @@ export default function ProfileView() {
 
     setSendingContact(true);
     try {
-      // Stocker le message directement dans Supabase
-      const { error } = await supabase
-        .from('contact_messages')
-        .insert({
-          user_id: user?.id,
-          first_name: profile?.first_name || profile?.nom || 'Utilisateur',
-          last_name: profile?.last_name || profile?.prenom || 'Neira',
-          email: user?.email || 'noreply@neira.fr',
-          company: cabinetName || null,
-          subject: contactForm.subject,
-          message: contactForm.message,
-          status: 'new'
-        });
+      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA';
+      
+      const response = await fetch(
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/send-contact-email',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': anonKey,
+            'Authorization': `Bearer ${anonKey}`,
+          },
+          body: JSON.stringify({
+            firstName: profile?.first_name || profile?.nom || '',
+            lastName: profile?.last_name || profile?.prenom || '',
+            email: user?.email || '',
+            company: cabinetName || '',
+            subject: contactForm.subject,
+            message: contactForm.message,
+          })
+        }
+      );
 
-      if (error) {
-        console.error('Error saving contact message:', error);
-        throw error;
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'envoi du message');
       }
       
-      toast.success('Votre message a été envoyé avec succès', {
+      toast.success('Message envoyé avec succès !', {
         description: 'Nous vous répondrons dans les plus brefs délais.'
       });
       setContactForm({ subject: '', message: '' });
     } catch (error) {
       console.error('Erreur envoi contact:', error);
       toast.error('Erreur lors de l\'envoi du message', {
-        description: 'Veuillez réessayer plus tard ou nous contacter directement à support@neira.fr'
+        description: 'Veuillez réessayer plus tard ou nous contacter directement à contact@neira.fr'
       });
     } finally {
       setSendingContact(false);
