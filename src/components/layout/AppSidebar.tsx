@@ -396,16 +396,18 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className={`border-t border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
-        <Button
-          onClick={handleLogout}
-          variant="ghost"
-          className={`w-full gap-3 ${isCollapsed ? 'justify-center p-2' : 'justify-start'} text-red-600 hover:bg-red-50 hover:text-red-700`}
-          title={isCollapsed ? 'Déconnexion' : undefined}
-        >
-          <Power className="h-4 w-4 flex-shrink-0" />
-          {!isCollapsed && <span className="text-sm">Déconnexion</span>}
-        </Button>
+      <SidebarFooter className={`border-t border-sidebar-border ${isCollapsed ? 'p-2' : 'p-0'}`}>
+        <div className={isCollapsed ? 'p-2' : 'px-2 py-2'}>
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            className={`w-full gap-3 ${isCollapsed ? 'justify-center p-2' : 'justify-start px-3'} text-red-600 hover:bg-red-50 hover:text-red-700`}
+            title={isCollapsed ? 'Déconnexion' : undefined}
+          >
+            <Power className="h-4 w-4 flex-shrink-0" />
+            {!isCollapsed && <span className="text-sm">Déconnexion</span>}
+          </Button>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

@@ -207,11 +207,17 @@ export default function ProfileView() {
         </div>
 
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className={`grid w-full ${isFounder ? 'grid-cols-4' : 'grid-cols-3'} mb-6`}>
             <TabsTrigger value="profile">Profil</TabsTrigger>
-            <TabsTrigger value="billing">
+            {isFounder && (
+              <TabsTrigger value="billing">
+                <CreditCard className="w-4 h-4 mr-2" />
+                Facturation
+              </TabsTrigger>
+            )}
+            <TabsTrigger value="subscription">
               <CreditCard className="w-4 h-4 mr-2" />
-              Facturation
+              Abonnement
             </TabsTrigger>
             <TabsTrigger value="contact">
               <Mail className="w-4 h-4 mr-2" />
@@ -353,8 +359,95 @@ export default function ProfileView() {
             </Card>
           </TabsContent>
 
-          {/* Onglet Facturation */}
-          <TabsContent value="billing" className="space-y-6">
+          {/* Onglet Facturation (seulement pour les fondateurs) */}
+          {isFounder && (
+            <TabsContent value="billing" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Facturation du cabinet</CardTitle>
+                  <CardDescription>
+                    Détails de facturation mensuelle pour votre cabinet
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    {/* Informations cabinet */}
+                    <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-lg">Facturation mensuelle</h3>
+                        <Badge className="bg-green-600">Actif</Badge>
+                      </div>
+                      <p className="text-sm text-gray-600">{cabinetName}</p>
+                    </div>
+
+                    {/* Détails abonnement */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 border rounded-lg bg-white">
+                        <div className="text-sm font-medium text-muted-foreground mb-1">Formule d'abonnement</div>
+                        <div className="text-2xl font-bold capitalize">
+                          {subscriptionInfo?.subscription_tier || 'Free'}
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">
+                          {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')}/mois
+                        </div>
+                      </div>
+
+                      <div className="p-4 border rounded-lg bg-white">
+                        <div className="text-sm font-medium text-muted-foreground mb-1">Crédits signatures</div>
+                        <div className="text-2xl font-bold">
+                          À venir
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">
+                          Crédits additionnels
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Total mensuel */}
+                    <div className="p-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-sm opacity-90 mb-1">Total mensuel</div>
+                          <div className="text-3xl font-bold">
+                            {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')}
+                          </div>
+                          <div className="text-sm opacity-90 mt-1">
+                            Abonnement + Crédits signatures
+                          </div>
+                        </div>
+                        <CreditCard className="w-12 h-12 opacity-50" />
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3 pt-4">
+                      <Button 
+                        onClick={() => navigate(role === 'notaire' ? '/notaires/subscription' : '/avocats/subscription')}
+                        className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
+                      >
+                        Modifier l'abonnement
+                      </Button>
+                      <Button variant="outline">
+                        Voir les factures
+                      </Button>
+                    </div>
+
+                    {/* Note informative */}
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-sm text-blue-900">
+                        💡 <strong>Note :</strong> Les crédits signatures seront ajoutés automatiquement
+                        selon votre utilisation mensuelle. Vous serez facturé uniquement pour les signatures
+                        effectuées au-delà de votre quota inclus dans l'abonnement.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
+
+          {/* Onglet Abonnement */}
+          <TabsContent value="subscription" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Abonnement et facturation</CardTitle>
