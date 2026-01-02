@@ -40,11 +40,7 @@ export default function ProfileView() {
   const [sendingContact, setSendingContact] = useState(false);
 
   const loadUserCabinet = useCallback(async () => {
-    if (!user) {
-      console.log('❌ loadUserCabinet: pas de user');
-      return;
-    }
-    console.log('🚀 loadUserCabinet appelé pour user:', user.id);
+    if (!user) return;
     setLoadingCabinet(true);
     try {
       // D'abord vérifier quelles lignes existent pour cet utilisateur
@@ -53,8 +49,6 @@ export default function ProfileView() {
         .select('*')
         .eq('user_id', user.id);
       
-      console.log('🔍 Toutes les lignes cabinet_members:', JSON.stringify(allMemberships, null, 2));
-      
       const { data, error } = await supabase
         .from('cabinet_members')
         .select('cabinets(nom, role, id, owner_id), role_cabinet, status')
@@ -62,15 +56,12 @@ export default function ProfileView() {
         .limit(1)
         .maybeSingle();
       
-      console.log('📊 Résultat query (sans filtre status):', { data, error });
-      
       if (error) {
         console.error('❌ Error loading cabinet:', error);
         setCabinetName(null);
         setCabinetFonction(null);
         setIsFounder(false);
       } else if (!data) {
-        console.log('⚠️ Pas de données cabinet trouvées');
         setCabinetName(null);
         setCabinetFonction(null);
         setIsFounder(false);
@@ -78,30 +69,18 @@ export default function ProfileView() {
         const cabinetData = data.cabinets as any;
         const cabinetRole = cabinetData?.role;
         
-        console.log('🔍 DEBUG Cabinet:', {
-          cabinetRole,
-          expectedRole: role,
-          role_cabinet: data.role_cabinet,
-          isFounder: data.role_cabinet?.toLowerCase() === 'fondateur'
-        });
-        
         if (cabinetRole === role) {
           setCabinetName(cabinetData?.nom || null);
           setCabinetFonction(data.role_cabinet || null);
           setCabinetId(cabinetData?.id || null);
-          // Vérifier si l'utilisateur est fondateur selon le role_cabinet
           const foundateur = data.role_cabinet?.toLowerCase() === 'fondateur';
-          console.log('✅ Setting isFounder to:', foundateur);
           setIsFounder(foundateur);
           
           // Charger les infos d'abonnement si fondateur
           if (foundateur && cabinetData?.id) {
-            console.log('🚀 Chargement des infos pour cabinet ID:', cabinetData.id);
-            loadSubscriptionInfo(cabinetData.id);
-            loadMemberCount(cabinetData.id);
-            loadSignatureCredits(cabinetData.id);
-          } else {
-            console.log('⚠️ Pas de chargement:', { foundateur, cabinetId: cabinetData?.id });
+            await loadSubscriptionInfo(cabinetData.id);
+            await loadMemberCount(cabinetData.id);
+            await loadSignatureCredits(cabinetData.id);
           }
         } else {
           setCabinetName(null);
@@ -120,7 +99,6 @@ export default function ProfileView() {
   }, [user, role]);
 
   const loadSubscriptionInfo = async (cabinetId: string) => {
-    console.log('📥 loadSubscriptionInfo appelé avec cabinetId:', cabinetId);
     try {
       const { data, error } = await supabase
         .from('cabinets')
@@ -128,7 +106,6 @@ export default function ProfileView() {
         .eq('id', cabinetId)
         .single();
       
-      console.log('📊 Subscription data:', { data, error });
       if (!error && data) {
         setSubscriptionInfo(data);
       }
@@ -138,24 +115,13 @@ export default function ProfileView() {
   };
 
   const loadMemberCount = async (cabinetId: string) => {
-    console.log('👥 loadMemberCount appelé avec cabinetId:', cabinetId);
     try {
-      // D'abord voir tous les membres sans filtre
-      const { data: allMembers, error: debugError } = await supabase
-        .from('cabinet_members')
-        .select('status, user_id')
-        .eq('cabinet_id', cabinetId);
-      
-      console.log('🔍 Tous les membres du cabinet:', allMembers);
-      
-      // Compter tous les membres sauf ceux rejetés/en attente
       const { count, error } = await supabase
         .from('cabinet_members')
         .select('*', { count: 'exact', head: true })
         .eq('cabinet_id', cabinetId)
         .in('status', ['active', 'inactive']);
       
-      console.log('📊 Member count (active + inactive):', { count, error });
       if (!error && count !== null) {
         setMemberCount(count);
       }
@@ -165,7 +131,6 @@ export default function ProfileView() {
   };
 
   const loadSignatureCredits = async (cabinetId: string) => {
-    console.log('✍️ loadSignatureCredits appelé avec cabinetId:', cabinetId);
     try {
       const { data, error } = await supabase
         .from('cabinet_members')
@@ -174,16 +139,13 @@ export default function ProfileView() {
         .in('status', ['active', 'inactive'])
         .not('signature_addon_quantity', 'is', null);
       
-      console.log('📊 Signature credits data:', { data, error });
       if (!error && data) {
-        // Calculer le total des crédits payants
         const totalPrice = data.reduce((sum, member) => {
           return sum + (member.signature_addon_price || 0);
         }, 0);
         const totalQuantity = data.reduce((sum, member) => {
           return sum + (member.signature_addon_quantity || 0);
         }, 0);
-        console.log('💰 Totaux calculés:', { totalPrice, totalQuantity });
         setSignatureCreditsTotal(totalPrice);
         setSignatureCreditsCount(totalQuantity);
       }
@@ -296,11 +258,6 @@ export default function ProfileView() {
     // Ajouter les crédits signatures payants (montant unique, pas mensuel)
     return membersCost + signatureCreditsTotal;
   };
-
-  console.log('🔷 RENDER ProfileView - isFounder:', isFounder, 'cabinetFonction:', cabinetFonction);
-  console.log('💳 subscriptionInfo:', subscriptionInfo);
-  console.log('👥 memberCount:', memberCount);
-  console.log('✍️ signatureCredits:', { total: signatureCreditsTotal, count: signatureCreditsCount });
 
   return (
     <AppLayout>
