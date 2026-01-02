@@ -17,25 +17,41 @@ serve(async (req) => {
   }
 
   try {
-    const { priceId, successUrl, cancelUrl, customerEmail, cabinetId } = await req.json()
+    const { priceId, successUrl, cancelUrl, customerEmail, cabinetId, quantity } = await req.json()
 
-    if (!priceId) {
-      throw new Error('Price ID is required')
+    if (!priceId || !cabinetId || !quantity) {
+      throw new Error('Price ID, cabinet ID and quantity are required')
     }
 
-    // Create Checkout Session with SEPA enabled
-    const session = await stripe.checkout.sessions.create({
+    // Vérifier si un customer existe déjà pour ce cabinet
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.39.0')
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
+
+    const { data: cabinet } = await supabase
+      .from('cabinets')
+      .select('stripe_customer_id')
+      .eq('id', cabinetId)
+      .single()
+
+    let customerId = cabinet?.stripe_customer_id
+
+    // Si pas de customer, on laisse Stripe le créer via customer_email
+    const sessionParams: any = {
       mode: 'subscription',
-      payment_method_types: ['sepa_debit', 'card'], // SEPA en priorité, carte en fallback
+      payment_method_types: ['sepa_debit', 'card'], // SEPA en priorité
       line_items: [
         {
           price: priceId,
-          quantity: 1,
+          quantity: quantity, // Nombre de membres
         },
       ],
       success_url: successUrl || `${req.headers.get('origin')}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl || `${req.headers.get('origin')}/subscription`,
-      customer_email: customerEmail,
+      billing_address_collection: 'required',
+      locale: 'fr',
       metadata: {
         cabinet_id: cabinetId,
       },
@@ -44,9 +60,18 @@ serve(async (req) => {
           cabinet_id: cabinetId,
         },
       },
-      billing_address_collection: 'required', // Requis pour SEPA
-      locale: 'fr', // Interface en français
-    })
+    }
+
+    // Si customer existant, on l'utilise
+    if (customerId) {
+      sessionParams.customer = customerId
+    } else {
+      // Sinon, on crée via email
+      sessionParams.customer_email = customerEmail
+    }
+
+    // Create Checkout Session
+    const session = await stripe.checkout.sessions.create(sessionParams)
 
     return new Response(
       JSON.stringify({ sessionId: session.id, url: session.url }),

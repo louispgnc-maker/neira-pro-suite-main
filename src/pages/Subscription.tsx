@@ -305,6 +305,7 @@ export default function Subscription() {
         priceId,
         customerEmail: user?.email || '',
         cabinetId: cabinetId || '',
+        quantity: activeMembersCount, // Nombre de membres actifs
         successUrl: `${window.location.origin}${prefix}/subscription?success=true`,
         cancelUrl: `${window.location.origin}${prefix}/subscription?canceled=true`,
       });

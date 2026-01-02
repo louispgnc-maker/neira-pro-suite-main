@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import emailjs from '@emailjs/browser';
+import { createPortalSession } from "@/lib/stripeCheckout";
 
 export default function ProfileView() {
   const { user, profile } = useAuth();
@@ -32,6 +33,7 @@ export default function ProfileView() {
   const [signatureCreditsTotal, setSignatureCreditsTotal] = useState(0);
   const [signatureCreditsCount, setSignatureCreditsCount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState<{ last4: string; brand: string } | null>(null);
+  const [stripeCustomerId, setStripeCustomerId] = useState<string | null>(null);
   
   // État pour le formulaire de contact
   const [contactForm, setContactForm] = useState({
@@ -103,12 +105,13 @@ export default function ProfileView() {
     try {
       const { data, error } = await supabase
         .from('cabinets')
-        .select('subscription_tier, subscription_status, subscription_started_at, payment_method_last4, payment_method_brand')
+        .select('subscription_tier, subscription_status, subscription_started_at, payment_method_last4, payment_method_brand, stripe_customer_id')
         .eq('id', cabinetId)
         .single();
       
       if (!error && data) {
         setSubscriptionInfo(data);
+        setStripeCustomerId(data.stripe_customer_id || null);
         if (data.payment_method_last4) {
           setPaymentMethod({
             last4: data.payment_method_last4,
@@ -599,11 +602,25 @@ export default function ProfileView() {
                     </div>
                     <Button 
                       variant="outline"
-                      onClick={() => {
-                        toast.info('Redirection vers la gestion des paiements...', {
-                          description: 'Vous allez être redirigé vers Stripe pour mettre à jour vos informations de paiement'
-                        });
-                        // TODO: Intégrer avec Stripe Customer Portal
+                      onClick={async () => {
+                        if (!stripeCustomerId) {
+                          toast.error('Aucun moyen de paiement configuré', {
+                            description: 'Veuillez d\'abord souscrire à un abonnement'
+                          });
+                          return;
+                        }
+
+                        try {
+                          toast.info('Redirection vers la gestion des paiements...');
+                          const { url } = await createPortalSession(
+                            stripeCustomerId,
+                            window.location.href
+                          );
+                          window.location.href = url;
+                        } catch (error) {
+                          console.error('Erreur ouverture portal:', error);
+                          toast.error('Erreur lors de l\'ouverture du portail de paiement');
+                        }
                       }}
                     >
                       Modifier
