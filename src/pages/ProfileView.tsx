@@ -496,31 +496,14 @@ export default function ProfileView() {
                       </div>
                     </div>
 
-                    {/* Informations de facturation */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="p-4 border rounded-lg bg-blue-50">
-                        <div className="text-sm font-medium text-blue-700 mb-1">Abonnement depuis le</div>
-                        <div className="text-lg font-semibold text-blue-900">
-                          {subscriptionInfo?.subscription_started_at 
-                            ? formatDate(new Date(subscriptionInfo.subscription_started_at))
-                            : '—'
-                          }
-                        </div>
-                      </div>
-
-                      <div className="p-4 border rounded-lg bg-purple-50">
-                        <div className="text-sm font-medium text-purple-700 mb-1">Mensualité en cours</div>
-                        <div className="text-lg font-semibold text-purple-900">
-                          {getSubscriptionMonth()}{getSubscriptionMonth() === 1 ? 'ère' : 'ème'} mensualité
-                        </div>
-                      </div>
-
-                      <div className="p-4 border rounded-lg bg-green-50">
-                        <div className="text-sm font-medium text-green-700 mb-1">Prochain paiement</div>
-                        <div className="text-lg font-semibold text-green-900">
-                          {formatDate(getNextPaymentDate())}
-                        </div>
-                      </div>
+                    {/* Informations de facturation - discret */}
+                    <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t">
+                      <p>
+                        Abonné depuis le {subscriptionInfo?.subscription_started_at 
+                          ? formatDate(new Date(subscriptionInfo.subscription_started_at))
+                          : '—'
+                        } · {getSubscriptionMonth()}{getSubscriptionMonth() === 1 ? 'ère' : 'ème'} mensualité · Prochain paiement le {formatDate(getNextPaymentDate())}
+                      </p>
                     </div>
 
                     {/* Total mensuel */}
