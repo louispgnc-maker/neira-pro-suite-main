@@ -10,6 +10,7 @@ import { Mail, ArrowLeft, Send } from "lucide-react";
 import emailjs from '@emailjs/browser';
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function ContactSupport() {
   const navigate = useNavigate();
@@ -51,34 +52,59 @@ export default function ContactSupport() {
     setIsSubmitting(true);
 
     try {
-      // Send confirmation email to client
-      await emailjs.send(
-        'service_pplgv88',
-        'template_ss4jq2s',
-        {
-          from_name: `${formData.firstName} ${formData.lastName}`,
-          from_email: formData.email,
-          company: formData.company,
+      // D'abord, sauvegarder dans Supabase (prioritaire)
+      const { error: dbError } = await supabase
+        .from('contact_messages')
+        .insert({
+          user_id: user?.id,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          company: formData.company || null,
           subject: formData.subject,
           message: formData.message,
-        }
-      );
+          status: 'new'
+        });
 
-      // Send notification email to Neira team
-      await emailjs.send(
-        'service_pplgv88',
-        'template_u6upq8f',
-        {
-          from_name: `${formData.firstName} ${formData.lastName}`,
-          from_email: formData.email,
-          company: formData.company,
-          subject: formData.subject,
-          message: formData.message,
-        }
-      );
+      if (dbError) {
+        console.error('Error saving to database:', dbError);
+        throw dbError;
+      }
 
-      toast.success("Message envoyé !", {
-        description: "Nous vous répondrons dans les plus brefs délais."
+      // Ensuite, envoyer les emails via EmailJS
+      try {
+        // Send confirmation email to client
+        await emailjs.send(
+          'service_pplgv88',
+          'template_ss4jq2s',
+          {
+            from_name: `${formData.firstName} ${formData.lastName}`,
+            from_email: formData.email,
+            company: formData.company,
+            subject: formData.subject,
+            message: formData.message,
+          }
+        );
+
+        // Send notification email to Neira team
+        await emailjs.send(
+          'service_pplgv88',
+          'template_u6upq8f',
+          {
+            from_name: `${formData.firstName} ${formData.lastName}`,
+            from_email: formData.email,
+            company: formData.company,
+            subject: formData.subject,
+            message: formData.message,
+          }
+        );
+      } catch (emailError) {
+        // L'email a échoué mais le message est sauvegardé dans la DB
+        console.log('Email notification failed (non-critical):', emailError);
+      }
+
+      toast.success('Message envoyé avec succès !', {
+        description: 'Nous vous répondrons dans les plus brefs délais.'
       });
 
       // Reset form
@@ -92,9 +118,9 @@ export default function ContactSupport() {
       });
 
     } catch (error) {
-      console.error('Error sending email:', error);
-      toast.error("Erreur lors de l'envoi", {
-        description: "Veuillez réessayer ou nous contacter directement."
+      console.error('Contact form error:', error);
+      toast.error('Erreur lors de l\'envoi', {
+        description: 'Veuillez réessayer plus tard ou nous contacter directement à contact@neira.fr'
       });
     } finally {
       setIsSubmitting(false);
