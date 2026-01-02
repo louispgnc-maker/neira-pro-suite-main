@@ -277,8 +277,8 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
               <p><strong>Note :</strong> Les statistiques sont calculées individuellement pour chaque membre du cabinet.</p>
             </div>
 
-            {/* Section d'achat de forfaits signatures pour plan essentiel ou professionnel */}
-            {(subscriptionPlan === 'essentiel' || subscriptionPlan === 'professionnel') && (
+            {/* Section d'achat de forfaits signatures pour tous les plans */}
+            {(subscriptionPlan === 'essentiel' || subscriptionPlan === 'professionnel' || subscriptionPlan === 'cabinet-plus') && (
               <div className="border-t pt-4">
                 <Button
                   onClick={() => setBuyDialogOpen(true)}
