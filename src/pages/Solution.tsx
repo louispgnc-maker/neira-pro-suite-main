@@ -182,7 +182,7 @@ export default function Solution() {
                 </div>
               </div>
               
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/checkout-essentiel')}>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate('/checkout/essentiel')}>
                 Choisir Essentiel
               </Button>
             </Card>
@@ -264,7 +264,7 @@ export default function Solution() {
                 <p className="text-sm text-green-700 font-semibold">⚡ Pensé pour les cabinets en croissance</p>
               </div>
               
-              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate('/checkout-professionnel')}>
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate('/checkout/professionnel')}>
                 Choisir Professionnel
               </Button>
             </Card>
@@ -335,7 +335,7 @@ export default function Solution() {
                 </div>
               </div>
               
-              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/checkout-cabinet-plus')}>
+              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/checkout/cabinet-plus')}>
                 Choisir Cabinet+
               </Button>
             </Card>
