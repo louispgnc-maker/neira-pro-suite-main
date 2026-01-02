@@ -286,6 +286,10 @@ export default function ProfileView() {
     }).format(date);
   };
 
+  const getCurrentMonthName = () => {
+    return new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(new Date());
+  };
+
   return (
     <AppLayout>
       <div className="p-6 max-w-5xl mx-auto space-y-6">
@@ -445,107 +449,139 @@ export default function ProfileView() {
           {/* Onglet Facturation (seulement pour les fondateurs) */}
           {isFounder && (
             <TabsContent value="billing" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Facturation du cabinet</CardTitle>
-                  <CardDescription>
-                    Détails de facturation mensuelle pour votre cabinet
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
+              
+              {/* 🔷 BLOC 1 — RÉSUMÉ DE FACTURATION */}
+              <Card className="shadow-lg">
+                <CardContent className="pt-6">
                   <div className="space-y-4">
-                    {/* Informations cabinet */}
-                    <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-lg">Facturation mensuelle</h3>
-                        <Badge className="bg-green-600">Actif</Badge>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-lg font-semibold text-muted-foreground">
+                          Facturation – {getCurrentMonthName().charAt(0).toUpperCase() + getCurrentMonthName().slice(1)}
+                        </h2>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {cabinetName}
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-600">{cabinetName}</p>
+                      <Badge className="bg-green-600 hover:bg-green-700">Actif</Badge>
                     </div>
 
-                    {/* Détails abonnement */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="p-4 border rounded-lg bg-white">
-                        <div className="text-sm font-medium text-muted-foreground mb-1">Formule d'abonnement</div>
-                        <div className="text-2xl font-bold capitalize">
-                          {subscriptionInfo?.subscription_tier || 'Free'}
-                        </div>
-                        <div className="text-sm text-gray-600 mt-1">
-                          {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')}€/mois par membre
-                        </div>
+                    <div className="border-t pt-4 mt-4">
+                      <div className="text-sm text-muted-foreground mb-2">Total mensuel</div>
+                      <div className="text-5xl font-bold text-primary mb-3">
+                        {calculateMonthlyTotal()} € <span className="text-xl text-muted-foreground">HT</span>
                       </div>
-
-                      <div className="p-4 border rounded-lg bg-white">
-                        <div className="text-sm font-medium text-muted-foreground mb-1">Nombre de membres</div>
-                        <div className="text-2xl font-bold">
-                          {memberCount}
-                        </div>
-                        <div className="text-sm text-gray-600 mt-1">
-                          {memberCount > 1 ? 'Membres actifs' : 'Membre actif'}
-                        </div>
-                      </div>
-
-                      <div className="p-4 border rounded-lg bg-white">
-                        <div className="text-sm font-medium text-muted-foreground mb-1">Crédits signatures</div>
-                        <div className="text-2xl font-bold">
-                          {signatureCreditsCount > 0 ? signatureCreditsCount : '—'}
-                        </div>
-                        <div className="text-sm text-gray-600 mt-1">
-                          {signatureCreditsTotal > 0 ? `${signatureCreditsTotal}€ payés` : 'Aucun crédit acheté'}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Informations de facturation - discret */}
-                    <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t">
-                      <p>
-                        Abonné depuis le {subscriptionInfo?.subscription_started_at 
-                          ? formatDate(new Date(subscriptionInfo.subscription_started_at))
-                          : '—'
-                        } · {getSubscriptionMonth()}{getSubscriptionMonth() === 1 ? 'ère' : 'ème'} mensualité · Prochain paiement le <span className="font-bold underline">{formatDate(getNextPaymentDate())}</span>
-                      </p>
-                    </div>
-
-                    {/* Total mensuel */}
-                    <div className="p-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-lg">
-                      <div className="flex items-center justify-between">
+                      
+                      <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
                         <div>
-                          <div className="text-sm opacity-90 mb-1">Total mensuel</div>
-                          <div className="text-3xl font-bold">
-                            {calculateMonthlyTotal()}€
-                          </div>
-                          <div className="text-sm opacity-90 mt-1">
-                            {memberCount} × {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')}€{signatureCreditsTotal > 0 ? ` + ${signatureCreditsTotal}€ (signatures)` : ''}
-                          </div>
+                          <span className="capitalize">{subscriptionInfo?.subscription_tier || 'Free'}</span> · {memberCount} {memberCount > 1 ? 'membres' : 'membre'}
                         </div>
-                        <CreditCard className="w-12 h-12 opacity-50" />
+                        <div>
+                          Prochain prélèvement : <span className="font-semibold text-foreground">{formatDate(getNextPaymentDate())}</span>
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-3 pt-4">
-                      <Button 
-                        onClick={() => navigate(role === 'notaire' ? '/notaires/subscription' : '/avocats/subscription')}
-                        className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
-                      >
-                        Modifier l'abonnement
-                      </Button>
-                      <Button variant="outline">
-                        Voir les factures
-                      </Button>
-                    </div>
-
-                    {/* Note informative */}
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                      <p className="text-sm text-blue-900">
-                        💡 <strong>Note :</strong> Les crédits signatures seront ajoutés automatiquement
-                        selon votre utilisation mensuelle. Vous serez facturé uniquement pour les signatures
-                        effectuées au-delà de votre quota inclus dans l'abonnement.
-                      </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
+
+              {/* 🔷 BLOC 2 — DÉTAIL DU PRIX */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Formule</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold capitalize mb-1">
+                      {subscriptionInfo?.subscription_tier || 'Free'}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')} € / mois / membre
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Membres actifs</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold mb-1">{memberCount}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {memberCount > 1 ? 'Membres' : 'Membre'}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Signatures</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">Incluses :</span>
+                        <span className="text-green-600 font-semibold">✔</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Hors forfait : {signatureCreditsTotal > 0 ? `${signatureCreditsTotal} €` : '0 €'}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* 🔷 BLOC 3 — CALCUL TRANSPARENT */}
+              <Card className="bg-gradient-to-br from-blue-600 to-purple-600 text-white">
+                <CardContent className="pt-6">
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-lg mb-4">Détail du calcul</h3>
+                    
+                    <div className="space-y-2 text-sm opacity-95">
+                      <div className="flex justify-between items-center pb-2 border-b border-white/20">
+                        <span>Abonnement {subscriptionInfo?.subscription_tier || 'Free'}</span>
+                        <span className="font-medium">
+                          {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')} € × {memberCount} {memberCount > 1 ? 'membres' : 'membre'} = {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free') * memberCount} €
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center pb-3 border-b border-white/20">
+                        <span>Crédits signatures hors forfait</span>
+                        <span className="font-medium">{signatureCreditsTotal} €</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-base font-bold pt-2">
+                        <span>Total mensuel HT</span>
+                        <span className="text-2xl">{calculateMonthlyTotal()} €</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Boutons d'action avec hiérarchie */}
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => navigate(role === 'notaire' ? '/notaires/subscription' : '/avocats/subscription')}
+                  className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
+                  size="lg"
+                >
+                  Modifier l'abonnement
+                </Button>
+                <Button variant="outline" size="lg">
+                  Voir les factures
+                </Button>
+              </div>
+
+              {/* Note informative - version courte */}
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-900 leading-relaxed">
+                  ℹ️ Les signatures incluses dans votre abonnement sont comprises.<br />
+                  Les signatures supplémentaires sont facturées uniquement si le quota est dépassé.<br />
+                  <span className="font-medium">Aucun achat automatique sans utilisation.</span>
+                </p>
+              </div>
+
             </TabsContent>
           )}
 
