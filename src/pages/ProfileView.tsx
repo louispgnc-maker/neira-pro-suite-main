@@ -502,7 +502,7 @@ export default function ProfileView() {
                         Abonné depuis le {subscriptionInfo?.subscription_started_at 
                           ? formatDate(new Date(subscriptionInfo.subscription_started_at))
                           : '—'
-                        } · {getSubscriptionMonth()}{getSubscriptionMonth() === 1 ? 'ère' : 'ème'} mensualité · Prochain paiement le {formatDate(getNextPaymentDate())}
+                        } · {getSubscriptionMonth()}{getSubscriptionMonth() === 1 ? 'ère' : 'ème'} mensualité · Prochain paiement le <span className="font-bold underline">{formatDate(getNextPaymentDate())}</span>
                       </p>
                     </div>
 
