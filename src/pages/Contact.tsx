@@ -72,8 +72,8 @@ export default function Contact() {
         console.log('Email notification failed (non-critical):', emailError);
       }
 
-      toast.success("Message envoyé avec succès !", {
-        description: "Nous vous répondrons dans les plus brefs délais.",
+      toast.success('Message envoyé avec succès !', {
+        description: 'Nous vous répondrons dans les plus brefs délais.'
       });
 
       // Reset form
@@ -87,8 +87,8 @@ export default function Contact() {
       });
     } catch (error) {
       console.error('Contact form error:', error);
-      toast.error("Erreur lors de l'envoi", {
-        description: "Veuillez réessayer plus tard ou nous contacter directement à contact@neira.fr",
+      toast.error('Erreur lors de l\'envoi', {
+        description: 'Veuillez réessayer plus tard ou nous contacter directement à contact@neira.fr'
       });
     } finally {
       setIsSubmitting(false);

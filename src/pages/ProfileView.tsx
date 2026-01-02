@@ -116,8 +116,8 @@ export default function ProfileView() {
 
     setSendingContact(true);
     try {
-      // Stocker le message directement dans Supabase
-      const { error } = await supabase
+      // D'abord, sauvegarder dans Supabase (prioritaire)
+      const { error: dbError } = await supabase
         .from('contact_messages')
         .insert({
           user_id: user?.id,
@@ -130,12 +130,12 @@ export default function ProfileView() {
           status: 'new'
         });
 
-      if (error) {
-        console.error('Error saving contact message:', error);
-        throw error;
+      if (dbError) {
+        console.error('Error saving to database:', dbError);
+        throw dbError;
       }
 
-      // Optionnel: Tenter d'envoyer l'email via Edge Function (ne bloque pas si ça échoue)
+      // Ensuite, tenter d'envoyer l'email (optionnel, ne bloque pas)
       try {
         const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVseXNyZHF1anpsYnZuamZpbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNjMzMTQsImV4cCI6MjA3NzczOTMxNH0.ItqpqcgP_FFqvmx-FunQv0RmCI9EATJlUWuYmw0zPvA';
         
@@ -159,17 +159,19 @@ export default function ProfileView() {
           }
         );
       } catch (emailError) {
-        // L'envoi d'email a échoué mais le message est sauvegardé
+        // L'email a échoué mais le message est sauvegardé dans la DB
         console.log('Email notification failed (non-critical):', emailError);
       }
-      
+
       toast.success('Message envoyé avec succès !', {
         description: 'Nous vous répondrons dans les plus brefs délais.'
       });
+
+      // Reset form
       setContactForm({ subject: '', message: '' });
     } catch (error) {
-      console.error('Erreur envoi contact:', error);
-      toast.error('Erreur lors de l\'envoi du message', {
+      console.error('Contact form error:', error);
+      toast.error('Erreur lors de l\'envoi', {
         description: 'Veuillez réessayer plus tard ou nous contacter directement à contact@neira.fr'
       });
     } finally {
@@ -443,36 +445,85 @@ export default function ProfileView() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="firstName">Prénom</Label>
+                      <Input
+                        id="firstName"
+                        value={profile?.first_name || profile?.nom || ''}
+                        disabled
+                        className="mt-1 bg-gray-50"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="lastName">Nom</Label>
+                      <Input
+                        id="lastName"
+                        value={profile?.last_name || profile?.prenom || ''}
+                        disabled
+                        className="mt-1 bg-gray-50"
+                      />
+                    </div>
+                  </div>
+
                   <div>
-                    <Label htmlFor="subject">Sujet</Label>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      value={user?.email || ''}
+                      disabled
+                      className="mt-1 bg-gray-50"
+                    />
+                  </div>
+
+                  {cabinetName && (
+                    <div>
+                      <Label htmlFor="company">Cabinet / Entreprise</Label>
+                      <Input
+                        id="company"
+                        value={cabinetName}
+                        disabled
+                        className="mt-1 bg-gray-50"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <Label htmlFor="subject">Titre / Objet *</Label>
                     <Input
                       id="subject"
                       placeholder="Objet de votre message"
                       value={contactForm.subject}
                       onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
                       className="mt-1"
+                      required
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="message">Message</Label>
+                    <Label htmlFor="message">Message *</Label>
                     <Textarea
                       id="message"
-                      placeholder="Décrivez votre demande..."
+                      placeholder="Décrivez votre besoin ou posez votre question..."
                       value={contactForm.message}
                       onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
                       className="mt-1 min-h-[150px]"
+                      required
+                      rows={6}
                     />
                   </div>
 
                   <Button 
                     onClick={handleSendContact}
                     disabled={sendingContact}
-                    className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
+                    className={`w-full ${role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
                   >
-                    <Send className="w-4 h-4 mr-2" />
                     {sendingContact ? 'Envoi en cours...' : 'Envoyer le message'}
                   </Button>
+
+                  <p className="text-xs text-gray-500 text-center">
+                    * Champs obligatoires
+                  </p>
                 </div>
               </CardContent>
             </Card>
