@@ -244,6 +244,9 @@ export default function ProfileView() {
 
   const getSubscriptionPrice = (tier: string) => {
     const prices: Record<string, number> = {
+      'essentiel': 39,
+      'professionnel': 59,
+      'cabinet-plus': 89,
       'free': 0,
       'basic': 29,
       'pro': 79,
