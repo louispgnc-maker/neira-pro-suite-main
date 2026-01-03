@@ -10,9 +10,14 @@ export interface CreateCheckoutSessionParams {
 }
 
 export async function createStripeCheckoutSession(params: CreateCheckoutSessionParams): Promise<string> {
+  console.log('Calling create-subscription-checkout with params:', params);
+  
   const { data, error } = await supabase.functions.invoke('create-subscription-checkout', {
     body: params
   });
+
+  console.log('Response data:', data);
+  console.log('Response error:', error);
 
   if (error) {
     console.error('Error creating checkout session:', error);
@@ -22,6 +27,7 @@ export async function createStripeCheckoutSession(params: CreateCheckoutSessionP
 
   if (data?.error) {
     console.error('Stripe error:', data.error);
+    console.error('Stripe error details:', data.details);
     throw new Error(data.error);
   }
 

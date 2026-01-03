@@ -97,8 +97,12 @@ serve(async (req) => {
     )
   } catch (error) {
     console.error('Error creating checkout session:', error)
+    console.error('Error type:', error.type)
+    console.error('Error code:', error.code)
+    console.error('Error message:', error.message)
+    console.error('Full error:', JSON.stringify(error, null, 2))
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message, details: error }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
