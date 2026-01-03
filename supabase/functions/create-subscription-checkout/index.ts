@@ -51,7 +51,7 @@ serve(async (req) => {
     // Si pas de customer, on laisse Stripe le créer via customer_email
     const sessionParams: any = {
       mode: 'subscription',
-      payment_method_types: ['sepa_debit', 'card'], // SEPA en priorité
+      payment_method_types: ['card'], // Carte uniquement pour commencer
       line_items: [
         {
           price: priceId,
