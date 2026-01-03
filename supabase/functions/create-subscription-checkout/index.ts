@@ -2,7 +2,14 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
 import Stripe from 'https://esm.sh/stripe@14.21.0'
 
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') as string, {
+const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
+console.log('Stripe key loaded:', stripeKey ? `sk_live_...${stripeKey.slice(-4)}` : 'MISSING');
+
+if (!stripeKey) {
+  throw new Error('STRIPE_SECRET_KEY is not configured');
+}
+
+const stripe = new Stripe(stripeKey, {
   apiVersion: '2024-11-20.acacia',
 })
 
@@ -20,7 +27,13 @@ serve(async (req) => {
   try {
     const { priceId, successUrl, cancelUrl, customerEmail, cabinetId, quantity } = await req.json()
 
-    console.log('Checkout request:', { priceId, cabinetId, quantity, customerEmail })
+    console.log('=== CHECKOUT REQUEST START ===');
+    console.log('Plan (priceId):', priceId);
+    console.log('Members count (quantity):', quantity);
+    console.log('Cabinet ID:', cabinetId || 'NEW USER');
+    console.log('Customer email:', customerEmail || 'WILL BE COLLECTED');
+    console.log('Success URL:', successUrl);
+    console.log('Cancel URL:', cancelUrl);
 
     if (!priceId || !quantity) {
       throw new Error('Price ID and quantity are required')
@@ -81,12 +94,15 @@ serve(async (req) => {
     }
     // Sinon, Stripe demandera l'email pendant le checkout
 
-    console.log('Creating Stripe session with params:', sessionParams)
+    console.log('Creating Stripe session with params:', JSON.stringify(sessionParams, null, 2))
 
     // Create Checkout Session
+    console.log('Calling Stripe API...');
     const session = await stripe.checkout.sessions.create(sessionParams)
 
-    console.log('Session created:', session.id)
+    console.log('✅ Session created successfully!');
+    console.log('Session ID:', session.id);
+    console.log('Session URL:', session.url);
 
     return new Response(
       JSON.stringify({ sessionId: session.id, url: session.url }),
@@ -96,13 +112,21 @@ serve(async (req) => {
       }
     )
   } catch (error) {
-    console.error('Error creating checkout session:', error)
-    console.error('Error type:', error.type)
-    console.error('Error code:', error.code)
-    console.error('Error message:', error.message)
+    console.error('❌ ERROR creating checkout session');
+    console.error('Error name:', error.name);
+    console.error('Error type:', error.type);
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    console.error('Error statusCode:', error.statusCode);
     console.error('Full error:', JSON.stringify(error, null, 2))
+    
     return new Response(
-      JSON.stringify({ error: error.message, details: error }),
+      JSON.stringify({ 
+        error: error.message,
+        type: error.type,
+        code: error.code,
+        statusCode: error.statusCode
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
