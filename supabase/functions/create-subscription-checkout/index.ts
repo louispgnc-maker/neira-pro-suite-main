@@ -1,6 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
-import Stripe from 'https://esm.sh/stripe@14.21.0'
+import Stripe from 'https://esm.sh/stripe@14.10.0?target=deno'
 
 const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
 console.log('Stripe key loaded:', stripeKey ? `sk_live_...${stripeKey.slice(-4)}` : 'MISSING');
