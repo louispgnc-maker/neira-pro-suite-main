@@ -19,18 +19,23 @@ export async function createStripeCheckoutSession(params: CreateCheckoutSessionP
   console.log('📬 Response data:', data);
   console.log('❌ Response error:', error);
 
-  if (error) {
-    console.error('❌ Error creating checkout session:', error);
-    console.error('❌ Error details:', JSON.stringify(error, null, 2));
-    throw new Error(error.message || 'Failed to create checkout session');
+  // Vérifier si data contient une erreur (même si error est défini)
+  if (data?.error || data?.message) {
+    console.error('❌ Edge Function error in data:', {
+      error: data.error,
+      message: data.message,
+      type: data.type,
+      code: data.code,
+      statusCode: data.statusCode,
+      fullData: data
+    });
+    throw new Error(`Stripe error: ${data.error || data.message} (${data.type || data.code || 'unknown'})`);
   }
 
-  if (data?.error) {
-    console.error('❌ Stripe error:', data.error);
-    console.error('❌ Stripe error type:', data.type);
-    console.error('❌ Stripe error code:', data.code);
-    console.error('❌ Stripe statusCode:', data.statusCode);
-    throw new Error(`Stripe error: ${data.error} (${data.type || data.code})`);
+  if (error) {
+    console.error('❌ Supabase Functions error:', error);
+    console.error('❌ Error details:', JSON.stringify(error, null, 2));
+    throw new Error(error.message || 'Failed to create checkout session');
   }
 
   if (!data?.url) {
