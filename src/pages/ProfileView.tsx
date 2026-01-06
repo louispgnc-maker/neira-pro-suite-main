@@ -64,20 +64,35 @@ export default function ProfileView() {
         .eq('status', 'accepted')
         .limit(10); // Prendre plusieurs pour filtrer côté client
       
+      console.log('🔍 Data reçue:', data);
+      console.log('🔍 Error:', error);
+      
       if (error) {
         console.error('❌ Error loading cabinet:', error);
         setCabinetName(null);
         setCabinetFonction(null);
         setIsFounder(false);
       } else if (!data || data.length === 0) {
-        console.log('⚠️ Aucun cabinet trouvé');
+        console.log('⚠️ Aucun cabinet trouvé (data vide)');
         setCabinetName(null);
         setCabinetFonction(null);
         setIsFounder(false);
       } else {
+        console.log('📊 Nombre de cabinets trouvés:', data.length);
+        
+        // Afficher chaque cabinet pour debug
+        data.forEach((membership: any, index: number) => {
+          console.log(`📍 Cabinet ${index + 1}:`, {
+            cabinets: membership.cabinets,
+            role_cabinet: membership.role_cabinet,
+            status: membership.status
+          });
+        });
+        
         // Filtrer pour trouver le cabinet qui correspond au rôle actuel
         const matchingCabinet = data.find((membership: any) => {
           const cabinetData = membership.cabinets as any;
+          console.log(`🔎 Comparaison: cabinetData?.role (${cabinetData?.role}) === role (${role})`, cabinetData?.role === role);
           return cabinetData?.role === role;
         });
         
