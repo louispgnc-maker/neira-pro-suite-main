@@ -391,10 +391,6 @@ export default function CheckoutPlan() {
                       <span>Abonnement {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}</span>
                       <span>{price}€</span>
                     </div>
-                    <div className="flex justify-between text-sm text-black">
-                      <span>TVA (20%)</span>
-                      <span>{tva}€</span>
-                    </div>
                     <div className="flex justify-between font-bold text-base border-t pt-2 text-black">
                       <span>Total</span>
                       <span>{total}€</span>

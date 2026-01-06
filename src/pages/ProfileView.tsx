@@ -535,12 +535,9 @@ export default function ProfileView() {
                     </div>
 
                     <div className="border-t pt-4 mt-4">
-                      <div className="text-sm text-muted-foreground mb-2">Total mensuel TTC</div>
+                      <div className="text-sm text-muted-foreground mb-2">Total mensuel</div>
                       <div className={`text-5xl font-bold mb-3 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
                         {calculateMonthlyTotal()} €
-                      </div>
-                      <div className="text-sm text-muted-foreground mb-3">
-                        Montant HT : {calculateMonthlyTotal()} € · TVA : 0 € (0%)
                       </div>
                       
                       <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
