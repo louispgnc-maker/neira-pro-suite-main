@@ -56,13 +56,19 @@ export default function ProfileView() {
       
       console.log('📋 Tous les cabinets trouvés:', allMemberships);
       
-      // Charger le cabinet correspondant au rôle actuel ET accepté
+      // Afficher le statut de chaque cabinet
+      if (allMemberships && allMemberships.length > 0) {
+        allMemberships.forEach((m: any, i: number) => {
+          console.log(`📌 Cabinet ${i + 1} - Statut: "${m.status}", Role: "${m.cabinets?.role}", Nom: "${m.cabinets?.nom}"`);
+        });
+      }
+      
+      // Charger TOUS les cabinets sans filtrer par status
       const { data, error } = await supabase
         .from('cabinet_members')
         .select('cabinets(nom, role, id, owner_id), role_cabinet, status')
         .eq('user_id', user.id)
-        .eq('status', 'accepted')
-        .limit(10); // Prendre plusieurs pour filtrer côté client
+        .limit(10);
       
       console.log('🔍 Data reçue:', data);
       console.log('🔍 Error:', error);
