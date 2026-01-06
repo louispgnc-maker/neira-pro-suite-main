@@ -223,7 +223,7 @@ export default function CheckoutPublic() {
                         <RadioGroupItem value="monthly" id="monthly" />
                         <Label htmlFor="monthly" className="flex-1 cursor-pointer">
                           <div className="font-medium">Mensuel</div>
-                          <div className="text-sm text-gray-600">{monthlyPrice}€ HT / mois</div>
+                          <div className="text-sm text-gray-600">{monthlyPrice}€ / mois</div>
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
@@ -233,7 +233,7 @@ export default function CheckoutPublic() {
                             Annuel
                             <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">-10%</span>
                           </div>
-                          <div className="text-sm text-gray-600">{yearlyPrice}€ HT / an</div>
+                          <div className="text-sm text-gray-600">{yearlyPrice}€ / an</div>
                         </Label>
                       </div>
                     </RadioGroup>
