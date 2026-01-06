@@ -29,6 +29,8 @@ serve(async (req) => {
 
     const { data: { user } } = await supabaseClient.auth.getUser()
     
+    console.log('🔐 Utilisateur authentifié:', user?.id)
+    
     if (!user) {
       throw new Error('Non authentifié')
     }
@@ -43,7 +45,18 @@ serve(async (req) => {
       role
     } = await req.json()
 
+    console.log('📦 Données reçues:', {
+      quantity,
+      price,
+      prorataAmount,
+      cabinetId,
+      targetUserId,
+      expiresAt,
+      role
+    })
+
     // Créer une Checkout Session Stripe
+    console.log('💳 Création de la session Stripe...')
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -74,6 +87,11 @@ serve(async (req) => {
       },
     })
 
+    console.log('✅ Session Stripe créée avec succès:', {
+      sessionId: session.id,
+      url: session.url
+    })
+
     return new Response(
       JSON.stringify({ sessionId: session.id, url: session.url }),
       {
@@ -82,9 +100,10 @@ serve(async (req) => {
       }
     )
   } catch (error) {
-    console.error('Erreur création session:', error)
+    console.error('❌ Erreur création session:', error)
+    console.error('❌ Détails de l\'erreur:', JSON.stringify(error, null, 2))
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message || 'Erreur inconnue' }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,

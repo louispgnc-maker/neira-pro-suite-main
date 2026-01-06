@@ -76,7 +76,21 @@ export default function ProfileView() {
           setCabinetName(cabinetData?.nom || null);
           setCabinetFonction(data.role_cabinet || null);
           setCabinetId(cabinetData?.id || null);
-          const foundateur = data.role_cabinet?.toLowerCase() === 'fondateur';
+          
+          // Vérifier si l'utilisateur est fondateur OU owner du cabinet
+          const isFondateur = data.role_cabinet?.toLowerCase() === 'fondateur';
+          const isOwner = cabinetData?.owner_id === user.id;
+          const foundateur = isFondateur || isOwner;
+          
+          console.log('🔍 Vérification fondateur:', { 
+            role_cabinet: data.role_cabinet,
+            isFondateur,
+            owner_id: cabinetData?.owner_id,
+            user_id: user.id,
+            isOwner,
+            foundateur 
+          });
+          
           setIsFounder(foundateur);
           
           // Charger les infos d'abonnement si fondateur
@@ -306,6 +320,15 @@ export default function ProfileView() {
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Paramètres</h1>
         </div>
+
+        {/* Debug info */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="bg-yellow-50 border border-yellow-200 p-3 rounded text-xs">
+            <div><strong>Debug:</strong> isFounder = {String(isFounder)}</div>
+            <div>Cabinet: {cabinetName || 'Aucun'}</div>
+            <div>Fonction: {cabinetFonction || 'Aucune'}</div>
+          </div>
+        )}
 
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className={`grid w-full ${isFounder ? 'grid-cols-3' : 'grid-cols-2'} mb-6`}>

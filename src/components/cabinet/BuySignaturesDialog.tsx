@@ -174,6 +174,16 @@ export function BuySignaturesDialog({
       }
 
       // Appeler l'Edge Function pour créer une session Stripe
+      console.log('📦 Envoi de la requête à create-signature-checkout avec:', {
+        quantity: selectedPackage.quantity,
+        price: selectedPackage.price,
+        prorataAmount,
+        cabinetId: cabinet.id,
+        targetUserId: targetUserId || user.id,
+        expiresAt: expiresAt.toISOString(),
+        role,
+      });
+
       const { data: sessionData, error: sessionError } = await supabase.functions.invoke(
         'create-signature-checkout',
         {
@@ -189,9 +199,14 @@ export function BuySignaturesDialog({
         }
       );
 
+      console.log('📬 Réponse reçue:', { sessionData, sessionError });
+
       if (sessionError || !sessionData?.url) {
+        console.error('❌ Erreur détectée:', sessionError);
         throw new Error(sessionError?.message || 'Erreur lors de la création de la session de paiement');
       }
+
+      console.log('✅ URL de redirection Stripe:', sessionData.url);
 
       // Rediriger vers Stripe Checkout
       window.location.href = sessionData.url;
