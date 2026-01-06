@@ -46,44 +46,64 @@ export default function ProfileView() {
     if (!user) return;
     setLoadingCabinet(true);
     try {
-      // D'abord vérifier quelles lignes existent pour cet utilisateur
+      console.log('🔍 Chargement cabinet pour user:', user.id, 'role:', role);
+      
+      // Charger tous les cabinets pour debug
       const { data: allMemberships, error: debugError } = await supabase
         .from('cabinet_members')
-        .select('*')
+        .select('cabinets(nom, role, id, owner_id), role_cabinet, status')
         .eq('user_id', user.id);
       
+      console.log('📋 Tous les cabinets trouvés:', allMemberships);
+      
+      // Charger le cabinet correspondant au rôle actuel ET accepté
       const { data, error } = await supabase
         .from('cabinet_members')
         .select('cabinets(nom, role, id, owner_id), role_cabinet, status')
         .eq('user_id', user.id)
-        .limit(1)
-        .maybeSingle();
+        .eq('status', 'accepted')
+        .limit(10); // Prendre plusieurs pour filtrer côté client
       
       if (error) {
         console.error('❌ Error loading cabinet:', error);
         setCabinetName(null);
         setCabinetFonction(null);
         setIsFounder(false);
-      } else if (!data) {
+      } else if (!data || data.length === 0) {
+        console.log('⚠️ Aucun cabinet trouvé');
         setCabinetName(null);
         setCabinetFonction(null);
         setIsFounder(false);
       } else {
-        const cabinetData = data.cabinets as any;
-        const cabinetRole = cabinetData?.role;
+        // Filtrer pour trouver le cabinet qui correspond au rôle actuel
+        const matchingCabinet = data.find((membership: any) => {
+          const cabinetData = membership.cabinets as any;
+          return cabinetData?.role === role;
+        });
         
-        if (cabinetRole === role) {
+        console.log('🎯 Cabinet correspondant au rôle', role, ':', matchingCabinet);
+        
+        if (!matchingCabinet) {
+          console.log('⚠️ Aucun cabinet trouvé pour le rôle:', role);
+          setCabinetName(null);
+          setCabinetFonction(null);
+          setIsFounder(false);
+        } else {
+          const cabinetData = matchingCabinet.cabinets as any;
+          const cabinetData = matchingCabinet.cabinets as any;
+          const cabinetRole = cabinetData?.role;
+          
           setCabinetName(cabinetData?.nom || null);
-          setCabinetFonction(data.role_cabinet || null);
+          setCabinetFonction(matchingCabinet.role_cabinet || null);
           setCabinetId(cabinetData?.id || null);
           
           // Vérifier si l'utilisateur est fondateur OU owner du cabinet
-          const isFondateur = data.role_cabinet?.toLowerCase() === 'fondateur';
+          const isFondateur = matchingCabinet.role_cabinet?.toLowerCase() === 'fondateur';
           const isOwner = cabinetData?.owner_id === user.id;
           const foundateur = isFondateur || isOwner;
           
           console.log('🔍 Vérification fondateur:', { 
-            role_cabinet: data.role_cabinet,
+            role_cabinet: matchingCabinet.role_cabinet,
             isFondateur,
             owner_id: cabinetData?.owner_id,
             user_id: user.id,
@@ -99,10 +119,6 @@ export default function ProfileView() {
             await loadMemberCount(cabinetData.id);
             await loadSignatureCredits(cabinetData.id);
           }
-        } else {
-          setCabinetName(null);
-          setCabinetFonction(null);
-          setIsFounder(false);
         }
       }
     } catch (error) {
