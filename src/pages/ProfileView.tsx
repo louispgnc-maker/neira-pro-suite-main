@@ -90,8 +90,6 @@ export default function ProfileView() {
           setIsFounder(false);
         } else {
           const cabinetData = matchingCabinet.cabinets as any;
-          const cabinetData = matchingCabinet.cabinets as any;
-          const cabinetRole = cabinetData?.role;
           
           setCabinetName(cabinetData?.nom || null);
           setCabinetFonction(matchingCabinet.role_cabinet || null);
