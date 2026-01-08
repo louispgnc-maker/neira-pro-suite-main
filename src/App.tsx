@@ -47,6 +47,7 @@ import Solution from "./pages/Solution";
 import CheckoutEssentiel from "./pages/CheckoutEssentiel";
 import CheckoutProfessionnel from "./pages/CheckoutProfessionnel";
 import CheckoutCabinetPlus from "./pages/CheckoutCabinetPlus";
+import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import TestSubscription from "./pages/TestSubscription";
 import TestPayment from "./pages/test/TestPayment";
 import TestThanks from "./pages/test/TestThanks";
@@ -97,6 +98,7 @@ const App = () => (
             <Route path="/checkout-essentiel" element={<CheckoutEssentiel />} />
             <Route path="/checkout-professionnel" element={<CheckoutProfessionnel />} />
             <Route path="/checkout-cabinet-plus" element={<CheckoutCabinetPlus />} />
+            <Route path="/subscription/success" element={<SubscriptionSuccess />} />
             
             {/* Routes Avocat */}
             <Route path="/avocats/auth" element={<AvocatAuth />} />

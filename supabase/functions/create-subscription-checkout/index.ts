@@ -2,17 +2,6 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
 import Stripe from 'https://esm.sh/stripe@14.10.0?target=deno'
 
-const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
-console.log('Stripe key loaded:', stripeKey ? `sk_live_...${stripeKey.slice(-4)}` : 'MISSING');
-
-if (!stripeKey) {
-  throw new Error('STRIPE_SECRET_KEY is not configured');
-}
-
-const stripe = new Stripe(stripeKey, {
-  apiVersion: '2023-10-16',
-})
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -25,6 +14,10 @@ serve(async (req) => {
   }
 
   try {
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+      apiVersion: '2023-10-16',
+    })
+
     const { priceId, successUrl, cancelUrl, customerEmail, cabinetId, quantity } = await req.json()
 
     console.log('=== CHECKOUT REQUEST START ===');
@@ -61,20 +54,28 @@ serve(async (req) => {
       console.log('No cabinetId provided - creating session for new user')
     }
 
-    // Si pas de customer, on laisse Stripe le créer via customer_email
+    // Configuration de la session Checkout pour paiements internationaux
     const sessionParams: any = {
       mode: 'subscription',
-      payment_method_types: ['card'], // Carte uniquement pour commencer
+      // Support de multiples méthodes de paiement pour tous les pays
+      payment_method_types: ['card', 'sepa_debit', 'bancontact', 'ideal', 'giropay', 'sofort'],
       line_items: [
         {
           price: priceId,
-          quantity: quantity, // Nombre de membres
+          quantity: quantity,
         },
       ],
       success_url: successUrl || `${req.headers.get('origin')}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl || `${req.headers.get('origin')}/subscription`,
-      billing_address_collection: 'required',
+      billing_address_collection: 'auto',
       locale: 'fr',
+      
+      // 🎨 PERSONNALISATION: Collecte d'adresse pour la facturation
+      phone_number_collection: {
+        enabled: true,
+      },
+      
+      // Métadonnées pour le webhook
       metadata: {
         cabinet_id: cabinetId || 'pending',
       },
@@ -88,16 +89,25 @@ serve(async (req) => {
     // Si customer existant, on l'utilise
     if (customerId) {
       sessionParams.customer = customerId
+      // Pour un customer existant, on permet la mise à jour des infos
+      sessionParams.customer_update = {
+        address: 'auto',
+        name: 'auto',
+      }
     } else if (customerEmail) {
-      // Sinon, on crée via email si fourni
+      // Création d'un nouveau customer avec email pré-rempli
       sessionParams.customer_email = customerEmail
     }
-    // Sinon, Stripe demandera l'email pendant le checkout
+    // Sinon, Stripe collectera l'email pendant le checkout
 
     console.log('Creating Stripe session with params:', JSON.stringify(sessionParams, null, 2))
 
-    // Create Checkout Session
+    // Créer la session Checkout
     console.log('Calling Stripe API...');
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+      apiVersion: '2023-10-16',
+    })
+    
     const session = await stripe.checkout.sessions.create(sessionParams)
 
     console.log('✅ Session created successfully!');
