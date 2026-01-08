@@ -7,6 +7,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+  apiVersion: '2023-10-16',
+})
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -14,10 +18,6 @@ serve(async (req) => {
   }
 
   try {
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
-      apiVersion: '2023-10-16',
-    })
-
     const { priceId, successUrl, cancelUrl, customerEmail, cabinetId, quantity } = await req.json()
 
     console.log('=== CHECKOUT REQUEST START ===');
@@ -104,10 +104,6 @@ serve(async (req) => {
 
     // Créer la session Checkout
     console.log('Calling Stripe API...');
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
-      apiVersion: '2023-10-16',
-    })
-    
     const session = await stripe.checkout.sessions.create(sessionParams)
 
     console.log('✅ Session created successfully!');
