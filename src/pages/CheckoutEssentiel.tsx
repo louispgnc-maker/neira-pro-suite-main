@@ -7,6 +7,10 @@ import { Label } from "@/components/ui/label";
 import { CheckCircle2, ArrowLeft, CreditCard, Lock, Info } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabaseClient";
+import { createStripeCheckoutSession } from "@/lib/stripeCheckout";
+import { STRIPE_PRICE_IDS } from "@/lib/stripeConfig";
 import {
   Tooltip,
   TooltipContent,
@@ -17,6 +21,7 @@ import {
 export default function CheckoutEssentiel() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   
@@ -31,22 +36,42 @@ export default function CheckoutEssentiel() {
     e.preventDefault();
     setLoading(true);
     
-    // Stocker les infos du plan dans sessionStorage
-    sessionStorage.setItem('pendingSubscription', JSON.stringify({
-      plan: 'essentiel',
-      billingPeriod: billingPeriod,
-      members: 1,
-      price: total
-    }));
-    
-    toast.info("Étape suivante : Création de compte", {
-      description: "Veuillez créer votre compte pour finaliser votre abonnement."
-    });
-    
-    // Rediriger vers l'inscription
-    setTimeout(() => {
-      navigate('/auth?plan=essentiel&billing=' + billingPeriod);
-    }, 1500);
+    try {
+      // Récupérer le cabinet de l'utilisateur si connecté
+      let cabinetId = null;
+      let customerEmail = null;
+      
+      if (user) {
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('cabinet_id')
+          .eq('user_id', user.id)
+          .single();
+        
+        cabinetId = memberData?.cabinet_id;
+        customerEmail = user.email;
+      }
+      
+      // Créer la session Stripe Checkout
+      const checkoutUrl = await createStripeCheckoutSession({
+        priceId: STRIPE_PRICE_IDS['essentiel'],
+        quantity: 1,
+        customerEmail: customerEmail || undefined,
+        cabinetId: cabinetId,
+        successUrl: `${window.location.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/checkout-essentiel`,
+      });
+      
+      // Rediriger vers Stripe Checkout
+      window.location.href = checkoutUrl;
+      
+    } catch (error) {
+      console.error('Erreur lors de la création de la session:', error);
+      toast.error("Erreur lors de la création de la session de paiement", {
+        description: error instanceof Error ? error.message : "Veuillez réessayer"
+      });
+      setLoading(false);
+    }
   };
 
   return (
@@ -235,58 +260,18 @@ export default function CheckoutEssentiel() {
                       </div>
                     </div>
 
-                    {/* Informations de carte */}
+                    {/* Informations de paiement */}
                     <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="cardNumber" className="text-gray-900 text-sm">Numéro de carte</Label>
-                        <Input 
-                          id="cardNumber"
-                          placeholder="1234 5678 9012 3456"
-                          required
-                          className="bg-background"
-                        />
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="expiry" className="text-gray-900 text-sm">Date d'expiration</Label>
-                          <Input 
-                            id="expiry"
-                            placeholder="MM/AA"
-                            required
-                            className="bg-background"
-                          />
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                          <Lock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <h4 className="font-semibold text-blue-900 text-sm mb-1">Paiement sécurisé par Stripe</h4>
+                            <p className="text-xs text-blue-700">
+                              Vous serez redirigé vers notre page de paiement sécurisée Stripe pour finaliser votre abonnement.
+                            </p>
+                          </div>
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="cvc" className="text-gray-900 text-sm">CVC</Label>
-                          <Input 
-                            id="cvc"
-                            placeholder="123"
-                            required
-                            className="bg-background"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="name" className="text-gray-900 text-sm">Nom sur la carte</Label>
-                        <Input 
-                          id="name"
-                          placeholder="Jean Dupont"
-                          required
-                          className="bg-background"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="email" className="text-gray-900 text-sm">Email de facturation</Label>
-                        <Input 
-                          id="email"
-                          type="email"
-                          placeholder="votre@email.com"
-                          required
-                          className="bg-background"
-                        />
                       </div>
                     </div>
 
@@ -310,7 +295,7 @@ export default function CheckoutEssentiel() {
                       }`}
                       disabled={loading}
                     >
-                      {loading ? "Traitement en cours..." : `Confirmer - ${total}€`}
+                      {loading ? "Redirection vers Stripe..." : `Procéder au paiement - ${total}€`}
                     </Button>
 
                     <p className="text-xs text-gray-600 text-center">
