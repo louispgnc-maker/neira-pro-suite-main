@@ -37,16 +37,16 @@ const FullscreenButton = () => {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={toggleFullscreen}
-          className="fixed bottom-6 right-6 z-50 h-12 w-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800 border-2 hover:scale-110"
+          className="fixed bottom-6 right-6 z-50 h-9 w-9 rounded-md opacity-30 hover:opacity-100 transition-opacity duration-200 bg-gray-100/50 hover:bg-gray-200 text-gray-600 hover:text-gray-900"
           aria-label={isFullscreen ? "Quitter le plein écran" : "Passer en plein écran"}
         >
           {isFullscreen ? (
-            <Minimize className="h-5 w-5" />
+            <Minimize className="h-4 w-4" />
           ) : (
-            <Maximize className="h-5 w-5" />
+            <Maximize className="h-4 w-4" />
           )}
         </Button>
       </TooltipTrigger>
