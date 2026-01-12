@@ -62,6 +62,7 @@ import PublicClientForm from "./pages/PublicClientForm";
 import ScrollToTop from "./components/ScrollToTop";
 import EmailConfirmHandler from "./components/EmailConfirmHandler";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
+import FullscreenButton from "./components/FullscreenButton";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +75,7 @@ const App = () => (
         <BrowserRouter>
           <EmailConfirmHandler />
           <ScrollToTop />
+          <FullscreenButton />
           <Routes>
             <Route path="/" element={<Auth />} />
             <Route path="/about" element={<About />} />
