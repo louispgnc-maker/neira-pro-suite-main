@@ -206,8 +206,8 @@ export function DashboardNotaire() {
 
   return (
     <AppLayout>
-      <div className="min-h-screen">
-        <div className="p-6 space-y-6">
+      <div className="w-full">
+        <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
