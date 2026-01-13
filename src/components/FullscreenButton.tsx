@@ -17,9 +17,20 @@ const FullscreenButton = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
 
+    // Bloquer la touche Échap pour le plein écran
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && document.fullscreenElement) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
     document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("keydown", handleKeyDown, { capture: true });
+    
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("keydown", handleKeyDown, { capture: true });
     };
   }, []);
 
