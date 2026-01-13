@@ -57,7 +57,8 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
           <BuildInfo />
         </main>
-        <GlobalSearch userRole={role} />
+        {/* GlobalSearch sans bouton - uniquement pour Cmd+K global */}
+        <GlobalSearch userRole={role} hideButton={true} />
       </div>
     </SidebarProvider>
   );

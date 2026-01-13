@@ -62,9 +62,10 @@ const searchIndex: SearchItem[] = [
 
 interface GlobalSearchProps {
   userRole?: "avocat" | "notaire";
+  hideButton?: boolean;
 }
 
-export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
+export function GlobalSearch({ userRole = "avocat", hideButton = false }: GlobalSearchProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchItem[]>([]);
@@ -225,8 +226,9 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
     setQuery("");
   };
 
-  // Afficher le bouton seulement sur le dashboard
-  if (!isOpen && !showButton) {
+  // Si hideButton=true, ne jamais afficher le bouton
+  // Sinon, afficher le bouton seulement sur le dashboard
+  if (!isOpen && (hideButton || !showButton)) {
     return null;
   }
 
