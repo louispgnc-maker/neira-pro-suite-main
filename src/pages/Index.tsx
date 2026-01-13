@@ -104,7 +104,7 @@ export default function Index() {
                 </div>
                 <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
                   <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-gray-700"><strong>Espace collaboratif</strong> unique pour échanger avec vos clients</p>
+                  <p className="text-gray-700"><strong>Espace collaboratif</strong> unique pour échanger avec votre équipe</p>
                 </div>
                 <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
                   <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
@@ -149,7 +149,7 @@ export default function Index() {
               <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Users className="h-7 w-7 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Collaboration client</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Collaboration d'équipe</h3>
               <p className="text-gray-600">Espace partagé sécurisé, messagerie intégrée et suivi en temps réel des dossiers</p>
             </div>
 
@@ -386,15 +386,15 @@ export default function Index() {
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-blue-300">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Essentiel</h3>
-                <p className="text-gray-600 mb-6">Pour débuter avec Neira</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
+                <p className="text-gray-600 mb-6">Idéal pour avocats et notaires indépendants</p>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-gray-900">29€</span>
-                  <span className="text-gray-600">/mois</span>
+                  <span className="text-5xl font-bold text-gray-900">39€</span>
+                  <span className="text-gray-600">/mois/utilisateur</span>
                 </div>
               </div>
               <ul className="space-y-4 mb-8">
-                {["1 utilisateur", "Gestion documentaire", "10 Go de stockage", "Espace client sécurisé", "Support email"].map((feature, i) => (
+                {["20 Go de stockage", "100 dossiers actifs", "30 clients actifs", "15 signatures/mois/utilisateur", "Gestion documentaire", "Partage sécurisé client"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <span className="text-gray-700">{feature}</span>
@@ -405,24 +405,24 @@ export default function Index() {
                 className="w-full bg-gray-900 hover:bg-gray-800 text-white py-6"
                 onClick={() => navigate("/checkout-essentiel")}
               >
-                Commencer
+                Choisir Essentiel
               </Button>
             </div>
 
             <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-8 relative hover:shadow-2xl transition-shadow border-4 border-blue-400 transform scale-105">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
-                LE PLUS POPULAIRE
+                RECOMMANDÉ
               </div>
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-white mb-2">Professionnel</h3>
-                <p className="text-blue-100 mb-6">Pour cabinets en croissance</p>
+                <h3 className="text-2xl font-bold text-white mb-2">NEIRA PROFESSIONNEL</h3>
+                <p className="text-blue-100 mb-6">⚡ Pensé pour les cabinets en croissance</p>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-white">79€</span>
-                  <span className="text-blue-100">/mois</span>
+                  <span className="text-5xl font-bold text-white">59€</span>
+                  <span className="text-blue-100">/mois/utilisateur</span>
                 </div>
               </div>
               <ul className="space-y-4 mb-8">
-                {["Jusqu'à 5 utilisateurs", "Toutes fonctionnalités Essentiel", "100 Go stockage", "Automatisation avancée", "Statistiques & rapports", "Support prioritaire"].map((feature, i) => (
+                {["100 Go de stockage", "600 dossiers actifs", "200 clients actifs", "80 signatures/mois/utilisateur", "Espace collaboratif complet", "Gestion documentaire avancée", "Tableaux de bord"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-yellow-300 flex-shrink-0 mt-0.5" />
                     <span className="text-white">{feature}</span>
@@ -433,20 +433,21 @@ export default function Index() {
                 className="w-full bg-white hover:bg-gray-100 text-blue-600 py-6 font-bold"
                 onClick={() => navigate("/checkout-professionnel")}
               >
-                Démarrer maintenant
+                Choisir Professionnel
               </Button>
             </div>
 
             <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-purple-300">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Sur mesure</h3>
-                <p className="text-gray-600 mb-6">Pour grands cabinets</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
+                <p className="text-gray-600 mb-6">Idéal pour cabinets de 10 à 50+ utilisateurs</p>
                 <div className="mb-6">
-                  <span className="text-3xl font-bold text-gray-900">Contactez-nous</span>
+                  <span className="text-5xl font-bold text-gray-900">89€</span>
+                  <span className="text-gray-600">/mois/utilisateur</span>
                 </div>
               </div>
               <ul className="space-y-4 mb-8">
-                {["Utilisateurs illimités", "Toutes fonctionnalités Pro", "Stockage personnalisé", "Intégrations sur mesure", "Formation personnalisée", "Support 24/7"].map((feature, i) => (
+                {["Stockage illimité", "Dossiers illimités", "Clients illimités", "Signatures illimitées", "Collaboration sans limite", "Tableaux de bord avancés", "Onboarding & formation", "Accès anticipé aux nouveautés"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <span className="text-gray-700">{feature}</span>
@@ -455,9 +456,9 @@ export default function Index() {
               </ul>
               <Button 
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6"
-                onClick={() => navigate("/contact")}
+                onClick={() => navigate("/checkout-cabinet-plus")}
               >
-                Nous contacter
+                Choisir Cabinet+
               </Button>
             </div>
           </div>
@@ -477,7 +478,7 @@ export default function Index() {
             Rejoignez les centaines de professionnels du droit qui font confiance à Neira
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+          <div className="flex items-center justify-center">
             <Button 
               size="lg" 
               className="text-lg px-10 py-7 bg-white text-blue-600 hover:bg-gray-100 shadow-2xl hover:shadow-3xl transition-all duration-200 font-bold"
@@ -485,23 +486,6 @@ export default function Index() {
             >
               Demander une démo gratuite
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="text-lg px-10 py-7 border-2 border-white text-white hover:bg-white/10 shadow-xl hover:shadow-2xl transition-all duration-200"
-              onClick={() => navigate("/checkout-essentiel")}
-            >
-              Essayer gratuitement
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-white/90">
-            {["Aucune carte bancaire requise", "Configuration en 5 minutes", "Support client réactif"].map((item, i) => (
-              <div key={i} className="flex flex-col items-center gap-2">
-                <CheckCircle2 className="h-8 w-8 text-green-300" />
-                <span className="text-lg">{item}</span>
-              </div>
-            ))}
           </div>
         </div>
       </section>
