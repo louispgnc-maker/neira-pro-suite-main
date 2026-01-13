@@ -64,25 +64,25 @@ export default function Index() {
       {/* 2. PROBLÈME → SOLUTION */}
       <section className="py-20 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid md:grid-cols-2 gap-12 items-start">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 min-h-[80px] flex items-center">
                 Les défis quotidiens de votre cabinet
               </h2>
               <div className="space-y-4">
-                <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-100">
+                <div className="flex items-start gap-4 p-5 bg-red-50 rounded-xl border border-red-100 hover:shadow-md transition-shadow">
                   <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                   <p className="text-gray-700"><strong>Tâches répétitives</strong> qui vous font perdre un temps précieux</p>
                 </div>
-                <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-100">
+                <div className="flex items-start gap-4 p-5 bg-red-50 rounded-xl border border-red-100 hover:shadow-md transition-shadow">
                   <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                   <p className="text-gray-700"><strong>Documents éparpillés</strong> difficiles à retrouver et à partager</p>
                 </div>
-                <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-100">
+                <div className="flex items-start gap-4 p-5 bg-red-50 rounded-xl border border-red-100 hover:shadow-md transition-shadow">
                   <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                   <p className="text-gray-700"><strong>Communication client</strong> fragmentée entre emails, appels et messages</p>
                 </div>
-                <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-100">
+                <div className="flex items-start gap-4 p-5 bg-red-50 rounded-xl border border-red-100 hover:shadow-md transition-shadow">
                   <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                   <p className="text-gray-700"><strong>Manque de visibilité</strong> sur l'avancement de vos dossiers</p>
                 </div>
@@ -90,23 +90,23 @@ export default function Index() {
             </div>
 
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 min-h-[80px] flex items-center">
                 Neira transforme votre quotidien
               </h2>
               <div className="space-y-4">
-                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-start gap-4 p-5 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
                   <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
                   <p className="text-gray-700"><strong>Automatisation intelligente</strong> de vos workflows juridiques</p>
                 </div>
-                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-start gap-4 p-5 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
                   <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
                   <p className="text-gray-700"><strong>Gestion centralisée</strong> de tous vos documents en toute sécurité</p>
                 </div>
-                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-start gap-4 p-5 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
                   <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
                   <p className="text-gray-700"><strong>Espace collaboratif</strong> unique pour échanger avec votre équipe</p>
                 </div>
-                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-start gap-4 p-5 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
                   <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
                   <p className="text-gray-700"><strong>Tableau de bord complet</strong> pour piloter votre activité</p>
                 </div>
