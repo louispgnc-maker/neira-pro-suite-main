@@ -12,6 +12,7 @@ import { RecentClients } from "@/components/dashboard/RecentClients";
 import { AlertsCompliance } from "@/components/dashboard/AlertsCompliance";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { GlobalSearch } from "@/components/GlobalSearch";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
@@ -215,6 +216,7 @@ export function DashboardNotaire() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
+            <GlobalSearch userRole="notaire" />
             <button
               onClick={() => {
                 console.log('Dashboard subscription button clicked', { subscriptionTier });
