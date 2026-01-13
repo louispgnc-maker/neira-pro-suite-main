@@ -92,11 +92,7 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
         e.preventDefault();
         setIsOpen(true);
       }
-      if (e.key === "Escape" && isOpen) {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsOpen(false);
-      }
+      // Échap ne ferme plus la barre de recherche - uniquement via croix ou clic extérieur
     };
 
     // Utiliser capture: true pour intercepter l'événement avant le plein écran
