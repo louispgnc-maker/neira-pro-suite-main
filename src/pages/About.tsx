@@ -5,7 +5,7 @@ export default function About() {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background"
+      className="min-h-screen bg-white"
       style={{
         paddingLeft: '1cm',
         paddingRight: '1cm',
