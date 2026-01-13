@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -226,7 +227,7 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
     );
   }
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[9999] bg-black/50 flex items-start justify-center pt-[20vh] overflow-hidden">
       <div
         ref={containerRef}
@@ -305,6 +306,7 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
