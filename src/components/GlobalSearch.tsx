@@ -107,16 +107,34 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
       if (inputRef.current) {
         inputRef.current.focus();
       }
+      // Sauvegarder la position de scroll actuelle
+      const scrollY = window.scrollY;
       // Bloquer le scroll du body
       document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
     } else {
       // Restaurer le scroll
+      const scrollY = document.body.style.top;
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      // Restaurer la position de scroll
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
     }
 
     // Cleanup: toujours restaurer le scroll
     return () => {
+      const scrollY = document.body.style.top;
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY) * -1);
+      }
     };
   }, [isOpen]);
 
