@@ -102,7 +102,7 @@ export function AppSidebar() {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
     }
