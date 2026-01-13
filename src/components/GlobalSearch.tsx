@@ -100,11 +100,23 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
     return () => document.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [isOpen]);
 
-  // Focus l'input quand ouvert
+  // Focus l'input quand ouvert et bloquer le scroll
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+    if (isOpen) {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+      // Bloquer le scroll du body
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Restaurer le scroll
+      document.body.style.overflow = '';
     }
+
+    // Cleanup: toujours restaurer le scroll
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
   // Fermer si clic en dehors
