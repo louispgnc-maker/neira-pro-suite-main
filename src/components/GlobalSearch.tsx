@@ -74,9 +74,9 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showButton, setShowButton] = useState(false);
 
-  // Ne jamais afficher le bouton - accessible uniquement via Cmd+K
+  // Afficher le bouton uniquement sur le dashboard
   useEffect(() => {
-    setShowButton(false);
+    setShowButton(location.pathname.includes('/dashboard'));
   }, [location.pathname]);
 
   // Fermer lors du changement de route
