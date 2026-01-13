@@ -100,6 +100,10 @@ export function AppSidebar() {
   // Fonction de déconnexion
   const handleLogout = async () => {
     try {
+      // Sortir du mode plein écran avant de se déconnecter
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      }
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       navigate('/');
