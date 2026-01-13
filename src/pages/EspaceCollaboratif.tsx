@@ -1227,7 +1227,7 @@ export default function EspaceCollaboratif() {
       {/* En-tête */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Espace Collaboratif</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Espace Collaboratif</h1>
           <div className="flex items-center gap-2">
             <Badge className={colorClass}>{cabinet.nom}</Badge>
             <span className="text-sm text-foreground">

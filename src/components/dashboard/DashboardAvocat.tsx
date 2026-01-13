@@ -201,7 +201,7 @@ export function DashboardAvocat() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
               Bienvenue sur votre espace{profile?.first_name ? `, ${profile.first_name}` : ''}
             </h1>
           </div>
@@ -224,7 +224,7 @@ export function DashboardAvocat() {
             </button>
           </div>
         </div>
-        <p className="text-foreground mt-2">
+        <p className="text-lg text-gray-600 mt-2">
           Voici un aperçu de votre activité juridique
         </p>
 

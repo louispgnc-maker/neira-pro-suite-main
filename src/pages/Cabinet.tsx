@@ -40,13 +40,13 @@ export default function Cabinet() {
         {hasCabinet ? (
           // L'utilisateur a un cabinet - Afficher ManageCabinet
           <>
-            <h1 className="text-3xl font-bold">Mon cabinet</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Mon cabinet</h1>
             {user && <ManageCabinet key={refreshKey} role={role} userId={user.id} cabinetId={cabinetIdFromUrl || cabinet?.id} />}
           </>
         ) : (
           // L'utilisateur n'a pas de cabinet - Proposer création ou join
           <>
-            <h1 className="text-3xl font-bold">Gestion de cabinet</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Gestion de cabinet</h1>
             
             <div className="grid gap-4 md:grid-cols-2">
               {/* Créer un cabinet */}

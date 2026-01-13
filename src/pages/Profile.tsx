@@ -249,7 +249,7 @@ export default function Profile() {
     <AppLayout>
       <div className="p-6 max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Mon profil</h1>
+          <h1 className="text-4xl font-bold text-gray-900">Mon profil</h1>
           <Button 
             onClick={handleSave} 
             disabled={saving}

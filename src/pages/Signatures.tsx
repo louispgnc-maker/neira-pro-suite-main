@@ -120,8 +120,8 @@ export default function Signatures() {
       <div className="p-6">
         <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold">Signatures</h1>
-            <p className="text-foreground mt-1">Suivez vos demandes de signature électronique</p>
+            <h1 className="text-4xl font-bold text-gray-900">Signatures</h1>
+            <p className="text-lg text-gray-600 mt-1">Suivez vos demandes de signatures électroniques</p>
           </div>
           {isSignatureLimitReached ? (
             <div className="text-right">

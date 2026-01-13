@@ -283,7 +283,7 @@ export default function Statistiques() {
         {/* Contenu flouté si pas d'accès */}
         <div className={hasAccess ? '' : 'filter blur-sm pointer-events-none select-none'}>
           <div className="mb-6">
-            <h1 className="text-3xl font-bold">Statistiques</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Statistiques</h1>
             <p className="text-foreground mt-1">Analyse avancée de votre activité</p>
           </div>
 
