@@ -146,10 +146,29 @@ export default function NotaireAuth() {
   }
 
   return (
-    <div className="min-h-screen bg-white" style={{ paddingLeft: '1cm', paddingRight: '1cm', backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Fond%20orange.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+    <div className="min-h-screen flex flex-col bg-white">
       <PublicHeader />
 
-      <div className="p-6 pt-28 flex items-center justify-center min-h-screen">
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+        </div>
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              Espace Notaires
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+              Connectez-vous à votre espace professionnel
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Login Section */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-md mx-auto">
       {overlayVisible ? (
         <div className={`fixed inset-0 z-[1000] flex items-center justify-center`}>
           <div className={`absolute inset-0 bg-white`} style={{ transform: overlayAnimate ? 'scale(20)' : 'scale(0.04)', opacity: overlayAnimate ? 1 : 0, transition: 'transform 800ms ease-out, opacity 500ms ease-out' }} />
@@ -164,7 +183,7 @@ export default function NotaireAuth() {
         </div>
       ) : null}
 
-      <Card className="w-full max-w-md">
+      <Card className="w-full border border-gray-200 shadow-xl">
         <CardHeader>
           <CardTitle>Connexion — Espace Notaires</CardTitle>
           <CardDescription>Connectez-vous à votre espace Notaire</CardDescription>
@@ -205,7 +224,8 @@ export default function NotaireAuth() {
           </div>
         </CardContent>
       </Card>
-      </div>
+        </div>
+      </section>
 
       <Dialog open={resetPasswordOpen} onOpenChange={setResetPasswordOpen}>
         <DialogContent className="bg-orange-50">
