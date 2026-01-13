@@ -384,78 +384,78 @@ export default function Index() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="bg-gradient-to-br from-green-50 to-emerald-100 border-2 border-green-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-green-400">
+            <div className="bg-white border-2 border-blue-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-blue-400">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-green-900 mb-2">NEIRA ESSENTIEL</h3>
-                <p className="text-green-700 mb-6">Idéal pour avocats et notaires indépendants</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
+                <p className="text-gray-600 mb-6">Idéal pour avocats et notaires indépendants</p>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-green-900">39€</span>
-                  <span className="text-green-700">/mois/utilisateur</span>
+                  <span className="text-5xl font-bold text-blue-600">39€</span>
+                  <span className="text-gray-600">/mois/utilisateur</span>
                 </div>
               </div>
               <ul className="space-y-4 mb-8">
                 {["20 Go de stockage", "100 dossiers actifs", "30 clients actifs", "15 signatures/mois/utilisateur", "Gestion documentaire", "Partage sécurisé client"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-800">{feature}</span>
+                    <span className="text-gray-700">{feature}</span>
                   </li>
                 ))}
               </ul>
               <Button 
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-6"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6"
                 onClick={() => navigate("/checkout-essentiel")}
               >
                 Choisir Essentiel
               </Button>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-8 relative hover:shadow-2xl transition-shadow border-4 border-blue-400 transform scale-105">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
+            <div className="bg-white rounded-2xl p-8 relative hover:shadow-2xl transition-shadow border-2 border-purple-500 transform scale-105">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-sm font-bold">
                 RECOMMANDÉ
               </div>
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-white mb-2">NEIRA PROFESSIONNEL</h3>
-                <p className="text-blue-100 mb-6">⚡ Pensé pour les cabinets en croissance</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA PROFESSIONNEL</h3>
+                <p className="text-gray-600 mb-6">⚡ Pensé pour les cabinets en croissance</p>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-white">59€</span>
-                  <span className="text-blue-100">/mois/utilisateur</span>
+                  <span className="text-5xl font-bold text-purple-600">59€</span>
+                  <span className="text-gray-600">/mois/utilisateur</span>
                 </div>
               </div>
               <ul className="space-y-4 mb-8">
                 {["100 Go de stockage", "600 dossiers actifs", "200 clients actifs", "80 signatures/mois/utilisateur", "Espace collaboratif complet", "Gestion documentaire avancée", "Tableaux de bord"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-yellow-300 flex-shrink-0 mt-0.5" />
-                    <span className="text-white">{feature}</span>
+                    <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">{feature}</span>
                   </li>
                 ))}
               </ul>
               <Button 
-                className="w-full bg-white hover:bg-gray-100 text-blue-600 py-6 font-bold"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 font-bold"
                 onClick={() => navigate("/checkout-professionnel")}
               >
                 Choisir Professionnel
               </Button>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-violet-100 border-2 border-purple-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-purple-400">
+            <div className="bg-white border-2 border-orange-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-orange-400">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-purple-900 mb-2">NEIRA CABINET+</h3>
-                <p className="text-purple-700 mb-6">Idéal pour cabinets de 10 à 50+ utilisateurs</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
+                <p className="text-gray-600 mb-6">Idéal pour cabinets de 10 à 50+ utilisateurs</p>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-purple-900">89€</span>
-                  <span className="text-purple-700">/mois/utilisateur</span>
+                  <span className="text-5xl font-bold text-orange-600">89€</span>
+                  <span className="text-gray-600">/mois/utilisateur</span>
                 </div>
               </div>
               <ul className="space-y-4 mb-8">
                 {["Stockage illimité", "Dossiers illimités", "Clients illimités", "Signatures illimitées", "Collaboration sans limite", "Tableaux de bord avancés", "Onboarding & formation", "Accès anticipé aux nouveautés"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-800">{feature}</span>
+                    <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">{feature}</span>
                   </li>
                 ))}
               </ul>
               <Button 
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6"
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white py-6"
                 onClick={() => navigate("/checkout-cabinet-plus")}
               >
                 Choisir Cabinet+
