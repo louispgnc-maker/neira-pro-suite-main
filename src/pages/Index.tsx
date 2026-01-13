@@ -1,101 +1,527 @@
-
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { PublicHeader } from "@/components/layout/PublicHeader";
+import { CheckCircle2, FileText, Users, Clock, Shield, BarChart3, Zap, ArrowRight, CheckCheck, Scale, Building2 } from "lucide-react";
 
 export default function Index() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/20 via-accent/10 to-background"
-      style={{
-        paddingLeft: '1cm',
-        paddingRight: '1cm',
-        backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design%20sans%20titre-4.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
+    <div className="min-h-screen flex flex-col bg-white">
       <PublicHeader />
 
-      <main className="w-full max-w-5xl mx-auto pt-24 pb-12 px-6">
-        <header className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4">Automatisez votre activité juridique</h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">La plateforme tout-en-un qui simplifie votre quotidien de professionnel du juridique.</p>
-        </header>
-
-        {/* Role buttons */}
-        <div className="flex items-center justify-center gap-6 mb-12">
-          <Button size="lg" className="text-lg px-6 py-3 bg-blue-600 text-white hover:bg-blue-800 shadow-md ring-1 ring-blue-700 border border-blue-800/20 whitespace-nowrap transition-colors duration-150" onClick={() => navigate("/avocats/auth")}>
-            Espace Avocats
-          </Button>
-          <Button size="lg" className="text-lg px-6 py-3 bg-orange-600 text-white hover:bg-orange-800 shadow-md ring-1 ring-orange-700 border border-orange-800/20 whitespace-nowrap transition-colors duration-150" onClick={() => navigate("/notaires/auth")}>
-            Espace Notaires
-          </Button>
+      {/* 1. HERO SECTION */}
+      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
         </div>
-
-        {/* Features: 4 blocks */}
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <div className="flex flex-col items-start p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-border shadow-sm">
-            <div className="text-2xl mb-3">🔄</div>
-            <h3 className="font-semibold text-lg mb-2">Automatiser vos tâches répétitives</h3>
-            <p className="text-sm text-muted-foreground">Gagnez plusieurs heures par semaine en automatisant vos workflows juridiques.</p>
-          </div>
-
-          <div className="flex flex-col items-start p-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-border shadow-sm">
-            <div className="text-2xl mb-3">📁</div>
-            <h3 className="font-semibold text-lg mb-2">Gérer vos documents en toute sécurité</h3>
-            <p className="text-sm text-muted-foreground">Classement, partage, versionning, historique complet.</p>
-          </div>
-
-          <div className="flex flex-col items-start p-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-border shadow-sm">
-            <div className="text-2xl mb-3">👥</div>
-            <h3 className="font-semibold text-lg mb-2">Collaborer avec vos clients et vos équipes</h3>
-            <p className="text-sm text-muted-foreground">Espace partagé, messages, échanges sécurisés.</p>
-          </div>
-
-          <div className="flex flex-col items-start p-6 rounded-xl bg-gradient-to-br from-success/10 to-success/5 border border-border shadow-sm">
-            <div className="text-2xl mb-3">📊</div>
-            <h3 className="font-semibold text-lg mb-2">Piloter votre activité</h3>
-            <p className="text-sm text-muted-foreground">Agenda, statistiques, indicateurs et suivi des dossiers.</p>
-          </div>
-        </section>
-
-        {/* Pour qui ? */}
-        <section className="mb-12">
-          <h3 className="text-2xl font-bold text-foreground mb-6 text-center">Pour qui ?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 bg-white/60 rounded-xl border border-border shadow-sm">
-              <h4 className="text-lg font-semibold mb-3">👩‍⚖️ Avocats</h4>
-              <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-2">
-                <li>Gestion de dossiers</li>
-                <li>Collaboration client</li>
-                <li>Automatisation de modèles</li>
-                <li>Communication simplifiée</li>
-              </ul>
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+              Pilotez votre cabinet juridique en toute simplicité
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+              La plateforme tout-en-un qui automatise vos tâches, sécurise vos documents et optimise votre collaboration client
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-6 bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 group"
+                onClick={() => navigate("/solution")}
+              >
+                Découvrir la solution
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="text-lg px-8 py-6 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 shadow-md hover:shadow-lg transition-all duration-200"
+                onClick={() => navigate("/contact")}
+              >
+                Demander une démo
+              </Button>
             </div>
 
-            <div className="p-6 bg-white/60 rounded-xl border border-border shadow-sm">
-              <h4 className="text-lg font-semibold mb-3">🏛️ Notaires</h4>
-              <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-2">
-                <li>Gestion d’actes</li>
-                <li>Collecte sécurisée de documents</li>
-                <li>Automatisation administrative</li>
-                <li>Collaboration en équipe</li>
-              </ul>
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <span>Conforme RGPD</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <span>Données hébergées en France</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <span>Support dédié</span>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* CTA */}
-        <section className="text-center mt-6">
-          <p className="mb-4 text-lg text-muted-foreground">Découvrez tous nos outils et débloquez l’ensemble de nos fonctionnalités avancées dès maintenant</p>
-          <div className="flex items-center justify-center">
-            <Button size="lg" onClick={() => navigate('/avocats/auth')}>Découvrir</Button>
+      {/* 2. PROBLÈME → SOLUTION */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Les défis quotidiens de votre cabinet
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-100">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700"><strong>Tâches répétitives</strong> qui vous font perdre un temps précieux</p>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-100">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700"><strong>Documents éparpillés</strong> difficiles à retrouver et à partager</p>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-100">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700"><strong>Communication client</strong> fragmentée entre emails, appels et messages</p>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-100">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700"><strong>Manque de visibilité</strong> sur l'avancement de vos dossiers</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Neira transforme votre quotidien
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-700"><strong>Automatisation intelligente</strong> de vos workflows juridiques</p>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-700"><strong>Gestion centralisée</strong> de tous vos documents en toute sécurité</p>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-700"><strong>Espace collaboratif</strong> unique pour échanger avec vos clients</p>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-700"><strong>Tableau de bord complet</strong> pour piloter votre activité</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      {/* 3. CE QUE FAIT NEIRA */}
+      <section className="py-20 px-6 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Une plateforme complète pour votre cabinet
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Neira réunit tous les outils essentiels pour gérer efficacement votre activité juridique
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
+              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <FileText className="h-7 w-7 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Gestion documentaire</h3>
+              <p className="text-gray-600">Stockage sécurisé, organisation intelligente, versionning et partage simplifié de tous vos documents</p>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
+              <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Zap className="h-7 w-7 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Automatisation</h3>
+              <p className="text-gray-600">Génération automatique de documents, workflows personnalisables et rappels intelligents</p>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
+              <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Users className="h-7 w-7 text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Collaboration client</h3>
+              <p className="text-gray-600">Espace partagé sécurisé, messagerie intégrée et suivi en temps réel des dossiers</p>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
+              <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Clock className="h-7 w-7 text-orange-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Suivi des échéances</h3>
+              <p className="text-gray-600">Calendrier intelligent, notifications automatiques et gestion des délais critiques</p>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
+              <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Shield className="h-7 w-7 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Sécurité & Conformité</h3>
+              <p className="text-gray-600">Chiffrement des données, conformité RGPD et hébergement sécurisé en France</p>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
+              <div className="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <BarChart3 className="h-7 w-7 text-indigo-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Pilotage & Statistiques</h3>
+              <p className="text-gray-600">Tableaux de bord personnalisés, indicateurs clés et rapports d'activité détaillés</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. VALEUR APPORTÉE */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Des résultats concrets pour votre cabinet
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Neira vous fait gagner du temps et améliore votre efficacité au quotidien
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-10 rounded-2xl border border-blue-100 hover:shadow-lg transition-shadow">
+              <div className="text-5xl md:text-6xl font-bold text-blue-600 mb-4">-70%</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">de temps sur les tâches administratives</h3>
+              <p className="text-gray-600 text-lg">Concentrez-vous sur votre cœur de métier en automatisant les tâches répétitives</p>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-10 rounded-2xl border border-green-100 hover:shadow-lg transition-shadow">
+              <div className="text-5xl md:text-6xl font-bold text-green-600 mb-4">+45%</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">de productivité pour vos équipes</h3>
+              <p className="text-gray-600 text-lg">Optimisez l'organisation et la collaboration au sein de votre cabinet</p>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-10 rounded-2xl border border-purple-100 hover:shadow-lg transition-shadow">
+              <div className="text-5xl md:text-6xl font-bold text-purple-600 mb-4">100%</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">de vos documents sécurisés</h3>
+              <p className="text-gray-600 text-lg">Garantissez la confidentialité avec un système de sécurité renforcé</p>
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-10 rounded-2xl border border-orange-100 hover:shadow-lg transition-shadow">
+              <div className="text-5xl md:text-6xl font-bold text-orange-600 mb-4">24/7</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Visibilité sur votre activité</h3>
+              <p className="text-gray-600 text-lg">Suivez en temps réel l'avancement de vos dossiers</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. COMMENT ÇA FONCTIONNE */}
+      <section className="py-20 px-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Comment fonctionne Neira ?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Une solution pensée pour simplifier chaque aspect de votre activité juridique
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            {[
+              { num: 1, color: "blue", title: "Automatisation intelligente", desc: "Créez des modèles personnalisés et générez automatiquement vos documents. Définissez des workflows sur mesure." },
+              { num: 2, color: "purple", title: "Collaboration simplifiée", desc: "Partagez des espaces sécurisés avec vos clients et équipes. Communiquez en temps réel." },
+              { num: 3, color: "green", title: "Gestion documentaire centralisée", desc: "Stockez, classez et retrouvez instantanément tous vos documents avec gestion des versions." },
+              { num: 4, color: "orange", title: "Suivi des échéances", desc: "Ne manquez plus de deadline. Neira vous alerte automatiquement des échéances critiques." },
+              { num: 5, color: "red", title: "Sécurité maximale", desc: "Données chiffrées, hébergées en France et conformes RGPD. Traçabilité complète." }
+            ].map((step) => (
+              <div key={step.num} className="bg-white p-8 rounded-2xl shadow-md hover:shadow-lg transition-shadow flex items-start gap-6">
+                <div className={`w-12 h-12 bg-${step.color}-600 text-white rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0`} style={{backgroundColor: step.color === "blue" ? "#2563eb" : step.color === "purple" ? "#9333ea" : step.color === "green" ? "#16a34a" : step.color === "orange" ? "#ea580c" : "#dc2626"}}>
+                  {step.num}
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{step.title}</h3>
+                  <p className="text-gray-600 text-lg">{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 6. POUR QUI */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Une solution adaptée à votre métier
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Neira accompagne les professionnels du droit dans leur transformation digitale
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-10 rounded-2xl border-2 border-blue-200 hover:shadow-2xl transition-all duration-300">
+              <div className="flex items-center gap-4 mb-6">
+                <Scale className="h-12 w-12 text-blue-600" />
+                <h3 className="text-3xl font-bold text-gray-900">Avocats</h3>
+              </div>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-3">
+                  <CheckCheck className="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700 text-lg">Gestion complète de vos dossiers clients</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCheck className="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700 text-lg">Automatisation des actes et contrats</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCheck className="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700 text-lg">Espace client sécurisé</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCheck className="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700 text-lg">Suivi des procédures et échéances</span>
+                </li>
+              </ul>
+              <Button 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg"
+                onClick={() => navigate("/avocats/auth")}
+              >
+                Accéder à l'espace Avocats
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-50 to-amber-100 p-10 rounded-2xl border-2 border-orange-200 hover:shadow-2xl transition-all duration-300">
+              <div className="flex items-center gap-4 mb-6">
+                <Building2 className="h-12 w-12 text-orange-600" />
+                <h3 className="text-3xl font-bold text-gray-900">Notaires</h3>
+              </div>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-3">
+                  <CheckCheck className="h-6 w-6 text-orange-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700 text-lg">Gestion des actes authentiques</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCheck className="h-6 w-6 text-orange-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700 text-lg">Collecte sécurisée des pièces</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCheck className="h-6 w-6 text-orange-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700 text-lg">Automatisation administrative</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCheck className="h-6 w-6 text-orange-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700 text-lg">Conformité réglementaire</span>
+                </li>
+              </ul>
+              <Button 
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white py-6 text-lg"
+                onClick={() => navigate("/notaires/auth")}
+              >
+                Accéder à l'espace Notaires
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. CAS D'USAGE */}
+      <section className="py-20 px-6 bg-gradient-to-br from-gray-50 to-slate-100">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Neira en action au quotidien
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Découvrez comment Neira simplifie concrètement votre travail
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {[
+              { icon: FileText, color: "blue", title: "Gestion des dossiers", desc: "Créez et suivez tous vos dossiers depuis une interface unique", items: ["Création automatisée", "Templates personnalisables", "Suivi temps réel"] },
+              { icon: Users, color: "purple", title: "Collaboration client", desc: "Offrez un accès sécurisé pour consulter et déposer des documents", items: ["Portail client", "Messagerie sécurisée", "Documents chiffrés"] },
+              { icon: Clock, color: "orange", title: "Suivi des échéances", desc: "Respectez tous vos délais grâce aux alertes automatiques", items: ["Rappels configurables", "Calendrier partagé", "Notifications multi-canaux"] },
+              { icon: BarChart3, color: "green", title: "Pilotage du cabinet", desc: "Vue d'ensemble et analyse de vos performances", items: ["Tableaux de bord", "Indicateurs KPI", "Rapports détaillés"] }
+            ].map((useCase, idx) => (
+              <div key={idx} className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                <div className={`w-16 h-16 bg-${useCase.color}-100 rounded-2xl flex items-center justify-center mb-6`} style={{backgroundColor: useCase.color === "blue" ? "#dbeafe" : useCase.color === "purple" ? "#f3e8ff" : useCase.color === "orange" ? "#ffedd5" : "#dcfce7"}}>
+                  <useCase.icon className="h-8 w-8" style={{color: useCase.color === "blue" ? "#2563eb" : useCase.color === "purple" ? "#9333ea" : useCase.color === "orange" ? "#ea580c" : "#16a34a"}} />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{useCase.title}</h3>
+                <p className="text-gray-600 mb-4">{useCase.desc}</p>
+                <ul className="space-y-2 text-gray-600">
+                  {useCase.items.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{backgroundColor: useCase.color === "blue" ? "#2563eb" : useCase.color === "purple" ? "#9333ea" : useCase.color === "orange" ? "#ea580c" : "#16a34a"}}></div>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 8. OFFRES */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Choisissez l'offre adaptée à vos besoins
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Des formules flexibles pour accompagner la croissance de votre cabinet
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-blue-300">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Essentiel</h3>
+                <p className="text-gray-600 mb-6">Pour débuter avec Neira</p>
+                <div className="mb-6">
+                  <span className="text-5xl font-bold text-gray-900">29€</span>
+                  <span className="text-gray-600">/mois</span>
+                </div>
+              </div>
+              <ul className="space-y-4 mb-8">
+                {["1 utilisateur", "Gestion documentaire", "10 Go de stockage", "Espace client sécurisé", "Support email"].map((feature, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button 
+                className="w-full bg-gray-900 hover:bg-gray-800 text-white py-6"
+                onClick={() => navigate("/checkout-essentiel")}
+              >
+                Commencer
+              </Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-8 relative hover:shadow-2xl transition-shadow border-4 border-blue-400 transform scale-105">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
+                LE PLUS POPULAIRE
+              </div>
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-white mb-2">Professionnel</h3>
+                <p className="text-blue-100 mb-6">Pour cabinets en croissance</p>
+                <div className="mb-6">
+                  <span className="text-5xl font-bold text-white">79€</span>
+                  <span className="text-blue-100">/mois</span>
+                </div>
+              </div>
+              <ul className="space-y-4 mb-8">
+                {["Jusqu'à 5 utilisateurs", "Toutes fonctionnalités Essentiel", "100 Go stockage", "Automatisation avancée", "Statistiques & rapports", "Support prioritaire"].map((feature, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-yellow-300 flex-shrink-0 mt-0.5" />
+                    <span className="text-white">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button 
+                className="w-full bg-white hover:bg-gray-100 text-blue-600 py-6 font-bold"
+                onClick={() => navigate("/checkout-professionnel")}
+              >
+                Démarrer maintenant
+              </Button>
+            </div>
+
+            <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-purple-300">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Sur mesure</h3>
+                <p className="text-gray-600 mb-6">Pour grands cabinets</p>
+                <div className="mb-6">
+                  <span className="text-3xl font-bold text-gray-900">Contactez-nous</span>
+                </div>
+              </div>
+              <ul className="space-y-4 mb-8">
+                {["Utilisateurs illimités", "Toutes fonctionnalités Pro", "Stockage personnalisé", "Intégrations sur mesure", "Formation personnalisée", "Support 24/7"].map((feature, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button 
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6"
+                onClick={() => navigate("/contact")}
+              >
+                Nous contacter
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. CTA FINAL */}
+      <section className="py-24 px-6 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+        </div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+            Prêt à transformer votre cabinet ?
+          </h2>
+          <p className="text-xl md:text-2xl text-blue-100 mb-10 max-w-3xl mx-auto">
+            Rejoignez les centaines de professionnels du droit qui font confiance à Neira
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+            <Button 
+              size="lg" 
+              className="text-lg px-10 py-7 bg-white text-blue-600 hover:bg-gray-100 shadow-2xl hover:shadow-3xl transition-all duration-200 font-bold"
+              onClick={() => navigate("/contact")}
+            >
+              Demander une démo gratuite
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="text-lg px-10 py-7 border-2 border-white text-white hover:bg-white/10 shadow-xl hover:shadow-2xl transition-all duration-200"
+              onClick={() => navigate("/checkout-essentiel")}
+            >
+              Essayer gratuitement
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-white/90">
+            {["Aucune carte bancaire requise", "Configuration en 5 minutes", "Support client réactif"].map((item, i) => (
+              <div key={i} className="flex flex-col items-center gap-2">
+                <CheckCircle2 className="h-8 w-8 text-green-300" />
+                <span className="text-lg">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-400 py-12 px-6">
+        <div className="max-w-6xl mx-auto text-center">
+          <p className="mb-4">© 2026 Neira - Tous droits réservés</p>
+          <div className="flex items-center justify-center gap-6 text-sm">
+            {[
+              { label: "Mentions légales", href: "/mentions-legales" },
+              { label: "RGPD", href: "/rgpd" },
+              { label: "CGU", href: "/cgu" },
+              { label: "Contact", href: "/contact" }
+            ].map((link, i) => (
+              <a key={i} href={link.href} className="hover:text-white transition-colors">{link.label}</a>
+            ))}
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
