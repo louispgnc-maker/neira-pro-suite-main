@@ -69,16 +69,16 @@ export function PublicHeader() {
               <ChevronDown className="w-3 h-3" />
             </button>
             {whoOpen && (
-              <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+              <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 overflow-hidden">
                 <button
                   onClick={() => { setWhoOpen(false); navigate('/avocats/metier'); }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   Avocats
                 </button>
                 <button
                   onClick={() => { setWhoOpen(false); navigate('/notaires/metier'); }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   Notaires
                 </button>
@@ -111,16 +111,16 @@ export function PublicHeader() {
               <ChevronDown className="w-3 h-3" />
             </button>
             {connOpen && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+              <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 overflow-hidden">
                 <button
                   onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   Espace Avocats
                 </button>
                 <button
                   onClick={() => { setConnOpen(false); navigate('/notaires/auth'); }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   Espace Notaires
                 </button>
