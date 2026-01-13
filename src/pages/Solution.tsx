@@ -63,40 +63,38 @@ export default function Solution() {
 
   return (
     <TooltipProvider delayDuration={0}>
-    <div 
-      className="min-h-screen bg-white"
-      style={{
-        paddingLeft: '1cm',
-        paddingRight: '1cm',
-        backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Mix%20deux%20couleurs.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
+    <div className="min-h-screen flex flex-col bg-white">
       <PublicHeader />
 
       {/* Hero Section */}
-      <div className="container mx-auto px-4 py-24">
-        <div className="max-w-4xl mx-auto text-center mb-16">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Vous êtes responsable de cabinet ?
-          </h1>
-          <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-            Choisissez la formule adaptée à la taille de votre équipe et équipez votre cabinet 
-            d'une solution tout-en-un pour digitaliser et automatiser votre activité juridique.
-          </p>
+      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
         </div>
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              Vous êtes responsable de cabinet ?
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+              Choisissez la formule adaptée à la taille de votre équipe et équipez votre cabinet 
+              d'une solution tout-en-un pour digitaliser et automatiser votre activité juridique.
+            </p>
+          </div>
+        </div>
+      </section>
 
-        {/* Pricing Section */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+
+      {/* Pricing Section */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900">
             Choisissez l'offre adaptée à votre équipe
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Offre Essentiel */}
-            <Card className="p-6 bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-blue-500">
+            <Card className="p-6 bg-white transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-blue-500 border border-gray-200 rounded-xl shadow-lg">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
                 <div className="text-4xl font-bold text-blue-600 mb-2">39€</div>
@@ -188,7 +186,7 @@ export default function Solution() {
             </Card>
 
             {/* Offre Professionnel */}
-            <Card className="p-6 bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 border-purple-500 relative">
+            <Card className="p-6 bg-white transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 border-purple-500 relative rounded-xl shadow-lg">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-xs font-semibold">
                 RECOMMANDÉ
               </div>
@@ -270,7 +268,7 @@ export default function Solution() {
             </Card>
 
             {/* Offre Cabinet+ */}
-            <Card className="p-6 bg-white/90 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-orange-500">
+            <Card className="p-6 bg-white transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-orange-500 border border-gray-200 rounded-xl shadow-lg">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
                 <div className="text-4xl font-bold text-orange-600 mb-2">89€</div>
@@ -341,7 +339,7 @@ export default function Solution() {
             </Card>
           </div>
         </div>
-      </div>
+      </section>
     </div>
     </TooltipProvider>
   );

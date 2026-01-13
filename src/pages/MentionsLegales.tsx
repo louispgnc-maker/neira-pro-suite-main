@@ -2,24 +2,26 @@ import { PublicHeader } from '@/components/layout/PublicHeader';
 
 export default function MentionsLegales() {
   return (
-    <div 
-      className="min-h-screen bg-white"
-      style={{
-        paddingLeft: '1cm',
-        paddingRight: '1cm',
-        backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Mix%20deux%20couleurs.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
+    <div className="min-h-screen flex flex-col bg-white">
       <PublicHeader />
 
-      <div className="container mx-auto px-4 py-24">
-        <div className="max-w-4xl mx-auto bg-white/90 backdrop-blur rounded-2xl shadow-xl p-12">
-          <h1 className="text-4xl font-bold mb-8 text-gray-900">
-            Mentions légales – Neira (Micro-entreprise)
-          </h1>
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+        </div>
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              Mentions légales
+            </h1>
+          </div>
+        </div>
+      </section>
+
+      {/* Content */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-12 border border-gray-200">
 
           {/* Section 1 */}
           <section className="mb-8">
@@ -156,7 +158,7 @@ export default function MentionsLegales() {
             </p>
           </section>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

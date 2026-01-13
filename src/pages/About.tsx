@@ -4,39 +4,36 @@ import { PublicHeader } from "@/components/layout/PublicHeader";
 export default function About() {
 
   return (
-    <div
-      className="min-h-screen bg-white"
-      style={{
-        paddingLeft: '1cm',
-        paddingRight: '1cm',
-        backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Mix%20deux%20couleurs.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
+    <div className="min-h-screen flex flex-col bg-white">
       <PublicHeader />
 
-      {/* Content */}
-      <div className="container mx-auto px-4 py-24 min-h-screen">
-        <div className="max-w-6xl mx-auto my-8">
-          {/* Hero Section */}
-          <div className="bg-white rounded-2xl shadow-xl p-12 mb-8 text-center">
-            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+        </div>
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               À propos de Neira
             </h1>
-            <p className="text-2xl text-gray-600 font-light">
+            <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
               Simplifier le quotidien des professionnels du droit
             </p>
-            <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
+            <div className="p-6 bg-white rounded-xl shadow-lg border border-gray-200">
               <p className="text-lg text-gray-700 leading-relaxed">
                 Neira est une solution pensée pour un objectif simple : permettre aux avocats, notaires et juristes de se concentrer pleinement sur leur métier, sans être freinés par la gestion administrative, la désorganisation ou la multiplication des outils numériques.
               </p>
             </div>
           </div>
+        </div>
+      </section>
 
+      {/* Content */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
           {/* Le Constat */}
-          <div className="bg-white rounded-2xl shadow-xl p-10 mb-8">
+          <div className="bg-white rounded-2xl shadow-xl p-10 mb-8 border border-gray-200">
             <div className="flex items-start gap-4 mb-6">
               <div className="p-3 bg-blue-100 rounded-lg">
                 <Lightbulb className="w-8 h-8 text-blue-600" />
@@ -55,7 +52,7 @@ export default function About() {
           </div>
 
           {/* Notre Mission */}
-          <div className="bg-white rounded-2xl shadow-xl p-10 mb-8">
+          <div className="bg-white rounded-2xl shadow-xl p-10 mb-8 border border-gray-200">
             <div className="flex items-start gap-4 mb-6">
               <div className="p-3 bg-purple-100 rounded-lg">
                 <Target className="w-8 h-8 text-purple-600" />
@@ -94,7 +91,7 @@ export default function About() {
           </div>
 
           {/* Ce que Neira apporte */}
-          <div className="bg-white rounded-2xl shadow-xl p-10 mb-8">
+          <div className="bg-white rounded-2xl shadow-xl p-10 mb-8 border border-gray-200">
             <div className="flex items-start gap-4 mb-6">
               <div className="p-3 bg-purple-100 rounded-lg">
                 <Zap className="w-8 h-8 text-purple-600" />
@@ -141,7 +138,7 @@ export default function About() {
           </div>
 
           {/* Conçue avec les professionnels */}
-          <div className="bg-white rounded-2xl shadow-xl p-10 mb-8">
+          <div className="bg-white rounded-2xl shadow-xl p-10 mb-8 border border-gray-200">
             <div className="flex items-start gap-4 mb-6">
               <div className="p-3 bg-green-100 rounded-lg">
                 <Users className="w-8 h-8 text-green-600" />
@@ -168,7 +165,7 @@ export default function About() {
           </div>
 
           {/* Notre Vision */}
-          <div className="bg-white rounded-2xl shadow-xl p-10 mb-8">
+          <div className="bg-white rounded-2xl shadow-xl p-10 mb-8 border border-gray-200">
             <div className="flex items-start gap-4 mb-6">
               <div className="p-3 bg-orange-100 rounded-lg">
                 <TrendingUp className="w-8 h-8 text-orange-600" />
@@ -205,7 +202,7 @@ export default function About() {
           </div>
 
           {/* L'humain au centre */}
-          <div className="bg-white rounded-2xl shadow-xl p-10">
+          <div className="bg-white rounded-2xl shadow-xl p-10 border border-gray-200">
             <div className="flex items-start gap-4 mb-6">
               <div className="p-3 bg-pink-100 rounded-lg">
                 <Heart className="w-8 h-8 text-pink-600" />
@@ -235,7 +232,7 @@ export default function About() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
