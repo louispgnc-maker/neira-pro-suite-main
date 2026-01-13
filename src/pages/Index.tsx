@@ -195,25 +195,25 @@ export default function Index() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-10 rounded-2xl border border-blue-100 hover:shadow-lg transition-shadow">
               <div className="text-5xl md:text-6xl font-bold text-blue-600 mb-4">-70%</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">de temps sur les tâches administratives</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Jusqu'à -70% de temps administratif</h3>
               <p className="text-gray-600 text-lg">Concentrez-vous sur votre cœur de métier en automatisant les tâches répétitives</p>
             </div>
 
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-10 rounded-2xl border border-green-100 hover:shadow-lg transition-shadow">
               <div className="text-5xl md:text-6xl font-bold text-green-600 mb-4">+45%</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">de productivité pour vos équipes</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Jusqu'à +45% de productivité</h3>
               <p className="text-gray-600 text-lg">Optimisez l'organisation et la collaboration au sein de votre cabinet</p>
             </div>
 
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-10 rounded-2xl border border-purple-100 hover:shadow-lg transition-shadow">
               <div className="text-5xl md:text-6xl font-bold text-purple-600 mb-4">100%</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">de vos documents sécurisés</h3>
-              <p className="text-gray-600 text-lg">Garantissez la confidentialité avec un système de sécurité renforcé</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Sécurité renforcée & confidentialité</h3>
+              <p className="text-gray-600 text-lg">Chiffrement & accès contrôlés pour garantir la protection de vos données</p>
             </div>
 
             <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-10 rounded-2xl border border-orange-100 hover:shadow-lg transition-shadow">
               <div className="text-5xl md:text-6xl font-bold text-orange-600 mb-4">24/7</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Visibilité sur votre activité</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Suivi en temps réel 24/7</h3>
               <p className="text-gray-600 text-lg">Suivez en temps réel l'avancement de vos dossiers</p>
             </div>
           </div>
