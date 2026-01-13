@@ -77,7 +77,8 @@ const App = () => (
           <ScrollToTop />
           <FullscreenButton />
           <Routes>
-            <Route path="/" element={<Auth />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/about" element={<About />} />
             <Route path="/solution" element={<Solution />} />
             <Route path="/test-subscription" element={<TestSubscription />} />
