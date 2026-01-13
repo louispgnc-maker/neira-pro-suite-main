@@ -225,24 +225,9 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
     setQuery("");
   };
 
-  // Afficher le bouton seulement sur le dashboard, mais la modale est toujours accessible via Cmd+K
-  if (!isOpen && !showButton) {
-    return null;
-  }
-
+  // Ne jamais afficher le bouton - uniquement accessible via Cmd+K
   if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="w-full max-w-md flex items-center gap-2 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:border-blue-400 hover:shadow-sm transition-all"
-      >
-        <Search className="h-4 w-4 text-gray-400" />
-        <span className="text-gray-500">Rechercher...</span>
-        <kbd className="ml-auto px-2 py-0.5 text-xs font-semibold text-gray-500 bg-gray-100 border border-gray-300 rounded">
-          ⌘K
-        </kbd>
-      </button>
-    );
+    return null;
   }
 
   return createPortal(
