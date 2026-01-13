@@ -99,8 +99,9 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    // Utiliser capture: true pour intercepter l'événement avant le plein écran
+    document.addEventListener("keydown", handleKeyDown, { capture: true });
+    return () => document.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [isOpen]);
 
   // Focus l'input quand ouvert
