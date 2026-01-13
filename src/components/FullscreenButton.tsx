@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { Maximize, Minimize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,24 +10,61 @@ import {
 
 const FullscreenButton = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const location = useLocation();
+  const isRestoringRef = useRef(false);
 
   useEffect(() => {
+    let restoreTimeout: NodeJS.Timeout;
+
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const fullscreenActive = !!document.fullscreenElement;
+      setIsFullscreen(fullscreenActive);
+      
+      // Ne pas mettre à jour localStorage si on est en train de restaurer
+      if (!isRestoringRef.current) {
+        localStorage.setItem("fullscreenMode", fullscreenActive ? "true" : "false");
+      }
+      
+      // Si on sort du plein écran mais qu'il devrait être actif, le restaurer
+      if (!fullscreenActive && localStorage.getItem("fullscreenMode") === "true" && !isRestoringRef.current) {
+        isRestoringRef.current = true;
+        restoreTimeout = setTimeout(() => {
+          document.documentElement.requestFullscreen().catch(() => {
+            isRestoringRef.current = false;
+          });
+          isRestoringRef.current = false;
+        }, 50);
+      }
+    };
+
+    const restoreFullscreen = () => {
+      const savedFullscreenMode = localStorage.getItem("fullscreenMode");
+      if (savedFullscreenMode === "true" && !document.fullscreenElement) {
+        setTimeout(() => {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }, 100);
+      }
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
+    
+    // Tenter de restaurer le plein écran au chargement
+    restoreFullscreen();
+    
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      if (restoreTimeout) clearTimeout(restoreTimeout);
     };
-  }, []);
+  }, [location]); // Réexécuter à chaque changement de page
 
   const toggleFullscreen = async () => {
     try {
       if (!document.fullscreenElement) {
         await document.documentElement.requestFullscreen();
+        localStorage.setItem("fullscreenMode", "true");
       } else {
         await document.exitFullscreen();
+        localStorage.setItem("fullscreenMode", "false");
       }
     } catch (error) {
       console.error("Erreur lors du passage en plein écran:", error);
