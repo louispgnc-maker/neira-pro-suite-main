@@ -32,8 +32,13 @@ export function PublicHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
       <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4 relative">
-        <div onClick={() => navigate('/')} className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-          <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Logo%20Neira.png" alt="Neira" className="w-10 h-10 rounded-md object-cover" />
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => navigate('/')} 
+            className="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 hover:scale-110 active:scale-90 cursor-pointer"
+          >
+            <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Logo%20Neira.png" alt="Neira" className="w-full h-full object-cover" />
+          </button>
           <div className="leading-tight">
             <div className="text-base font-bold text-foreground">Neira</div>
             <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
