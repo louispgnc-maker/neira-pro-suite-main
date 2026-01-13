@@ -8,40 +8,55 @@ interface SearchItem {
   path: string;
   keywords: string[];
   category: string;
+  section?: string; // Sous-section de la page
 }
 
 const searchIndex: SearchItem[] = [
   // Dashboard
-  { title: "Dashboard", path: "/dashboard", keywords: ["accueil", "tableau de bord", "home"], category: "Navigation" },
+  { title: "Dashboard", path: "/dashboard", keywords: ["accueil", "tableau de bord", "home", "statistiques"], category: "Navigation" },
   
   // Documents & Contrats
-  { title: "Documents", path: "/documents", keywords: ["fichiers", "documents", "pdfs"], category: "Gestion" },
-  { title: "Contrats", path: "/contrats", keywords: ["contrats", "accords", "conventions"], category: "Gestion" },
-  { title: "Signatures", path: "/signatures", keywords: ["signatures", "signer", "signature électronique"], category: "Gestion" },
-  { title: "Dossiers", path: "/dossiers", keywords: ["dossiers", "affaires", "cas"], category: "Gestion" },
+  { title: "Documents", path: "/documents", keywords: ["fichiers", "documents", "pdfs", "télécharger", "upload"], category: "Gestion" },
+  { title: "Documents - Upload", path: "/documents", section: "Upload de fichiers", keywords: ["ajouter document", "importer fichier", "téléverser"], category: "Gestion" },
+  { title: "Contrats", path: "/contrats", keywords: ["contrats", "accords", "conventions", "modèles"], category: "Gestion" },
+  { title: "Contrats - Nouveau", path: "/contrats", section: "Créer un contrat", keywords: ["nouveau contrat", "créer contrat", "modèle contrat"], category: "Gestion" },
+  { title: "Signatures", path: "/signatures", keywords: ["signatures", "signer", "signature électronique", "paraphes"], category: "Gestion" },
+  { title: "Signatures - Crédits", path: "/signatures", section: "Acheter des crédits", keywords: ["acheter signatures", "crédits signature", "paiement signature"], category: "Gestion" },
+  { title: "Dossiers", path: "/dossiers", keywords: ["dossiers", "affaires", "cas", "projets"], category: "Gestion" },
   
   // Clients
-  { title: "Clients", path: "/clients", keywords: ["clients", "contacts", "personnes"], category: "Gestion" },
+  { title: "Clients", path: "/clients", keywords: ["clients", "contacts", "personnes", "liste clients"], category: "Gestion" },
   { title: "Nouveau Client", path: "/clients/nouveau", keywords: ["créer client", "ajouter client", "nouveau contact"], category: "Actions" },
+  { title: "Clients - Recherche", path: "/clients", section: "Rechercher un client", keywords: ["chercher client", "trouver client", "filtrer clients"], category: "Gestion" },
   
   // Cabinet
-  { title: "Cabinet", path: "/cabinet", keywords: ["cabinet", "équipe", "collaborateurs", "membres"], category: "Gestion" },
-  { title: "Espace Collaboratif", path: "/espace-collaboratif", keywords: ["collaboration", "partage", "équipe"], category: "Gestion" },
+  { title: "Cabinet", path: "/cabinet", keywords: ["cabinet", "équipe", "collaborateurs", "membres", "gestion cabinet"], category: "Gestion" },
+  { title: "Cabinet - Membres", path: "/cabinet", section: "Gestion des membres", keywords: ["ajouter membre", "inviter collaborateur", "équipe", "utilisateurs"], category: "Gestion" },
+  { title: "Cabinet - Paramètres", path: "/cabinet", section: "Paramètres du cabinet", keywords: ["configuration cabinet", "réglages cabinet"], category: "Gestion" },
+  { title: "Espace Collaboratif", path: "/espace-collaboratif", keywords: ["collaboration", "partage", "équipe", "documents partagés"], category: "Gestion" },
   
   // Statistiques & Rapports
-  { title: "Statistiques", path: "/statistiques", keywords: ["stats", "rapports", "analyses", "graphiques"], category: "Analyse" },
-  { title: "Tâches", path: "/tasks", keywords: ["tâches", "to-do", "agenda", "calendrier"], category: "Organisation" },
+  { title: "Statistiques", path: "/statistiques", keywords: ["stats", "rapports", "analyses", "graphiques", "métriques", "kpi"], category: "Analyse" },
+  { title: "Statistiques - Revenus", path: "/statistiques", section: "Revenus", keywords: ["chiffre affaires", "revenus", "facturation", "finance"], category: "Analyse" },
+  { title: "Statistiques - Clients", path: "/statistiques", section: "Clients", keywords: ["nombre clients", "clients actifs", "nouveaux clients"], category: "Analyse" },
+  { title: "Tâches", path: "/tasks", keywords: ["tâches", "to-do", "agenda", "calendrier", "planning"], category: "Organisation" },
   
   // Communication
-  { title: "Intégration Email", path: "/email-integration", keywords: ["email", "gmail", "messagerie", "courrier"], category: "Communication" },
-  { title: "Boîte de réception", path: "/email-inbox", keywords: ["inbox", "messages", "emails reçus"], category: "Communication" },
+  { title: "Intégration Email", path: "/email-integration", keywords: ["email", "gmail", "messagerie", "courrier", "synchronisation"], category: "Communication" },
+  { title: "Email - Configuration", path: "/email-integration", section: "Configuration Gmail", keywords: ["configurer email", "connecter gmail", "oauth"], category: "Communication" },
+  { title: "Boîte de réception", path: "/email-inbox", keywords: ["inbox", "messages", "emails reçus", "courrier entrant"], category: "Communication" },
   
   // Paramètres & Profil
-  { title: "Mon Profil", path: "/profile", keywords: ["profil", "compte", "paramètres personnels"], category: "Paramètres" },
-  { title: "Abonnement", path: "/subscription", keywords: ["abonnement", "plan", "facturation", "paiement", "premium"], category: "Paramètres" },
+  { title: "Mon Profil", path: "/profile", keywords: ["profil", "compte", "paramètres personnels", "informations personnelles"], category: "Paramètres" },
+  { title: "Profil - Informations", path: "/profile", section: "Informations personnelles", keywords: ["nom", "prénom", "email", "téléphone", "coordonnées"], category: "Paramètres" },
+  { title: "Profil - Facturation", path: "/profile", section: "Informations de facturation", keywords: ["facturation", "adresse facturation", "siret", "tva"], category: "Paramètres" },
+  { title: "Profil - Sécurité", path: "/profile", section: "Sécurité", keywords: ["mot de passe", "sécurité", "authentification", "changer password"], category: "Paramètres" },
+  { title: "Abonnement", path: "/subscription", keywords: ["abonnement", "plan", "facturation", "paiement", "premium", "tarif"], category: "Paramètres" },
+  { title: "Abonnement - Plans", path: "/subscription", section: "Changer de plan", keywords: ["changer plan", "upgrade", "downgrade", "essai gratuit"], category: "Paramètres" },
+  { title: "Abonnement - Paiement", path: "/subscription", section: "Méthode de paiement", keywords: ["carte bancaire", "paiement", "facturation", "moyen paiement"], category: "Paramètres" },
   
   // Support
-  { title: "Support", path: "/contact-support", keywords: ["aide", "support", "contact", "assistance"], category: "Support" },
+  { title: "Support", path: "/contact-support", keywords: ["aide", "support", "contact", "assistance", "question"], category: "Support" },
 ];
 
 interface GlobalSearchProps {
@@ -112,13 +127,33 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
     const searchQuery = query.toLowerCase();
     const filtered = searchIndex.filter(item => {
       const titleMatch = item.title.toLowerCase().includes(searchQuery);
+      const sectionMatch = item.section?.toLowerCase().includes(searchQuery);
       const keywordMatch = item.keywords.some(keyword => 
         keyword.toLowerCase().includes(searchQuery)
       );
-      return titleMatch || keywordMatch;
+      return titleMatch || sectionMatch || keywordMatch;
     });
 
-    setResults(filtered.slice(0, 8)); // Limiter à 8 résultats
+    // Trier pour mettre les correspondances exactes en premier
+    const sorted = filtered.sort((a, b) => {
+      const aExactTitle = a.title.toLowerCase() === searchQuery;
+      const bExactTitle = b.title.toLowerCase() === searchQuery;
+      const aExactSection = a.section?.toLowerCase() === searchQuery;
+      const bExactSection = b.section?.toLowerCase() === searchQuery;
+      const aExactKeyword = a.keywords.some(k => k.toLowerCase() === searchQuery);
+      const bExactKeyword = b.keywords.some(k => k.toLowerCase() === searchQuery);
+      
+      if (aExactTitle && !bExactTitle) return -1;
+      if (!aExactTitle && bExactTitle) return 1;
+      if (aExactSection && !bExactSection) return -1;
+      if (!aExactSection && bExactSection) return 1;
+      if (aExactKeyword && !bExactKeyword) return -1;
+      if (!aExactKeyword && bExactKeyword) return 1;
+      
+      return 0;
+    });
+
+    setResults(sorted.slice(0, 10)); // Limiter à 10 résultats
     setSelectedIndex(0);
   }, [query]);
 
@@ -192,20 +227,27 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
           <div className="max-h-96 overflow-y-auto">
             {results.map((item, index) => (
               <button
-                key={item.path}
+                key={`${item.path}-${item.section || 'main'}`}
                 onClick={() => handleNavigate(item)}
                 className={cn(
-                  "w-full flex items-center justify-between px-4 py-3 text-left transition-colors",
+                  "w-full flex items-start justify-between px-4 py-3 text-left transition-colors",
                   index === selectedIndex
                     ? "bg-blue-50 border-l-2 border-blue-500"
                     : "hover:bg-gray-50"
                 )}
               >
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-900">{item.title}</div>
-                  <div className="text-xs text-gray-500">{item.category}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-gray-900">
+                    {item.title}
+                  </div>
+                  {item.section && (
+                    <div className="text-xs text-blue-600 mt-0.5">
+                      → {item.section}
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500 mt-0.5">{item.category}</div>
                 </div>
-                <div className="text-xs text-gray-400">{item.path}</div>
+                <div className="text-xs text-gray-400 ml-2 flex-shrink-0">{item.path}</div>
               </button>
             ))}
           </div>
