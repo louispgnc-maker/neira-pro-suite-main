@@ -72,6 +72,12 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
   const location = useLocation();
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showButton, setShowButton] = useState(false);
+
+  // Afficher le bouton seulement sur le dashboard
+  useEffect(() => {
+    setShowButton(location.pathname.includes('/dashboard'));
+  }, [location.pathname]);
 
   // Fermer lors du changement de route
   useEffect(() => {
@@ -191,15 +197,20 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
     setQuery("");
   };
 
+  // Afficher le bouton seulement sur le dashboard, mais la modale est toujours accessible
+  if (!isOpen && !showButton) {
+    return null;
+  }
+
   if (!isOpen) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+        className="flex items-center gap-3 px-4 py-2.5 text-sm bg-white border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all shadow-sm hover:shadow-md"
       >
-        <Search className="h-4 w-4" />
-        <span className="hidden md:inline">Rechercher...</span>
-        <kbd className="hidden md:inline px-2 py-0.5 text-xs font-semibold text-gray-800 bg-white border border-gray-300 rounded">
+        <Search className="h-5 w-5 text-gray-500" />
+        <span className="text-gray-700 font-medium">Rechercher...</span>
+        <kbd className="hidden lg:inline px-2.5 py-1 text-xs font-semibold text-gray-600 bg-gray-100 border border-gray-300 rounded">
           ⌘K
         </kbd>
       </button>

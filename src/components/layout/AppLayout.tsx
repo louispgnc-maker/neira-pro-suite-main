@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { BuildInfo } from "./BuildInfo";
+import { GlobalSearch } from "@/components/GlobalSearch";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -56,6 +57,8 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
           <BuildInfo />
         </main>
+        {/* Barre de recherche globale accessible partout avec Cmd+K */}
+        <GlobalSearch userRole={role} />
       </div>
     </SidebarProvider>
   );
