@@ -73,12 +73,6 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
   const location = useLocation();
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showButton, setShowButton] = useState(false);
-
-  // Afficher le bouton uniquement sur le dashboard
-  useEffect(() => {
-    setShowButton(location.pathname.includes('/dashboard'));
-  }, [location.pathname]);
 
   // Fermer lors du changement de route
   useEffect(() => {
@@ -224,11 +218,6 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
     setIsOpen(false);
     setQuery("");
   };
-
-  // Afficher le bouton seulement sur le dashboard, mais la modale est toujours accessible
-  if (!isOpen && !showButton) {
-    return null;
-  }
 
   if (!isOpen) {
     return (
