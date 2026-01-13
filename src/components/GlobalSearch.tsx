@@ -206,11 +206,11 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full flex items-center gap-3 px-6 py-4 text-base bg-white border-2 border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all shadow-md hover:shadow-lg"
+        className="w-full max-w-md flex items-center gap-2 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:border-blue-400 hover:shadow-sm transition-all"
       >
-        <Search className="h-6 w-6 text-gray-400" />
-        <span className="text-gray-600 font-medium">Rechercher une page, un client, un document...</span>
-        <kbd className="ml-auto px-3 py-1.5 text-sm font-semibold text-gray-600 bg-gray-100 border border-gray-300 rounded-md">
+        <Search className="h-4 w-4 text-gray-400" />
+        <span className="text-gray-500">Rechercher...</span>
+        <kbd className="ml-auto px-2 py-0.5 text-xs font-semibold text-gray-500 bg-gray-100 border border-gray-300 rounded">
           ⌘K
         </kbd>
       </button>

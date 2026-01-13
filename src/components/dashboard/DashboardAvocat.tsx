@@ -230,9 +230,7 @@ export function DashboardAvocat() {
         </p>
 
         {/* Barre de recherche */}
-        <div className="w-full max-w-3xl mx-auto">
-          <GlobalSearch userRole="avocat" />
-        </div>
+        <GlobalSearch userRole="avocat" />
 
   {/* KPI Cards single row */}
   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
