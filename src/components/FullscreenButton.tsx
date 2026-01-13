@@ -47,26 +47,7 @@ const FullscreenButton = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={toggleFullscreen}
-          className="fixed bottom-6 right-6 z-50 h-9 w-9 rounded-md opacity-30 hover:opacity-100 transition-opacity duration-200 bg-gray-100/50 hover:bg-gray-200 text-gray-600 hover:text-gray-900"
-          aria-label={isFullscreen ? "Quitter le plein écran" : "Passer en plein écran"}
-        >
-          {isFullscreen ? (
-            <Minimize className="h-4 w-4" />
-          ) : (
-            <Maximize className="h-4 w-4" />
-          )}
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent side="left">
-        <p>{isFullscreen ? "Quitter le plein écran" : "Passer en plein écran"}</p>
-      </TooltipContent>
-    </Tooltip>
-  );
-};
-
-export default FullscreenButton;
-Zoom}
+          onClick={toggleZoom}
           className="fixed bottom-6 right-6 z-50 h-9 w-9 rounded-md opacity-30 hover:opacity-100 transition-opacity duration-200 bg-gray-100/50 hover:bg-gray-200 text-gray-600 hover:text-gray-900"
           aria-label={isZoomed ? "Vue normale" : "Agrandir l'affichage"}
         >
@@ -78,4 +59,10 @@ Zoom}
         </Button>
       </TooltipTrigger>
       <TooltipContent side="left">
-        <p>{isZoomed ? "Vue normale" : "Agrandir l'affichage
+        <p>{isZoomed ? "Vue normale" : "Agrandir l'affichage"}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+};
+
+export default FullscreenButton;
