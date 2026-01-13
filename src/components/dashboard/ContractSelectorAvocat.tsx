@@ -145,7 +145,7 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent className="min-w-[360px] max-h-[420px] overflow-y-auto">
               <div className="px-2 py-2 border-b border-muted flex items-center gap-2 sticky top-0 bg-background z-10">
-                <Search className="h-4 w-4 text-muted-foreground" />
+                <Search className="h-4 w-4 text-gray-600" />
                 <input
                   type="text"
                   value={search}
@@ -157,7 +157,7 @@ export function ContractSelectorAvocat({ variant = 'vertical', label = 'Créer u
               </div>
               <DropdownMenuSeparator />
               {filteredCategories.length === 0 ? (
-                <DropdownMenuLabel className="text-muted-foreground text-center py-4">Aucun contrat trouvé</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-gray-600 text-center py-4">Aucun contrat trouvé</DropdownMenuLabel>
               ) : (
                 filteredCategories.map((cat) => (
                   <DropdownMenuSub key={cat.key}>

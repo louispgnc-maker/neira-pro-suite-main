@@ -192,13 +192,13 @@ export function RecentContrats({ role = 'avocat', title }: RecentContratsProps =
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-center text-gray-600">
                   Chargement…
                 </TableCell>
               </TableRow>
             ) : contrats.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-center text-gray-600">
                   Aucun contrat.
                 </TableCell>
               </TableRow>
@@ -210,7 +210,7 @@ export function RecentContrats({ role = 'avocat', title }: RecentContratsProps =
                   className="cursor-pointer"
                 >
                   <TableCell className="font-medium">{contrat.name}</TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="text-gray-600">
                     {contrat.client_names && contrat.client_names.length > 0
                       ? contrat.client_names.join(", ")
                       : "—"}
@@ -220,8 +220,8 @@ export function RecentContrats({ role = 'avocat', title }: RecentContratsProps =
                       {contrat.category}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{contrat.type}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
+                  <TableCell className="text-gray-600 text-sm">{contrat.type}</TableCell>
+                  <TableCell className="text-gray-600 text-sm">
                     {contrat.created_at ? new Date(contrat.created_at).toLocaleDateString() : "—"}
                   </TableCell>
                   <TableCell>

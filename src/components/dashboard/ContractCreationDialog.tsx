@@ -144,7 +144,7 @@ export function ContractCreationDialog({ open, onOpenChange, role = 'avocat', pr
               placeholder="Décrivez les spécificités de ce contrat, les points importants à inclure, le contexte particulier..."
               className="mt-2 min-h-[120px]"
             />
-            <p className="text-sm text-muted-foreground mt-2">
+            <p className="text-sm text-gray-600 mt-2">
               Plus vous donnez de détails, plus le formulaire sera adapté à votre situation.
             </p>
           </div>

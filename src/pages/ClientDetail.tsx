@@ -299,7 +299,7 @@ export default function ClientDetail() {
           <div className="flex-1">
             <h1 className="text-3xl font-bold">Fiche client</h1>
             {client?.name && (
-              <p className="text-muted-foreground mt-1">{client.name}</p>
+              <p className="text-gray-600 mt-1">{client.name}</p>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -319,10 +319,10 @@ export default function ClientDetail() {
 
         {loading ? (
           <div className="flex items-center justify-center h-[300px] border border-dashed border-border rounded-lg">
-            <p className="text-muted-foreground">Chargement…</p>
+            <p className="text-gray-600">Chargement…</p>
           </div>
         ) : !client ? (
-          <div className="text-muted-foreground">Client introuvable.</div>
+          <div className="text-gray-600">Client introuvable.</div>
         ) : (
           <div className="space-y-6">
             <Card>
@@ -332,43 +332,43 @@ export default function ClientDetail() {
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-muted-foreground">Nom</div>
+                  <div className="text-sm text-gray-600">Nom</div>
                   <div className="font-medium">{client.nom || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Prénom</div>
+                  <div className="text-sm text-gray-600">Prénom</div>
                   <div className="font-medium">{client.prenom || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Date de naissance</div>
+                  <div className="text-sm text-gray-600">Date de naissance</div>
                   <div className="font-medium">{client.date_naissance || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Lieu de naissance</div>
+                  <div className="text-sm text-gray-600">Lieu de naissance</div>
                   <div className="font-medium">{client.lieu_naissance || '-'}</div>
                 </div>
                 <div className="md:col-span-2">
-                  <div className="text-sm text-muted-foreground">Adresse</div>
+                  <div className="text-sm text-gray-600">Adresse</div>
                   <div className="font-medium">{client.adresse || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Téléphone</div>
+                  <div className="text-sm text-gray-600">Téléphone</div>
                   <div className="font-medium">{client.telephone || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Email</div>
+                  <div className="text-sm text-gray-600">Email</div>
                   <div className="font-medium">{client.email || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Nationalité</div>
+                  <div className="text-sm text-gray-600">Nationalité</div>
                   <div className="font-medium">{client.nationalite || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Sexe</div>
+                  <div className="text-sm text-gray-600">Sexe</div>
                   <div className="font-medium">{client.sexe || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">État civil</div>
+                  <div className="text-sm text-gray-600">État civil</div>
                   <div className="font-medium">{client.etat_civil || '-'}</div>
                 </div>
               </CardContent>
@@ -381,15 +381,15 @@ export default function ClientDetail() {
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-muted-foreground">Type</div>
+                  <div className="text-sm text-gray-600">Type</div>
                   <div className="font-medium">{client.type_identite || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Numéro</div>
+                  <div className="text-sm text-gray-600">Numéro</div>
                   <div className="font-medium">{client.numero_identite || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Expiration</div>
+                  <div className="text-sm text-gray-600">Expiration</div>
                   <div className="font-medium">{client.date_expiration_identite || '-'}</div>
                 </div>
               </CardContent>
@@ -404,30 +404,30 @@ export default function ClientDetail() {
                 {typeof client.situation_familiale === 'object' && client.situation_familiale !== null && Object.keys(client.situation_familiale).length > 0 ? (
                   <>
                     <div>
-                      <div className="text-sm text-muted-foreground">Situation familiale</div>
+                      <div className="text-sm text-gray-600">Situation familiale</div>
                       <div className="font-medium">{(client.situation_familiale as any)?.situation_familiale || '-'}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Régime matrimonial</div>
+                      <div className="text-sm text-gray-600">Régime matrimonial</div>
                       <div className="font-medium">{(client.situation_familiale as any)?.regime_matrimonial || '-'}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Nombre d'enfants</div>
+                      <div className="text-sm text-gray-600">Nombre d'enfants</div>
                       <div className="font-medium">{(client.situation_familiale as any)?.nombre_enfants || '-'}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Personne à charge</div>
+                      <div className="text-sm text-gray-600">Personne à charge</div>
                       <div className="font-medium">{(client.situation_familiale as any)?.personne_a_charge || '-'}</div>
                     </div>
                   </>
                 ) : client.situation_matrimoniale ? (
                   <div>
-                    <div className="text-sm text-muted-foreground">Situation matrimoniale</div>
+                    <div className="text-sm text-gray-600">Situation matrimoniale</div>
                     <div className="font-medium">{client.situation_matrimoniale}</div>
                   </div>
                 ) : null}
                 <div>
-                  <div className="text-sm text-muted-foreground">Enfants</div>
+                  <div className="text-sm text-gray-600">Enfants</div>
                   {client.enfants && Array.isArray(client.enfants) && client.enfants.length > 0 ? (
                     <div className="space-y-1">
                       {client.enfants.map((e, idx) => (
@@ -451,31 +451,31 @@ export default function ClientDetail() {
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-muted-foreground">Profession</div>
+                  <div className="text-sm text-gray-600">Profession</div>
                   <div className="font-medium">{client.profession || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Employeur</div>
+                  <div className="text-sm text-gray-600">Employeur</div>
                   <div className="font-medium">{client.employeur || '-'}</div>
                 </div>
                 <div className="md:col-span-2">
-                  <div className="text-sm text-muted-foreground">Adresse professionnelle</div>
+                  <div className="text-sm text-gray-600">Adresse professionnelle</div>
                   <div className="font-medium">{client.adresse_professionnelle || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">SIRET</div>
+                  <div className="text-sm text-gray-600">SIRET</div>
                   <div className="font-medium">{client.siret || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Situation fiscale</div>
+                  <div className="text-sm text-gray-600">Situation fiscale</div>
                   <div className="font-medium">{client.situation_fiscale || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Revenus</div>
+                  <div className="text-sm text-gray-600">Revenus</div>
                   <div className="font-medium">{client.revenus || '-'}</div>
                 </div>
                 <div className="md:col-span-2">
-                  <div className="text-sm text-muted-foreground">Comptes bancaires</div>
+                  <div className="text-sm text-gray-600">Comptes bancaires</div>
                   {client.comptes_bancaires && Array.isArray(client.comptes_bancaires) && client.comptes_bancaires.length > 0 ? (
                     <div className="space-y-1">
                       {client.comptes_bancaires.map((c, idx) => (
@@ -487,7 +487,7 @@ export default function ClientDetail() {
                   )}
                 </div>
                 <div className="md:col-span-2">
-                  <div className="text-sm text-muted-foreground">Justificatifs financiers</div>
+                  <div className="text-sm text-gray-600">Justificatifs financiers</div>
                   <div className="font-medium whitespace-pre-wrap">{client.justificatifs_financiers || '-'}</div>
                 </div>
               </CardContent>
@@ -499,19 +499,19 @@ export default function ClientDetail() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <div className="text-sm text-muted-foreground">Type de dossier</div>
+                  <div className="text-sm text-gray-600">Type de dossier</div>
                   <div className="font-medium">{client.type_dossier || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Contrat souhaité</div>
+                  <div className="text-sm text-gray-600">Contrat souhaité</div>
                   <div className="font-medium">{client.contrat_souhaite || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Historique de litiges</div>
+                  <div className="text-sm text-gray-600">Historique de litiges</div>
                   <div className="font-medium whitespace-pre-wrap">{client.historique_litiges || '-'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Documents liés au dossier</div>
+                  <div className="text-sm text-gray-600">Documents liés au dossier</div>
                   {client.documents_objet && client.documents_objet.length > 0 ? (
                     <div className="space-y-1">
                       {client.documents_objet.map((d, idx) => (
@@ -523,7 +523,7 @@ export default function ClientDetail() {
                   )}
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Contrats associés</div>
+                  <div className="text-sm text-gray-600">Contrats associés</div>
                   {contrats.length === 0 ? (
                     <div className="text-sm">—</div>
                   ) : (
@@ -544,25 +544,25 @@ export default function ClientDetail() {
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-muted-foreground">Source du client</div>
+                  <div className="text-sm text-gray-600">Source du client</div>
                   <Badge variant={client.source === 'formulaire_web' ? 'default' : 'secondary'}>
                     {client.source === 'formulaire_web' ? '📋 Formulaire web' : client.source === 'manual' ? '✍️ Création manuelle' : client.source || 'Non spécifié'}
                   </Badge>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Consentement RGPD</div>
+                  <div className="text-sm text-gray-600">Consentement RGPD</div>
                   <Badge variant={client.consentement_rgpd ? 'default' : 'secondary'}>
                     {client.consentement_rgpd ? '✓ Accepté' : '✗ Non renseigné'}
                   </Badge>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Signature mandat</div>
+                  <div className="text-sm text-gray-600">Signature mandat</div>
                   <Badge variant={client.signature_mandat ? 'default' : 'secondary'}>
                     {client.signature_mandat ? '✓ Signée' : '✗ Non signée'}
                   </Badge>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Date de création</div>
+                  <div className="text-sm text-gray-600">Date de création</div>
                   <div className="font-medium">
                     {client.created_at ? new Date(client.created_at).toLocaleDateString('fr-FR', {
                       day: 'numeric',
@@ -602,7 +602,7 @@ export default function ClientDetail() {
                             </Badge>
                             <span className="font-medium">{doc.file_name}</span>
                           </div>
-                          <div className="text-xs text-muted-foreground mt-1">
+                          <div className="text-xs text-gray-600 mt-1">
                             {formatFileSize(doc.file_size)} • {new Date(doc.uploaded_at).toLocaleDateString('fr-FR', { 
                               day: 'numeric', 
                               month: 'long', 

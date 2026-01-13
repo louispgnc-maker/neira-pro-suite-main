@@ -301,7 +301,7 @@ export default function EditClient() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold">Modifier la fiche client</h1>
-            <p className="text-muted-foreground mt-1">Mettez à jour les informations du client</p>
+            <p className="text-gray-600 mt-1">Mettez à jour les informations du client</p>
           </div>
         </div>
 
@@ -424,7 +424,7 @@ export default function EditClient() {
                   <Upload className="mr-2 h-4 w-4" />
                   {idDocFile ? idDocFile.name : "Choisir un fichier"}
                 </Button>
-                <p className="text-xs text-muted-foreground">Formats: JPG, PNG, PDF</p>
+                <p className="text-xs text-gray-600">Formats: JPG, PNG, PDF</p>
               </div>
             </CardContent>
           </Card>
@@ -623,7 +623,7 @@ export default function EditClient() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground text-center py-4 border rounded-lg">
+                  <p className="text-sm text-gray-600 text-center py-4 border rounded-lg">
                     Cliquez sur "Ajouter un enfant" pour renseigner les informations des enfants
                   </p>
                 )}
@@ -715,7 +715,7 @@ export default function EditClient() {
                 <Label>Contrat(s) associé(s)</Label>
                 <div className="border rounded-md p-2 max-h-56 overflow-y-auto">
                   {contrats.length === 0 ? (
-                    <p className="text-sm text-muted-foreground px-1">Aucun contrat enregistré.</p>
+                    <p className="text-sm text-gray-600 px-1">Aucun contrat enregistré.</p>
                   ) : (
                     <div className="grid grid-cols-1 gap-2">
                       {contrats
@@ -735,7 +735,7 @@ export default function EditClient() {
                               />
                               <span className="text-sm">
                                 <span className="font-medium">{c.name}</span>
-                                <span className="text-muted-foreground"> — {c.category}</span>
+                                <span className="text-gray-600"> — {c.category}</span>
                               </span>
                             </label>
                           );
@@ -743,7 +743,7 @@ export default function EditClient() {
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">Sélectionnez les contrats liés à ce client.</p>
+                <p className="text-xs text-gray-600">Sélectionnez les contrats liés à ce client.</p>
               </div>
 
             </CardContent>

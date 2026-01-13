@@ -29,7 +29,7 @@ export default function CreateCabinet() {
     return (
       <AppLayout>
         <div className="p-6 max-w-5xl mx-auto">
-          <p className="text-center text-foreground">Chargement...</p>
+          <p className="text-center text-gray-900">Chargement...</p>
         </div>
       </AppLayout>
     );
@@ -66,7 +66,7 @@ export default function CreateCabinet() {
               <CardContent className="space-y-4">
                 <div>
                   <CreateCabinetDialog role={role} onSuccess={refreshCabinet} />
-                  <p className="text-xs text-foreground mt-2">
+                  <p className="text-xs text-gray-900 mt-2">
                     Une fois créé, vous pourrez partager le code d'invitation avec vos collaborateurs.
                   </p>
                 </div>

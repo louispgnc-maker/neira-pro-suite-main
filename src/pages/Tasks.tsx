@@ -171,7 +171,7 @@ export default function Tasks() {
         <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
           <div className="flex-1">
             <h1 className="text-3xl font-bold">Tâches</h1>
-            <p className="text-foreground mt-1">Gérez toutes vos tâches</p>
+            <p className="text-gray-900 mt-1">Gérez toutes vos tâches</p>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -222,18 +222,18 @@ export default function Tasks() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher (titre ou description)…"
-            className="w-full md:max-w-sm rounded-md border border-input bg-white px-3 py-2 text-sm text-foreground placeholder:text-foreground/50"
+            className="w-full md:max-w-sm rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-900/50"
           />
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
-            <p className="text-foreground">Chargement…</p>
+            <p className="text-gray-900">Chargement…</p>
           </div>
         ) : activeTasks.length === 0 ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
-              <p className="text-foreground">Aucune tâche pour le moment</p>
+              <p className="text-gray-900">Aucune tâche pour le moment</p>
               <div className="mt-4 flex justify-center">
                 <Button className={mainButtonColor} onClick={() => setOpen(true)}>
                   Ajouter une première tâche
@@ -275,13 +275,13 @@ export default function Tasks() {
                       />
                       <span className="font-medium text-lg">{task.title}</span>
                     </div>
-                    {task.description && <div className="text-sm text-foreground mb-2 whitespace-pre-line">{task.description}</div>}
+                    {task.description && <div className="text-sm text-gray-900 mb-2 whitespace-pre-line">{task.description}</div>}
                     <div className="flex-1" />
                     <div className="flex items-center justify-between mt-2">
                       {task.due_at ? (
                         <Badge variant={overdue ? "destructive" : "outline"}>{dateStr}</Badge>
                       ) : (
-                        <span className="text-foreground text-xs">Pas d'échéance</span>
+                        <span className="text-gray-900 text-xs">Pas d'échéance</span>
                       )}
                     </div>
                   </div>

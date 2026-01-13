@@ -207,7 +207,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
               </PopoverContent>
             </Popover>
             {documents.length === 0 && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-gray-600">
                 Aucun document disponible pour signature
               </p>
             )}
@@ -234,7 +234,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                 >
                   <div className="flex flex-col">
                     <span className="font-medium">Simple</span>
-                    <span className="text-xs text-muted-foreground">Signature électronique basique</span>
+                    <span className="text-xs text-gray-600">Signature électronique basique</span>
                   </div>
                 </SelectItem>
                 <SelectItem 
@@ -245,7 +245,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                 >
                   <div className="flex flex-col">
                     <span className="font-medium">Avancée</span>
-                    <span className="text-xs text-muted-foreground">Signature avec authentification OTP</span>
+                    <span className="text-xs text-gray-600">Signature avec authentification OTP</span>
                   </div>
                 </SelectItem>
                 <SelectItem 
@@ -256,7 +256,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                 >
                   <div className="flex flex-col">
                     <span className="font-medium">Qualifiée</span>
-                    <span className="text-xs text-muted-foreground">Signature avec certificat qualifié (plus sécurisé)</span>
+                    <span className="text-xs text-gray-600">Signature avec certificat qualifié (plus sécurisé)</span>
                   </div>
                 </SelectItem>
               </SelectContent>

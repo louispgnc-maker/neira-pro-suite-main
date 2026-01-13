@@ -55,7 +55,7 @@ export function ResourceCounter({
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-foreground">{label}</span>
+        <span className="text-sm font-medium text-gray-900">{label}</span>
         <Badge 
           variant={isAtLimit ? "destructive" : isNearLimit ? "secondary" : "outline"}
           className="text-xs"

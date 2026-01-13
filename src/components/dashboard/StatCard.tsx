@@ -21,7 +21,7 @@ export function StatCard({ title, value, icon: Icon, trend, iconColor = "text-pr
       onClick={onClick}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+        <CardTitle className="text-sm font-medium text-gray-600">
           {title}
         </CardTitle>
         <div className={`p-2 rounded-lg ${iconBgColor}`}>
@@ -29,7 +29,7 @@ export function StatCard({ title, value, icon: Icon, trend, iconColor = "text-pr
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold text-foreground">{value}</div>
+        <div className="text-2xl font-bold text-gray-900">{value}</div>
         {trend && (
           <p className={`text-xs ${trend.positive ? 'text-success' : 'text-destructive'}`}>
             {trend.positive ? '+' : '-'}{trend.value} ce mois

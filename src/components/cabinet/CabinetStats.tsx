@@ -176,7 +176,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
       <Card className={`border-2 ${borderClass}`}>
         <CardContent className="p-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-          <p className="text-sm text-muted-foreground">Chargement des statistiques...</p>
+          <p className="text-sm text-gray-600">Chargement des statistiques...</p>
         </CardContent>
       </Card>
     );
@@ -198,35 +198,35 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-muted/50 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
-              <FileText className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground">Dossiers</span>
+              <FileText className="h-4 w-4 text-gray-600" />
+              <span className="text-xs font-medium text-gray-600">Dossiers</span>
             </div>
             <span className={`text-2xl font-bold ${colorClass}`}>{totalStats.dossiers}</span>
           </div>
 
           <div className="bg-muted/50 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
-              <UsersIcon className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground">Clients</span>
+              <UsersIcon className="h-4 w-4 text-gray-600" />
+              <span className="text-xs font-medium text-gray-600">Clients</span>
             </div>
             <span className={`text-2xl font-bold ${colorClass}`}>{totalStats.clients}</span>
           </div>
 
           <div className="bg-muted/50 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
-              <FileSignature className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground">Signatures</span>
+              <FileSignature className="h-4 w-4 text-gray-600" />
+              <span className="text-xs font-medium text-gray-600">Signatures</span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className={`text-2xl font-bold ${colorClass}`}>{totalStats.signatures}</span>
-              <span className="text-xs text-muted-foreground">ce mois</span>
+              <span className="text-xs text-gray-600">ce mois</span>
             </div>
           </div>
 
           <div className="bg-muted/50 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
-              <HardDrive className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground">Documents</span>
+              <HardDrive className="h-4 w-4 text-gray-600" />
+              <span className="text-xs font-medium text-gray-600">Documents</span>
             </div>
             <span className={`text-2xl font-bold ${colorClass}`}>{totalStats.documents}</span>
           </div>
@@ -252,25 +252,25 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
                   >
                     <div className="flex-1">
                       <p className="font-medium text-sm">{member.nom || member.email}</p>
-                      <p className="text-xs text-muted-foreground">{member.email}</p>
+                      <p className="text-xs text-gray-600">{member.email}</p>
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="flex gap-4 text-xs">
                         <div className="text-center">
                           <p className="font-semibold">{member.dossiers}</p>
-                          <p className="text-muted-foreground">dossiers</p>
+                          <p className="text-gray-600">dossiers</p>
                         </div>
                         <div className="text-center">
                           <p className="font-semibold">{member.clients}</p>
-                          <p className="text-muted-foreground">clients</p>
+                          <p className="text-gray-600">clients</p>
                         </div>
                         <div className="text-center">
                           <p className="font-semibold">{member.signatures}</p>
-                          <p className="text-muted-foreground">signatures</p>
+                          <p className="text-gray-600">signatures</p>
                         </div>
                         <div className="text-center">
                           <p className="font-semibold">{member.documents}</p>
-                          <p className="text-muted-foreground">docs</p>
+                          <p className="text-gray-600">docs</p>
                         </div>
                       </div>
                       {isExpanded ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
@@ -284,14 +284,14 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            <FileText className="h-4 w-4 text-gray-600" />
                             <span className="text-sm font-medium">Dossiers</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(member.dossiers, limits.dossiers))}`}>
                               {member.dossiers}
                             </span>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-gray-600">
                               / {limits.dossiers >= 999999 ? '∞' : limits.dossiers}
                             </span>
                           </div>
@@ -308,14 +308,14 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <UsersIcon className="h-4 w-4 text-muted-foreground" />
+                            <UsersIcon className="h-4 w-4 text-gray-600" />
                             <span className="text-sm font-medium">Clients</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(member.clients, limits.clients))}`}>
                               {member.clients}
                             </span>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-gray-600">
                               / {limits.clients >= 999999 ? '∞' : limits.clients}
                             </span>
                           </div>
@@ -332,14 +332,14 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <FileSignature className="h-4 w-4 text-muted-foreground" />
+                            <FileSignature className="h-4 w-4 text-gray-600" />
                             <span className="text-sm font-medium">Signatures (ce mois)</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(member.signatures, member.signature_limit))}`}>
                               {member.signatures}
                             </span>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-gray-600">
                               / {member.signature_limit >= 999999 ? '∞' : member.signature_limit}
                             </span>
                           </div>
@@ -356,14 +356,14 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <HardDrive className="h-4 w-4 text-muted-foreground" />
+                            <HardDrive className="h-4 w-4 text-gray-600" />
                             <span className="text-sm font-medium">Stockage</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(memberStorageGB, limits.storage))}`}>
                               {memberStorageGB.toFixed(2)} Go
                             </span>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-gray-600">
                               / {limits.storage >= 999999 ? '∞' : `${limits.storage} Go`}
                             </span>
                           </div>

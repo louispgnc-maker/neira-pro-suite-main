@@ -130,7 +130,7 @@ export default function Clients() {
         <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
           <div className="flex-1">
             <h1 className="text-4xl font-bold text-gray-900">Clients</h1>
-            <p className="text-foreground mt-1">Gérez votre base clients et KYC</p>
+            <p className="text-gray-900 mt-1">Gérez votre base clients et KYC</p>
           </div>
           <div className="md:w-auto w-full flex justify-end">
             {isLimitReached ? (
@@ -172,18 +172,18 @@ export default function Clients() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un client…"
-            className="w-full md:max-w-sm rounded-md border border-input bg-white px-3 py-2 text-sm text-foreground placeholder:text-foreground/50"
+            className="w-full md:max-w-sm rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-900/50"
           />
         </div>
         
         {loading ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
-            <p className="text-foreground">Chargement…</p>
+            <p className="text-gray-900">Chargement…</p>
           </div>
         ) : clients.length === 0 ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
-              <p className="text-foreground">Aucun client pour le moment</p>
+              <p className="text-gray-900">Aucun client pour le moment</p>
               <div className="mt-4 flex justify-center">
                 <FicheClientMenu
                   variant="horizontal"
@@ -221,7 +221,7 @@ export default function Clients() {
                             </p>
                           )}
                           {client.created_at && (
-                            <p className="text-xs text-muted-foreground mt-2">
+                            <p className="text-xs text-gray-600 mt-2">
                               Ajouté le {new Date(client.created_at).toLocaleDateString()}
                             </p>
                           )}

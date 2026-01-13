@@ -123,9 +123,9 @@ export function TasksCalendar({ role = 'avocat' }: TasksCalendarProps = {}) {
       <CardContent>
         <div className="space-y-3">
           {loading ? (
-            <p className="text-center text-muted-foreground">Chargement…</p>
+            <p className="text-center text-gray-600">Chargement…</p>
             ) : tasks.length === 0 ? (
-              <p className="text-center text-muted-foreground">Aucune tâche à venir.</p>
+              <p className="text-center text-gray-600">Aucune tâche à venir.</p>
           ) : (
             tasks.map((task) => (
               <div
@@ -133,8 +133,8 @@ export function TasksCalendar({ role = 'avocat' }: TasksCalendarProps = {}) {
                 className="flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors"
               >
                 <div className="flex flex-col items-center min-w-[60px] pt-1">
-                  <span className="text-xs text-muted-foreground font-medium">{formatDay(task.due_date)}</span>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                  <span className="text-xs text-gray-600 font-medium">{formatDay(task.due_date)}</span>
+                  <div className="flex items-center gap-1 text-xs text-gray-600 mt-1">
                     <Clock className="h-3 w-3" />
                     {formatTime(task.due_date)}
                   </div>

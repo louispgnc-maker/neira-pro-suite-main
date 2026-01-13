@@ -293,7 +293,7 @@ export default function Profile() {
               />
             </div>
             <div className="space-y-2">
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-gray-600">
                 <p>Format recommandé : JPG ou PNG</p>
                 <p>Taille max : 5 MB</p>
               </div>
@@ -357,7 +357,7 @@ export default function Profile() {
               <div>
                 <div className="text-sm font-medium mb-2">Cabinet et fonction</div>
                 {loadingCabinet ? (
-                  <div className="text-sm text-muted-foreground">Chargement...</div>
+                  <div className="text-sm text-gray-600">Chargement...</div>
                 ) : (
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-sm bg-green-50 text-green-700 border-green-200">
@@ -433,7 +433,7 @@ export default function Profile() {
                 />
               </div>
             ) : (
-              <div className="border-2 border-dashed rounded-lg p-8 text-center text-muted-foreground">
+              <div className="border-2 border-dashed rounded-lg p-8 text-center text-gray-600">
                 Aucune signature enregistrée
               </div>
             )}
@@ -452,7 +452,7 @@ export default function Profile() {
               className="hidden"
               onChange={handleSignatureUpload}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-600">
               Téléchargez une image de votre signature manuscrite ou une signature électronique
             </p>
           </CardContent>

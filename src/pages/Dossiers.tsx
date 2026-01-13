@@ -498,7 +498,7 @@ export default function Dossiers() {
           <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold text-gray-900">Dossiers</h1>
-            <p className="text-foreground mt-1">Gérez vos dossiers et leurs associations</p>
+            <p className="text-gray-900 mt-1">Gérez vos dossiers et leurs associations</p>
           </div>
           <Dialog open={open} onOpenChange={(v) => { 
             if (isDossierLimitReached && v) {
@@ -550,7 +550,7 @@ export default function Dossiers() {
                     <label className="text-sm font-medium">Clients</label>
                     <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
                       {clients.length === 0 ? (
-                        <div className="text-sm text-foreground px-1">Aucun client</div>
+                        <div className="text-sm text-gray-900 px-1">Aucun client</div>
                       ) : clients.map((c) => {
                         const checked = selectedClients.includes(c.id);
                         return (
@@ -566,7 +566,7 @@ export default function Dossiers() {
                     <label className="text-sm font-medium">Contrats</label>
                     <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
                       {contrats.length === 0 ? (
-                        <div className="text-sm text-foreground px-1">Aucun contrat</div>
+                        <div className="text-sm text-gray-900 px-1">Aucun contrat</div>
                       ) : contrats.map((c) => {
                         const checked = selectedContrats.includes(c.id);
                         return (
@@ -574,7 +574,7 @@ export default function Dossiers() {
                             <input type="checkbox" className="mt-1 h-4 w-4" checked={checked} onChange={(e) => setSelectedContrats((prev) => e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id))} />
                             <span>
                               <span className="font-medium">{c.name}</span>
-                              <span className="text-foreground"> — {c.category}</span>
+                              <span className="text-gray-900"> — {c.category}</span>
                             </span>
                           </label>
                         );
@@ -585,7 +585,7 @@ export default function Dossiers() {
                     <label className="text-sm font-medium">Documents</label>
                     <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
                       {documents.length === 0 ? (
-                        <div className="text-sm text-foreground px-1">Aucun document</div>
+                        <div className="text-sm text-gray-900 px-1">Aucun document</div>
                       ) : documents.map((d) => {
                         const checked = selectedDocuments.includes(d.id);
                         return (
@@ -642,7 +642,7 @@ export default function Dossiers() {
                     <label className="text-sm font-medium">Clients</label>
                     <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
                       {clients.length === 0 ? (
-                        <div className="text-sm text-foreground px-1">Aucun client</div>
+                        <div className="text-sm text-gray-900 px-1">Aucun client</div>
                       ) : clients.map((c) => {
                         const checked = editSelectedClients.includes(c.id);
                         return (
@@ -658,7 +658,7 @@ export default function Dossiers() {
                     <label className="text-sm font-medium">Contrats</label>
                     <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
                       {contrats.length === 0 ? (
-                        <div className="text-sm text-foreground px-1">Aucun contrat</div>
+                        <div className="text-sm text-gray-900 px-1">Aucun contrat</div>
                       ) : contrats.map((c) => {
                         const checked = editSelectedContrats.includes(c.id);
                         return (
@@ -666,7 +666,7 @@ export default function Dossiers() {
                             <input type="checkbox" className="mt-1 h-4 w-4" checked={checked} onChange={(e) => setEditSelectedContrats((prev) => e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id))} />
                             <span>
                               <span className="font-medium">{c.name}</span>
-                              <span className="text-foreground"> — {c.category}</span>
+                              <span className="text-gray-900"> — {c.category}</span>
                             </span>
                           </label>
                         );
@@ -677,7 +677,7 @@ export default function Dossiers() {
                     <label className="text-sm font-medium">Documents</label>
                     <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
                       {documents.length === 0 ? (
-                        <div className="text-sm text-foreground px-1">Aucun document</div>
+                        <div className="text-sm text-gray-900 px-1">Aucun document</div>
                       ) : documents.map((d) => {
                         const checked = editSelectedDocuments.includes(d.id);
                         return (
@@ -720,7 +720,7 @@ export default function Dossiers() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-center h-[300px] border border-dashed border-border rounded-lg">
-                <p className="text-foreground">Chargement…</p>
+                <p className="text-gray-900">Chargement…</p>
               </div>
             </CardContent>
           </Card>
@@ -728,12 +728,12 @@ export default function Dossiers() {
           <>
             <div className="mb-4 bg-white p-4 rounded-lg border">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-900" />
                 <Input
                   placeholder="Rechercher un dossier..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10 bg-white text-foreground placeholder:text-foreground/50"
+                  className="pl-10 bg-white text-gray-900 placeholder:text-gray-900/50"
                 />
               </div>
             </div>
@@ -758,7 +758,7 @@ export default function Dossiers() {
                   <TableBody>
                     {dossiers.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center text-foreground">Aucun dossier</TableCell>
+                        <TableCell colSpan={7} className="text-center text-gray-900">Aucun dossier</TableCell>
                       </TableRow>
                     ) : (
                       dossiers.map((d) => (
@@ -793,7 +793,7 @@ export default function Dossiers() {
                           <TableCell>{d.client_count ?? '—'}</TableCell>
                           <TableCell>{d.contrat_count ?? '—'}</TableCell>
                           <TableCell>{d.document_count ?? '—'}</TableCell>
-                          <TableCell className="text-sm text-foreground">{new Date(d.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-sm text-gray-900">{new Date(d.created_at).toLocaleDateString()}</TableCell>
                           <TableCell>
                             <div className="flex items-center gap-1">
                               <ShareToCollaborativeDialog

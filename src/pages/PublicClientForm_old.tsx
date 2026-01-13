@@ -194,7 +194,7 @@ export default function PublicClientForm() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-blue-50">
         <Card className="w-full max-w-2xl">
           <CardContent className="p-8">
-            <p className="text-center text-muted-foreground">Chargement...</p>
+            <p className="text-center text-gray-600">Chargement...</p>
           </CardContent>
         </Card>
       </div>

@@ -438,10 +438,10 @@ export default function Auth() {
         {/* Title, description, CTA - First white container - HERO SECTION */}
         <div className="bg-white rounded-xl p-12 shadow-lg border-2 border-primary/20 mb-12 max-w-3xl">
           <div className="text-center">
-            <h2 className="text-4xl font-bold text-foreground mb-5 leading-tight">
+            <h2 className="text-4xl font-bold text-gray-900 mb-5 leading-tight">
               Vous êtes responsable de cabinet ?
             </h2>
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Équipez dès maintenant votre équipe de notre solution tout-en-un pour professionnels du juridique.
             </p>
             <Button onClick={() => navigate('/solution')} size="lg" className="px-12 py-7 text-xl font-semibold">Découvrir notre solution</Button>
@@ -452,7 +452,7 @@ export default function Auth() {
         <div className="w-full bg-white rounded-xl p-8 shadow-md border border-border mb-12">
           {/* Social proof cards */}
           <div>
-            <h3 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-6">Fonctionnalités principales</h3>
+            <h3 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-6">Fonctionnalités principales</h3>
             <div
               ref={scrollerRef}
               className="grid grid-cols-3 gap-6 py-4"
@@ -487,7 +487,7 @@ export default function Auth() {
 
         {/* Métiers - Avocats et Notaires */}
         <div className="w-full bg-white rounded-xl p-8 shadow-md border border-border mb-12">
-          <h3 className="text-3xl font-bold text-foreground text-center mb-8">Pour qui ?</h3>
+          <h3 className="text-3xl font-bold text-gray-900 text-center mb-8">Pour qui ?</h3>
           <div className="grid md:grid-cols-2 gap-6">
             {/* Avocats */}
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/avocats/metier')}>
@@ -536,16 +536,16 @@ export default function Auth() {
             <div className="flex-shrink-0">
               <div className="flex items-center gap-2 mb-2">
                 <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Logo%20Neira.png" alt="Neira" className="w-7 h-7 rounded-md object-cover" />
-                <span className="text-sm font-bold text-foreground">Neira</span>
+                <span className="text-sm font-bold text-gray-900">Neira</span>
               </div>
-              <p className="text-muted-foreground text-xs max-w-xs mb-2">
+              <p className="text-gray-600 text-xs max-w-xs mb-2">
                 La plateforme collaborative pour les professionnels du juridique.
               </p>
               <div className="flex gap-2">
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-pink-500 transition-colors">
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-pink-500 transition-colors">
                   <Instagram className="w-4 h-4" />
                 </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-blue-600 transition-colors">
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors">
                   <Linkedin className="w-4 h-4" />
                 </a>
               </div>
@@ -555,38 +555,38 @@ export default function Auth() {
             <div className="flex gap-12">
               {/* Solutions */}
               <div>
-                <h5 className="font-semibold mb-2 text-foreground text-sm">Solutions</h5>
-                <ul className="space-y-1 text-xs text-muted-foreground">
-                  <li><a href="/avocats/metier" className="hover:text-foreground transition-colors">Avocats</a></li>
-                  <li><a href="/notaires/metier" className="hover:text-foreground transition-colors">Notaires</a></li>
-                  <li><button onClick={() => navigate('/solution')} className="hover:text-foreground transition-colors text-left">Découvrir notre solution</button></li>
+                <h5 className="font-semibold mb-2 text-gray-900 text-sm">Solutions</h5>
+                <ul className="space-y-1 text-xs text-gray-600">
+                  <li><a href="/avocats/metier" className="hover:text-gray-900 transition-colors">Avocats</a></li>
+                  <li><a href="/notaires/metier" className="hover:text-gray-900 transition-colors">Notaires</a></li>
+                  <li><button onClick={() => navigate('/solution')} className="hover:text-gray-900 transition-colors text-left">Découvrir notre solution</button></li>
                 </ul>
               </div>
 
               {/* Company */}
               <div>
-                <h5 className="font-semibold mb-2 text-foreground text-sm">Entreprise</h5>
-                <ul className="space-y-1 text-xs text-muted-foreground">
-                  <li><button onClick={() => navigate('/about')} className="hover:text-foreground transition-colors text-left">À propos</button></li>
-                  <li><button onClick={() => navigate('/contact')} className="hover:text-foreground transition-colors text-left">Contact</button></li>
+                <h5 className="font-semibold mb-2 text-gray-900 text-sm">Entreprise</h5>
+                <ul className="space-y-1 text-xs text-gray-600">
+                  <li><button onClick={() => navigate('/about')} className="hover:text-gray-900 transition-colors text-left">À propos</button></li>
+                  <li><button onClick={() => navigate('/contact')} className="hover:text-gray-900 transition-colors text-left">Contact</button></li>
                 </ul>
               </div>
 
               {/* Legal */}
               <div>
-                <h5 className="font-semibold mb-2 text-foreground text-sm">Légal</h5>
-                <ul className="space-y-1 text-xs text-muted-foreground">
-                  <li><button onClick={() => navigate('/mentions-legales')} className="hover:text-foreground transition-colors text-left">Mentions légales</button></li>
-                  <li><button onClick={() => navigate('/rgpd')} className="hover:text-foreground transition-colors text-left">RGPD</button></li>
-                  <li><button onClick={() => navigate('/cgu')} className="hover:text-foreground transition-colors text-left">CGU</button></li>
+                <h5 className="font-semibold mb-2 text-gray-900 text-sm">Légal</h5>
+                <ul className="space-y-1 text-xs text-gray-600">
+                  <li><button onClick={() => navigate('/mentions-legales')} className="hover:text-gray-900 transition-colors text-left">Mentions légales</button></li>
+                  <li><button onClick={() => navigate('/rgpd')} className="hover:text-gray-900 transition-colors text-left">RGPD</button></li>
+                  <li><button onClick={() => navigate('/cgu')} className="hover:text-gray-900 transition-colors text-left">CGU</button></li>
                 </ul>
               </div>
             </div>
 
             {/* Right - Copyright */}
             <div className="flex-shrink-0 text-right">
-              <p className="text-xs text-muted-foreground">&copy; 2025 Neira</p>
-              <p className="text-xs text-muted-foreground">Tous droits réservés</p>
+              <p className="text-xs text-gray-600">&copy; 2025 Neira</p>
+              <p className="text-xs text-gray-600">Tous droits réservés</p>
             </div>
           </div>
         </div>

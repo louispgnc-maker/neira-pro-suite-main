@@ -198,7 +198,7 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
               required={field.required}
             />
             {field.description && (
-              <p className="text-sm text-muted-foreground">{field.description}</p>
+              <p className="text-sm text-gray-600">{field.description}</p>
             )}
           </div>
         );
@@ -218,7 +218,7 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
               className="min-h-[100px]"
             />
             {field.description && (
-              <p className="text-sm text-muted-foreground">{field.description}</p>
+              <p className="text-sm text-gray-600">{field.description}</p>
             )}
           </div>
         );
@@ -242,7 +242,7 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
               </SelectContent>
             </Select>
             {field.description && (
-              <p className="text-sm text-muted-foreground">{field.description}</p>
+              <p className="text-sm text-gray-600">{field.description}</p>
             )}
           </div>
         );
@@ -260,7 +260,7 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
               {field.label} {field.required && <span className="text-red-500">*</span>}
             </Label>
             {field.description && (
-              <p className="text-sm text-muted-foreground ml-6">{field.description}</p>
+              <p className="text-sm text-gray-600 ml-6">{field.description}</p>
             )}
           </div>
         );
@@ -297,14 +297,14 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
               />
             </div>
             {uploadedFiles[field.id]?.length > 0 && (
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-gray-600">
                 {uploadedFiles[field.id].map((file, idx) => (
                   <div key={idx}>• {file.name}</div>
                 ))}
               </div>
             )}
             {field.description && (
-              <p className="text-sm text-muted-foreground">{field.description}</p>
+              <p className="text-sm text-gray-600">{field.description}</p>
             )}
           </div>
         );
@@ -732,7 +732,7 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
                       </SelectItem>
                     ))
                   ) : (
-                    <div className="p-2 text-sm text-muted-foreground">
+                    <div className="p-2 text-sm text-gray-600">
                       Aucun client trouvé
                     </div>
                   )}

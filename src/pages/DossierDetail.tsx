@@ -399,7 +399,7 @@ export default function DossierDetail() {
           </Button>
           <div className="flex-1">
             <h1 className="text-3xl font-bold">Dossier</h1>
-            {dossier?.title && <p className="text-muted-foreground mt-1">{dossier.title}</p>}
+            {dossier?.title && <p className="text-gray-600 mt-1">{dossier.title}</p>}
           </div>
           {dossier && (
             <Button onClick={openEditDialog} className={mainColor}>
@@ -411,10 +411,10 @@ export default function DossierDetail() {
 
         {loading ? (
           <div className="flex items-center justify-center h-[300px] border border-dashed border-border rounded-lg">
-            <p className="text-muted-foreground">Chargement…</p>
+            <p className="text-gray-600">Chargement…</p>
           </div>
         ) : !dossier ? (
-          <div className="text-muted-foreground">Dossier introuvable.</div>
+          <div className="text-gray-600">Dossier introuvable.</div>
         ) : (
           <div className="space-y-6">
             <Card>
@@ -423,21 +423,21 @@ export default function DossierDetail() {
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-muted-foreground">Titre</div>
+                  <div className="text-sm text-gray-600">Titre</div>
                   <div className="font-medium">{dossier.title}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Statut</div>
+                  <div className="text-sm text-gray-600">Statut</div>
                   <Badge variant="outline" className={role === 'notaire' ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
                     {dossier.status}
                   </Badge>
                 </div>
                 <div className="md:col-span-2">
-                  <div className="text-sm text-muted-foreground">Description</div>
+                  <div className="text-sm text-gray-600">Description</div>
                   <div className="font-medium whitespace-pre-wrap">{dossier.description || '—'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Créé le</div>
+                  <div className="text-sm text-gray-600">Créé le</div>
                   <div className="font-medium">{dossier.created_at ? new Date(dossier.created_at).toLocaleDateString() : '—'}</div>
                 </div>
               </CardContent>
@@ -449,7 +449,7 @@ export default function DossierDetail() {
               </CardHeader>
               <CardContent>
                 {clients.length === 0 ? (
-                  <div className="text-sm text-muted-foreground">Aucun client</div>
+                  <div className="text-sm text-gray-600">Aucun client</div>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {clients.map(c => (
@@ -473,7 +473,7 @@ export default function DossierDetail() {
               </CardHeader>
               <CardContent>
                 {contrats.length === 0 ? (
-                  <div className="text-sm text-muted-foreground">Aucun contrat</div>
+                  <div className="text-sm text-gray-600">Aucun contrat</div>
                 ) : (
                   <div className="space-y-4">
                     {contrats.map(k => {
@@ -491,7 +491,7 @@ export default function DossierDetail() {
                             <div className="flex items-center justify-between">
                               <div>
                                 <div className="font-medium">{k.name}</div>
-                                <div className="text-muted-foreground text-xs mt-1">{k.category}</div>
+                                <div className="text-gray-600 text-xs mt-1">{k.category}</div>
                               </div>
                               <Button 
                                 size="sm"
@@ -513,7 +513,7 @@ export default function DossierDetail() {
                           {hasContent && !k.content && k.contenu_json && (
                             <div className="p-4 bg-muted/30">
                               <div className="text-sm font-medium mb-2">Formulaire rempli</div>
-                              <div className="text-xs text-muted-foreground">Cliquez sur "Voir le contrat" pour consulter les détails</div>
+                              <div className="text-xs text-gray-600">Cliquez sur "Voir le contrat" pour consulter les détails</div>
                             </div>
                           )}
                         </div>
@@ -530,7 +530,7 @@ export default function DossierDetail() {
               </CardHeader>
               <CardContent>
                 {documents.length === 0 ? (
-                  <div className="text-sm text-muted-foreground">Aucun document</div>
+                  <div className="text-sm text-gray-600">Aucun document</div>
                 ) : (
                   <div className="space-y-2">
                     {documents.map(d => (
@@ -591,10 +591,10 @@ export default function DossierDetail() {
           
           {loadingClient ? (
             <div className="flex items-center justify-center h-[200px]">
-              <p className="text-muted-foreground">Chargement...</p>
+              <p className="text-gray-600">Chargement...</p>
             </div>
           ) : !selectedClient ? (
-            <div className="text-muted-foreground">Client introuvable</div>
+            <div className="text-gray-600">Client introuvable</div>
           ) : (
             <div className="space-y-4">
               {/* Informations personnelles */}
@@ -604,52 +604,52 @@ export default function DossierDetail() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm text-muted-foreground">Nom</div>
+                    <div className="text-sm text-gray-600">Nom</div>
                     <div className="font-medium">{selectedClient.nom || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Prénom</div>
+                    <div className="text-sm text-gray-600">Prénom</div>
                     <div className="font-medium">{selectedClient.prenom || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Email</div>
+                    <div className="text-sm text-gray-600">Email</div>
                     <div className="font-medium">{selectedClient.email || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Téléphone</div>
+                    <div className="text-sm text-gray-600">Téléphone</div>
                     <div className="font-medium">{selectedClient.telephone || '—'}</div>
                   </div>
                   <div className="md:col-span-2">
-                    <div className="text-sm text-muted-foreground">Adresse</div>
+                    <div className="text-sm text-gray-600">Adresse</div>
                     <div className="font-medium">{selectedClient.adresse || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Date de naissance</div>
+                    <div className="text-sm text-gray-600">Date de naissance</div>
                     <div className="font-medium">{selectedClient.date_naissance ? new Date(selectedClient.date_naissance).toLocaleDateString() : '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Lieu de naissance</div>
+                    <div className="text-sm text-gray-600">Lieu de naissance</div>
                     <div className="font-medium">{selectedClient.lieu_naissance || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Nationalité</div>
+                    <div className="text-sm text-gray-600">Nationalité</div>
                     <div className="font-medium">{selectedClient.nationalite || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Sexe</div>
+                    <div className="text-sm text-gray-600">Sexe</div>
                     <div className="font-medium">{selectedClient.sexe || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">État civil</div>
+                    <div className="text-sm text-gray-600">État civil</div>
                     <div className="font-medium">{selectedClient.etat_civil || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Situation matrimoniale</div>
+                    <div className="text-sm text-gray-600">Situation matrimoniale</div>
                     <div className="font-medium">{selectedClient.situation_matrimoniale || '—'}</div>
                   </div>
                   {selectedClient.situation_familiale && selectedClient.situation_familiale.length > 0 && (
                     <div className="md:col-span-2">
-                      <div className="text-sm text-muted-foreground">Situation familiale</div>
+                      <div className="text-sm text-gray-600">Situation familiale</div>
                       <div className="font-medium">{selectedClient.situation_familiale.join(', ')}</div>
                     </div>
                   )}
@@ -665,19 +665,19 @@ export default function DossierDetail() {
                   <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {selectedClient.situation_familiale.regime_matrimonial && (
                       <div>
-                        <div className="text-sm text-muted-foreground">Régime matrimonial</div>
+                        <div className="text-sm text-gray-600">Régime matrimonial</div>
                         <div className="font-medium">{selectedClient.situation_familiale.regime_matrimonial}</div>
                       </div>
                     )}
                     {selectedClient.situation_familiale.nombre_enfants !== undefined && (
                       <div>
-                        <div className="text-sm text-muted-foreground">Nombre d'enfants</div>
+                        <div className="text-sm text-gray-600">Nombre d'enfants</div>
                         <div className="font-medium">{selectedClient.situation_familiale.nombre_enfants}</div>
                       </div>
                     )}
                     {selectedClient.situation_familiale.personne_a_charge !== undefined && (
                       <div>
-                        <div className="text-sm text-muted-foreground">Personnes à charge</div>
+                        <div className="text-sm text-gray-600">Personnes à charge</div>
                         <div className="font-medium">{selectedClient.situation_familiale.personne_a_charge}</div>
                       </div>
                     )}
@@ -692,19 +692,19 @@ export default function DossierDetail() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm text-muted-foreground">Type de pièce d'identité</div>
+                    <div className="text-sm text-gray-600">Type de pièce d'identité</div>
                     <div className="font-medium">{selectedClient.type_identite || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Numéro</div>
+                    <div className="text-sm text-gray-600">Numéro</div>
                     <div className="font-medium">{selectedClient.numero_identite || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Date d'expiration</div>
+                    <div className="text-sm text-gray-600">Date d'expiration</div>
                     <div className="font-medium">{selectedClient.date_expiration_identite ? new Date(selectedClient.date_expiration_identite).toLocaleDateString() : '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Statut KYC</div>
+                    <div className="text-sm text-gray-600">Statut KYC</div>
                     <div className="font-medium">
                       <Badge variant={selectedClient.kyc_status === 'complete' ? 'default' : 'secondary'}>
                         {selectedClient.kyc_status || 'Non défini'}
@@ -721,32 +721,32 @@ export default function DossierDetail() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm text-muted-foreground">Profession</div>
+                    <div className="text-sm text-gray-600">Profession</div>
                     <div className="font-medium">{selectedClient.profession || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Employeur</div>
+                    <div className="text-sm text-gray-600">Employeur</div>
                     <div className="font-medium">{selectedClient.employeur || '—'}</div>
                   </div>
                   <div className="md:col-span-2">
-                    <div className="text-sm text-muted-foreground">Adresse professionnelle</div>
+                    <div className="text-sm text-gray-600">Adresse professionnelle</div>
                     <div className="font-medium">{selectedClient.adresse_professionnelle || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">SIRET</div>
+                    <div className="text-sm text-gray-600">SIRET</div>
                     <div className="font-medium">{selectedClient.siret || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Situation fiscale</div>
+                    <div className="text-sm text-gray-600">Situation fiscale</div>
                     <div className="font-medium">{selectedClient.situation_fiscale || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Revenus</div>
+                    <div className="text-sm text-gray-600">Revenus</div>
                     <div className="font-medium">{selectedClient.revenus || '—'}</div>
                   </div>
                   {selectedClient.comptes_bancaires && selectedClient.comptes_bancaires.length > 0 && (
                     <div className="md:col-span-2">
-                      <div className="text-sm text-muted-foreground mb-2">Comptes bancaires</div>
+                      <div className="text-sm text-gray-600 mb-2">Comptes bancaires</div>
                       <div className="space-y-1">
                         {selectedClient.comptes_bancaires.map((compte, idx) => (
                           <div key={idx} className="p-2 bg-muted rounded text-sm font-mono">
@@ -758,7 +758,7 @@ export default function DossierDetail() {
                   )}
                   {selectedClient.justificatifs_financiers && (
                     <div className="md:col-span-2">
-                      <div className="text-sm text-muted-foreground">Justificatifs financiers</div>
+                      <div className="text-sm text-gray-600">Justificatifs financiers</div>
                       <div className="font-medium whitespace-pre-wrap">{selectedClient.justificatifs_financiers}</div>
                     </div>
                   )}
@@ -772,22 +772,22 @@ export default function DossierDetail() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm text-muted-foreground">Type de dossier</div>
+                    <div className="text-sm text-gray-600">Type de dossier</div>
                     <div className="font-medium">{selectedClient.type_dossier || '—'}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Contrat souhaité</div>
+                    <div className="text-sm text-gray-600">Contrat souhaité</div>
                     <div className="font-medium">{selectedClient.contrat_souhaite || '—'}</div>
                   </div>
                   {selectedClient.historique_litiges && (
                     <div className="md:col-span-2">
-                      <div className="text-sm text-muted-foreground">Historique des litiges</div>
+                      <div className="text-sm text-gray-600">Historique des litiges</div>
                       <div className="font-medium whitespace-pre-wrap">{selectedClient.historique_litiges}</div>
                     </div>
                   )}
                   {selectedClient.documents_objet && selectedClient.documents_objet.length > 0 && (
                     <div className="md:col-span-2">
-                      <div className="text-sm text-muted-foreground mb-2">Documents objet du dossier</div>
+                      <div className="text-sm text-gray-600 mb-2">Documents objet du dossier</div>
                       <div className="space-y-1">
                         {selectedClient.documents_objet.map((doc, idx) => (
                           <div key={idx} className="p-2 bg-muted rounded text-sm">
@@ -799,7 +799,7 @@ export default function DossierDetail() {
                   )}
                   {selectedClient.source && (
                     <div>
-                      <div className="text-sm text-muted-foreground">Source</div>
+                      <div className="text-sm text-gray-600">Source</div>
                       <div className="font-medium">{selectedClient.source}</div>
                     </div>
                   )}
@@ -813,17 +813,17 @@ export default function DossierDetail() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm text-muted-foreground">Source</div>
+                    <div className="text-sm text-gray-600">Source</div>
                     <div>
                       {selectedClient.source ? (
                         <Badge variant="outline">{selectedClient.source}</Badge>
                       ) : (
-                        <span className="text-muted-foreground">—</span>
+                        <span className="text-gray-600">—</span>
                       )}
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Consentement RGPD</div>
+                    <div className="text-sm text-gray-600">Consentement RGPD</div>
                     <div>
                       <Badge variant={selectedClient.consentement_rgpd ? 'default' : 'secondary'}>
                         {selectedClient.consentement_rgpd ? 'Oui' : 'Non'}
@@ -831,7 +831,7 @@ export default function DossierDetail() {
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">Signature du mandat</div>
+                    <div className="text-sm text-gray-600">Signature du mandat</div>
                     <div>
                       <Badge variant={selectedClient.signature_mandat ? 'default' : 'secondary'}>
                         {selectedClient.signature_mandat ? 'Oui' : 'Non'}
@@ -840,7 +840,7 @@ export default function DossierDetail() {
                   </div>
                   {selectedClient.created_at && (
                     <div>
-                      <div className="text-sm text-muted-foreground">Date de création</div>
+                      <div className="text-sm text-gray-600">Date de création</div>
                       <div className="font-medium">
                         {new Date(selectedClient.created_at).toLocaleDateString('fr-FR', {
                           year: 'numeric',
@@ -868,7 +868,7 @@ export default function DossierDetail() {
                           <div className="font-medium">
                             {enfant.prenom ? `${enfant.prenom} ${enfant.nom}` : enfant.nom}
                           </div>
-                          <div className="text-sm text-muted-foreground mt-1">
+                          <div className="text-sm text-gray-600 mt-1">
                             {enfant.sexe && <span>{enfant.sexe} • </span>}
                             {enfant.date_naissance && <span>Né(e) le {new Date(enfant.date_naissance).toLocaleDateString()}</span>}
                           </div>
@@ -919,7 +919,7 @@ export default function DossierDetail() {
                 <label className="text-sm font-medium">Clients</label>
                 <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
                   {allClients.length === 0 ? (
-                    <div className="text-sm text-foreground px-1">Aucun client</div>
+                    <div className="text-sm text-gray-900 px-1">Aucun client</div>
                   ) : allClients.map((c) => {
                     const checked = editSelectedClients.includes(c.id);
                     return (
@@ -935,7 +935,7 @@ export default function DossierDetail() {
                 <label className="text-sm font-medium">Contrats</label>
                 <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
                   {allContrats.length === 0 ? (
-                    <div className="text-sm text-foreground px-1">Aucun contrat</div>
+                    <div className="text-sm text-gray-900 px-1">Aucun contrat</div>
                   ) : allContrats.map((c) => {
                     const checked = editSelectedContrats.includes(c.id);
                     return (
@@ -943,7 +943,7 @@ export default function DossierDetail() {
                         <input type="checkbox" className="mt-1 h-4 w-4" checked={checked} onChange={(e) => setEditSelectedContrats((prev) => e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id))} />
                         <span>
                           <span className="font-medium">{c.name}</span>
-                          <span className="text-foreground"> — {c.category}</span>
+                          <span className="text-gray-900"> — {c.category}</span>
                         </span>
                       </label>
                     );
@@ -954,7 +954,7 @@ export default function DossierDetail() {
                 <label className="text-sm font-medium">Documents</label>
                 <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
                   {allDocuments.length === 0 ? (
-                    <div className="text-sm text-foreground px-1">Aucun document</div>
+                    <div className="text-sm text-gray-900 px-1">Aucun document</div>
                   ) : allDocuments.map((d) => {
                     const checked = editSelectedDocuments.includes(d.id);
                     return (

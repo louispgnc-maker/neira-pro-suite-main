@@ -83,7 +83,7 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
       onClick={() => navigate(role === 'notaire' ? '/notaires/tasks' : '/avocats/tasks')}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">Tâches du jour</CardTitle>
+        <CardTitle className="text-sm font-medium text-gray-600">Tâches du jour</CardTitle>
         <div className={`p-2 rounded-lg ${role === 'notaire' ? 'bg-orange-100' : 'bg-blue-100'}`}>
           <CheckSquare className={`h-4 w-4 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} />
         </div>
@@ -92,7 +92,7 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
         <div className="flex items-center justify-between">
           <div>
             <div className="text-2xl font-bold">{todoCount + overdueCount}</div>
-            <div className="text-xs text-muted-foreground">Total</div>
+            <div className="text-xs text-gray-600">Total</div>
           </div>
           <div className="grid grid-cols-1 gap-2">
             <div className="text-sm">À faire: <span className="font-semibold">{todoCount}</span></div>

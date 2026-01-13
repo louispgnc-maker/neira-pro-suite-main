@@ -1465,9 +1465,9 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                       />
                       <div className="mt-2 space-y-2 max-h-[300px] overflow-y-auto pr-2">
                         {membersLoading ? (
-                          <p className="text-sm text-muted-foreground">Chargement des membres...</p>
+                          <p className="text-sm text-gray-600">Chargement des membres...</p>
                         ) : members.length === 0 ? (
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-gray-600">
                             Aucun membre disponible (total: {members.length}, user: {user?.id ? 'présent' : 'absent'})
                           </p>
                         ) : (
@@ -1542,9 +1542,9 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                       />
                       <div className="mt-2 space-y-2 max-h-[300px] overflow-y-auto pr-2">
                         {membersLoading ? (
-                          <p className="text-sm text-muted-foreground">Chargement des membres...</p>
+                          <p className="text-sm text-gray-600">Chargement des membres...</p>
                         ) : members.length === 0 ? (
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-gray-600">
                             Aucun membre disponible (total: {members.length}, user: {user?.id ? 'présent' : 'absent'})
                           </p>
                         ) : (
@@ -1659,7 +1659,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               <>
                 <div className="py-2">
                   <div className="border-t border-gray-200"></div>
-                  <p className="text-xs text-muted-foreground mt-2 px-2">Groupes</p>
+                  <p className="text-xs text-gray-600 mt-2 px-2">Groupes</p>
                 </div>
                 {groups.map(conv => {
                   const unreadCount = unreadMessages.get(conv.id) || 0;
@@ -1707,7 +1707,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
               <>
                 <div className="py-2">
                   <div className="border-t border-gray-200"></div>
-                  <p className="text-xs text-muted-foreground mt-2 px-2">Messages directs</p>
+                  <p className="text-xs text-gray-600 mt-2 px-2">Messages directs</p>
                 </div>
                 {directMessages.map(conv => {
                   const unreadCount = unreadMessages.get(conv.id) || 0;
@@ -1814,11 +1814,11 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
             {/* Messages area with fixed height and scroll */}
             <div className="overflow-y-scroll mb-4 space-y-3 pr-2" style={{ maxHeight: 'calc(100vh - 450px)' }} ref={scrollAreaRef}>
           {!selectedConversation ? (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
+            <div className="flex items-center justify-center h-full text-gray-600">
                 <p>Sélectionnez une conversation pour commencer</p>
               </div>
             ) : messages.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-muted-foreground">
+              <div className="flex items-center justify-center h-full text-gray-600">
                 <p>Aucun message pour le moment</p>
               </div>
             ) : (
@@ -1849,7 +1849,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                             : getDisplayName(msg.sender_profile)
                           }
                         </span>
-                        <span className={`text-xs text-muted-foreground ${isOwnMessage ? 'order-1' : 'order-2'}`}>
+                        <span className={`text-xs text-gray-600 ${isOwnMessage ? 'order-1' : 'order-2'}`}>
                           {new Date(msg.created_at).toLocaleTimeString('fr-FR', { 
                             hour: '2-digit', 
                             minute: '2-digit' 
@@ -2317,13 +2317,13 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
           {loadingItems ? (
             <div className="flex items-center justify-center py-8">
-              <div className="text-muted-foreground">Chargement...</div>
+              <div className="text-gray-600">Chargement...</div>
             </div>
           ) : (
             <>
               {/* Documents list */}
               {shareType === 'document' && availableDocuments.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                <div className="flex flex-col items-center justify-center py-8 text-gray-600">
                   <FileText className="h-12 w-12 mb-2 opacity-50" />
                   <p>Aucun document disponible</p>
                 </div>
@@ -2343,7 +2343,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                           <FileText className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-500' : 'text-blue-500'}`} />
                           <div className="flex-1">
                             <p className="font-medium">{title}</p>
-                            <p className="text-xs text-muted-foreground">{date}</p>
+                            <p className="text-xs text-gray-600">{date}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -2371,7 +2371,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
               {/* Dossiers list */}
               {shareType === 'dossier' && availableDossiers.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                <div className="flex flex-col items-center justify-center py-8 text-gray-600">
                   <FileText className="h-12 w-12 mb-2 opacity-50" />
                   <p>Aucun dossier disponible</p>
                 </div>
@@ -2391,9 +2391,9 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                           <div className="flex-1">
                             <p className="font-medium">{dossier.title}</p>
                             {dossier.description && (
-                              <p className="text-xs text-muted-foreground">{dossier.description}</p>
+                              <p className="text-xs text-gray-600">{dossier.description}</p>
                             )}
-                            <p className="text-xs text-muted-foreground">{date}</p>
+                            <p className="text-xs text-gray-600">{date}</p>
                           </div>
                         </div>
                         <Button
@@ -2411,7 +2411,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
 
               {/* Clients list */}
               {shareType === 'client' && availableClients.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                <div className="flex flex-col items-center justify-center py-8 text-gray-600">
                   <Users className="h-12 w-12 mb-2 opacity-50" />
                   <p>Aucun client disponible</p>
                 </div>
@@ -2431,9 +2431,9 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
                           <div className="flex-1">
                             <p className="font-medium">{client.first_name} {client.last_name}</p>
                             {client.email && (
-                              <p className="text-xs text-muted-foreground">{client.email}</p>
+                              <p className="text-xs text-gray-600">{client.email}</p>
                             )}
-                            <p className="text-xs text-muted-foreground">{date}</p>
+                            <p className="text-xs text-gray-600">{date}</p>
                           </div>
                         </div>
                         <Button

@@ -76,9 +76,9 @@ export function PendingSignatures({ role = 'avocat' }: PendingSignaturesProps = 
       <CardContent>
         <div className="space-y-4">
           {loading ? (
-            <p className="text-center text-muted-foreground">Chargement…</p>
+            <p className="text-center text-gray-600">Chargement…</p>
             ) : signatures.length === 0 ? (
-              <p className="text-center text-muted-foreground">Aucunes signatures.</p>
+              <p className="text-center text-gray-600">Aucunes signatures.</p>
           ) : (
             signatures.map((sig) => (
               <div
@@ -87,8 +87,8 @@ export function PendingSignatures({ role = 'avocat' }: PendingSignaturesProps = 
               >
                 <div className="flex-1">
                   <p className="font-medium text-sm">{sig.signer}</p>
-                  <p className="text-xs text-muted-foreground">{sig.document_name}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-gray-600">{sig.document_name}</p>
+                  <p className="text-xs text-gray-600 mt-1">
                     Dernière relance: {sig.last_reminder_at ? new Date(sig.last_reminder_at).toLocaleDateString() : "—"}
                   </p>
                 </div>

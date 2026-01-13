@@ -40,13 +40,13 @@ type DocRow = {
 const statusColorsAvocat: Record<string, string> = {
   "Signé": "bg-success/10 text-success border-success/20",
   "En cours": "bg-blue-100 text-blue-600 border-blue-200",
-  "Brouillon": "bg-muted text-foreground border-border",
+  "Brouillon": "bg-muted text-gray-900 border-border",
   "En attente": "bg-warning/10 text-warning border-warning/20",
 };
 const statusColorsNotaire: Record<string, string> = {
   "Signé": "bg-success/10 text-success border-success/20",
   "En cours": "bg-orange-100 text-orange-600 border-orange-200",
-  "Brouillon": "bg-muted text-foreground border-border",
+  "Brouillon": "bg-muted text-gray-900 border-border",
   "En attente": "bg-warning/10 text-warning border-warning/20",
 };
 
@@ -492,7 +492,7 @@ export default function Documents() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher (nom ou client)…"
-            className="w-full md:max-w-sm rounded-md border border-input bg-white px-3 py-2 text-sm text-foreground placeholder:text-foreground/50"
+            className="w-full md:max-w-sm rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-900/50"
           />
         </div>
         
@@ -503,12 +503,12 @@ export default function Documents() {
 
         {loading ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
-            <p className="text-foreground">Chargement…</p>
+            <p className="text-gray-900">Chargement…</p>
           </div>
         ) : documents.length === 0 ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
-              <p className="text-foreground">Aucun document pour le moment</p>
+              <p className="text-gray-900">Aucun document pour le moment</p>
               <div className="mt-4 flex justify-center">
                 <Button className={mainButtonColor + ""} onClick={triggerImport}>
                   <Plus className="h-4 w-4 mr-2" />
@@ -535,7 +535,7 @@ export default function Documents() {
                     className="cursor-pointer"
                   >
                     <TableCell className="font-medium">{doc.name}</TableCell>
-                    <TableCell className="text-foreground text-sm">
+                    <TableCell className="text-gray-900 text-sm">
                       {doc.updated_at ? new Date(doc.updated_at).toLocaleDateString() : "—"}
                     </TableCell>
                     <TableCell>

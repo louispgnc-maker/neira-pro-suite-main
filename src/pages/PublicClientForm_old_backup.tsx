@@ -382,7 +382,7 @@ export default function PublicClientForm() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-blue-50">
         <Card className="w-full max-w-2xl">
           <CardContent className="p-8">
-            <p className="text-center text-muted-foreground">Chargement...</p>
+            <p className="text-center text-gray-600">Chargement...</p>
           </CardContent>
         </Card>
       </div>
@@ -682,7 +682,7 @@ export default function PublicClientForm() {
                     ))}
 
                     {enfantsList.length === 0 && (
-                      <p className="text-sm text-muted-foreground text-center py-4">
+                      <p className="text-sm text-gray-600 text-center py-4">
                         Cliquez sur "Ajouter un enfant" pour renseigner les informations de vos enfants
                       </p>
                     )}
@@ -739,7 +739,7 @@ export default function PublicClientForm() {
                   onChange={(e) => setPieceIdentiteFiles(e.target.files)}
                   className="cursor-pointer"
                 />
-                <p className="text-xs text-muted-foreground">Formats acceptés : JPG, PNG, PDF (2 fichiers max : recto + verso)</p>
+                <p className="text-xs text-gray-600">Formats acceptés : JPG, PNG, PDF (2 fichiers max : recto + verso)</p>
                 {pieceIdentiteFiles && pieceIdentiteFiles.length > 0 && (
                   <div className="mt-2 space-y-2">
                     {Array.from(pieceIdentiteFiles).map((file, index) => (
@@ -981,7 +981,7 @@ export default function PublicClientForm() {
                       onChange={(e) => setMandatFile(e.target.files?.[0] || null)}
                       className="cursor-pointer"
                     />
-                    <p className="text-xs text-muted-foreground">Formats acceptés : JPG, PNG, PDF</p>
+                    <p className="text-xs text-gray-600">Formats acceptés : JPG, PNG, PDF</p>
                     {mandatFile && (
                       <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                         <span className="text-sm text-gray-700">{mandatFile.name}</span>
@@ -1114,7 +1114,7 @@ export default function PublicClientForm() {
                   onChange={(e) => setJustificatifDomicileFile(e.target.files?.[0] || null)}
                   className="cursor-pointer"
                 />
-                <p className="text-xs text-muted-foreground">Facture électricité, eau, gaz, internet, avis d'imposition...</p>
+                <p className="text-xs text-gray-600">Facture électricité, eau, gaz, internet, avis d'imposition...</p>
                 {justificatifDomicileFile && (
                   <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                     <span className="text-sm text-gray-700">{justificatifDomicileFile.name}</span>
@@ -1141,7 +1141,7 @@ export default function PublicClientForm() {
                   onChange={(e) => setAutresDocuments(e.target.files)}
                   className="cursor-pointer"
                 />
-                <p className="text-xs text-muted-foreground">Vous pouvez uploader plusieurs fichiers (RIB, livret de famille, contrats...)</p>
+                <p className="text-xs text-gray-600">Vous pouvez uploader plusieurs fichiers (RIB, livret de famille, contrats...)</p>
                 {autresDocuments && autresDocuments.length > 0 && (
                   <div className="mt-2 space-y-2">
                     {Array.from(autresDocuments).map((file, index) => (

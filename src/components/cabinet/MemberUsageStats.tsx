@@ -160,21 +160,21 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
         </DialogHeader>
 
         {loading ? (
-          <div className="py-8 text-center text-muted-foreground">Chargement...</div>
+          <div className="py-8 text-center text-gray-600">Chargement...</div>
         ) : (
           <div className="space-y-6">
             {/* Dossiers */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <FileText className="h-4 w-4 text-gray-600" />
                   <span className="text-sm font-medium">Dossiers</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(usage.dossiers, limits.dossiers))}`}>
                     {usage.dossiers}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-gray-600">
                     / {limits.dossiers >= 999999 ? '∞' : limits.dossiers}
                   </span>
                 </div>
@@ -191,14 +191,14 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <Users className="h-4 w-4 text-gray-600" />
                   <span className="text-sm font-medium">Clients</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(usage.clients, limits.clients))}`}>
                     {usage.clients}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-gray-600">
                     / {limits.clients >= 999999 ? '∞' : limits.clients}
                   </span>
                 </div>
@@ -215,14 +215,14 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FileSignature className="h-4 w-4 text-muted-foreground" />
+                  <FileSignature className="h-4 w-4 text-gray-600" />
                   <span className="text-sm font-medium">Signatures (ce mois)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(usage.signatures, limits.signatures))}`}>
                     {usage.signatures}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-gray-600">
                     / {limits.signatures >= 999999 ? '∞' : limits.signatures}
                   </span>
                 </div>
@@ -239,14 +239,14 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <HardDrive className="h-4 w-4 text-muted-foreground" />
+                  <HardDrive className="h-4 w-4 text-gray-600" />
                   <span className="text-sm font-medium">Stockage</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`text-sm font-bold ${getUsageColor(getUsagePercentage(usage.storage, limits.storage))}`}>
                     {usage.storage} Go
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-gray-600">
                     / {limits.storage >= 999999 ? '∞' : `${limits.storage} Go`}
                   </span>
                 </div>
@@ -273,7 +273,7 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
             )}
 
             {/* Légende */}
-            <div className="bg-muted/50 rounded-lg p-3 text-xs text-muted-foreground">
+            <div className="bg-muted/50 rounded-lg p-3 text-xs text-gray-600">
               <p><strong>Note :</strong> Les statistiques sont calculées individuellement pour chaque membre du cabinet.</p>
             </div>
 

@@ -110,9 +110,9 @@ export default function Signatures() {
       return 'bg-warning/10 text-warning border-warning/20';
     }
     if (status.toLowerCase() === 'brouillon') {
-      return 'bg-muted text-foreground border-border';
+      return 'bg-muted text-gray-900 border-border';
     }
-    return 'bg-muted text-foreground border-border';
+    return 'bg-muted text-gray-900 border-border';
   }
 
   return (
@@ -161,7 +161,7 @@ export default function Signatures() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher (signataire ou document)…"
-            className="w-full md:max-w-sm rounded-md border border-input bg-white px-3 py-2 text-sm text-foreground placeholder:text-foreground/50"
+            className="w-full md:max-w-sm rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-900/50"
           />
         </div>
 
@@ -176,12 +176,12 @@ export default function Signatures() {
 
         {loading ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
-            <p className="text-foreground">Chargement…</p>
+            <p className="text-gray-900">Chargement…</p>
           </div>
         ) : signatures.length === 0 ? (
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
-              <p className="text-foreground">Aucunes signatures</p>
+              <p className="text-gray-900">Aucunes signatures</p>
               <Button className={mainButtonColor + " mt-4"}>
                 Ajoutez ici vos documents signés
               </Button>
@@ -208,7 +208,7 @@ export default function Signatures() {
                         {sig.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-foreground text-sm">
+                    <TableCell className="text-gray-900 text-sm">
                       {sig.last_reminder_at
                         ? new Date(sig.last_reminder_at).toLocaleDateString()
                         : "Jamais"}

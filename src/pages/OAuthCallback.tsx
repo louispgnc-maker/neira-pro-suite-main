@@ -36,7 +36,7 @@ export default function OAuthCallback() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-background">
       <div className="text-center space-y-4">
         <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-        <p className="text-muted-foreground">Connexion en cours...</p>
+        <p className="text-gray-600">Connexion en cours...</p>
       </div>
     </div>
   );

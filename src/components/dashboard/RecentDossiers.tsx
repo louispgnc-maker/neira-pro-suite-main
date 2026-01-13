@@ -78,11 +78,11 @@ export function RecentDossiers({ role }: RecentDossiersProps) {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center text-muted-foreground">Chargement…</TableCell>
+                <TableCell colSpan={3} className="text-center text-gray-600">Chargement…</TableCell>
               </TableRow>
             ) : rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center text-muted-foreground">Aucun dossier.</TableCell>
+                <TableCell colSpan={3} className="text-center text-gray-600">Aucun dossier.</TableCell>
               </TableRow>
             ) : (
               rows.map((d) => (
@@ -92,8 +92,8 @@ export function RecentDossiers({ role }: RecentDossiersProps) {
                   className="cursor-pointer"
                 >
                   <TableCell className="font-medium">{d.title}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{d.status}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-sm text-gray-600">{d.status}</TableCell>
+                  <TableCell className="text-sm text-gray-600">{new Date(d.created_at).toLocaleDateString()}</TableCell>
                 </TableRow>
               ))
             )}

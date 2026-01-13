@@ -231,7 +231,7 @@ export default function EmailIntegration() {
       <div className="p-6 space-y-6">
         <div>
           <h1 className="text-4xl font-bold text-gray-900">Intégration Email</h1>
-          <p className="text-muted-foreground mt-1">Connectez vos comptes email professionnels</p>
+          <p className="text-gray-600 mt-1">Connectez vos comptes email professionnels</p>
         </div>
 
         <Card>
@@ -261,7 +261,7 @@ export default function EmailIntegration() {
                     <div className="text-center">
                       <p className="font-medium">{provider.label}</p>
                       {provider.description && (
-                        <p className="text-xs text-muted-foreground mt-1">{provider.description}</p>
+                        <p className="text-xs text-gray-600 mt-1">{provider.description}</p>
                       )}
                       {provider.available ? (
                         <Button
@@ -279,7 +279,7 @@ export default function EmailIntegration() {
                           )}
                         </Button>
                       ) : (
-                        <p className="text-xs text-muted-foreground mt-2">Bientôt disponible</p>
+                        <p className="text-xs text-gray-600 mt-2">Bientôt disponible</p>
                       )}
                     </div>
                   </CardContent>
@@ -298,8 +298,8 @@ export default function EmailIntegration() {
           ) : accounts.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">
+                <AlertCircle className="h-12 w-12 text-gray-600 mb-4" />
+                <p className="text-gray-600">
                   Aucun compte email connecté
                 </p>
               </CardContent>
@@ -313,7 +313,7 @@ export default function EmailIntegration() {
                       <CheckCircle2 className="h-5 w-5 text-green-500" />
                       <div>
                         <p className="font-medium">{account.email}</p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-gray-600">
                           Connecté le {new Date(account.created_at).toLocaleDateString('fr-FR')}
                         </p>
                       </div>

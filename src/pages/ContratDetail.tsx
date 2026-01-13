@@ -343,16 +343,16 @@ export default function ContratDetail() {
           </Button>
           <div className="flex-1">
             <h1 className="text-3xl font-bold">{role === 'notaire' ? 'Acte' : 'Contrat'}</h1>
-            {contrat?.name && <p className="text-muted-foreground mt-1">{contrat.name}</p>}
+            {contrat?.name && <p className="text-gray-600 mt-1">{contrat.name}</p>}
           </div>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center h-[300px] border border-dashed border-border rounded-lg">
-            <p className="text-muted-foreground">Chargement…</p>
+            <p className="text-gray-600">Chargement…</p>
           </div>
         ) : !contrat ? (
-          <div className="text-muted-foreground">Contrat introuvable.</div>
+          <div className="text-gray-600">Contrat introuvable.</div>
         ) : (
           <div className="space-y-6">
             <Card>
@@ -400,17 +400,17 @@ export default function ContratDetail() {
                 {!editingInfo ? (
                   <>
                     <div>
-                      <div className="text-sm text-muted-foreground">Nom</div>
+                      <div className="text-sm text-gray-600">Nom</div>
                       <div className="font-medium">{contrat.name}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Catégorie</div>
+                      <div className="text-sm text-gray-600">Catégorie</div>
                       <Badge variant="outline" className={role === 'notaire' ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'}>
                         {contrat.category || '—'}
                       </Badge>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Client assigné</div>
+                      <div className="text-sm text-gray-600">Client assigné</div>
                       <div className="font-medium">
                         {contrat.client_id ? (
                           (() => {
@@ -421,22 +421,22 @@ export default function ContratDetail() {
                       </div>
                     </div>
                     <div className="md:col-span-2">
-                      <div className="text-sm text-muted-foreground">Type</div>
+                      <div className="text-sm text-gray-600">Type</div>
                       <div className="font-medium">{contrat.type || '—'}</div>
                     </div>
                     <div className="md:col-span-2">
-                      <div className="text-sm text-muted-foreground">Description</div>
+                      <div className="text-sm text-gray-600">Description</div>
                       <div className="font-medium whitespace-pre-wrap">{contrat.description || '—'}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Créé le</div>
+                      <div className="text-sm text-gray-600">Créé le</div>
                       <div className="font-medium">{contrat.created_at ? new Date(contrat.created_at).toLocaleDateString() : '—'}</div>
                     </div>
                   </>
                 ) : (
                   <>
                     <div className="md:col-span-2">
-                      <label className="text-sm text-muted-foreground">Nom *</label>
+                      <label className="text-sm text-gray-600">Nom *</label>
                       <Input 
                         value={editedName}
                         onChange={(e) => setEditedName(e.target.value)}
@@ -445,7 +445,7 @@ export default function ContratDetail() {
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-muted-foreground">Catégorie</label>
+                      <label className="text-sm text-gray-600">Catégorie</label>
                       <Input 
                         value={editedCategory}
                         onChange={(e) => setEditedCategory(e.target.value)}
@@ -454,7 +454,7 @@ export default function ContratDetail() {
                       />
                     </div>
                     <div>
-                      <label className="text-sm text-muted-foreground">Client assigné</label>
+                      <label className="text-sm text-gray-600">Client assigné</label>
                       <Select value={editedClientId || "none"} onValueChange={setEditedClientId}>
                         <SelectTrigger className="mt-1">
                           <SelectValue placeholder="Sélectionner un client" />
@@ -470,7 +470,7 @@ export default function ContratDetail() {
                       </Select>
                     </div>
                     <div>
-                      <label className="text-sm text-muted-foreground">Type</label>
+                      <label className="text-sm text-gray-600">Type</label>
                       <Input 
                         value={editedType}
                         onChange={(e) => setEditedType(e.target.value)}
@@ -479,7 +479,7 @@ export default function ContratDetail() {
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="text-sm text-muted-foreground">Description</label>
+                      <label className="text-sm text-gray-600">Description</label>
                       <Textarea 
                         value={editedDescription}
                         onChange={(e) => setEditedDescription(e.target.value)}
@@ -488,7 +488,7 @@ export default function ContratDetail() {
                       />
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Créé le</div>
+                      <div className="text-sm text-gray-600">Créé le</div>
                       <div className="font-medium">{contrat.created_at ? new Date(contrat.created_at).toLocaleDateString() : '—'}</div>
                     </div>
                   </>
@@ -610,7 +610,7 @@ export default function ContratDetail() {
                   <div className="text-sm">
                     Partagé par <span className="font-medium">{sharedBy}</span>
                     {!isOwner && (
-                      <p className="text-xs text-muted-foreground mt-2">
+                      <p className="text-xs text-gray-600 mt-2">
                         Vous pouvez consulter ce contrat mais seul le créateur peut le modifier.
                       </p>
                     )}

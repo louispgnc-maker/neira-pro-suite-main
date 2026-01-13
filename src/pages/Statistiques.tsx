@@ -254,7 +254,7 @@ export default function Statistiques() {
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-muted-foreground">Chargement des statistiques...</p>
+              <p className="mt-4 text-gray-600">Chargement des statistiques...</p>
             </div>
           </div>
         </div>
@@ -284,7 +284,7 @@ export default function Statistiques() {
         <div className={hasAccess ? '' : 'filter blur-sm pointer-events-none select-none'}>
           <div className="mb-6">
             <h1 className="text-4xl font-bold text-gray-900">Statistiques</h1>
-            <p className="text-foreground mt-1">Analyse avancée de votre activité</p>
+            <p className="text-gray-900 mt-1">Analyse avancée de votre activité</p>
           </div>
 
           {/* 1️⃣ Activité et Performance du Cabinet */}
@@ -297,11 +297,11 @@ export default function Statistiques() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Dossiers traités ce mois</CardTitle>
-                <FolderOpen className="h-4 w-4 text-muted-foreground" />
+                <FolderOpen className="h-4 w-4 text-gray-600" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{dossierStats.total}</div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-600">
                   {dossierStats.enCours} en cours, {dossierStats.urgents} urgents
                 </p>
               </CardContent>
@@ -310,11 +310,11 @@ export default function Statistiques() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Signatures réalisées</CardTitle>
-                <FileSignature className="h-4 w-4 text-muted-foreground" />
+                <FileSignature className="h-4 w-4 text-gray-600" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{signatureStats.total}</div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-600">
                   {signatureStats.electroniques} électroniques / {signatureStats.presentielle} présentielle
                 </p>
               </CardContent>
@@ -327,11 +327,11 @@ export default function Statistiques() {
               </div>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Chiffre d'affaires</CardTitle>
-                <Lock className="h-4 w-4 text-muted-foreground" />
+                <Lock className="h-4 w-4 text-gray-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-muted-foreground">— €</div>
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <div className="text-2xl font-bold text-gray-600">— €</div>
+                <p className="text-xs text-gray-600 flex items-center gap-1">
                   En cours de développement
                 </p>
               </CardContent>
@@ -349,7 +349,7 @@ export default function Statistiques() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">État des dossiers</CardTitle>
-                <FolderOpen className="h-4 w-4 text-muted-foreground" />
+                <FolderOpen className="h-4 w-4 text-gray-600" />
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -384,7 +384,7 @@ export default function Statistiques() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Types de contrats</CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
+                <FileText className="h-4 w-4 text-gray-600" />
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -398,7 +398,7 @@ export default function Statistiques() {
                       </div>
                     ))}
                   {Object.keys(contratStats.byType).length === 0 && (
-                    <p className="text-xs text-muted-foreground">Aucun contrat</p>
+                    <p className="text-xs text-gray-600">Aucun contrat</p>
                   )}
                 </div>
               </CardContent>
@@ -407,7 +407,7 @@ export default function Statistiques() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Temps moyen entre création et signature</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Clock className="h-4 w-4 text-gray-600" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold mb-2">{contratStats.avgTimeToSignature} jours</div>
@@ -429,11 +429,11 @@ export default function Statistiques() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Nouveaux clients ce mois</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="h-4 w-4 text-gray-600" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{clientStats.nouveauxCeMois}</div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-600">
                   Sur {clientStats.total} clients au total
                 </p>
               </CardContent>
@@ -442,13 +442,13 @@ export default function Statistiques() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Évolution nouveaux clients</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <TrendingUp className="h-4 w-4 text-gray-600" />
               </CardHeader>
               <CardContent>
                 <div className={`text-2xl font-bold ${parseFloat(evolutionClients) >= 0 ? 'text-success' : 'text-destructive'}`}>
                   {parseFloat(evolutionClients) >= 0 ? '+' : ''}{evolutionClients}%
                 </div>
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <p className="text-xs text-gray-600 flex items-center gap-1">
                   {parseFloat(evolutionClients) >= 0 ? (
                     <TrendingUp className="h-3 w-3 text-success" />
                   ) : (
@@ -462,7 +462,7 @@ export default function Statistiques() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Activité clients</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="h-4 w-4 text-gray-600" />
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -474,7 +474,7 @@ export default function Statistiques() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm flex items-center gap-1">
-                      <Minus className="h-3 w-3 text-muted-foreground" /> Sans activité
+                      <Minus className="h-3 w-3 text-gray-600" /> Sans activité
                     </span>
                     <span className="text-sm font-medium">{clientStats.sansActivite}</span>
                   </div>
@@ -499,10 +499,10 @@ export default function Statistiques() {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold mb-2">Fonctionnalité réservée</h2>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-gray-600 mb-4">
                     Les statistiques avancées sont disponibles uniquement avec l'offre <strong className={role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}>Neira Cabinet+</strong>.
                   </p>
-                  <p className="text-sm text-muted-foreground mb-6">
+                  <p className="text-sm text-gray-600 mb-6">
                     Votre plan actuel : <span className="font-semibold capitalize">{limits.subscription_plan || 'Gratuit'}</span>
                   </p>
                 </div>

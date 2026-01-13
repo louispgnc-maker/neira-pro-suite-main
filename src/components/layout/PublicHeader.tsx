@@ -40,8 +40,8 @@ export function PublicHeader() {
             <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Logo%20Neira.png" alt="Neira" className="w-full h-full object-cover" />
           </button>
           <div className="leading-tight">
-            <div className="text-base font-bold text-foreground">Neira</div>
-            <div className="text-xs text-muted-foreground">Espace Professionnel Automatisé</div>
+            <div className="text-base font-bold text-gray-900">Neira</div>
+            <div className="text-xs text-gray-600">Espace Professionnel Automatisé</div>
           </div>
         </div>
 

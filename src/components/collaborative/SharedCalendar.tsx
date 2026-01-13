@@ -62,7 +62,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
     const hideTime = isAllDay || timeText === '00:00' || timeText === '00:00:00';
     return (
       <div className="flex items-center gap-2">
-        {!hideTime && <span className="text-xs text-muted-foreground mr-1">{timeText}</span>}
+        {!hideTime && <span className="text-xs text-gray-600 mr-1">{timeText}</span>}
         <span className="truncate">{arg.event.title}</span>
       </div>
     );
@@ -430,7 +430,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
   <div className="mb-3 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-medium">Calendrier partagé</h3>
-          <p className="text-sm text-muted-foreground">Jour / semaine / mois — temps réel pour tous les membres</p>
+          <p className="text-sm text-gray-600">Jour / semaine / mois — temps réel pour tous les membres</p>
         </div>
         <div className="flex gap-2">
           <Dialog open={openCreate} onOpenChange={setOpenCreate}>
@@ -448,7 +448,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
                 </DialogTitle>
               </DialogHeader>
               {editingEvent && (
-                <div className="text-sm text-muted-foreground mb-2">
+                <div className="text-sm text-gray-600 mb-2">
                   <p>Créé par : <strong>{editingEvent.owner_name || editingEvent.owner_id || '—'}</strong></p>
                 </div>
               )}
@@ -550,7 +550,7 @@ export function SharedCalendar({ role, members, isCabinetOwner }: { role?: strin
           {members.map(m => (
             <div key={m.id} className="flex items-center gap-2">
               <span style={{ backgroundColor: generateColorFromString(m.id) }} className="w-4 h-4 rounded" />
-              <span className="text-sm text-muted-foreground">{m.nom || m.email || m.id.substring(0,6)}</span>
+              <span className="text-sm text-gray-600">{m.nom || m.email || m.id.substring(0,6)}</span>
             </div>
           ))}
         </div>

@@ -420,12 +420,12 @@ export default function ProfileView() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm font-medium text-muted-foreground mb-1">Nom</div>
+                    <div className="text-sm font-medium text-gray-600 mb-1">Nom</div>
                     <div className="text-base">{profile?.last_name || '—'}</div>
                   </div>
                   
                   <div>
-                    <div className="text-sm font-medium text-muted-foreground mb-1">Prénom</div>
+                    <div className="text-sm font-medium text-gray-600 mb-1">Prénom</div>
                     <div className="text-base">{profile?.first_name || '—'}</div>
                   </div>
                 </div>
@@ -448,7 +448,7 @@ export default function ProfileView() {
                   <div>
                     <div className="text-sm font-medium mb-2">Cabinet et fonction</div>
                     {loadingCabinet ? (
-                      <div className="text-sm text-muted-foreground">Chargement...</div>
+                      <div className="text-sm text-gray-600">Chargement...</div>
                     ) : (
                       <div className="flex items-center gap-2">
                         <Badge variant="outline" className="text-sm bg-green-50 text-green-700 border-green-200">
@@ -474,18 +474,18 @@ export default function ProfileView() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm font-medium text-muted-foreground mb-1">Téléphone professionnel</div>
+                    <div className="text-sm font-medium text-gray-600 mb-1">Téléphone professionnel</div>
                     <div className="text-base">{profile?.telephone_pro || '—'}</div>
                   </div>
                   
                   <div>
-                    <div className="text-sm font-medium text-muted-foreground mb-1">Email professionnel</div>
+                    <div className="text-sm font-medium text-gray-600 mb-1">Email professionnel</div>
                     <div className="text-base">{profile?.email_pro || '—'}</div>
                   </div>
                 </div>
 
                 <div>
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Adresse professionnelle</div>
+                  <div className="text-sm font-medium text-gray-600 mb-1">Adresse professionnelle</div>
                   <div className="text-base whitespace-pre-line">{profile?.adresse_pro || '—'}</div>
                 </div>
               </CardContent>
@@ -506,7 +506,7 @@ export default function ProfileView() {
                     />
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed rounded-lg p-8 text-center text-muted-foreground">
+                  <div className="border-2 border-dashed rounded-lg p-8 text-center text-gray-600">
                     Aucune signature enregistrée
                   </div>
                 )}
@@ -524,10 +524,10 @@ export default function ProfileView() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-lg font-semibold text-muted-foreground">
+                        <h2 className="text-lg font-semibold text-gray-600">
                           Facturation – {getCurrentMonthName().charAt(0).toUpperCase() + getCurrentMonthName().slice(1)}
                         </h2>
-                        <div className="text-sm text-muted-foreground mt-1">
+                        <div className="text-sm text-gray-600 mt-1">
                           {cabinetName}
                         </div>
                       </div>
@@ -535,17 +535,17 @@ export default function ProfileView() {
                     </div>
 
                     <div className="border-t pt-4 mt-4">
-                      <div className="text-sm text-muted-foreground mb-2">Total mensuel</div>
+                      <div className="text-sm text-gray-600 mb-2">Total mensuel</div>
                       <div className={`text-5xl font-bold mb-3 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
                         {calculateMonthlyTotal()} €
                       </div>
                       
-                      <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                      <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600">
                         <div>
                           <span className="capitalize">{subscriptionInfo?.subscription_tier || 'Free'}</span> · {memberCount} {memberCount > 1 ? 'membres' : 'membre'}
                         </div>
                         <div>
-                          Prochain prélèvement : <span className="font-semibold text-foreground">{formatDate(getNextPaymentDate())}</span>
+                          Prochain prélèvement : <span className="font-semibold text-gray-900">{formatDate(getNextPaymentDate())}</span>
                         </div>
                       </div>
                     </div>
@@ -557,13 +557,13 @@ export default function ProfileView() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">Formule</CardTitle>
+                    <CardTitle className="text-sm font-medium text-gray-600">Formule</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold capitalize mb-1">
                       {subscriptionInfo?.subscription_tier || 'Free'}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-gray-600">
                       {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')} € / mois / membre
                     </div>
                   </CardContent>
@@ -571,11 +571,11 @@ export default function ProfileView() {
 
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">Membres actifs</CardTitle>
+                    <CardTitle className="text-sm font-medium text-gray-600">Membres actifs</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold mb-1">{memberCount}</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-gray-600">
                       {memberCount > 1 ? 'Membres' : 'Membre'}
                     </div>
                   </CardContent>
@@ -583,13 +583,13 @@ export default function ProfileView() {
 
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">Signatures</CardTitle>
+                    <CardTitle className="text-sm font-medium text-gray-600">Signatures</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {subscriptionInfo?.subscription_tier === 'cabinet-plus' ? (
                       <div className="space-y-1">
                         <div className="text-2xl font-bold mb-1">Illimitées</div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-gray-600">
                           Incluses dans l'abonnement
                         </div>
                       </div>
@@ -599,7 +599,7 @@ export default function ProfileView() {
                           <span className="text-sm font-medium">Incluses :</span>
                           <span className="text-green-600 font-semibold">✔</span>
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-gray-600">
                           Hors forfait : {signatureCreditsTotal > 0 ? `${signatureCreditsTotal} €` : '0 €'}
                         </div>
                       </div>
@@ -611,7 +611,7 @@ export default function ProfileView() {
               {/* Détail du calcul - discret */}
               <Card>
                 <CardContent className="pt-4">
-                  <div className="text-sm text-muted-foreground space-y-2">
+                  <div className="text-sm text-gray-600 space-y-2">
                     <div className="flex justify-between">
                       <span>Abonnement {subscriptionInfo?.subscription_tier || 'Free'}</span>
                       <span>{getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')} € × {memberCount} = {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free') * memberCount} €</span>
@@ -622,7 +622,7 @@ export default function ProfileView() {
                         <span>{signatureCreditsTotal} €</span>
                       </div>
                     )}
-                    <div className="flex justify-between font-semibold text-foreground pt-2 border-t">
+                    <div className="flex justify-between font-semibold text-gray-900 pt-2 border-t">
                       <span>Total mensuel HT</span>
                       <span>{calculateMonthlyTotal()} €</span>
                     </div>
@@ -635,23 +635,23 @@ export default function ProfileView() {
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-sm font-medium text-muted-foreground mb-2">Moyen de paiement</div>
+                      <div className="text-sm font-medium text-gray-600 mb-2">Moyen de paiement</div>
                       {paymentMethod ? (
                         <div className="flex items-center gap-2">
-                          <CreditCard className="w-5 h-5 text-muted-foreground" />
+                          <CreditCard className="w-5 h-5 text-gray-600" />
                           <span className="text-base font-medium">
                             {paymentMethod.brand} se terminant par •••• {paymentMethod.last4}
                           </span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <CreditCard className="w-5 h-5 text-muted-foreground" />
-                          <span className="text-base text-muted-foreground">
+                          <CreditCard className="w-5 h-5 text-gray-600" />
+                          <span className="text-base text-gray-600">
                             Aucun moyen de paiement enregistré
                           </span>
                         </div>
                       )}
-                      <div className="text-xs text-muted-foreground mt-1">
+                      <div className="text-xs text-gray-600 mt-1">
                         Prélèvement automatique SEPA
                       </div>
                     </div>

@@ -238,7 +238,7 @@ export default function CreateClientAvocat() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold">Créer une fiche client (Avocat)</h1>
-            <p className="text-muted-foreground mt-1">Renseignez les informations nécessaires à l'acte.</p>
+            <p className="text-gray-600 mt-1">Renseignez les informations nécessaires à l'acte.</p>
           </div>
         </div>
 
@@ -316,7 +316,7 @@ export default function CreateClientAvocat() {
                     <SelectItem className={itemHover} value="Autre">Autre</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">Cette information est facultative conformément au RGPD</p>
+                <p className="text-xs text-gray-600">Cette information est facultative conformément au RGPD</p>
               </div>
             </CardContent>
           </Card>
@@ -383,7 +383,7 @@ export default function CreateClientAvocat() {
                   <Upload className="mr-2 h-4 w-4" />
                   {idDocFile ? idDocFile.name : 'Choisir un fichier'}
                 </Button>
-                <p className="text-xs text-muted-foreground">Formats: JPG, PNG, PDF</p>
+                <p className="text-xs text-gray-600">Formats: JPG, PNG, PDF</p>
               </div>
             </CardContent>
           </Card>
@@ -408,7 +408,7 @@ export default function CreateClientAvocat() {
                     <SelectItem className={itemHover} value="Concubinage">Concubinage</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">Cette information est facultative et ne sera utilisée que si nécessaire pour le dossier juridique</p>
+                <p className="text-xs text-gray-600">Cette information est facultative et ne sera utilisée que si nécessaire pour le dossier juridique</p>
               </div>
             </CardContent>
           </Card>
@@ -442,7 +442,7 @@ export default function CreateClientAvocat() {
               <div className="space-y-2">
                 <Label htmlFor="employeur">Employeur (optionnel)</Label>
                 <Input id="employeur" value={employeur} onChange={e => setEmployeur(e.target.value)} placeholder="Nom de l'entreprise ou organisation" />
-                <p className="text-xs text-muted-foreground">Les informations financières détaillées seront demandées dans le dossier si nécessaire</p>
+                <p className="text-xs text-gray-600">Les informations financières détaillées seront demandées dans le dossier si nécessaire</p>
               </div>
             </CardContent>
           </Card>
@@ -578,7 +578,7 @@ export default function CreateClientAvocat() {
                   onChange={e => setWhatsapp(e.target.value)} 
                   placeholder="+33 6 12 34 56 78"
                 />
-                <p className="text-xs text-muted-foreground">Si vous souhaitez être contacté par WhatsApp</p>
+                <p className="text-xs text-gray-600">Si vous souhaitez être contacté par WhatsApp</p>
               </div>
               
               <div className="space-y-2">
@@ -612,7 +612,7 @@ export default function CreateClientAvocat() {
                   onChange={e => setNotes(e.target.value)} 
                   placeholder="Toute information complémentaire utile concernant ce client..."
                 />
-                <p className="text-xs text-muted-foreground">Les notes liées à une affaire spécifique doivent être ajoutées dans le dossier correspondant</p>
+                <p className="text-xs text-gray-600">Les notes liées à une affaire spécifique doivent être ajoutées dans le dossier correspondant</p>
               </div>
             </CardContent>
           </Card>
@@ -628,7 +628,7 @@ export default function CreateClientAvocat() {
                 <Checkbox id="rgpd" checked={consentementRGPD} onCheckedChange={c => setConsentementRGPD(c as boolean)} />
                 <div className="grid gap-1.5 leading-none">
                   <Label htmlFor="rgpd" className="text-sm font-medium">Le client accepte le traitement de ses données (RGPD) *</Label>
-                  <p className="text-xs text-muted-foreground">Utilisation strictement liée à la préparation et la rédaction de l'acte.</p>
+                  <p className="text-xs text-gray-600">Utilisation strictement liée à la préparation et la rédaction de l'acte.</p>
                 </div>
               </div>
               
@@ -636,7 +636,7 @@ export default function CreateClientAvocat() {
                 <Checkbox id="cgu" checked={acceptationCGU} onCheckedChange={c => setAcceptationCGU(c as boolean)} />
                 <div className="grid gap-1.5 leading-none">
                   <Label htmlFor="cgu" className="text-sm font-medium">Le client accepte les Conditions Générales d'Utilisation *</Label>
-                  <p className="text-xs text-muted-foreground">Consultables sur le site du cabinet.</p>
+                  <p className="text-xs text-gray-600">Consultables sur le site du cabinet.</p>
                 </div>
               </div>
               
@@ -644,7 +644,7 @@ export default function CreateClientAvocat() {
                 <Checkbox id="conservation" checked={acceptationConservation} onCheckedChange={c => setAcceptationConservation(c as boolean)} />
                 <div className="grid gap-1.5 leading-none">
                   <Label htmlFor="conservation" className="text-sm font-medium">Le client accepte la conservation de ses données pendant la durée légale *</Label>
-                  <p className="text-xs text-muted-foreground">Conservation pendant la durée du dossier + délais légaux.</p>
+                  <p className="text-xs text-gray-600">Conservation pendant la durée du dossier + délais légaux.</p>
                 </div>
               </div>
               
@@ -652,7 +652,7 @@ export default function CreateClientAvocat() {
                 <Checkbox id="contact" checked={autorisationContact} onCheckedChange={c => setAutorisationContact(c as boolean)} />
                 <div className="grid gap-1.5 leading-none">
                   <Label htmlFor="contact" className="text-sm font-medium">Le client autorise le cabinet à le recontacter pour ce dossier *</Label>
-                  <p className="text-xs text-muted-foreground">Par email, téléphone ou courrier selon sa préférence.</p>
+                  <p className="text-xs text-gray-600">Par email, téléphone ou courrier selon sa préférence.</p>
                 </div>
               </div>
               
@@ -660,7 +660,7 @@ export default function CreateClientAvocat() {
                 <Checkbox id="mandat" checked={signatureMandat} onCheckedChange={c => setSignatureMandat(c as boolean)} />
                 <div className="grid gap-1.5 leading-none">
                   <Label htmlFor="mandat" className="text-sm font-medium">Le client signe électroniquement le mandat / engagement</Label>
-                  <p className="text-xs text-muted-foreground">Confirmation de la relation client avec l'avocat.</p>
+                  <p className="text-xs text-gray-600">Confirmation de la relation client avec l'avocat.</p>
                 </div>
               </div>
             </CardContent>

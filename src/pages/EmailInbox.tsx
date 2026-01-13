@@ -808,9 +808,9 @@ export default function EmailInbox() {
         <div className="p-6">
           <Card>
             <CardContent className="py-12 text-center">
-              <Mail className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <Mail className="h-16 w-16 mx-auto text-gray-600 mb-4" />
               <h3 className="text-xl font-medium mb-2">Aucun compte connecté</h3>
-              <p className="text-sm text-muted-foreground mb-6">
+              <p className="text-sm text-gray-600 mb-6">
                 Connectez d'abord un compte email pour accéder à votre messagerie
               </p>
               <Button 
@@ -959,7 +959,7 @@ export default function EmailInbox() {
             </Select>
 
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />
               <Input
                 placeholder="Rechercher dans les emails..."
                 value={searchQuery}
@@ -981,13 +981,13 @@ export default function EmailInbox() {
             {loading ? (
               <div className="p-8 text-center">
                 <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
-                <p className="mt-2 text-sm text-muted-foreground">Chargement...</p>
+                <p className="mt-2 text-sm text-gray-600">Chargement...</p>
               </div>
             ) : currentFolder === 'drafts' ? (
               drafts.length === 0 ? (
                 <div className="p-8 text-center">
-                  <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-sm text-muted-foreground">Aucun brouillon</p>
+                  <FileText className="h-12 w-12 mx-auto text-gray-600 mb-4" />
+                  <p className="text-sm text-gray-600">Aucun brouillon</p>
                 </div>
               ) : (
                 <div className="divide-y">
@@ -1000,14 +1000,14 @@ export default function EmailInbox() {
                       onClick={() => openDraft(draft)}
                     >
                       <div className="flex items-start gap-3">
-                        <FileText className="h-4 w-4 mt-1 text-muted-foreground" />
+                        <FileText className="h-4 w-4 mt-1 text-gray-600" />
                         
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-sm truncate font-medium">
                               {draft.to_address || '(Aucun destinataire)'}
                             </span>
-                            <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
+                            <span className="text-xs text-gray-600 whitespace-nowrap ml-2">
                               {new Date(draft.updated_at).toLocaleDateString('fr-FR', {
                                 day: 'numeric',
                                 month: 'short',
@@ -1019,7 +1019,7 @@ export default function EmailInbox() {
                             {draft.subject || '(Sans objet)'}
                           </div>
                           
-                          <div className="text-xs text-muted-foreground truncate">
+                          <div className="text-xs text-gray-600 truncate">
                             {draft.body ? draft.body.substring(0, 100) + '...' : '(Vide)'}
                           </div>
                           
@@ -1043,8 +1043,8 @@ export default function EmailInbox() {
               )
             ) : filteredEmails.length === 0 ? (
               <div className="p-8 text-center">
-                <Mail className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-sm text-muted-foreground">Aucun email</p>
+                <Mail className="h-12 w-12 mx-auto text-gray-600 mb-4" />
+                <p className="text-sm text-gray-600">Aucun email</p>
               </div>
             ) : (
               <div className="divide-y">
@@ -1070,7 +1070,7 @@ export default function EmailInbox() {
                       >
                         <Star
                           className={`h-4 w-4 ${
-                            email.is_starred ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'
+                            email.is_starred ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'
                           }`}
                         />
                       </button>
@@ -1080,7 +1080,7 @@ export default function EmailInbox() {
                           <span className={`text-sm truncate ${!email.is_read ? 'font-bold' : ''}`}>
                             {currentFolder === 'sent' ? email.to_address : email.from_address}
                           </span>
-                          <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
+                          <span className="text-xs text-gray-600 whitespace-nowrap ml-2">
                             {new Date(email.received_at).toLocaleDateString('fr-FR', {
                               day: 'numeric',
                               month: 'short',
@@ -1092,7 +1092,7 @@ export default function EmailInbox() {
                           {email.subject}
                         </div>
                         
-                        <div className="text-xs text-muted-foreground truncate">
+                        <div className="text-xs text-gray-600 truncate">
                           {email.body_text.substring(0, 100)}...
                         </div>
                         
@@ -1181,19 +1181,19 @@ export default function EmailInbox() {
                     </div>
                     <div className="flex-1">
                       <div className="font-medium">{selectedEmail.from_address}</div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-gray-600">
                         À: {selectedEmail.to_address}
                       </div>
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-gray-600">
                       {new Date(selectedEmail.received_at).toLocaleString('fr-FR')}
                     </div>
                   </div>
 
                   {selectedEmail.attachments && selectedEmail.attachments.length > 0 && (
                     <div className="flex items-center gap-2 py-2 px-3 bg-muted/30 rounded-md">
-                      <Paperclip className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">
+                      <Paperclip className="h-4 w-4 text-gray-600" />
+                      <span className="text-xs text-gray-600">
                         {selectedEmail.attachments.length} pièce{selectedEmail.attachments.length > 1 ? 's' : ''} jointe{selectedEmail.attachments.length > 1 ? 's' : ''}
                       </span>
                       <div className="flex-1" />
@@ -1317,7 +1317,7 @@ export default function EmailInbox() {
                 </div>
               </div>
             ) : (
-              <div className="h-full flex items-center justify-center text-muted-foreground">
+              <div className="h-full flex items-center justify-center text-gray-600">
                 <div className="text-center">
                   <Mail className="h-16 w-16 mx-auto mb-4 opacity-20" />
                   <p>Sélectionnez un email pour le lire</p>
@@ -1400,7 +1400,7 @@ export default function EmailInbox() {
                       <div className="flex items-center gap-2">
                         <Paperclip className="h-3 w-3" />
                         <span>{file.name}</span>
-                        <span className="text-muted-foreground">({(file.size / 1024).toFixed(1)} KB)</span>
+                        <span className="text-gray-600">({(file.size / 1024).toFixed(1)} KB)</span>
                       </div>
                       <Button
                         type="button"

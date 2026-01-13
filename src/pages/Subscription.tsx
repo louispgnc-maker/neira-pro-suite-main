@@ -302,7 +302,7 @@ export default function Subscription() {
         <div className="container mx-auto p-8 flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Chargement de votre abonnement...</p>
+            <p className="text-gray-600">Chargement de votre abonnement...</p>
           </div>
         </div>
       </AppLayout>
@@ -429,7 +429,7 @@ export default function Subscription() {
                           {plan.notIncluded.map((item, idx) => (
                             <div key={idx} className="flex items-center gap-2">
                               <X className="h-4 w-4 text-red-500 shrink-0" />
-                              <span className="text-sm text-muted-foreground">{item}</span>
+                              <span className="text-sm text-gray-600">{item}</span>
                             </div>
                           ))}
                         </div>

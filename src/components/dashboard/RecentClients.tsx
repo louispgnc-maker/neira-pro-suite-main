@@ -71,9 +71,9 @@ export function RecentClients({ role = 'avocat' }: RecentClientsProps = {}) {
       <CardContent>
         <div className="space-y-3">
           {loading ? (
-            <p className="text-center text-muted-foreground">Chargement…</p>
+            <p className="text-center text-gray-600">Chargement…</p>
             ) : clients.length === 0 ? (
-              <p className="text-center text-muted-foreground">Aucuns clients récents.</p>
+              <p className="text-center text-gray-600">Aucuns clients récents.</p>
           ) : (
             clients.map((client) => (
               <div

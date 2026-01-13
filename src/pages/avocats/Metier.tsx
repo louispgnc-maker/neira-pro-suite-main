@@ -88,7 +88,7 @@ export default function AvocatsMetier() {
               </div>
               <div>
                 <h1 className="text-4xl font-bold">Cabinets d'Avocats</h1>
-                <p className="text-muted-foreground mt-1">Rôles et permissions dans l'espace collaboratif</p>
+                <p className="text-gray-600 mt-1">Rôles et permissions dans l'espace collaboratif</p>
               </div>
             </div>
             <Button onClick={() => navigate(-1)} className="bg-blue-600 hover:bg-blue-700 text-white">Retour</Button>
@@ -108,7 +108,7 @@ export default function AvocatsMetier() {
                 </div>
               </div>
               <div className="p-6">
-                <h4 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
+                <h4 className="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">
                   Permissions
                 </h4>
                 <ul className="space-y-2.5">

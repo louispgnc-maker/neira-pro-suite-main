@@ -1123,7 +1123,7 @@ export default function EspaceCollaboratif() {
         <div className="container mx-auto p-6">
           <Card>
             <CardContent className="py-8">
-              <p className="text-center text-foreground">Chargement...</p>
+              <p className="text-center text-gray-900">Chargement...</p>
             </CardContent>
           </Card>
         </div>
@@ -1150,10 +1150,10 @@ export default function EspaceCollaboratif() {
             <CardContent className="py-8">
               <div className="max-w-2xl mx-auto space-y-6">
                 <div className="text-center mb-8">
-                  <p className="text-foreground mb-2">
+                  <p className="text-gray-900 mb-2">
                     Vous n'êtes pas encore membre d'un cabinet collaboratif.
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-gray-600">
                     Choisissez une option ci-dessous pour commencer à collaborer :
                   </p>
                 </div>
@@ -1204,7 +1204,7 @@ export default function EspaceCollaboratif() {
                   </Card>
                 </div>
                 
-                <div className="text-center text-sm text-muted-foreground mt-6 p-4 bg-muted/50 rounded-lg">
+                <div className="text-center text-sm text-gray-600 mt-6 p-4 bg-muted/50 rounded-lg">
                   <p className="font-medium mb-2">💡 Pourquoi utiliser l'espace collaboratif ?</p>
                   <ul className="text-left max-w-md mx-auto space-y-1">
                     <li>• Partagez des documents, dossiers et contrats</li>
@@ -1230,7 +1230,7 @@ export default function EspaceCollaboratif() {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Espace Collaboratif</h1>
           <div className="flex items-center gap-2">
             <Badge className={colorClass}>{cabinet.nom}</Badge>
-            <span className="text-sm text-foreground">
+            <span className="text-sm text-gray-900">
               {members.length} membre{members.length > 1 ? 's' : ''}
             </span>
           </div>
@@ -1314,7 +1314,7 @@ export default function EspaceCollaboratif() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{documents.length + contrats.length}</div>
-                <p className="text-xs text-foreground">documents et contrats au total</p>
+                <p className="text-xs text-gray-900">documents et contrats au total</p>
               </CardContent>
             </Card>
             <Card>
@@ -1323,7 +1323,7 @@ export default function EspaceCollaboratif() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{dossiers.length}</div>
-                <p className="text-xs text-foreground">dossiers partagés</p>
+                <p className="text-xs text-gray-900">dossiers partagés</p>
               </CardContent>
             </Card>
             <Card>
@@ -1332,7 +1332,7 @@ export default function EspaceCollaboratif() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{members.length}</div>
-                <p className="text-xs text-foreground">membres au total</p>
+                <p className="text-xs text-gray-900">membres au total</p>
               </CardContent>
             </Card>
           </div>
@@ -1348,12 +1348,12 @@ export default function EspaceCollaboratif() {
                       placeholder="Rechercher activité..."
                       value={activitySearch}
                       onChange={(e) => setActivitySearch(e.target.value)}
-                      className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-foreground placeholder:text-foreground/50"
+                      className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-gray-900 placeholder:text-gray-900/50"
                     />
                   </div>
 
                   {documents.length === 0 && dossiers.length === 0 && contrats.length === 0 ? (
-                <div className="text-center py-12 text-foreground">
+                <div className="text-center py-12 text-gray-900">
                   <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucune activité récente</p>
                 </div>
@@ -1389,14 +1389,14 @@ export default function EspaceCollaboratif() {
                           )}
                           <div>
                             <p className="font-medium">{item.title}</p>
-                            <p className="text-xs text-foreground">
+                            <p className="text-xs text-gray-900">
                               {item.type} partagé le {new Date(item.shared_at).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
                         {/* Right side: date, delete (if allowed) then type badge aligned to the right */}
                         <div className="flex flex-col items-end gap-2 ml-4">
-                          <p className="text-xs text-foreground">
+                          <p className="text-xs text-gray-900">
                             {item.type} partagé le {new Date(item.shared_at).toLocaleDateString()}
                           </p>
                           <div className="flex items-center gap-3">
@@ -1409,7 +1409,7 @@ export default function EspaceCollaboratif() {
                                 className="p-1 rounded hover:bg-gray-100"
                                 title="Supprimer"
                               >
-                                <Trash2 className="h-4 w-4 text-foreground" />
+                                <Trash2 className="h-4 w-4 text-gray-900" />
                               </button>
                             )}
 
@@ -1471,7 +1471,7 @@ export default function EspaceCollaboratif() {
               </CardHeader>
               <CardContent>
                 {documents.length === 0 ? (
-                  <div className="text-center py-8 text-foreground">
+                  <div className="text-center py-8 text-gray-900">
                     <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
                     <p className="text-sm">Aucun document partagé</p>
                     <p className="text-xs mt-1">Utilisez le bouton de partage sur vos documents</p>
@@ -1484,7 +1484,7 @@ export default function EspaceCollaboratif() {
                         placeholder="Rechercher documents..."
                         value={documentsSearch}
                         onChange={(e) => setDocumentsSearch(e.target.value)}
-                        className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-foreground placeholder:text-foreground/50"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-gray-900 placeholder:text-gray-900/50"
                       />
                     </div>
 
@@ -1500,17 +1500,17 @@ export default function EspaceCollaboratif() {
                               <div className="flex-1">
                                 <p className="font-medium">{doc.title}</p>
                                 {doc.description && (
-                                  <p className="text-sm text-foreground mt-1">{doc.description}</p>
+                                  <p className="text-sm text-gray-900 mt-1">{doc.description}</p>
                                 )}
                                 {doc.sharer_profile && (
-                                  <p className="text-xs text-muted-foreground mt-1">
+                                  <p className="text-xs text-gray-600 mt-1">
                                     Partagé par {doc.sharer_profile.first_name} {doc.sharer_profile.last_name}
                                   </p>
                                 )}
                               </div>
 
                               <div className="flex flex-col items-end gap-2 ml-4">
-                                <p className="text-xs text-foreground">
+                                <p className="text-xs text-gray-900">
                                   Partagé le {new Date(doc.shared_at).toLocaleDateString()}
                                 </p>
                                 <div className="flex items-center gap-3">
@@ -1520,7 +1520,7 @@ export default function EspaceCollaboratif() {
                                       className="p-1 rounded hover:bg-gray-100"
                                       title="Supprimer"
                                     >
-                                      <Trash2 className="h-4 w-4 text-foreground" />
+                                      <Trash2 className="h-4 w-4 text-gray-900" />
                                     </button>
                                   )}
 
@@ -1576,7 +1576,7 @@ export default function EspaceCollaboratif() {
               </CardHeader>
               <CardContent>
                 {contrats.length === 0 ? (
-                  <div className="text-center py-8 text-foreground">
+                  <div className="text-center py-8 text-gray-900">
                     <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
                     <p className="text-sm">Aucun contrat partagé</p>
                     <p className="text-xs mt-1">Utilisez le bouton de partage sur vos contrats</p>
@@ -1589,7 +1589,7 @@ export default function EspaceCollaboratif() {
                         placeholder="Rechercher contrats..."
                         value={contratsSearch}
                         onChange={(e) => setContratsSearch(e.target.value)}
-                        className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-foreground placeholder:text-foreground/50"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-gray-900 placeholder:text-gray-900/50"
                       />
                     </div>
 
@@ -1607,17 +1607,17 @@ export default function EspaceCollaboratif() {
                                   <p className="font-medium">{contrat.title}</p>
                                 </div>
                                 {contrat.description && (
-                                  <p className="text-sm text-foreground mt-1">{contrat.description}</p>
+                                  <p className="text-sm text-gray-900 mt-1">{contrat.description}</p>
                                 )}
                                 {contrat.sharer_profile && (
-                                  <p className="text-xs text-muted-foreground mt-1">
+                                  <p className="text-xs text-gray-600 mt-1">
                                     Partagé par {contrat.sharer_profile.first_name} {contrat.sharer_profile.last_name}
                                   </p>
                                 )}
                               </div>
 
                               <div className="flex flex-col items-end gap-2 ml-4">
-                                <p className="text-xs text-foreground">
+                                <p className="text-xs text-gray-900">
                                   Type: {contrat.contrat_type} • Partagé le {new Date(contrat.shared_at).toLocaleDateString()}
                                 </p>
                                 <div className="flex items-center gap-3">
@@ -1627,7 +1627,7 @@ export default function EspaceCollaboratif() {
                                       className="p-1 rounded hover:bg-gray-100"
                                       title="Supprimer"
                                     >
-                                      <Trash2 className="h-4 w-4 text-foreground" />
+                                      <Trash2 className="h-4 w-4 text-gray-900" />
                                     </button>
                                   )}
 
@@ -1674,7 +1674,7 @@ export default function EspaceCollaboratif() {
             </CardHeader>
             <CardContent>
               {dossiers.length === 0 ? (
-                <div className="text-center py-12 text-foreground">
+                <div className="text-center py-12 text-gray-900">
                   <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucun dossier partagé</p>
                   <p className="text-sm mt-2">Utilisez le bouton de partage sur vos dossiers</p>
@@ -1687,7 +1687,7 @@ export default function EspaceCollaboratif() {
                       placeholder="Rechercher dossiers..."
                       value={dossiersSearch}
                       onChange={(e) => setDossiersSearch(e.target.value)}
-                      className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-foreground placeholder:text-foreground/50"
+                      className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-gray-900 placeholder:text-gray-900/50"
                     />
                   </div>
 
@@ -1708,10 +1708,10 @@ export default function EspaceCollaboratif() {
                                 <div>
                                   <p className="font-medium">{dossier.title}</p>
                                   {dossier.description && (
-                                    <p className="text-sm text-foreground mt-1">{dossier.description}</p>
+                                    <p className="text-sm text-gray-900 mt-1">{dossier.description}</p>
                                   )}
                                   {dossier.sharer_profile && (
-                                    <p className="text-xs text-muted-foreground mt-1">
+                                    <p className="text-xs text-gray-600 mt-1">
                                       Partagé par {dossier.sharer_profile.first_name} {dossier.sharer_profile.last_name}
                                     </p>
                                   )}
@@ -1720,8 +1720,8 @@ export default function EspaceCollaboratif() {
                             </div>
 
                             <div className="flex flex-col items-end gap-2 ml-4">
-                              <p className="text-xs text-foreground">{dossier.status}</p>
-                              <p className="text-xs text-foreground">
+                              <p className="text-xs text-gray-900">{dossier.status}</p>
+                              <p className="text-xs text-gray-900">
                                 Partagé le {new Date(dossier.shared_at).toLocaleDateString()}
                               </p>
 
@@ -1732,7 +1732,7 @@ export default function EspaceCollaboratif() {
                                     className="p-1 rounded hover:bg-gray-100"
                                     title="Supprimer"
                                   >
-                                    <Trash2 className="h-4 w-4 text-foreground" />
+                                    <Trash2 className="h-4 w-4 text-gray-900" />
                                   </button>
                                 )}
 
@@ -1778,7 +1778,7 @@ export default function EspaceCollaboratif() {
             </CardHeader>
             <CardContent>
                 {clientsShared.length === 0 ? (
-                <div className="text-center py-12 text-foreground">
+                <div className="text-center py-12 text-gray-900">
                   <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucun client partagé</p>
                   <p className="text-sm mt-2">Utilisez le bouton de partage sur vos dossiers/clients</p>
@@ -1791,7 +1791,7 @@ export default function EspaceCollaboratif() {
                       placeholder="Rechercher clients..."
                       value={clientsSearch}
                       onChange={(e) => setClientsSearch(e.target.value)}
-                      className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-foreground placeholder:text-foreground/50"
+                      className="w-full px-3 py-2 rounded-md border border-input bg-white text-sm text-gray-900 placeholder:text-gray-900/50"
                     />
                   </div>
 
@@ -1806,14 +1806,14 @@ export default function EspaceCollaboratif() {
                           <div className="flex-1">
                             <p className="font-medium">{client.name || client.client_id}</p>
                             {client.sharer_profile && (
-                              <p className="text-xs text-muted-foreground mt-1">
+                              <p className="text-xs text-gray-600 mt-1">
                                 Partagé par {client.sharer_profile.first_name} {client.sharer_profile.last_name}
                               </p>
                             )}
                           </div>
 
                           <div className="flex flex-col items-end gap-2 ml-4">
-                            <p className="text-xs text-foreground">
+                            <p className="text-xs text-gray-900">
                               Partagé le {new Date(client.shared_at).toLocaleDateString()}
                             </p>
                             <div className="flex items-center gap-3">
@@ -1823,7 +1823,7 @@ export default function EspaceCollaboratif() {
                                   className="p-1 rounded hover:bg-gray-100"
                                   title="Supprimer"
                                 >
-                                  <Trash2 className="h-4 w-4 text-foreground" />
+                                  <Trash2 className="h-4 w-4 text-gray-900" />
                                 </button>
                               )}
 
@@ -1909,7 +1909,7 @@ export default function EspaceCollaboratif() {
                               return (m.nom || m.email).toLowerCase().includes(searchLower);
                             })
                             .length === 0 ? (
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-gray-600">
                               {taskMemberSearch ? 'Aucun membre trouvé' : 'Aucun membre'}
                             </p>
                           ) : (
@@ -1999,7 +1999,7 @@ export default function EspaceCollaboratif() {
                                 return (m.nom || m.email).toLowerCase().includes(searchLower);
                               })
                               .length === 0 ? (
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-sm text-gray-600">
                                 {editTaskMemberSearch ? 'Aucun membre trouvé' : 'Aucun membre'}
                               </p>
                             ) : (
@@ -2052,12 +2052,12 @@ export default function EspaceCollaboratif() {
             </CardHeader>
             <CardContent>
               {collabLoading ? (
-                <div className="text-center py-12 text-foreground">
+                <div className="text-center py-12 text-gray-900">
                   <CheckSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Chargement…</p>
                 </div>
               ) : collabTasks.filter(t => !t.done).length === 0 ? (
-                <div className="text-center py-12 text-foreground">
+                <div className="text-center py-12 text-gray-900">
                   <CheckSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Aucune tâche pour le moment</p>
                   <p className="text-sm mt-2">Créez votre première tâche collaborative</p>
@@ -2123,11 +2123,11 @@ export default function EspaceCollaboratif() {
                           <span className="font-medium text-lg">{task.title}</span>
                         </div>
                         {task.description && (
-                          <div className="text-sm text-foreground mb-2 whitespace-pre-line">{task.description}</div>
+                          <div className="text-sm text-gray-900 mb-2 whitespace-pre-line">{task.description}</div>
                         )}
                         <div className="flex-1" />
                         {task.assigned_to && task.assigned_to.length > 0 && (
-                          <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                          <div className="text-xs text-gray-600 mb-2 flex items-center gap-1">
                             <User className="h-3 w-3" />
                             <span>
                               Assigné à <span className="font-medium">
@@ -2143,7 +2143,7 @@ export default function EspaceCollaboratif() {
                           </div>
                         )}
                         {task.creator_profile && (
-                          <div className="text-xs text-muted-foreground mb-2">
+                          <div className="text-xs text-gray-600 mb-2">
                             Créé par {task.creator_profile.first_name} {task.creator_profile.last_name}
                           </div>
                         )}
@@ -2153,7 +2153,7 @@ export default function EspaceCollaboratif() {
                               {dateStr}
                             </Badge>
                           ) : (
-                            <span className="text-foreground text-xs">Pas d'échéance</span>
+                            <span className="text-gray-900 text-xs">Pas d'échéance</span>
                           )}
                         </div>
                       </div>

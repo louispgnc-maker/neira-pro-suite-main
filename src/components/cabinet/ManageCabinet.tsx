@@ -521,7 +521,7 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
           <CardTitle>Gestion du cabinet</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Chargement...</p>
+          <p className="text-sm text-gray-600">Chargement...</p>
         </CardContent>
       </Card>
     );
@@ -977,7 +977,7 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                 ))}
                 {members.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={(currentUserRole && canRemoveMembers(currentUserRole)) ? 4 : 3} className="text-center text-muted-foreground">
+                    <TableCell colSpan={(currentUserRole && canRemoveMembers(currentUserRole)) ? 4 : 3} className="text-center text-gray-600">
                       Aucun membre pour le moment
                     </TableCell>
                   </TableRow>

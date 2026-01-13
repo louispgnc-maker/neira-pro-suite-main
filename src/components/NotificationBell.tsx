@@ -166,9 +166,9 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
         </DialogHeader>
         <div className="space-y-3 mt-2">
               {loading ? (
-                <div className="text-sm text-muted-foreground">Chargement…</div>
+                <div className="text-sm text-gray-600">Chargement…</div>
               ) : notifications.length === 0 ? (
-                <div className="text-sm text-muted-foreground">Aucune notification</div>
+                <div className="text-sm text-gray-600">Aucune notification</div>
               ) : (
                 // limit visible area to exactly ~3 items and allow scrolling for older notifications
                 <div className="space-y-2 max-h-[216px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300" style={{ scrollbarWidth: 'thin' }}>
@@ -248,10 +248,10 @@ export function NotificationBell({ role = 'avocat', compact = false, cabinetId }
                         <div role="button" tabIndex={0} onClick={() => onNavigate(n.metadata)} onKeyDown={(e) => { if (e.key === 'Enter') onNavigate(n.metadata); }} className={`flex items-start gap-3 p-3 border rounded-md cursor-pointer box-border overflow-hidden ${n.read ? 'bg-background border-border' : 'bg-gradient-to-r from-primary/5 to-accent/5 border-transparent'}`}>
                           <div className="flex-1 text-sm">
                             <div className="font-medium text-sm mb-1">{n.title}</div>
-                            {n.body && <div className="text-xs text-muted-foreground">{n.body}</div>}
+                            {n.body && <div className="text-xs text-gray-600">{n.body}</div>}
                           </div>
                           <div className="flex flex-col items-end ml-2">
-                            <div className="text-xs text-muted-foreground mb-2" title={when ? when.toLocaleString() : ''}>{timeAgo(when)}</div>
+                            <div className="text-xs text-gray-600 mb-2" title={when ? when.toLocaleString() : ''}>{timeAgo(when)}</div>
                             {/* colored circular open button so it's obvious and clickable */}
                             <button onClick={(e) => { e.stopPropagation(); onNavigate(n.metadata); }} title="Ouvrir" className={`inline-flex items-center justify-center h-8 w-8 rounded-full ${accentBg}`}>
                               <ArrowRight className="h-4 w-4" />

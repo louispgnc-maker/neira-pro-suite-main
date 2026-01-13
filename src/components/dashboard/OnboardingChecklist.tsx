@@ -18,7 +18,7 @@ export function OnboardingChecklist() {
       <CardHeader>
           <CardTitle className="text-lg">Prise en main</CardTitle>
           <Progress value={progress} className="mt-2" />
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-xs text-gray-600 mt-2">
             {completedCount} sur {steps.length} étapes complétées
           </p>
         </CardHeader>
@@ -29,11 +29,11 @@ export function OnboardingChecklist() {
                 {step.completed ? (
                   <CheckCircle2 className="h-5 w-5 text-success" />
                 ) : (
-                  <Circle className="h-5 w-5 text-muted-foreground" />
+                  <Circle className="h-5 w-5 text-gray-600" />
                 )}
                 <span
                   className={`text-sm ${
-                    step.completed ? "text-muted-foreground line-through" : "font-medium"
+                    step.completed ? "text-gray-600 line-through" : "font-medium"
                   }`}
                 >
                   {step.label}

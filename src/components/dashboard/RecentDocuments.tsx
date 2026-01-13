@@ -36,7 +36,7 @@ type DocRow = {
 const statusColors: Record<string, string> = {
   "Signé": "bg-success/10 text-success border-success/20",
   "En cours": "bg-primary/10 text-primary border-primary/20",
-  "Brouillon": "bg-muted text-muted-foreground border-border",
+  "Brouillon": "bg-muted text-gray-600 border-border",
   "En attente": "bg-warning/10 text-warning border-warning/20",
 };
 
@@ -232,7 +232,7 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
       <CardContent>
         {/* Search Bar */}
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />
           <Input
             placeholder="Rechercher un document..."
             value={searchQuery}
@@ -254,13 +254,13 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell colSpan={5} className="text-center text-gray-600">
                   Chargement…
                 </TableCell>
               </TableRow>
               ) : documents.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center text-gray-600">
                     {searchQuery ? "Aucun document trouvé" : "Aucuns documents."}
                   </TableCell>
                 </TableRow>
@@ -272,13 +272,13 @@ export function RecentDocuments({ statusColorOverride, role = 'avocat' }: Recent
                   className="cursor-pointer"
                 >
                   <TableCell className="font-medium">{doc.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{doc.client_name ?? "—"}</TableCell>
+                  <TableCell className="text-gray-600">{doc.client_name ?? "—"}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={effectiveStatusColors[doc.status] ?? "bg-muted text-muted-foreground border-border"}>
+                    <Badge variant="outline" className={effectiveStatusColors[doc.status] ?? "bg-muted text-gray-600 border-border"}>
                       {doc.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
+                  <TableCell className="text-gray-600 text-sm">
                     {doc.updated_at ? new Date(doc.updated_at).toLocaleDateString() : "—"}
                   </TableCell>
                   <TableCell>

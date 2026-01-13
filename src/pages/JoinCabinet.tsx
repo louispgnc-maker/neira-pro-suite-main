@@ -72,7 +72,7 @@ export default function JoinCabinet() {
     return (
       <AppLayout>
         <div className="p-6 max-w-5xl mx-auto">
-          <p className="text-center text-foreground">Chargement...</p>
+          <p className="text-center text-gray-900">Chargement...</p>
         </div>
       </AppLayout>
     );
@@ -126,7 +126,7 @@ export default function JoinCabinet() {
                       {joiningCabinet ? 'Vérification...' : 'Rejoindre'}
                     </Button>
                   </div>
-                  <p className="text-xs text-foreground mt-2">
+                  <p className="text-xs text-gray-900 mt-2">
                     Le code d'invitation est fourni par le fondateur ou un associé du cabinet.
                   </p>
                 </div>
