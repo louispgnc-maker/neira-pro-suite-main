@@ -100,17 +100,6 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
-        e.preventDefault();
-        setIsOpen(true);
-      }
-      if (e.key === "Escape") {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
 
   // Focus l'input quand ouvert
   useEffect(() => {
