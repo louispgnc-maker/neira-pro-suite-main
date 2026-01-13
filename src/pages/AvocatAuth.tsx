@@ -150,12 +150,12 @@ export default function AvocatAuth() {
       <PublicHeader />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-50 overflow-hidden">
+      <section className="relative pt-32 pb-16 px-6 bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-50 overflow-hidden min-h-screen flex flex-col">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
         </div>
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto relative z-10 flex-1 flex flex-col">
+          <div className="text-center max-w-4xl mx-auto mb-12">
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               Espace Avocats
             </h1>
@@ -163,12 +163,8 @@ export default function AvocatAuth() {
               Connectez-vous à votre espace professionnel
             </p>
           </div>
-        </div>
-      </section>
-
-      {/* Login Section */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-md mx-auto">
+          
+          <div className="max-w-md mx-auto w-full">
       {overlayVisible ? (
         <div className={`fixed inset-0 z-[1000] flex items-center justify-center`}>
           <div className={`absolute inset-0 bg-white`} style={{ transform: overlayAnimate ? 'scale(20)' : 'scale(0.04)', opacity: overlayAnimate ? 1 : 0, transition: 'transform 800ms ease-out, opacity 500ms ease-out' }} />
@@ -224,6 +220,7 @@ export default function AvocatAuth() {
           </div>
         </CardContent>
       </Card>
+          </div>
         </div>
       </section>
 
