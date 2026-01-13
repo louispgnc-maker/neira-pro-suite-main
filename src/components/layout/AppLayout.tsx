@@ -57,8 +57,6 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
           <BuildInfo />
         </main>
-        {/* Barre de recherche globale accessible partout avec Cmd+K */}
-        <GlobalSearch userRole={role} />
       </div>
     </SidebarProvider>
   );
