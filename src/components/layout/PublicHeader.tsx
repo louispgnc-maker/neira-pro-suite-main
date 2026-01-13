@@ -48,14 +48,14 @@ export function PublicHeader() {
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-8">
           <button
             onClick={() => navigate('/')}
-            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-all duration-200 border border-gray-200 hover:scale-110 active:scale-90"
           >
             Accueil
           </button>
 
           <button
             onClick={() => navigate('/solution')}
-            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-all duration-200 border border-gray-200 hover:scale-110 active:scale-90"
           >
             Notre solution
           </button>
@@ -63,7 +63,7 @@ export function PublicHeader() {
           <div ref={whoRef} className="relative">
             <button
               onClick={() => setWhoOpen(!whoOpen)}
-              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200 flex items-center gap-1"
+              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-all duration-200 border border-gray-200 flex items-center gap-1 hover:scale-110 active:scale-90"
             >
               Pour qui ?
               <ChevronDown className="w-3 h-3" />
@@ -72,13 +72,13 @@ export function PublicHeader() {
               <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
                 <button
                   onClick={() => { setWhoOpen(false); navigate('/avocats/metier'); }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   Avocats
                 </button>
                 <button
                   onClick={() => { setWhoOpen(false); navigate('/notaires/metier'); }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   Notaires
                 </button>
@@ -88,14 +88,14 @@ export function PublicHeader() {
 
           <button
             onClick={() => navigate('/about')}
-            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-all duration-200 border border-gray-200 hover:scale-110 active:scale-90"
           >
             À propos
           </button>
 
           <button
             onClick={() => navigate('/contact')}
-            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
+            className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-all duration-200 border border-gray-200 hover:scale-110 active:scale-90"
           >
             Contact
           </button>
@@ -105,7 +105,7 @@ export function PublicHeader() {
           <div ref={connRef} className="relative">
             <button
               onClick={() => setConnOpen(!connOpen)}
-              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors border border-gray-200 flex items-center gap-1"
+              className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-all duration-200 border border-gray-200 flex items-center gap-1 hover:scale-110 active:scale-90"
             >
               Connexion
               <ChevronDown className="w-3 h-3" />
@@ -114,13 +114,13 @@ export function PublicHeader() {
               <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
                 <button
                   onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   Espace Avocats
                 </button>
                 <button
                   onClick={() => { setConnOpen(false); navigate('/notaires/auth'); }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   Espace Notaires
                 </button>
@@ -128,10 +128,10 @@ export function PublicHeader() {
             )}
           </div>
 
-          <a href="https://www.instagram.com/neira.doc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm" style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}>
+          <a href="https://www.instagram.com/neira.doc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform duration-200 shadow-sm" style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}>
             <Instagram className="w-4 h-4" />
           </a>
-          <a href="https://www.linkedin.com/company/neira-doc" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-105 transition-transform duration-150 shadow-sm" style={{ background: '#0A66C2' }}>
+          <a href="https://www.linkedin.com/company/neira-doc" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform duration-200 shadow-sm" style={{ background: '#0A66C2' }}>
             <Linkedin className="w-4 h-4" />
           </a>
         </div>
