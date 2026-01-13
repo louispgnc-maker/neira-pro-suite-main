@@ -227,7 +227,7 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center pt-[20vh] overflow-hidden">
+    <div className="fixed inset-0 z-[9999] bg-black/50 flex items-start justify-center pt-[20vh] overflow-hidden">
       <div
         ref={containerRef}
         className="w-full max-w-2xl mx-4 bg-white rounded-xl shadow-2xl overflow-hidden"
