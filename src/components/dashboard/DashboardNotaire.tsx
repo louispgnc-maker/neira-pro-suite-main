@@ -216,7 +216,6 @@ export function DashboardNotaire() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
-            <GlobalSearch userRole="notaire" />
             <button
               onClick={() => {
                 console.log('Dashboard subscription button clicked', { subscriptionTier });
@@ -238,6 +237,11 @@ export function DashboardNotaire() {
         <p className="text-lg text-gray-600 mt-2">
           Voici un aperçu de votre activité notariale
         </p>
+
+        {/* Barre de recherche */}
+        <div className="w-full max-w-3xl mx-auto">
+          <GlobalSearch userRole="notaire" />
+        </div>
 
   {/* KPI Cards single row */}
   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
