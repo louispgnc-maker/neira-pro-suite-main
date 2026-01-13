@@ -128,27 +128,37 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
     const filtered = searchIndex.filter(item => {
       const titleMatch = item.title.toLowerCase().includes(searchQuery);
       const sectionMatch = item.section?.toLowerCase().includes(searchQuery);
+      // Ne chercher dans les keywords que si pas de match dans title/section
       const keywordMatch = item.keywords.some(keyword => 
         keyword.toLowerCase().includes(searchQuery)
       );
+      
+      // Priorité : afficher seulement si le mot est dans le titre ou la section
+      // Les keywords servent juste à élargir la recherche
       return titleMatch || sectionMatch || keywordMatch;
     });
 
-    // Trier pour mettre les correspondances exactes en premier
+    // Trier pour mettre les correspondances visibles en premier
     const sorted = filtered.sort((a, b) => {
+      const aVisibleMatch = a.title.toLowerCase().includes(searchQuery) || 
+                           a.section?.toLowerCase().includes(searchQuery);
+      const bVisibleMatch = b.title.toLowerCase().includes(searchQuery) || 
+                           b.section?.toLowerCase().includes(searchQuery);
+      
+      // Prioriser les matchs visibles
+      if (aVisibleMatch && !bVisibleMatch) return -1;
+      if (!aVisibleMatch && bVisibleMatch) return 1;
+      
+      // Puis les matchs exacts
       const aExactTitle = a.title.toLowerCase() === searchQuery;
       const bExactTitle = b.title.toLowerCase() === searchQuery;
       const aExactSection = a.section?.toLowerCase() === searchQuery;
       const bExactSection = b.section?.toLowerCase() === searchQuery;
-      const aExactKeyword = a.keywords.some(k => k.toLowerCase() === searchQuery);
-      const bExactKeyword = b.keywords.some(k => k.toLowerCase() === searchQuery);
       
       if (aExactTitle && !bExactTitle) return -1;
       if (!aExactTitle && bExactTitle) return 1;
       if (aExactSection && !bExactSection) return -1;
       if (!aExactSection && bExactSection) return 1;
-      if (aExactKeyword && !bExactKeyword) return -1;
-      if (!aExactKeyword && bExactKeyword) return 1;
       
       return 0;
     });
@@ -246,7 +256,7 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
                     {item.title}
                   </div>
                   {item.section && (
-                    <div className="text-xs text-blue-600 mt-0.5">
+                    <div className="text-xs text-blue-600 mt-0.5 font-medium">
                       → {item.section}
                     </div>
                   )}
