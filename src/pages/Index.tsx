@@ -64,9 +64,9 @@ export default function Index() {
       {/* 2. PROBLÈME → SOLUTION */}
       <section className="py-20 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-start">
+          <div className="grid md:grid-cols-2 gap-12">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 min-h-[80px] flex items-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 h-[120px] flex items-end">
                 Les défis quotidiens de votre cabinet
               </h2>
               <div className="space-y-4">
@@ -90,7 +90,7 @@ export default function Index() {
             </div>
 
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 min-h-[80px] flex items-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 h-[120px] flex items-end">
                 Neira transforme votre quotidien
               </h2>
               <div className="space-y-4">
