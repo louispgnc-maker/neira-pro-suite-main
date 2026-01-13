@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Maximize, Minimize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,27 +12,26 @@ const FullscreenButton = () => {
   const { user } = useAuth();
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
-    
-    // Appliquer le style plein écran personnalisé
-    const appElement = document.querySelector('.min-h-screen.flex.w-full') as HTMLElement;
-    if (appElement) {
-      if (!isFullscreen) {
-        appElement.style.position = 'fixed';
-        appElement.style.top = '0';
-        appElement.style.left = '0';
-        appElement.style.width = '100vw';
-        appElement.style.height = '100vh';
-        appElement.style.zIndex = '9999';
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
       } else {
-        appElement.style.position = '';
-        appElement.style.top = '';
-        appElement.style.left = '';
-        appElement.style.width = '';
-        appElement.style.height = '';
-        appElement.style.zIndex = '';
+        await document.exitFullscreen();
       }
+    } catch (error) {
+      console.error("Erreur lors du passage en plein écran:", error);
     }
   };
 
