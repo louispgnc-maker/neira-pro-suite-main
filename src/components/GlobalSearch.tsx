@@ -207,7 +207,12 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
           <Search className="h-5 w-5 text-gray-400" />
           <input
             ref={inputRef}
-            type="text"
+            type="search"
+            name="global-search-query"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
