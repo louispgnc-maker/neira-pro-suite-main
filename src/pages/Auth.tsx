@@ -535,7 +535,7 @@ export default function Auth() {
             {/* Left - Company Info */}
             <div className="flex-shrink-0">
               <div className="flex items-center gap-2 mb-2">
-                <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Design_sans_titre-3-removebg-preview.png" alt="Neira" className="w-7 h-7 rounded-md object-cover" />
+                <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Logo%20Neira.png" alt="Neira" className="w-7 h-7 rounded-md object-cover" />
                 <span className="text-sm font-bold text-foreground">Neira</span>
               </div>
               <p className="text-muted-foreground text-xs max-w-xs mb-2">
