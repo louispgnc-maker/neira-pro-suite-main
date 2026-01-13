@@ -384,25 +384,25 @@ export default function Index() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-blue-300">
+            <div className="bg-gradient-to-br from-green-50 to-emerald-100 border-2 border-green-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-green-400">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
-                <p className="text-gray-600 mb-6">Idéal pour avocats et notaires indépendants</p>
+                <h3 className="text-2xl font-bold text-green-900 mb-2">NEIRA ESSENTIEL</h3>
+                <p className="text-green-700 mb-6">Idéal pour avocats et notaires indépendants</p>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-gray-900">39€</span>
-                  <span className="text-gray-600">/mois/utilisateur</span>
+                  <span className="text-5xl font-bold text-green-900">39€</span>
+                  <span className="text-green-700">/mois/utilisateur</span>
                 </div>
               </div>
               <ul className="space-y-4 mb-8">
                 {["20 Go de stockage", "100 dossiers actifs", "30 clients actifs", "15 signatures/mois/utilisateur", "Gestion documentaire", "Partage sécurisé client"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-gray-800">{feature}</span>
                   </li>
                 ))}
               </ul>
               <Button 
-                className="w-full bg-gray-900 hover:bg-gray-800 text-white py-6"
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-6"
                 onClick={() => navigate("/checkout-essentiel")}
               >
                 Choisir Essentiel
@@ -437,20 +437,20 @@ export default function Index() {
               </Button>
             </div>
 
-            <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-purple-300">
+            <div className="bg-gradient-to-br from-purple-50 to-violet-100 border-2 border-purple-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-purple-400">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
-                <p className="text-gray-600 mb-6">Idéal pour cabinets de 10 à 50+ utilisateurs</p>
+                <h3 className="text-2xl font-bold text-purple-900 mb-2">NEIRA CABINET+</h3>
+                <p className="text-purple-700 mb-6">Idéal pour cabinets de 10 à 50+ utilisateurs</p>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-gray-900">89€</span>
-                  <span className="text-gray-600">/mois/utilisateur</span>
+                  <span className="text-5xl font-bold text-purple-900">89€</span>
+                  <span className="text-purple-700">/mois/utilisateur</span>
                 </div>
               </div>
               <ul className="space-y-4 mb-8">
                 {["Stockage illimité", "Dossiers illimités", "Clients illimités", "Signatures illimitées", "Collaboration sans limite", "Tableaux de bord avancés", "Onboarding & formation", "Accès anticipé aux nouveautés"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">{feature}</span>
+                    <CheckCircle2 className="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-800">{feature}</span>
                   </li>
                 ))}
               </ul>
