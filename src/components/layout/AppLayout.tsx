@@ -57,7 +57,6 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
           <BuildInfo />
         </main>
-        <GlobalSearch userRole={role} />
       </div>
     </SidebarProvider>
   );

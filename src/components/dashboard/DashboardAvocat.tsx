@@ -12,6 +12,7 @@ import { RecentClients } from "@/components/dashboard/RecentClients";
 import { AlertsCompliance } from "@/components/dashboard/AlertsCompliance";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { GlobalSearch } from "@/components/GlobalSearch";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
@@ -227,6 +228,9 @@ export function DashboardAvocat() {
         <p className="text-lg text-gray-600 mt-2">
           Voici un aperçu de votre activité juridique
         </p>
+
+        {/* Barre de recherche */}
+        <GlobalSearch userRole="avocat" />
 
   {/* KPI Cards single row */}
   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
