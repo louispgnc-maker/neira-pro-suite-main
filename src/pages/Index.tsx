@@ -66,7 +66,7 @@ export default function Index() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 h-[120px] flex items-end">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
                 Les défis quotidiens de votre cabinet
               </h2>
               <div className="space-y-4">
@@ -90,7 +90,7 @@ export default function Index() {
             </div>
 
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 h-[120px] flex items-end">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
                 Neira transforme votre quotidien
               </h2>
               <div className="space-y-4">
