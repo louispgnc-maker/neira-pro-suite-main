@@ -6,40 +6,39 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAuth } from "@/contexts/AuthContext";
 
 const FullscreenButton = () => {
-  const [isZoomed, setIsZoomed] = useState(false);
+  const { user } = useAuth();
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
-    // Restaurer l'état du zoom depuis localStorage
-    const savedZoomMode = localStorage.getItem("zoomMode");
-    if (savedZoomMode === "true") {
-      setIsZoomed(true);
-      document.documentElement.style.transform = "scale(1.15)";
-      document.documentElement.style.transformOrigin = "top center";
-      document.documentElement.style.width = "calc(100% / 1.15)";
-      document.documentElement.style.height = "calc(100% / 1.15)";
-    }
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
   }, []);
 
-  const toggleZoom = () => {
-    const newZoomState = !isZoomed;
-    setIsZoomed(newZoomState);
-    
-    if (newZoomState) {
-      document.documentElement.style.transform = "scale(1.15)";
-      document.documentElement.style.transformOrigin = "top center";
-      document.documentElement.style.width = "calc(100% / 1.15)";
-      document.documentElement.style.height = "calc(100% / 1.15)";
-      localStorage.setItem("zoomMode", "true");
-    } else {
-      document.documentElement.style.transform = "";
-      document.documentElement.style.transformOrigin = "";
-      document.documentElement.style.width = "";
-      document.documentElement.style.height = "";
-      localStorage.setItem("zoomMode", "false");
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (error) {
+      console.error("Erreur lors du passage en plein écran:", error);
     }
   };
+
+  // N'afficher le bouton que si l'utilisateur est connecté
+  if (!user) {
+    return null;
+  }
 
   return (
     <Tooltip>
@@ -47,11 +46,11 @@ const FullscreenButton = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={toggleZoom}
+          onClick={toggleFullscreen}
           className="fixed bottom-6 right-6 z-50 h-9 w-9 rounded-md opacity-30 hover:opacity-100 transition-opacity duration-200 bg-gray-100/50 hover:bg-gray-200 text-gray-600 hover:text-gray-900"
-          aria-label={isZoomed ? "Vue normale" : "Agrandir l'affichage"}
+          aria-label={isFullscreen ? "Quitter le plein écran" : "Passer en plein écran"}
         >
-          {isZoomed ? (
+          {isFullscreen ? (
             <Minimize className="h-4 w-4" />
           ) : (
             <Maximize className="h-4 w-4" />
@@ -59,7 +58,7 @@ const FullscreenButton = () => {
         </Button>
       </TooltipTrigger>
       <TooltipContent side="left">
-        <p>{isZoomed ? "Vue normale" : "Agrandir l'affichage"}</p>
+        <p>{isFullscreen ? "Quitter le plein écran" : "Passer en plein écran"}</p>
       </TooltipContent>
     </Tooltip>
   );
