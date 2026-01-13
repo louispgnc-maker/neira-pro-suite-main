@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Maximize, Minimize } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,37 +12,27 @@ const FullscreenButton = () => {
   const { user } = useAuth();
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    // Bloquer la touche Échap pour le plein écran
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && document.fullscreenElement) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    };
-
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    document.addEventListener("keydown", handleKeyDown, { capture: true });
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
     
-    return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-      document.removeEventListener("keydown", handleKeyDown, { capture: true });
-    };
-  }, []);
-
-  const toggleFullscreen = async () => {
-    try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
+    // Appliquer le style plein écran personnalisé
+    const appElement = document.querySelector('.min-h-screen.flex.w-full') as HTMLElement;
+    if (appElement) {
+      if (!isFullscreen) {
+        appElement.style.position = 'fixed';
+        appElement.style.top = '0';
+        appElement.style.left = '0';
+        appElement.style.width = '100vw';
+        appElement.style.height = '100vh';
+        appElement.style.zIndex = '9999';
       } else {
-        await document.exitFullscreen();
+        appElement.style.position = '';
+        appElement.style.top = '';
+        appElement.style.left = '';
+        appElement.style.width = '';
+        appElement.style.height = '';
+        appElement.style.zIndex = '';
       }
-    } catch (error) {
-      console.error("Erreur lors du passage en plein écran:", error);
     }
   };
 
