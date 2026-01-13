@@ -183,8 +183,6 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
     } else if (e.key === "Enter" && results.length > 0) {
       e.preventDefault();
       handleNavigate(results[selectedIndex]);
-    } else if (e.key === "Escape") {
-      setIsOpen(false);
     }
   };
 
@@ -291,7 +289,6 @@ export function GlobalSearch({ userRole = "avocat" }: GlobalSearchProps) {
             <div className="flex items-center gap-4">
               <span>↑↓ Naviguer</span>
               <span>↵ Sélectionner</span>
-              <span>Esc Fermer</span>
             </div>
           </div>
         )}
