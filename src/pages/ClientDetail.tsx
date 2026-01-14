@@ -312,43 +312,41 @@ export default function ClientDetail() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold">Fiche client</h1>
-              {invitationStatus === 'none' && (
-                <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-300">
-                  Espace client non activé
-                </Badge>
-              )}
-              {invitationStatus === 'pending' && (
-                <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-300">
-                  Invitation envoyée
-                </Badge>
-              )}
-              {invitationStatus === 'active' && (
-                <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
-                  Espace client actif
-                </Badge>
-              )}
-            </div>
+            <h1 className="text-3xl font-bold">Fiche client</h1>
             {client?.name && (
               <p className="text-gray-600 mt-1">{client.name}</p>
             )}
           </div>
           <div className="flex items-center gap-2">
             {invitationStatus === 'none' && (
-              <Button className={mainButtonColor} onClick={() => setShowInviteModal(true)}>
-                <UserPlus className="h-4 w-4 mr-2" /> Inviter à l'espace client
-              </Button>
+              <>
+                <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-300">
+                  Espace client non activé
+                </Badge>
+                <Button className={mainButtonColor} onClick={() => setShowInviteModal(true)}>
+                  <UserPlus className="h-4 w-4 mr-2" /> Inviter à l'espace client
+                </Button>
+              </>
             )}
             {invitationStatus === 'pending' && (
-              <Button variant="outline" onClick={() => setShowInviteModal(true)}>
-                <Mail className="h-4 w-4 mr-2" /> Renvoyer l'invitation
-              </Button>
+              <>
+                <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-300">
+                  Invitation envoyée
+                </Badge>
+                <Button variant="outline" onClick={() => setShowInviteModal(true)}>
+                  <Mail className="h-4 w-4 mr-2" /> Renvoyer l'invitation
+                </Button>
+              </>
             )}
             {invitationStatus === 'active' && (
-              <Button variant="outline" onClick={() => window.open(`/client-space/${id}`, '_blank')}>
-                <Eye className="h-4 w-4 mr-2" /> Voir l'espace client
-              </Button>
+              <>
+                <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
+                  Espace client actif
+                </Badge>
+                <Button variant="outline" onClick={() => window.open(`/client-space/${id}`, '_blank')}>
+                  <Eye className="h-4 w-4 mr-2" /> Voir l'espace client
+                </Button>
+              </>
             )}
             <Button className={mainButtonColor} onClick={onEdit} size="icon">
               <Pencil className="h-4 w-4" />
