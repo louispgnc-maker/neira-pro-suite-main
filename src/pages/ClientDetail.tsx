@@ -357,7 +357,7 @@ export default function ClientDetail() {
             <Button 
               variant="outline" 
               onClick={handleDeleteClient}
-              className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+              className="bg-red-50 text-red-600 border-red-300 hover:bg-red-100 hover:text-red-700 hover:border-red-400"
               size="icon"
             >
               <Trash2 className="h-4 w-4" />
