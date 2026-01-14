@@ -141,10 +141,13 @@ export default function ClientSpaces() {
     }
     if (status === 'pending') {
       return (
-        <Badge variant="outline" className="gap-1 border-orange-500 text-orange-700">
-          <Mail className="w-3 h-3" />
-          Invitation envoyée
-        </Badge>
+        <div className="text-right">
+          <Badge variant="outline" className="gap-1 border-orange-500 text-orange-700">
+            <Mail className="w-3 h-3" />
+            Invitation envoyée
+          </Badge>
+          <div className="text-xs text-muted-foreground mt-1">En attente de l'activation</div>
+        </div>
       );
     }
     return (

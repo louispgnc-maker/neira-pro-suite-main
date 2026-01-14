@@ -7,7 +7,7 @@ import AccessDenied from '@/pages/AccessDenied';
 
 interface RoleProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole: 'avocat' | 'notaire';
+  requiredRole: 'avocat' | 'notaire' | 'client';
 }
 
 // Liste des emails admin qui ont accès à tous les espaces
@@ -20,7 +20,7 @@ const ADMIN_EMAILS = [
 export default function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRouteProps) {
   const { user, loading: authLoading } = useAuth();
   const location = useLocation();
-  const [userRole, setUserRole] = useState<'avocat' | 'notaire' | null>(null);
+  const [userRole, setUserRole] = useState<'avocat' | 'notaire' | 'client' | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,6 +36,28 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
       }
 
       try {
+        // Si on cherche un client, vérifier dans la table clients
+        if (requiredRole === 'client') {
+          const { data: clientData, error: clientError } = await supabase
+            .from('clients')
+            .select('id')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+          console.log('[RoleProtectedRoute] Client check:', clientData, clientError);
+
+          if (clientData) {
+            setUserRole('client');
+            console.log('[RoleProtectedRoute] User is a client');
+          } else {
+            setUserRole(null);
+            console.log('[RoleProtectedRoute] User is not a client');
+          }
+          setLoading(false);
+          return;
+        }
+
+        // Pour avocat/notaire, utiliser la logique existante
         // Utiliser la même méthode que EspaceCollaboratif pour récupérer les cabinets
         const { data: cabinetsData, error: cabinetsError } = await supabase.rpc('get_user_cabinets');
         
@@ -85,7 +107,11 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
 
   if (!user) {
     // Rediriger vers la page de connexion appropriée
-    const authPath = requiredRole === 'avocat' ? '/avocats/auth' : '/notaires/auth';
+    let authPath = '/auth';
+    if (requiredRole === 'avocat') authPath = '/avocats/auth';
+    else if (requiredRole === 'notaire') authPath = '/notaires/auth';
+    else if (requiredRole === 'client') authPath = '/client-login';
+    
     return <Navigate to={authPath} state={{ from: location }} replace />;
   }
 
@@ -96,6 +122,14 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
   }
 
   if (!userRole) {
+    // Message approprié selon le rôle requis
+    if (requiredRole === 'client') {
+      toast.error("Accès refusé", {
+        description: "Vous devez avoir un compte client pour accéder à cet espace."
+      });
+      return <Navigate to="/client-login" replace />;
+    }
+    
     // L'utilisateur n'a pas de cabinet, rediriger vers la page de test pour créer son cabinet
     toast.error("Aucun cabinet trouvé", {
       description: "Veuillez créer votre cabinet pour accéder à cet espace."

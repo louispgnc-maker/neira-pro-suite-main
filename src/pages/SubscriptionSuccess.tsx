@@ -115,7 +115,7 @@ export default function SubscriptionSuccess() {
               <div className="flex flex-col gap-3">
                 <Button 
                   onClick={handleContinue}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   Accéder à mon espace
                   <ArrowRight className="w-4 h-4 ml-2" />
