@@ -43,7 +43,8 @@ export default function SubscriptionSuccess() {
   }, [searchParams]);
 
   const handleContinue = () => {
-    navigate('/dashboard');
+    // Rediriger vers le choix de profession
+    navigate('/select-profession');
   };
 
   if (loading) {

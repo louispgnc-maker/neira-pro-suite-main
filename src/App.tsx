@@ -15,6 +15,8 @@ import AvocatDashboard from "./pages/avocats/Dashboard";
 import NotaireDashboard from "./pages/notaires/Dashboard";
 import AvocatMetier from "./pages/avocats/Metier";
 import NotaireMetier from "./pages/notaires/Metier";
+import SelectProfession from "./pages/SelectProfession";
+import OnboardingCreateCabinet from "./pages/OnboardingCreateCabinet";
 import Documents from "./pages/Documents";
 import Signatures from "./pages/Signatures";
 import Clients from "./pages/Clients";
@@ -112,6 +114,10 @@ const App = () => (
             <Route path="/checkout-professionnel" element={<CheckoutProfessionnel />} />
             <Route path="/checkout-cabinet-plus" element={<CheckoutCabinetPlus />} />
             <Route path="/subscription/success" element={<SubscriptionSuccess />} />
+            
+            {/* Routes onboarding */}
+            <Route path="/select-profession" element={<SelectProfession />} />
+            <Route path="/onboarding/create-cabinet" element={<OnboardingCreateCabinet />} />
             
             {/* Routes Avocat */}
             <Route path="/avocats/auth" element={<AvocatAuth />} />
