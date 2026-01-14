@@ -36,21 +36,25 @@ export function InviteClientModal({
   const [sending, setSending] = useState(false);
   const [accessCode, setAccessCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [codeLoaded, setCodeLoaded] = useState(false);
   const hasClientEmail = clientEmail && clientEmail.includes("@");
 
-  // Charger ou générer le code d'accès à l'ouverture de la modal
+  // Charger le code d'accès existant UNIQUEMENT à l'ouverture
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !codeLoaded) {
       setEmail(clientEmail || "");
       loadOrGenerateAccessCode();
+    } else if (!isOpen) {
+      // Réinitialiser le flag quand la modal se ferme
+      setCodeLoaded(false);
     }
-  }, [isOpen, clientEmail, clientId]);
+  }, [isOpen, clientId]);
 
   const loadOrGenerateAccessCode = async () => {
     setLoading(true);
     try {
       // Vérifier si une invitation existe déjà pour ce client
-      const { data: existingInvitation } = await supabase
+      const { data: existingInvitation, error } = await supabase
         .from("client_invitations")
         .select("access_code")
         .eq("client_id", clientId)
@@ -58,18 +62,26 @@ export function InviteClientModal({
         .limit(1)
         .maybeSingle();
 
+      if (error) {
+        console.error("Error fetching invitation:", error);
+      }
+
       if (existingInvitation?.access_code) {
         // Utiliser le code existant
+        console.log("✅ Code existant trouvé:", existingInvitation.access_code);
         setAccessCode(existingInvitation.access_code);
       } else {
         // Générer un nouveau code d'accès unique à 6 caractères (lettres majuscules et chiffres)
+        console.log("🆕 Aucun code existant, génération d'un nouveau code");
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let newAccessCode = '';
         for (let i = 0; i < 6; i++) {
           newAccessCode += characters.charAt(Math.floor(Math.random() * characters.length));
         }
+        console.log("🔑 Nouveau code généré:", newAccessCode);
         setAccessCode(newAccessCode);
       }
+      setCodeLoaded(true);
     } catch (error) {
       console.error("Error loading access code:", error);
       // En cas d'erreur, générer un nouveau code
@@ -79,6 +91,7 @@ export function InviteClientModal({
         newAccessCode += characters.charAt(Math.floor(Math.random() * characters.length));
       }
       setAccessCode(newAccessCode);
+      setCodeLoaded(true);
     } finally {
       setLoading(false);
     }
