@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Scale, FileText, Users, Clock, Shield, Zap, CheckCircle, ArrowRight } from 'lucide-react';
+import { Scale, FileText, Users, Clock, Shield, Zap, CheckCircle } from 'lucide-react';
 import { PublicHeader } from '@/components/layout/PublicHeader';
 
 export default function AvocatsMetier() {
@@ -47,59 +46,72 @@ export default function AvocatsMetier() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-blue-50" style={{ backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Fond%20bleu%20avocat.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+    <div className="min-h-screen flex flex-col bg-white">
       <PublicHeader />
 
-      <div className="p-6 pt-28">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-12 text-center">
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg">
-              <Scale className="w-10 h-10 text-white" />
-            </div>
-          </div>
-          <h1 className="text-5xl font-bold mb-3">Neira pour les Avocats</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            La solution complète pour moderniser et simplifier la gestion de votre cabinet
-          </p>
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
         </div>
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center max-w-4xl mx-auto">
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg">
+                <Scale className="w-10 h-10 text-white" />
+              </div>
+            </div>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+              Neira pour les Avocats
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+              La solution complète pour moderniser et simplifier la gestion de votre cabinet
+            </p>
+          </div>
+        </div>
+      </section>
 
-        {/* Benefits Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {benefits.map((benefit, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-              <div className={`bg-gradient-to-r ${benefit.color} p-6 text-white`}>
-                <div className="flex items-center gap-3 mb-3">
-                  {benefit.icon}
-                  <h3 className="text-xl font-bold">{benefit.title}</h3>
+      {/* Benefits Section */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {benefits.map((benefit, index) => (
+              <div key={index} className="group">
+                <div className={`bg-gradient-to-r ${benefit.color} p-6 rounded-t-xl`}>
+                  <div className="flex items-center gap-3 text-white">
+                    {benefit.icon}
+                    <h3 className="text-xl font-bold">{benefit.title}</h3>
+                  </div>
+                </div>
+                <div className="bg-white p-6 rounded-b-xl border-2 border-t-0 border-gray-100 group-hover:shadow-xl transition-shadow duration-300">
+                  <p className="text-gray-700 leading-relaxed">{benefit.description}</p>
                 </div>
               </div>
-              <div className="p-6">
-                <p className="text-gray-700 leading-relaxed">{benefit.description}</p>
-              </div>
-            </Card>
-          ))}
+            ))}
+          </div>
         </div>
+      </section>
 
-        {/* CTA */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg p-12 text-white text-center">
-          <h2 className="text-3xl font-bold mb-4">Prêt à transformer votre cabinet ?</h2>
-          <p className="text-blue-100 mb-8 max-w-2xl mx-auto text-lg">
+      {/* CTA Section */}
+      <section className="py-20 px-6 bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700">
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Prêt à transformer votre cabinet ?
+          </h2>
+          <p className="text-xl text-blue-100 mb-10 max-w-3xl mx-auto">
             Rejoignez les centaines d'avocats qui font déjà confiance à Neira pour simplifier leur quotidien.
           </p>
-          <Button 
-            size="lg" 
-            variant="secondary"
-            onClick={() => navigate('/avocats/auth')}
-            className="gap-2 text-lg px-8 py-6"
-          >
-            Créer mon espace gratuitement
-            <ArrowRight className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center justify-center">
+            <Button 
+              size="lg" 
+              className="text-lg px-10 py-7 bg-white text-blue-600 hover:bg-gray-100 shadow-2xl hover:shadow-3xl transition-all duration-200 font-bold"
+              onClick={() => navigate('/avocats/auth')}
+            >
+              Créer mon espace gratuitement
+            </Button>
+          </div>
         </div>
-      </div>
-      </div>
+      </section>
     </div>
   );
 }
