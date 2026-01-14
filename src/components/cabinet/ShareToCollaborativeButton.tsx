@@ -26,9 +26,13 @@ export default function ShareToCollaborativeButton({ clientId, clientName, role,
     if (onDone) onDone();
   };
 
+  const buttonColor = role === 'notaire' 
+    ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+    : 'bg-blue-600 hover:bg-blue-700 text-white';
+
   return (
     <>
-      <Button variant="outline" size="icon" onClick={handleClick} disabled={disabled}>
+      <Button size="icon" onClick={handleClick} disabled={disabled} className={buttonColor}>
         <Share2 className="h-4 w-4" />
       </Button>
       <ShareToCollaborativeDialog
