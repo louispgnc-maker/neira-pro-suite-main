@@ -31,9 +31,9 @@ export function PublicHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
-      <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto px-6 py-2 flex items-center relative">
         {/* Gauche : Logo + Neira */}
-        <div className="flex items-center gap-2 flex-1">
+        <div className="flex items-center gap-2">
           <button 
             onClick={() => navigate('/')} 
             className="w-8 h-8 rounded-full overflow-hidden transition-transform duration-200 hover:scale-110 active:scale-90 cursor-pointer"
@@ -46,8 +46,8 @@ export function PublicHeader() {
           </div>
         </div>
 
-        {/* Centre : Navigation */}
-        <div className="flex items-center gap-4">
+        {/* Centre : Navigation (position absolue) */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-4">
           <button
             onClick={() => navigate('/')}
             className="px-4 py-1.5 text-sm font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 hover:scale-105 active:scale-95"
@@ -71,7 +71,7 @@ export function PublicHeader() {
               <ChevronDown className="w-3 h-3" />
             </button>
             {whoOpen && (
-              <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+              <div className="absolute left-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
                 <button
                   onClick={() => { setWhoOpen(false); navigate('/avocats/metier'); }}
                   className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95"
@@ -104,7 +104,7 @@ export function PublicHeader() {
         </div>
 
         {/* Droite : Connexion + Réseaux sociaux */}
-        <div className="flex items-center gap-2 flex-1 justify-end">
+        <div className="ml-auto flex items-center gap-2">
           <div ref={connRef} className="relative">
             <button
               onClick={() => setConnOpen(!connOpen)}
@@ -114,7 +114,7 @@ export function PublicHeader() {
               <ChevronDown className="w-3 h-3" />
             </button>
             {connOpen && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+              <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
                 <button
                   onClick={() => { setConnOpen(false); navigate('/avocats/auth'); }}
                   className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-all duration-200 hover:scale-105 active:scale-95"
