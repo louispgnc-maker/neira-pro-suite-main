@@ -213,6 +213,38 @@ export default function CreateClientAvocat() {
 
       if (insertErr) throw insertErr;
 
+      // Générer automatiquement le code d'accès pour l'espace client
+      if (inserted?.id) {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let accessCode = '';
+        for (let i = 0; i < 6; i++) {
+          accessCode += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+
+        const token = crypto.randomUUID();
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 720); // Expire dans 30 jours
+
+        // Créer l'invitation avec le code d'accès
+        const { error: inviteError } = await supabase
+          .from('client_invitations')
+          .insert({
+            client_id: inserted.id,
+            email: email || '',
+            token: token,
+            access_code: accessCode,
+            expires_at: expiresAt.toISOString(),
+            status: 'pending',
+          });
+
+        if (inviteError) {
+          console.error('Error creating access code:', inviteError);
+          // Ne pas bloquer la création du client si l'invitation échoue
+        } else {
+          console.log('✅ Code d\'accès créé:', accessCode, 'pour client:', inserted.id);
+        }
+      }
+
       toast.success('Fiche client créée avec succès');
       navigate('/avocats/clients');
     } catch (err: unknown) {

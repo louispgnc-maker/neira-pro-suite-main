@@ -49,7 +49,7 @@ export function InviteClientModal({
   const loadExistingAccessCode = async () => {
     setLoading(true);
     try {
-      // Chercher un code existant pour ce client
+      // Chercher le code existant pour ce client (créé lors de la création de la fiche)
       const { data: existingInvitation, error } = await supabase
         .from("client_invitations")
         .select("access_code")
@@ -63,45 +63,17 @@ export function InviteClientModal({
       }
 
       if (existingInvitation?.access_code) {
-        // Code existant trouvé - ne JAMAIS le changer
-        console.log("✅ Code existant trouvé:", existingInvitation.access_code);
+        // Code trouvé - l'afficher
+        console.log("✅ Code d'accès trouvé:", existingInvitation.access_code);
         setAccessCode(existingInvitation.access_code);
       } else {
-        // Aucun code existant - en créer un nouveau et l'enregistrer IMMÉDIATEMENT
-        console.log("🆕 Aucun code trouvé, création d'un code permanent");
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let newAccessCode = '';
-        for (let i = 0; i < 6; i++) {
-          newAccessCode += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        console.log("🔑 Code permanent créé:", newAccessCode);
-        
-        // Enregistrer le code IMMÉDIATEMENT en base de données
-        const token = crypto.randomUUID();
-        const expiresAt = new Date();
-        expiresAt.setHours(expiresAt.getHours() + 48);
-        
-        const { error: insertError } = await supabase
-          .from("client_invitations")
-          .insert({
-            client_id: clientId,
-            email: email || clientEmail || "",
-            token: token,
-            access_code: newAccessCode,
-            expires_at: expiresAt.toISOString(),
-            status: "pending",
-          });
-        
-        if (insertError) {
-          console.error("Error saving access code:", insertError);
-        } else {
-          console.log("💾 Code sauvegardé en base de données");
-        }
-        
-        setAccessCode(newAccessCode);
+        // Aucun code trouvé - ce client n'a pas été créé avec le nouveau système
+        console.warn("⚠️ Aucun code trouvé pour ce client - fiche créée avant l'implémentation des codes");
+        setAccessCode("ERREUR");
       }
     } catch (error) {
       console.error("Error:", error);
+      setAccessCode("ERREUR");
     } finally {
       setLoading(false);
     }
