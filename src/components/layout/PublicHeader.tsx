@@ -32,24 +32,22 @@ export function PublicHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
       <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between gap-3">
-        {/* Spacer gauche pour centrer le contenu */}
-        <div className="flex-1"></div>
-
-        {/* Centre : Logo + Navigation */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => navigate('/')} 
-              className="w-8 h-8 rounded-full overflow-hidden transition-transform duration-200 hover:scale-110 active:scale-90 cursor-pointer"
-            >
-              <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Logo%20Neira.png" alt="Neira" className="w-full h-full object-cover" />
-            </button>
-            <div className="leading-tight">
-              <div className="text-sm font-bold text-gray-900">Neira</div>
-              <div className="text-[10px] text-gray-600">Espace Pro Automatisé</div>
-            </div>
+        {/* Gauche : Logo + Neira */}
+        <div className="flex items-center gap-2 flex-1">
+          <button 
+            onClick={() => navigate('/')} 
+            className="w-8 h-8 rounded-full overflow-hidden transition-transform duration-200 hover:scale-110 active:scale-90 cursor-pointer"
+          >
+            <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Logo%20Neira.png" alt="Neira" className="w-full h-full object-cover" />
+          </button>
+          <div className="leading-tight">
+            <div className="text-sm font-bold text-gray-900">Neira</div>
+            <div className="text-[10px] text-gray-600">Espace Pro Automatisé</div>
           </div>
+        </div>
 
+        {/* Centre : Navigation */}
+        <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/')}
             className="px-4 py-1.5 text-sm font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 hover:scale-105 active:scale-95"
@@ -105,7 +103,7 @@ export function PublicHeader() {
           </button>
         </div>
 
-        {/* Droite : Boutons connexion + Réseaux sociaux */}
+        {/* Droite : Connexion + Réseaux sociaux */}
         <div className="flex items-center gap-2 flex-1 justify-end">
           <div ref={connRef} className="relative">
             <button
