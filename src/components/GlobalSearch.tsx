@@ -75,6 +75,7 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showButton, setShowButton] = useState(false);
+  const scrollPositionRef = useRef(0);
 
   // Afficher le bouton uniquement sur le dashboard
   useEffect(() => {
@@ -115,33 +116,28 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
         inputRef.current.focus();
       }
       // Sauvegarder la position de scroll actuelle
-      const scrollY = window.scrollY;
+      scrollPositionRef.current = window.scrollY;
       // Bloquer le scroll du body
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
+      document.body.style.top = `-${scrollPositionRef.current}px`;
       document.body.style.width = '100%';
     } else {
       // Restaurer le scroll
-      const scrollY = document.body.style.top;
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
-      // Restaurer la position de scroll
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      // Restaurer la position de scroll sauvegardée
+      window.scrollTo(0, scrollPositionRef.current);
     }
 
     // Cleanup: toujours restaurer le scroll
     return () => {
-      const scrollY = document.body.style.top;
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY) * -1);
-      }
     };
   }, [isOpen, hideButton]);
 
