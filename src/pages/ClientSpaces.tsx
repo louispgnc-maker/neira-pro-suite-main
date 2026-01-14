@@ -85,7 +85,8 @@ export default function ClientSpaces() {
           client_invitations (
             status,
             email,
-            access_code
+            access_code,
+            created_at
           )
         `)
         .eq('owner_id', user.id)
@@ -93,9 +94,15 @@ export default function ClientSpaces() {
 
       if (clientsError) throw clientsError;
 
-      // Mapper les données pour inclure les informations d'invitation
+      // Mapper les données pour inclure les informations de la dernière invitation
       const mappedClients: ClientWithInvitation[] = (clientsData || []).map((client: any) => {
-        const invitation = client.client_invitations?.[0];
+        // Prendre la dernière invitation (la plus récente)
+        const invitations = client.client_invitations || [];
+        const invitation = invitations.length > 0
+          ? invitations.sort((a: any, b: any) => 
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            )[0]
+          : null;
         return {
           id: client.id,
           nom: client.nom,
