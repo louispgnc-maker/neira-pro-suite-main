@@ -107,7 +107,7 @@ export function PublicHeader() {
               onClick={() => setConnOpen(!connOpen)}
               className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-all duration-200 border border-gray-200 flex items-center gap-1 hover:scale-110 active:scale-90"
             >
-              Connexion
+              Espace professionnel
               <ChevronDown className="w-3 h-3" />
             </button>
             {connOpen && (
@@ -127,6 +127,13 @@ export function PublicHeader() {
               </div>
             )}
           </div>
+
+          <button
+            onClick={() => navigate('/client-login')}
+            className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-all duration-200 border border-blue-600 hover:scale-110 active:scale-90"
+          >
+            Espace client
+          </button>
 
           <a href="https://www.instagram.com/neira.doc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform duration-200 shadow-sm" style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}>
             <Instagram className="w-4 h-4" />
