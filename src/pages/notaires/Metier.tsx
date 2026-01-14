@@ -99,15 +99,15 @@ export default function NotairesMetier() {
             Prêt à digitaliser votre étude ?
           </h2>
           <p className="text-xl text-orange-100 mb-10 max-w-3xl mx-auto">
-            Rejoignez les études notariales qui modernisent leur pratique avec Neira.
+            Rejoignez ceux qui modernisent déjà leur pratique avec Neira.
           </p>
           <div className="flex items-center justify-center">
             <Button 
               size="lg" 
               className="text-lg px-10 py-7 bg-white text-orange-600 hover:bg-gray-100 shadow-2xl hover:shadow-3xl transition-all duration-200 font-bold"
-              onClick={() => navigate('/notaires/auth')}
+              onClick={() => window.location.href = 'https://www.neira.fr/solution'}
             >
-              Créer mon espace gratuitement
+              Découvrir les offres
             </Button>
           </div>
         </div>

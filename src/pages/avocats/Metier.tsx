@@ -99,15 +99,15 @@ export default function AvocatsMetier() {
             Prêt à transformer votre cabinet ?
           </h2>
           <p className="text-xl text-blue-100 mb-10 max-w-3xl mx-auto">
-            Rejoignez les centaines d'avocats qui font déjà confiance à Neira pour simplifier leur quotidien.
+            Rejoignez les avocats qui font déjà confiance à Neira pour simplifier leur quotidien.
           </p>
           <div className="flex items-center justify-center">
             <Button 
               size="lg" 
               className="text-lg px-10 py-7 bg-white text-blue-600 hover:bg-gray-100 shadow-2xl hover:shadow-3xl transition-all duration-200 font-bold"
-              onClick={() => navigate('/avocats/auth')}
+              onClick={() => window.location.href = 'https://www.neira.fr/solution'}
             >
-              Créer mon espace gratuitement
+              Découvrir les offres
             </Button>
           </div>
         </div>
