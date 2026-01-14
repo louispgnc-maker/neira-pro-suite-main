@@ -60,7 +60,9 @@ import CGU from "./pages/CGU";
 import NotFound from "./pages/NotFound";
 import PublicClientForm from "./pages/PublicClientForm";
 import ClientInvitation from "./pages/ClientInvitation";
-import ClientSpace from "./pages/ClientSpace";
+import ClientDashboard from "./pages/client/ClientDashboard";
+import ClientDocuments from "./pages/client/ClientDocuments";
+import ClientDossiers from "./pages/client/ClientDossiers";
 import ScrollToTop from "./components/ScrollToTop";
 import EmailConfirmHandler from "./components/EmailConfirmHandler";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
@@ -98,7 +100,9 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/form/:token" element={<PublicClientForm />} />
             <Route path="/client-invitation/:token" element={<ClientInvitation />} />
-            <Route path="/client-space" element={<RoleProtectedRoute requiredRole="client"><ClientSpace /></RoleProtectedRoute>} />
+            <Route path="/client-space" element={<RoleProtectedRoute requiredRole="client"><ClientDashboard /></RoleProtectedRoute>} />
+            <Route path="/client-space/documents" element={<RoleProtectedRoute requiredRole="client"><ClientDocuments /></RoleProtectedRoute>} />
+            <Route path="/client-space/dossiers" element={<RoleProtectedRoute requiredRole="client"><ClientDossiers /></RoleProtectedRoute>} />
             
             {/* Routes checkout publiques */}
             <Route path="/checkout/:planId" element={<CheckoutPublic />} />
