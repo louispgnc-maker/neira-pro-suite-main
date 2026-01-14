@@ -16,9 +16,9 @@ serve(async (req) => {
   }
 
   try {
-    const { email, clientName, token } = await req.json();
+    const { email, clientName, token, accessCode } = await req.json();
 
-    if (!email || !clientName || !token) {
+    if (!email || !clientName || !token || !accessCode) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         {
@@ -117,6 +117,10 @@ serve(async (req) => {
                 
                 <div class="info-box">
                   <p><strong>⏰ Cette invitation est valable pendant 48 heures.</strong></p>
+                  <p style="margin: 10px 0;"><strong>🔑 Votre code d'accès personnel :</strong></p>
+                  <p style="font-size: 32px; font-weight: bold; color: #1e40af; text-align: center; letter-spacing: 8px; margin: 15px 0;">${accessCode}</p>
+                  <p style="margin: 5px 0; font-size: 13px;">Conservez précieusement ce code. Vous en aurez besoin pour vous connecter à votre espace client.</p>
+                  <hr style="margin: 15px 0; border: none; border-top: 1px solid #e5e7eb;">
                   <p style="margin: 5px 0;">Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :</p>
                   <p style="word-break: break-all; color: #1e40af;">${invitationUrl}</p>
                 </div>

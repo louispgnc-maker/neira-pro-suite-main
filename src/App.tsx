@@ -60,6 +60,7 @@ import CGU from "./pages/CGU";
 import NotFound from "./pages/NotFound";
 import PublicClientForm from "./pages/PublicClientForm";
 import ClientInvitation from "./pages/ClientInvitation";
+import ClientLogin from "./pages/ClientLogin";
 import ClientDashboard from "./pages/client/ClientDashboard";
 import ClientDocuments from "./pages/client/ClientDocuments";
 import ClientDossiers from "./pages/client/ClientDossiers";
@@ -100,6 +101,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/form/:token" element={<PublicClientForm />} />
             <Route path="/client-invitation/:token" element={<ClientInvitation />} />
+            <Route path="/client-login" element={<ClientLogin />} />
             <Route path="/client-space" element={<RoleProtectedRoute requiredRole="client"><ClientDashboard /></RoleProtectedRoute>} />
             <Route path="/client-space/documents" element={<RoleProtectedRoute requiredRole="client"><ClientDocuments /></RoleProtectedRoute>} />
             <Route path="/client-space/dossiers" element={<RoleProtectedRoute requiredRole="client"><ClientDossiers /></RoleProtectedRoute>} />

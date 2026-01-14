@@ -248,6 +248,18 @@ export default function ClientInvitation() {
               />
             </div>
 
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+              <Label className="text-gray-900 text-sm font-semibold">
+                🔑 Votre code d'accès personnel
+              </Label>
+              <p className="text-4xl font-bold text-blue-600 text-center tracking-widest font-mono my-3">
+                {invitation?.access_code}
+              </p>
+              <p className="text-xs text-gray-600 text-center">
+                Conservez précieusement ce code. Vous en aurez besoin pour vous connecter.
+              </p>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="password" className="text-gray-900">
                 <Lock className="inline h-4 w-4 mr-2" />
