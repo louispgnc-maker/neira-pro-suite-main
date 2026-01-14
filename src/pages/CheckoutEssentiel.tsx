@@ -37,37 +37,17 @@ export default function CheckoutEssentiel() {
     setLoading(true);
     
     try {
-      // Récupérer le cabinet de l'utilisateur si connecté
-      let cabinetId = null;
-      let customerEmail = null;
+      console.log('🚀 Bypass Stripe - Redirection directe vers confirmation');
       
-      if (user) {
-        const { data: memberData } = await supabase
-          .from('cabinet_members')
-          .select('cabinet_id')
-          .eq('user_id', user.id)
-          .single();
-        
-        cabinetId = memberData?.cabinet_id;
-        customerEmail = user.email;
-      }
+      // Simuler un délai de paiement
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Créer la session Stripe Checkout
-      const checkoutUrl = await createStripeCheckoutSession({
-        priceId: STRIPE_PRICE_IDS['essentiel'],
-        quantity: 1,
-        customerEmail: customerEmail || undefined,
-        cabinetId: cabinetId,
-        successUrl: `${window.location.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${window.location.origin}/checkout-essentiel`,
-      });
-      
-      // Rediriger vers Stripe Checkout
-      window.location.href = checkoutUrl;
+      // Rediriger directement vers la page de succès
+      window.location.href = `${window.location.origin}/subscription/success?session_id=temp_bypass`;
       
     } catch (error) {
-      console.error('Erreur lors de la création de la session:', error);
-      toast.error("Erreur lors de la création de la session de paiement", {
+      console.error('Erreur:', error);
+      toast.error("Erreur", {
         description: error instanceof Error ? error.message : "Veuillez réessayer"
       });
       setLoading(false);

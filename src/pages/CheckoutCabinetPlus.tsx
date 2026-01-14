@@ -103,44 +103,17 @@ export default function CheckoutCabinetPlus() {
     setLoading(true);
     
     try {
-      console.log('🚀 Démarrage du processus de checkout');
+      console.log('🚀 Bypass Stripe - Redirection directe vers confirmation');
       
-      // Récupérer le cabinet de l'utilisateur si connecté
-      let cabinetId = null;
-      let customerEmail = null;
+      // Simuler un délai de paiement
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      if (user) {
-        const { data: memberData } = await supabase
-          .from('cabinet_members')
-          .select('cabinet_id')
-          .eq('user_id', user.id)
-          .single();
-        
-        cabinetId = memberData?.cabinet_id;
-        customerEmail = user.email;
-        console.log('👤 Utilisateur connecté - Cabinet ID:', cabinetId);
-      } else {
-        console.log('👤 Nouvel utilisateur - création du compte après paiement');
-      }
-      
-      // Créer la session Stripe Checkout
-      const checkoutUrl = await createStripeCheckoutSession({
-        priceId: STRIPE_PRICE_IDS['cabinet-plus'],
-        quantity: userCount,
-        customerEmail: customerEmail || undefined,
-        cabinetId: cabinetId,
-        successUrl: `${window.location.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${window.location.origin}/checkout/cabinet-plus`,
-      });
-      
-      console.log('✅ Session créée, redirection vers Stripe:', checkoutUrl);
-      
-      // Rediriger vers Stripe Checkout
-      window.location.href = checkoutUrl;
+      // Rediriger directement vers la page de succès
+      window.location.href = `${window.location.origin}/subscription/success?session_id=temp_bypass`;
       
     } catch (error) {
-      console.error('❌ Erreur lors de la création de la session:', error);
-      toast.error("Erreur lors de la création de la session de paiement", {
+      console.error('❌ Erreur:', error);
+      toast.error("Erreur", {
         description: error instanceof Error ? error.message : "Veuillez réessayer"
       });
       setLoading(false);
