@@ -318,36 +318,6 @@ export default function ClientDetail() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            {invitationStatus === 'none' && (
-              <>
-                <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-300">
-                  Espace client non activé
-                </Badge>
-                <Button className={mainButtonColor} onClick={() => setShowInviteModal(true)}>
-                  <UserPlus className="h-4 w-4 mr-2" /> Inviter à l'espace client
-                </Button>
-              </>
-            )}
-            {invitationStatus === 'pending' && (
-              <>
-                <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-300">
-                  Invitation envoyée
-                </Badge>
-                <Button variant="outline" onClick={() => setShowInviteModal(true)}>
-                  <Mail className="h-4 w-4 mr-2" /> Renvoyer l'invitation
-                </Button>
-              </>
-            )}
-            {invitationStatus === 'active' && (
-              <>
-                <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
-                  Espace client actif
-                </Badge>
-                <Button variant="outline" onClick={() => window.open(`/client-space/${id}`, '_blank')}>
-                  <Eye className="h-4 w-4 mr-2" /> Voir l'espace client
-                </Button>
-              </>
-            )}
             <Button className={mainButtonColor} onClick={onEdit} size="icon">
               <Pencil className="h-4 w-4" />
             </Button>
@@ -362,6 +332,56 @@ export default function ClientDetail() {
             </Button>
           </div>
         </div>
+
+        {/* Client Space Invitation Section */}
+        {invitationStatus === 'none' && (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                <UserPlus className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Espace client non activé</h3>
+                <p className="text-sm text-gray-600">Invitez ce client à accéder à son espace sécurisé</p>
+              </div>
+            </div>
+            <Button className={mainButtonColor} onClick={() => setShowInviteModal(true)}>
+              <UserPlus className="h-4 w-4 mr-2" /> Inviter à l'espace client
+            </Button>
+          </div>
+        )}
+        {invitationStatus === 'pending' && (
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-lg p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
+                <Mail className="h-5 w-5 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Invitation envoyée</h3>
+                <p className="text-sm text-gray-600">En attente de l'activation du client</p>
+              </div>
+            </div>
+            <Button variant="outline" onClick={() => setShowInviteModal(true)} className="border-orange-300 text-orange-700 hover:bg-orange-50">
+              <Mail className="h-4 w-4 mr-2" /> Renvoyer l'invitation
+            </Button>
+          </div>
+        )}
+        {invitationStatus === 'active' && (
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                <Eye className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Espace client actif</h3>
+                <p className="text-sm text-gray-600">Le client a accès à son espace sécurisé</p>
+              </div>
+            </div>
+            <Button variant="outline" onClick={() => window.open(`/client-space/${id}`, '_blank')} className="border-green-300 text-green-700 hover:bg-green-50">
+              <Eye className="h-4 w-4 mr-2" /> Voir l'espace client
+            </Button>
+          </div>
+        )}
 
         {loading ? (
           <div className="flex items-center justify-center h-[300px] border border-dashed border-border rounded-lg">

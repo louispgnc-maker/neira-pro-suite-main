@@ -28,7 +28,7 @@ export default function ShareToCollaborativeButton({ clientId, clientName, role,
 
   return (
     <>
-      <Button variant="outline" size="icon" onClick={handleClick} disabled={disabled} className="bg-blue-50 text-blue-600 border-blue-300 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-400">
+      <Button variant="outline" size="icon" onClick={handleClick} disabled={disabled}>
         <Share2 className="h-4 w-4" />
       </Button>
       <ShareToCollaborativeDialog
