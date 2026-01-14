@@ -50,14 +50,14 @@ export function PublicHeader() {
         <div className="flex items-center gap-3 flex-1 justify-center">
           <button
             onClick={() => navigate('/')}
-            className="px-6 py-2.5 text-base font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
+            className="px-5 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
           >
             Accueil
           </button>
 
           <button
             onClick={() => navigate('/solution')}
-            className="px-6 py-2.5 text-base font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
+            className="px-5 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
           >
             Notre solution
           </button>
@@ -65,7 +65,7 @@ export function PublicHeader() {
           <div ref={whoRef} className="relative">
             <button
               onClick={() => setWhoOpen(!whoOpen)}
-              className="px-6 py-2.5 text-base font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 flex items-center gap-2 hover:scale-105 active:scale-95 hover:shadow-md"
+              className="px-5 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 flex items-center gap-2 hover:scale-105 active:scale-95 hover:shadow-md"
             >
               Pour qui ?
               <ChevronDown className="w-4 h-4" />
@@ -90,14 +90,14 @@ export function PublicHeader() {
 
           <button
             onClick={() => navigate('/about')}
-            className="px-6 py-2.5 text-base font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
+            className="px-5 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
           >
             À propos
           </button>
 
           <button
             onClick={() => navigate('/contact')}
-            className="px-6 py-2.5 text-base font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
+            className="px-5 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
           >
             Contact
           </button>
@@ -117,10 +117,10 @@ export function PublicHeader() {
           <div ref={connRef} className="relative">
             <button
               onClick={() => setConnOpen(!connOpen)}
-              className="px-6 py-2.5 text-base font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 flex items-center gap-2 hover:scale-105 active:scale-95 hover:shadow-md"
+              className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 flex items-center gap-1.5 hover:scale-105 active:scale-95 hover:shadow-md"
             >
-              Connexion
-              <ChevronDown className="w-4 h-4" />
+              Espace professionnel
+              <ChevronDown className="w-3.5 h-3.5" />
             </button>
             {connOpen && (
               <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden z-50">
@@ -142,7 +142,7 @@ export function PublicHeader() {
 
           <button
             onClick={() => navigate('/client-login')}
-            className="px-7 py-2.5 text-base font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-full transition-all duration-200 border border-blue-600 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+            className="px-5 py-2 text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-full transition-all duration-200 border border-blue-600 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
           >
             Espace client
           </button>
