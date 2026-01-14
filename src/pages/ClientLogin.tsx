@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Key, ArrowRight } from 'lucide-react';
+import { PublicHeader } from '@/components/layout/PublicHeader';
 
 export default function ClientLogin() {
   const navigate = useNavigate();
@@ -66,7 +67,9 @@ export default function ClientLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
+    <>
+      <PublicHeader />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4 pt-20">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
@@ -133,6 +136,7 @@ export default function ClientLogin() {
           </form>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </>
   );
 }
