@@ -108,29 +108,11 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
     return () => document.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [isOpen]);
 
-  // Focus l'input quand ouvert et bloquer le scroll
+  // Focus l'input quand ouvert
   useEffect(() => {
-    // L'instance avec hideButton (dans AppLayout) ne gère pas le scroll
-    // Seule l'instance du dashboard gère le scroll
-    if (hideButton) {
-      return; // Ne rien faire pour l'instance cachée
+    if (isOpen && inputRef.current && !hideButton) {
+      inputRef.current.focus();
     }
-    
-    if (isOpen) {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-      // Bloquer le scroll du body sans changer la position
-      document.body.style.overflow = 'hidden';
-    } else {
-      // Restaurer le scroll
-      document.body.style.overflow = '';
-    }
-
-    // Cleanup: toujours restaurer le scroll
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [isOpen, hideButton]);
 
   // Fermer si clic en dehors
