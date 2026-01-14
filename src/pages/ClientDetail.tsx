@@ -350,16 +350,17 @@ export default function ClientDetail() {
                 <Eye className="h-4 w-4 mr-2" /> Voir l'espace client
               </Button>
             )}
-            <Button className={mainButtonColor} onClick={onEdit}>
-              <Pencil className="h-4 w-4 mr-2" /> Modifier
+            <Button className={mainButtonColor} onClick={onEdit} size="icon">
+              <Pencil className="h-4 w-4" />
             </Button>
             <ShareToCollaborativeButton clientId={id as string} clientName={client?.name || ''} role={role} disabled={sharing} onStart={() => setSharing(true)} onDone={() => setSharing(false)} />
             <Button 
               variant="outline" 
               onClick={handleDeleteClient}
               className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+              size="icon"
             >
-              <Trash2 className="h-4 w-4 mr-2" /> Supprimer le client
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
