@@ -48,14 +48,14 @@ export function PublicHeader() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/')}
-            className="px-2 py-1 text-xs font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 hover:scale-105 active:scale-95"
+            className="px-4 py-1.5 text-sm font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 hover:scale-105 active:scale-95"
           >
             Accueil
           </button>
 
           <button
             onClick={() => navigate('/solution')}
-            className="px-2 py-1 text-xs font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 hover:scale-105 active:scale-95"
+            className="px-4 py-1.5 text-sm font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 hover:scale-105 active:scale-95"
           >
             Solution
           </button>
@@ -63,7 +63,7 @@ export function PublicHeader() {
           <div ref={whoRef} className="relative">
             <button
               onClick={() => setWhoOpen(!whoOpen)}
-              className="px-2 py-1 text-xs font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 flex items-center gap-1 hover:scale-105 active:scale-95"
+              className="px-4 py-1.5 text-sm font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 flex items-center gap-1 hover:scale-105 active:scale-95"
             >
               Pour qui ?
               <ChevronDown className="w-3 h-3" />
@@ -88,21 +88,21 @@ export function PublicHeader() {
 
           <button
             onClick={() => navigate('/about')}
-            className="px-2 py-1 text-xs font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 hover:scale-105 active:scale-95"
+            className="px-4 py-1.5 text-sm font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 hover:scale-105 active:scale-95"
           >
             À propos
           </button>
 
           <button
             onClick={() => navigate('/contact')}
-            className="px-2 py-1 text-xs font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 hover:scale-105 active:scale-95"
+            className="px-4 py-1.5 text-sm font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 hover:scale-105 active:scale-95"
           >
             Contact
           </button>
           <div ref={connRef} className="relative">
             <button
               onClick={() => setConnOpen(!connOpen)}
-              className="px-2 py-1 text-xs font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 flex items-center gap-1 hover:scale-105 active:scale-95"
+              className="px-4 py-1.5 text-sm font-medium hover:bg-gray-100 rounded transition-all border border-gray-200 flex items-center gap-1 hover:scale-105 active:scale-95"
             >
               Espace pro
               <ChevronDown className="w-3 h-3" />
@@ -127,7 +127,7 @@ export function PublicHeader() {
 
           <button
             onClick={() => navigate('/client-login')}
-            className="px-2 py-1 text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 rounded transition-all border border-blue-600 hover:scale-105 active:scale-95"
+            className="px-4 py-1.5 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded transition-all border border-blue-600 hover:scale-105 active:scale-95"
           >
             Client
           </button>
