@@ -67,14 +67,37 @@ export function InviteClientModal({
         console.log("✅ Code existant trouvé:", existingInvitation.access_code);
         setAccessCode(existingInvitation.access_code);
       } else {
-        // Aucun code existant - en générer un nouveau UNE SEULE FOIS
-        console.log("🆕 Aucun code trouvé, génération d'un nouveau");
+        // Aucun code existant - en créer un nouveau et l'enregistrer IMMÉDIATEMENT
+        console.log("🆕 Aucun code trouvé, création d'un code permanent");
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let newAccessCode = '';
         for (let i = 0; i < 6; i++) {
           newAccessCode += characters.charAt(Math.floor(Math.random() * characters.length));
         }
-        console.log("🔑 Code généré:", newAccessCode);
+        console.log("🔑 Code permanent créé:", newAccessCode);
+        
+        // Enregistrer le code IMMÉDIATEMENT en base de données
+        const token = crypto.randomUUID();
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 48);
+        
+        const { error: insertError } = await supabase
+          .from("client_invitations")
+          .insert({
+            client_id: clientId,
+            email: email || clientEmail || "",
+            token: token,
+            access_code: newAccessCode,
+            expires_at: expiresAt.toISOString(),
+            status: "pending",
+          });
+        
+        if (insertError) {
+          console.error("Error saving access code:", insertError);
+        } else {
+          console.log("💾 Code sauvegardé en base de données");
+        }
+        
         setAccessCode(newAccessCode);
       }
     } catch (error) {
@@ -92,28 +115,34 @@ export function InviteClientModal({
 
     setSending(true);
     try {
-      // Générer un token sécurisé
-      const token = crypto.randomUUID();
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 48); // Expire dans 48h
-
-      // Créer l'invitation dans la base avec le code déjà généré
-      const { error: inviteError } = await supabase
+      // Vérifier si une invitation existe déjà
+      const { data: existing } = await supabase
         .from("client_invitations")
-        .insert({
-          client_id: clientId,
-          email: email,
-          token: token,
-          access_code: accessCode,
-          expires_at: expiresAt.toISOString(),
-          status: "pending",
-        });
+        .select("id, access_code")
+        .eq("client_id", clientId)
+        .eq("access_code", accessCode)
+        .maybeSingle();
 
-      if (inviteError) {
-        console.error("Error creating invitation:", inviteError);
-        toast.error("Erreur lors de la création de l'invitation");
-        return;
+      let invitationToken = crypto.randomUUID();
+
+      if (existing) {
+        // Mettre à jour l'invitation existante avec le nouvel email
+        const { error: updateError } = await supabase
+          .from("client_invitations")
+          .update({
+            email: email,
+            token: invitationToken,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", existing.id);
+
+        if (updateError) {
+          console.error("Error updating invitation:", updateError);
+          toast.error("Erreur lors de la mise à jour de l'invitation");
+          return;
+        }
       }
+      // Si pas d'invitation existante, c'est qu'elle a déjà été créée par loadExistingAccessCode
 
       // Envoyer l'email via Edge Function
       const { error: emailError } = await supabase.functions.invoke(
@@ -122,7 +151,7 @@ export function InviteClientModal({
           body: {
             email: email,
             clientName: clientName,
-            token: token,
+            token: invitationToken,
             accessCode: accessCode,
           },
         }
