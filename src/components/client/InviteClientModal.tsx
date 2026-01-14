@@ -34,11 +34,21 @@ export function InviteClientModal({
 }: InviteClientModalProps) {
   const [email, setEmail] = useState("");
   const [sending, setSending] = useState(false);
+  const [accessCode, setAccessCode] = useState("");
   const hasClientEmail = clientEmail && clientEmail.includes("@");
 
+  // Générer le code d'accès à l'ouverture de la modal
   useEffect(() => {
     if (isOpen) {
       setEmail(clientEmail || "");
+      
+      // Générer un code d'accès unique à 6 caractères (lettres majuscules et chiffres)
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let newAccessCode = '';
+      for (let i = 0; i < 6; i++) {
+        newAccessCode += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      setAccessCode(newAccessCode);
     }
   }, [isOpen, clientEmail]);
 
@@ -55,14 +65,7 @@ export function InviteClientModal({
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 48); // Expire dans 48h
 
-      // Générer un code d'accès unique à 6 caractères (lettres majuscules et chiffres)
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let accessCode = '';
-      for (let i = 0; i < 6; i++) {
-        accessCode += characters.charAt(Math.floor(Math.random() * characters.length));
-      }
-
-      // Créer l'invitation dans la base
+      // Créer l'invitation dans la base avec le code déjà généré
       const { error: inviteError } = await supabase
         .from("client_invitations")
         .insert({
@@ -147,6 +150,21 @@ export function InviteClientModal({
                 Email provenant de la fiche client
               </p>
             )}
+          </div>
+
+          {/* Affichage du code d'accès généré */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <Label className="text-sm font-semibold text-gray-900 mb-2 block">
+              🔑 Code d'accès généré
+            </Label>
+            <div className="flex items-center justify-center gap-3">
+              <code className="text-3xl font-bold text-blue-600 tracking-widest font-mono bg-white px-4 py-2 rounded border border-blue-300">
+                {accessCode}
+              </code>
+            </div>
+            <p className="text-xs text-gray-600 text-center mt-2">
+              Ce code sera envoyé au client par email et lui permettra d'accéder à son espace. Il ne peut pas être modifié.
+            </p>
           </div>
         </div>
 

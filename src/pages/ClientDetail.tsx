@@ -157,7 +157,8 @@ export default function ClientDetail() {
 
       // Load invitation status
       const { data: invitation } = await supabase
-        .from('client_i, access_code')
+        .from('client_invitations')
+        .select('status, access_code')
         .eq('client_id', id)
         .order('created_at', { ascending: false })
         .limit(1)
@@ -165,8 +166,7 @@ export default function ClientDetail() {
       
       if (mounted && invitation) {
         setInvitationStatus(invitation.status as 'none' | 'pending' | 'active');
-        setClientInvitation(invitation as ClientInvitation
-        setInvitationStatus(invitation.status as 'none' | 'pending' | 'active');
+        setClientInvitation(invitation as ClientInvitation);
       }
 
       if (mounted) setLoading(false);
@@ -357,7 +357,8 @@ export default function ClientDetail() {
             </Button>
           </div>
         )}
-        {invitationStatus === 'pending' && (">
+        {invitationStatus === 'pending' && (
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
@@ -374,7 +375,19 @@ export default function ClientDetail() {
             </div>
             {clientInvitation?.access_code && (
               <div className="mt-3 bg-white border border-orange-200 rounded-lg p-3">
-                <p className="text-xs font-medium text-gray-600 mb-1">🔑 Code d'accès client :</p>">
+                <p className="text-xs font-medium text-gray-600 mb-1">🔑 Code d'accès client :</p>
+                <div className="flex items-center gap-2">
+                  <code className="text-2xl font-bold text-orange-600 tracking-widest font-mono bg-orange-50 px-3 py-1 rounded">
+                    {clientInvitation.access_code}
+                  </code>
+                  <p className="text-xs text-gray-500">(Non modifiable)</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        {invitationStatus === 'active' && (
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
@@ -399,20 +412,7 @@ export default function ClientDetail() {
                   <p className="text-xs text-gray-500">(Non modifiable)</p>
                 </div>
               </div>
-            )}atus === 'active' && (
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                <Eye className="h-5 w-5 text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">Espace client actif</h3>
-                <p className="text-sm text-gray-600">Le client a accès à son espace sécurisé</p>
-              </div>
-            </div>
-            <Button variant="outline" onClick={() => window.open(`/client-space/${id}`, '_blank')} className="border-green-300 text-green-700 hover:bg-green-50">
-              <Eye className="h-4 w-4 mr-2" /> Voir l'espace client
-            </Button>
+            )}
           </div>
         )}
 
