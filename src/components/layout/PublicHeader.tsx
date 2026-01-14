@@ -31,8 +31,9 @@ export function PublicHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
-      <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-4 relative">
-        <div className="flex items-center gap-3">
+      <div style={{ paddingLeft: '2.5cm', paddingRight: '2.5cm' }} className="w-full py-3 flex items-center justify-between gap-6">
+        {/* Gauche : Logo + Nom */}
+        <div className="flex items-center gap-3 flex-shrink-0">
           <button 
             onClick={() => navigate('/')} 
             className="w-10 h-10 rounded-full overflow-hidden transition-transform duration-200 hover:scale-110 active:scale-90 cursor-pointer"
@@ -45,7 +46,8 @@ export function PublicHeader() {
           </div>
         </div>
 
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-8">
+        {/* Centre : Navigation */}
+        <div className="flex items-center gap-6 flex-1 justify-center">
           <button
             onClick={() => navigate('/')}
             className="px-3 py-1.5 text-sm font-medium hover:bg-gray-100 rounded-md transition-all duration-200 border border-gray-200 hover:scale-110 active:scale-90"
@@ -101,7 +103,17 @@ export function PublicHeader() {
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Droite : Réseaux sociaux + Connexion */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <a href="https://www.instagram.com/neira.doc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform duration-200 shadow-sm" style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}>
+            <Instagram className="w-4 h-4" />
+          </a>
+          <a href="https://www.linkedin.com/company/neira-doc" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform duration-200 shadow-sm" style={{ background: '#0A66C2' }}>
+            <Linkedin className="w-4 h-4" />
+          </a>
+
+          <div className="w-px h-6 bg-gray-300 mx-1"></div>
+
           <div ref={connRef} className="relative">
             <button
               onClick={() => setConnOpen(!connOpen)}
@@ -134,13 +146,6 @@ export function PublicHeader() {
           >
             Espace client
           </button>
-
-          <a href="https://www.instagram.com/neira.doc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform duration-200 shadow-sm" style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}>
-            <Instagram className="w-4 h-4" />
-          </a>
-          <a href="https://www.linkedin.com/company/neira-doc" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-8 h-8 rounded-md flex items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform duration-200 shadow-sm" style={{ background: '#0A66C2' }}>
-            <Linkedin className="w-4 h-4" />
-          </a>
         </div>
       </div>
     </header>
