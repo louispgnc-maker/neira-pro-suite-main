@@ -274,24 +274,25 @@ export default function ClientLogin() {
                 </div>
                 <CardTitle className="text-2xl text-gray-900">Connexion</CardTitle>
                 <CardDescription className="text-gray-600">
-                  Entrez votre mot de passe
+                  Connectez-vous à votre espace client
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handlePasswordLogin} className="space-y-4">
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                    <p className="text-sm text-gray-600">Code d'accès vérifié</p>
-                    <p className="text-xs text-gray-500 mt-1">{invitation.email}</p>
+                  <div className="space-y-2">
+                    <Label htmlFor="loginEmail" className="text-gray-900">
+                      Email
+                    </Label>
+                    <Input
+                      id="loginEmail"
+                      type="email"
+                      name="username"
+                      value={invitation.email}
+                      autoComplete="username"
+                      readOnly
+                      className="bg-gray-50"
+                    />
                   </div>
-
-                  <input
-                    type="email"
-                    name="username"
-                    value={invitation.email}
-                    autoComplete="username"
-                    style={{ display: 'none' }}
-                    readOnly
-                  />
 
                   <div className="space-y-2">
                     <Label htmlFor="password" className="text-gray-900">
