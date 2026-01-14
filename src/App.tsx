@@ -115,7 +115,7 @@ const App = () => (
             
             {/* Routes Avocat */}
             <Route path="/avocats/auth" element={<AvocatAuth />} />
-            <Route path="/avocats/metier" element={<RoleProtectedRoute requiredRole="avocat"><AvocatMetier /></RoleProtectedRoute>} />
+            <Route path="/avocats/metier" element={<AvocatMetier />} />
             <Route path="/avocats/dashboard" element={<RoleProtectedRoute requiredRole="avocat"><AvocatDashboard /></RoleProtectedRoute>} />
             <Route path="/avocats/documents" element={<RoleProtectedRoute requiredRole="avocat"><Documents /></RoleProtectedRoute>} />
             <Route path="/avocats/signatures" element={<RoleProtectedRoute requiredRole="avocat"><Signatures /></RoleProtectedRoute>} />
@@ -144,7 +144,7 @@ const App = () => (
             
             {/* Routes Notaire */}
             <Route path="/notaires/auth" element={<NotaireAuth />} />
-            <Route path="/notaires/metier" element={<RoleProtectedRoute requiredRole="notaire"><NotaireMetier /></RoleProtectedRoute>} />
+            <Route path="/notaires/metier" element={<NotaireMetier />} />
             <Route path="/notaires/dashboard" element={<RoleProtectedRoute requiredRole="notaire"><NotaireDashboard /></RoleProtectedRoute>} />
             <Route path="/notaires/documents" element={<RoleProtectedRoute requiredRole="notaire"><Documents /></RoleProtectedRoute>} />
             <Route path="/notaires/signatures" element={<RoleProtectedRoute requiredRole="notaire"><Signatures /></RoleProtectedRoute>} />
