@@ -24,9 +24,9 @@ create policy "Cabinet members can view client invitations"
   for select
   using (
     exists (
-      select 1 from clients c
-      inner join cabinet_members cm on cm.cabinet_id = c.cabinet_id
-      where c.id = client_invitations.client_id
+      select 1 from cabinet_clients cc
+      inner join cabinet_members cm on cm.cabinet_id = cc.cabinet_id
+      where cc.client_id = client_invitations.client_id
       and cm.user_id = auth.uid()
     )
   );
@@ -37,9 +37,9 @@ create policy "Cabinet members can create client invitations"
   for insert
   with check (
     exists (
-      select 1 from clients c
-      inner join cabinet_members cm on cm.cabinet_id = c.cabinet_id
-      where c.id = client_invitations.client_id
+      select 1 from cabinet_clients cc
+      inner join cabinet_members cm on cm.cabinet_id = cc.cabinet_id
+      where cc.client_id = client_invitations.client_id
       and cm.user_id = auth.uid()
     )
   );
@@ -50,9 +50,9 @@ create policy "Cabinet members can update client invitations"
   for update
   using (
     exists (
-      select 1 from clients c
-      inner join cabinet_members cm on cm.cabinet_id = c.cabinet_id
-      where c.id = client_invitations.client_id
+      select 1 from cabinet_clients cc
+      inner join cabinet_members cm on cm.cabinet_id = cc.cabinet_id
+      where cc.client_id = client_invitations.client_id
       and cm.user_id = auth.uid()
     )
   );
