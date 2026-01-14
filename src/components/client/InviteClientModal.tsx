@@ -36,24 +36,20 @@ export function InviteClientModal({
   const [sending, setSending] = useState(false);
   const [accessCode, setAccessCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [codeLoaded, setCodeLoaded] = useState(false);
   const hasClientEmail = clientEmail && clientEmail.includes("@");
 
-  // Charger le code d'accès existant UNIQUEMENT à l'ouverture
+  // Charger le code existant UNE SEULE FOIS à l'ouverture
   useEffect(() => {
-    if (isOpen && !codeLoaded) {
+    if (isOpen) {
       setEmail(clientEmail || "");
-      loadOrGenerateAccessCode();
-    } else if (!isOpen) {
-      // Réinitialiser le flag quand la modal se ferme
-      setCodeLoaded(false);
+      loadExistingAccessCode();
     }
   }, [isOpen, clientId]);
 
-  const loadOrGenerateAccessCode = async () => {
+  const loadExistingAccessCode = async () => {
     setLoading(true);
     try {
-      // Vérifier si une invitation existe déjà pour ce client
+      // Chercher un code existant pour ce client
       const { data: existingInvitation, error } = await supabase
         .from("client_invitations")
         .select("access_code")
@@ -67,31 +63,22 @@ export function InviteClientModal({
       }
 
       if (existingInvitation?.access_code) {
-        // Utiliser le code existant
+        // Code existant trouvé - ne JAMAIS le changer
         console.log("✅ Code existant trouvé:", existingInvitation.access_code);
         setAccessCode(existingInvitation.access_code);
       } else {
-        // Générer un nouveau code d'accès unique à 6 caractères (lettres majuscules et chiffres)
-        console.log("🆕 Aucun code existant, génération d'un nouveau code");
+        // Aucun code existant - en générer un nouveau UNE SEULE FOIS
+        console.log("🆕 Aucun code trouvé, génération d'un nouveau");
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let newAccessCode = '';
         for (let i = 0; i < 6; i++) {
           newAccessCode += characters.charAt(Math.floor(Math.random() * characters.length));
         }
-        console.log("🔑 Nouveau code généré:", newAccessCode);
+        console.log("🔑 Code généré:", newAccessCode);
         setAccessCode(newAccessCode);
       }
-      setCodeLoaded(true);
     } catch (error) {
-      console.error("Error loading access code:", error);
-      // En cas d'erreur, générer un nouveau code
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let newAccessCode = '';
-      for (let i = 0; i < 6; i++) {
-        newAccessCode += characters.charAt(Math.floor(Math.random() * characters.length));
-      }
-      setAccessCode(newAccessCode);
-      setCodeLoaded(true);
+      console.error("Error:", error);
     } finally {
       setLoading(false);
     }
