@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,8 +10,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
 
 interface InviteClientModalProps {
   isOpen: boolean;
@@ -30,8 +32,15 @@ export function InviteClientModal({
   clientEmail,
   onSuccess,
 }: InviteClientModalProps) {
-  const [email, setEmail] = useState(clientEmail);
+  const [email, setEmail] = useState("");
   const [sending, setSending] = useState(false);
+  const hasClientEmail = clientEmail && clientEmail.includes("@");
+
+  useEffect(() => {
+    if (isOpen) {
+      setEmail(clientEmail || "");
+    }
+  }, [isOpen, clientEmail]);
 
   const handleSendInvitation = async () => {
     if (!email || !email.includes("@")) {
@@ -104,6 +113,15 @@ export function InviteClientModal({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          {!hasClientEmail && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Aucun email n'est renseigné dans la fiche client. Veuillez entrer l'adresse email du client ci-dessous.
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <div className="space-y-2">
             <Label htmlFor="email">Email du client</Label>
             <Input
@@ -112,7 +130,14 @@ export function InviteClientModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="email@exemple.com"
+              disabled={hasClientEmail}
+              className={hasClientEmail ? "bg-gray-50" : ""}
             />
+            {hasClientEmail && (
+              <p className="text-xs text-gray-500">
+                Email provenant de la fiche client
+              </p>
+            )}
           </div>
         </div>
 
