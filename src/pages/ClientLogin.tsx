@@ -18,8 +18,9 @@ interface ClientInvitation {
 
 export default function ClientLogin() {
   const navigate = useNavigate();
-  const [step, setStep] = useState<'code' | 'password' | 'create-password'>('code');
+  const [step, setStep] = useState<'code' | 'password' | 'create-password' | 'login'>('login');
   const [accessCode, setAccessCode] = useState('');
+  const [email, setEmail] = useState('');
   const [invitation, setInvitation] = useState<ClientInvitation | null>(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -111,19 +112,19 @@ export default function ClientLogin() {
       return;
     }
 
-    if (!invitation) return;
-
     setLoading(true);
     try {
-      // Se connecter avec l'email et le mot de passe
+      // Connexion classique email/password (sans code)
+      const emailToUse = invitation?.email || email;
+      
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: invitation.email,
+        email: emailToUse,
         password: password,
       });
 
       if (error) {
         console.error('Login error:', error);
-        toast.error('Mot de passe incorrect');
+        toast.error('Email ou mot de passe incorrect');
         setLoading(false);
         return;
       }
@@ -207,7 +208,83 @@ export default function ClientLogin() {
       <PublicHeader />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4 pt-20">
         <Card className="w-full max-w-md">
-          {/* Étape 1: Saisie du code d'accès */}
+          {/* Mode connexion classique (Email + Mot de passe) */}
+          {step === 'login' && (
+            <>
+              <CardHeader className="text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
+                    <Lock className="h-8 w-8 text-blue-600" />
+                  </div>
+                </div>
+                <CardTitle className="text-2xl text-gray-900">Espace client</CardTitle>
+                <CardDescription className="text-gray-600">
+                  Connectez-vous à votre espace
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handlePasswordLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="loginEmail" className="text-gray-900">
+                      Email
+                    </Label>
+                    <Input
+                      id="loginEmail"
+                      type="email"
+                      name="username"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="votre@email.com"
+                      required
+                      autoComplete="username"
+                      autoFocus
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="loginPassword" className="text-gray-900">
+                      Mot de passe
+                    </Label>
+                    <Input
+                      id="loginPassword"
+                      name="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Votre mot de passe"
+                      required
+                      minLength={8}
+                      autoComplete="current-password"
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    disabled={loading}
+                  >
+                    {loading ? 'Connexion...' : 'Se connecter'}
+                    {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
+                  </Button>
+
+                  <div className="text-center pt-4 space-y-2">
+                    <p className="text-sm text-gray-600">
+                      Première connexion ?{' '}
+                      <button
+                        type="button"
+                        onClick={() => setStep('code')}
+                        className="text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        Utilisez votre code d'accès
+                      </button>
+                    </p>
+                  </div>
+                </form>
+              </CardContent>
+            </>
+          )}
+
+          {/* Étape: Saisie du code d'accès (première activation) */}
           {step === 'code' && (
             <>
               <CardHeader className="text-center">
@@ -216,7 +293,7 @@ export default function ClientLogin() {
                     <Key className="h-8 w-8 text-blue-600" />
                   </div>
                 </div>
-                <CardTitle className="text-2xl text-gray-900">Espace client</CardTitle>
+                <CardTitle className="text-2xl text-gray-900">Première connexion</CardTitle>
                 <CardDescription className="text-gray-600">
                   Entrez votre code d'accès à 6 caractères
                 </CardDescription>
@@ -253,17 +330,20 @@ export default function ClientLogin() {
                   </Button>
 
                   <div className="text-center pt-4">
-                    <p className="text-sm text-gray-600">
-                      Vous n'avez pas reçu de code ?{' '}
-                      <span className="text-gray-500">Contactez votre professionnel</span>
-                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setStep('login')}
+                      className="text-sm text-blue-600 hover:text-blue-700"
+                    >
+                      ← Retour à la connexion
+                    </button>
                   </div>
                 </form>
               </CardContent>
             </>
           )}
 
-          {/* Étape 2: Connexion avec mot de passe (compte actif) */}
+          {/* Étape: Connexion avec mot de passe après code (compte déjà créé) */}
           {step === 'password' && invitation && (
             <>
               <CardHeader className="text-center">
