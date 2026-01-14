@@ -55,8 +55,12 @@ export function InviteClientModal({
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 48); // Expire dans 48h
 
-      // Générer un code d'accès unique à 6 chiffres
-      const accessCode = Math.floor(100000 + Math.random() * 900000).toString();
+      // Générer un code d'accès unique à 6 caractères (lettres majuscules et chiffres)
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let accessCode = '';
+      for (let i = 0; i < 6; i++) {
+        accessCode += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
 
       // Créer l'invitation dans la base
       const { error: inviteError } = await supabase
