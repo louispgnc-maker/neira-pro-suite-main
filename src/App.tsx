@@ -60,6 +60,7 @@ import CGU from "./pages/CGU";
 import NotFound from "./pages/NotFound";
 import PublicClientForm from "./pages/PublicClientForm";
 import ClientInvitation from "./pages/ClientInvitation";
+import ClientSpace from "./pages/ClientSpace";
 import ScrollToTop from "./components/ScrollToTop";
 import EmailConfirmHandler from "./components/EmailConfirmHandler";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
@@ -97,6 +98,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/form/:token" element={<PublicClientForm />} />
             <Route path="/client-invitation/:token" element={<ClientInvitation />} />
+            <Route path="/client-space" element={<RoleProtectedRoute requiredRole="client"><ClientSpace /></RoleProtectedRoute>} />
             
             {/* Routes checkout publiques */}
             <Route path="/checkout/:planId" element={<CheckoutPublic />} />
