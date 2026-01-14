@@ -88,14 +88,19 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
     setQuery("");
   }, [location.pathname]);
 
-  // Gérer Cmd+K / Ctrl+K pour ouvrir
+  // Gérer Cmd+K / Ctrl+K pour ouvrir et Échap pour fermer (si pas en fullscreen)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         setIsOpen(true);
       }
-      // Échap ne ferme plus la barre de recherche - uniquement via croix ou clic extérieur
+      // Fermer avec Échap seulement si la barre est ouverte ET qu'on n'est pas en fullscreen
+      if (e.key === "Escape" && isOpen && !document.fullscreenElement) {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsOpen(false);
+      }
     };
 
     // Utiliser capture: true pour intercepter l'événement avant le plein écran
@@ -311,6 +316,7 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
             <div className="flex items-center gap-4">
               <span>↑↓ Naviguer</span>
               <span>↵ Sélectionner</span>
+              <span>Esc Fermer</span>
             </div>
           </div>
         )}
