@@ -201,6 +201,9 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedIndex(prev => (prev - 1 + results.length) % results.length);
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev + 1) % results.length);
     } else if (e.key === "Enter" && results.length > 0) {
       e.preventDefault();
       handleNavigate(results[selectedIndex]);
