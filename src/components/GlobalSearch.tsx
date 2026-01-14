@@ -107,13 +107,6 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
     return () => document.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [isOpen]);
 
-  // Focus l'input quand ouvert
-  useEffect(() => {
-    if (isOpen && inputRef.current && !hideButton) {
-      inputRef.current.focus();
-    }
-  }, [isOpen, hideButton]);
-
   // Fermer si clic en dehors
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
