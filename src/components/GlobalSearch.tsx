@@ -75,7 +75,6 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showButton, setShowButton] = useState(false);
-  const scrollPositionRef = useRef(0);
 
   // Afficher le bouton uniquement sur le dashboard
   useEffect(() => {
