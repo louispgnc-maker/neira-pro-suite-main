@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Key, ArrowRight, Lock, CheckCircle2 } from 'lucide-react';
+import { Key, ArrowRight, Lock, CheckCircle2, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import { PublicHeader } from '@/components/layout/PublicHeader';
 
 interface ClientInvitation {
@@ -24,6 +24,43 @@ export default function ClientLogin() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Fonction pour générer un mot de passe sécurisé
+  const generateSecurePassword = () => {
+    const length = 16;
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*';
+    let password = '';
+    
+    password += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)];
+    password += 'abcdefghijklmnopqrstuvwxyz'[Math.floor(Math.random() * 26)];
+    password += '0123456789'[Math.floor(Math.random() * 10)];
+    password += '!@#$%&*'[Math.floor(Math.random() * 7)];
+    
+    for (let i = password.length; i < length; i++) {
+      password += charset[Math.floor(Math.random() * charset.length)];
+    }
+    
+    return password.split('').sort(() => Math.random() - 0.5).join('');
+  };
+
+  const handleGeneratePassword = () => {
+    const newPassword = generateSecurePassword();
+    setPassword(newPassword);
+    setConfirmPassword(newPassword);
+    setShowPassword(true);
+    setShowConfirmPassword(true);
+    toast.success('Mot de passe sécurisé généré !', {
+      description: 'Vous pouvez le copier ou le modifier selon vos préférences'
+    });
+  };
+
+  useEffect(() => {
+    if (step === 'create-password' && !password) {
+      handleGeneratePassword();
+    }
+  }, [step]);
 
   const handleAccessCodeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -247,18 +284,29 @@ export default function ClientLogin() {
                     <p className="text-xs text-gray-500 mt-1">{invitation.email}</p>
                   </div>
 
+                  <input
+                    type="email"
+                    name="username"
+                    value={invitation.email}
+                    autoComplete="username"
+                    style={{ display: 'none' }}
+                    readOnly
+                  />
+
                   <div className="space-y-2">
                     <Label htmlFor="password" className="text-gray-900">
                       Mot de passe
                     </Label>
                     <Input
                       id="password"
+                      name="password"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Votre mot de passe"
                       required
                       minLength={8}
+                      autoComplete="current-password"
                       autoFocus
                     />
                   </div>
@@ -311,35 +359,104 @@ export default function ClientLogin() {
                     <p className="text-xs text-gray-500 mt-1">{invitation.email}</p>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="newPassword" className="text-gray-900">
-                      Créer un mot de passe
-                    </Label>
-                    <Input
-                      id="newPassword"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Minimum 8 caractères"
-                      required
-                      minLength={8}
-                      autoFocus
-                    />
+                  <input
+                    type="email"
+                    name="username"
+                    value={invitation.email}
+                    autoComplete="username"
+                    style={{ display: 'none' }}
+                    readOnly
+                  />
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="newPassword" className="text-gray-900">
+                        Créer un mot de passe
+                      </Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleGeneratePassword}
+                        className="text-blue-600 hover:text-blue-700 h-auto p-1"
+                      >
+                        <RefreshCw className="w-3 h-3 mr-1" />
+                        Suggérer
+                      </Button>
+                    </div>
+                    <div className="relative">
+                      <Input
+                        id="newPassword"
+                        name="new-password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Minimum 8 caractères"
+                        required
+                        minLength={8}
+                        autoComplete="new-password"
+                        className="pr-10"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-400" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-gray-400" />
+                        )}
+                      </Button>
+                    </div>
+                    {password && password.length >= 8 && (
+                      <span className="text-xs text-green-600 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Longueur suffisante
+                      </span>
+                    )}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword" className="text-gray-900">
                       Confirmer le mot de passe
                     </Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Retapez votre mot de passe"
-                      required
-                      minLength={8}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        name="confirm-password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Retapez votre mot de passe"
+                        required
+                        minLength={8}
+                        autoComplete="new-password"
+                        className="pr-10"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-400" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-gray-400" />
+                        )}
+                      </Button>
+                    </div>
+                    {confirmPassword && password !== confirmPassword && (
+                      <p className="text-xs text-red-600">Les mots de passe ne correspondent pas</p>
+                    )}
+                    {confirmPassword && password === confirmPassword && (
+                      <p className="text-xs text-green-600 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Les mots de passe correspondent
+                      </p>
+                    )}
                   </div>
 
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
