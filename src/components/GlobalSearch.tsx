@@ -115,10 +115,13 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
 
   // Focus l'input quand ouvert sans scroller
   useEffect(() => {
-    if (isOpen && inputRef.current && !hideButton) {
-      inputRef.current.focus({ preventScroll: true });
+    if (isOpen && inputRef.current) {
+      // Utiliser setTimeout pour s'assurer que le DOM est rendu
+      setTimeout(() => {
+        inputRef.current?.focus({ preventScroll: true });
+      }, 0);
     }
-  }, [isOpen, hideButton]);
+  }, [isOpen]);
 
   // Fermer si clic en dehors
   useEffect(() => {
