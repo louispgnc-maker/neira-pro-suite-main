@@ -47,25 +47,25 @@ export function PublicHeader() {
         </div>
 
         {/* Centre : Navigation */}
-        <div className="flex items-center gap-3 flex-1 justify-center">
+        <div className="flex items-center gap-6 flex-1 justify-center">
           <button
-            onClick={() => navigate('/')}
-            className="px-5 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
+            onClick={() => navigate('/solution')}
+            className="px-6 py-2.5 text-sm font-medium hover:text-gray-900 transition-all duration-200"
           >
-            Accueil
+            Notre solution
           </button>
 
           <button
-            onClick={() => navigate('/solution')}
-            className="px-5 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
+            onClick={() => navigate('/')}
+            className="px-8 py-3 text-lg font-semibold hover:text-gray-900 transition-all duration-200"
           >
-            Notre solution
+            Accueil
           </button>
 
           <div ref={whoRef} className="relative">
             <button
               onClick={() => setWhoOpen(!whoOpen)}
-              className="px-5 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 flex items-center gap-2 hover:scale-105 active:scale-95 hover:shadow-md"
+              className="px-6 py-2.5 text-sm font-medium hover:text-gray-900 transition-all duration-200 flex items-center gap-1.5"
             >
               Pour qui ?
               <ChevronDown className="w-4 h-4" />
@@ -87,20 +87,6 @@ export function PublicHeader() {
               </div>
             )}
           </div>
-
-          <button
-            onClick={() => navigate('/about')}
-            className="px-5 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
-          >
-            À propos
-          </button>
-
-          <button
-            onClick={() => navigate('/contact')}
-            className="px-5 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 hover:scale-105 active:scale-95 hover:shadow-md"
-          >
-            Contact
-          </button>
         </div>
 
         {/* Droite : Réseaux sociaux + Connexion */}

@@ -1,75 +1,48 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Scale, Briefcase, FileText, UserCheck, Calculator, ShieldCheck, Users, ArrowRight } from 'lucide-react';
+import { Scale, FileText, Users, Clock, Shield, Zap, CheckCircle, ArrowRight } from 'lucide-react';
 import { PublicHeader } from '@/components/layout/PublicHeader';
 
 export default function AvocatsMetier() {
   const navigate = useNavigate();
 
-  const roles = [
-    {
-      icon: <Scale className="w-8 h-8" />,
-      title: "Associé / Fondateur",
-      color: "from-blue-900 to-blue-800",
-      permissions: [
-        "Accès complet à tous les dossiers et documents",
-        "Gestion des membres et attribution des rôles",
-        "Configuration du cabinet et paramètres",
-        "Validation des contrats et signatures",
-        "Supervision financière et reporting",
-        "Droits d'administration totaux"
-      ]
-    },
-    {
-      icon: <ShieldCheck className="w-8 h-8" />,
-      title: "Responsable Qualité / RGPD",
-      color: "from-blue-800 to-blue-700",
-      permissions: [
-        "Audits internes et conformité",
-        "Gestion des données personnelles",
-        "Contrôle des processus qualité",
-        "Formation des équipes",
-        "Accès lecture à tous les dossiers"
-      ]
-    },
-    {
-      icon: <Briefcase className="w-8 h-8" />,
-      title: "Avocat Collaborateur",
-      color: "from-blue-700 to-blue-600",
-      permissions: [
-        "Gestion de ses propres dossiers clients",
-        "Rédaction et modification de contrats",
-        "Accès aux modèles et bibliothèque juridique",
-        "Communication avec les clients"
-      ]
-    },
+  const benefits = [
     {
       icon: <FileText className="w-8 h-8" />,
-      title: "Juriste Senior",
-      color: "from-blue-600 to-blue-500",
-      permissions: [
-        "Relecture et validation des documents",
-        "Création et modification des modèles",
-        "Accès aux dossiers de son équipe"
-      ]
+      title: "Gestion des dossiers simplifiée",
+      description: "Centralisez tous vos dossiers clients, documents et contrats au même endroit. Recherche instantanée et organisation intelligente.",
+      color: "from-blue-600 to-blue-700"
     },
     {
-      icon: <UserCheck className="w-8 h-8" />,
-      title: "Assistant Juridique / Paralegal",
-      color: "from-blue-500 to-blue-400",
-      permissions: [
-        "Préparation des dossiers clients",
-        "Collecte et organisation des pièces"
-      ]
+      icon: <Users className="w-8 h-8" />,
+      title: "Collaboration en équipe",
+      description: "Travaillez ensemble sur les dossiers avec des rôles et permissions adaptés à chaque membre de votre cabinet.",
+      color: "from-blue-700 to-blue-800"
     },
     {
-      icon: <Calculator className="w-8 h-8" />,
-      title: "Chargé de Facturation",
-      color: "from-blue-400 to-blue-300",
-      permissions: [
-        "Accès lecture aux dossiers"
-      ]
+      icon: <Clock className="w-8 h-8" />,
+      title: "Gain de temps considérable",
+      description: "Automatisez les tâches répétitives : génération de documents, suivi des échéances, relances clients automatiques.",
+      color: "from-blue-500 to-blue-600"
+    },
+    {
+      icon: <Shield className="w-8 h-8" />,
+      title: "Conformité RGPD garantie",
+      description: "Toutes vos données sont sécurisées et hébergées en France. Gestion automatique des droits d'accès et de la confidentialité.",
+      color: "from-blue-600 to-indigo-600"
+    },
+    {
+      icon: <Zap className="w-8 h-8" />,
+      title: "Signature électronique",
+      description: "Faites signer vos clients en ligne avec une signature électronique juridiquement valable. Plus besoin d'impression ni de déplacement.",
+      color: "from-blue-500 to-blue-700"
+    },
+    {
+      icon: <CheckCircle className="w-8 h-8" />,
+      title: "Suivi client personnalisé",
+      description: "Offrez à vos clients un espace dédié où ils peuvent suivre l'avancement de leurs dossiers en temps réel.",
+      color: "from-blue-700 to-indigo-700"
     }
   ];
 
@@ -80,65 +53,49 @@ export default function AvocatsMetier() {
       <div className="p-6 pt-28">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-8">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg">
-                <Scale className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold">Cabinets d'Avocats</h1>
-                <p className="text-gray-600 mt-1">Rôles et permissions dans l'espace collaboratif</p>
-              </div>
+        <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-12 text-center">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg">
+              <Scale className="w-10 h-10 text-white" />
             </div>
-            <Button onClick={() => navigate(-1)} className="bg-blue-600 hover:bg-blue-700 text-white">Retour</Button>
           </div>
+          <h1 className="text-5xl font-bold mb-3">Neira pour les Avocats</h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            La solution complète pour moderniser et simplifier la gestion de votre cabinet
+          </p>
         </div>
 
-        {/* Roles Container */}
-        <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-8">
-          <h2 className="text-2xl font-bold mb-6">Rôles et permissions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {roles.map((role, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              <div className={`bg-gradient-to-r ${role.color} p-6 text-white`}>
-                <div className="flex items-center gap-3">
-                  {role.icon}
-                  <h3 className="text-xl font-bold">{role.title}</h3>
+        {/* Benefits Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {benefits.map((benefit, index) => (
+            <Card key={index} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className={`bg-gradient-to-r ${benefit.color} p-6 text-white`}>
+                <div className="flex items-center gap-3 mb-3">
+                  {benefit.icon}
+                  <h3 className="text-xl font-bold">{benefit.title}</h3>
                 </div>
               </div>
               <div className="p-6">
-                <h4 className="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">
-                  Permissions
-                </h4>
-                <ul className="space-y-2.5">
-                  {role.permissions.map((permission, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm">
-                      <ArrowRight className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span>{permission}</span>
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-gray-700 leading-relaxed">{benefit.description}</p>
               </div>
             </Card>
           ))}
-          </div>
         </div>
 
         {/* CTA */}
-        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-8 text-white text-center">
-          <h2 className="text-2xl font-bold mb-3">Prêt à optimiser votre cabinet ?</h2>
-          <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-            Commencez à utiliser Neira pour gérer vos équipes, vos dossiers et vos clients de manière collaborative et sécurisée.
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg p-12 text-white text-center">
+          <h2 className="text-3xl font-bold mb-4">Prêt à transformer votre cabinet ?</h2>
+          <p className="text-blue-100 mb-8 max-w-2xl mx-auto text-lg">
+            Rejoignez les centaines d'avocats qui font déjà confiance à Neira pour simplifier leur quotidien.
           </p>
           <Button 
             size="lg" 
             variant="secondary"
             onClick={() => navigate('/avocats/auth')}
-            className="gap-2"
+            className="gap-2 text-lg px-8 py-6"
           >
-            Créer mon espace
-            <ArrowRight className="w-4 h-4" />
+            Créer mon espace gratuitement
+            <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
       </div>

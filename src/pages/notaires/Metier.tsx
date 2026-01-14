@@ -1,75 +1,48 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Landmark, FileSignature, ClipboardCheck, UserCog, Archive, ShieldCheck, Users, ArrowRight } from 'lucide-react';
+import { Landmark, FileSignature, Users, Clock, Shield, Zap, CheckCircle, ArrowRight } from 'lucide-react';
 import { PublicHeader } from '@/components/layout/PublicHeader';
 
 export default function NotairesMetier() {
   const navigate = useNavigate();
 
-  const roles = [
-    {
-      icon: <Landmark className="w-8 h-8" />,
-      title: "Notaire Associé",
-      color: "from-orange-900 to-orange-800",
-      permissions: [
-        "Accès complet à tous les actes et dossiers",
-        "Gestion des membres et attribution des rôles",
-        "Configuration de l'étude et paramètres",
-        "Validation et signature des actes",
-        "Supervision financière et reporting",
-        "Droits d'administration totaux"
-      ]
-    },
-    {
-      icon: <ShieldCheck className="w-8 h-8" />,
-      title: "Responsable Qualité / RGPD",
-      color: "from-orange-800 to-orange-700",
-      permissions: [
-        "Audits internes et conformité",
-        "Gestion des données personnelles",
-        "Contrôle des processus qualité",
-        "Formation des équipes",
-        "Accès lecture à tous les dossiers"
-      ]
-    },
+  const benefits = [
     {
       icon: <FileSignature className="w-8 h-8" />,
-      title: "Notaire Adjoint",
-      color: "from-orange-700 to-orange-600",
-      permissions: [
-        "Rédaction et contrôle des actes",
-        "Relations directes avec les clients",
-        "Accès aux modèles et bibliothèque d'actes",
-        "Gestion des dossiers assignés"
-      ]
+      title: "Gestion complète des actes",
+      description: "Centralisez la rédaction, le suivi et l'archivage de tous vos actes notariés. Modèles personnalisables et conformes.",
+      color: "from-orange-600 to-orange-700"
     },
     {
-      icon: <ClipboardCheck className="w-8 h-8" />,
-      title: "Clerc / Formaliste",
-      color: "from-orange-600 to-orange-500",
-      permissions: [
-        "Préparation et constitution des dossiers",
-        "Enregistrement des formalités",
-        "Collecte des pièces justificatives"
-      ]
+      icon: <Users className="w-8 h-8" />,
+      title: "Organisation de l'étude",
+      description: "Gérez votre équipe avec des rôles adaptés : notaires, clercs, formalistes. Chacun accède à ce dont il a besoin.",
+      color: "from-orange-700 to-orange-800"
     },
     {
-      icon: <Archive className="w-8 h-8" />,
-      title: "Gestionnaire d'Actes",
-      color: "from-orange-500 to-orange-400",
-      permissions: [
-        "Organisation et archivage des actes",
-        "Suivi des signatures et envois"
-      ]
+      icon: <Clock className="w-8 h-8" />,
+      title: "Automatisation des tâches",
+      description: "Réduisez le temps passé sur les tâches administratives : génération automatique de documents, relances, suivis d'échéances.",
+      color: "from-orange-500 to-orange-600"
     },
     {
-      icon: <UserCog className="w-8 h-8" />,
-      title: "Responsable Administratif",
-      color: "from-orange-400 to-orange-300",
-      permissions: [
-        "Gestion de l'accueil et des rendez-vous"
-      ]
+      icon: <Shield className="w-8 h-8" />,
+      title: "Sécurité et conformité",
+      description: "Respect total du RGPD et des normes notariales. Données hébergées en France avec chiffrement de bout en bout.",
+      color: "from-orange-600 to-red-600"
+    },
+    {
+      icon: <Zap className="w-8 h-8" />,
+      title: "Signature électronique certifiée",
+      description: "Signature électronique qualifiée conforme aux exigences notariales. Valeur juridique garantie pour tous vos actes.",
+      color: "from-orange-500 to-orange-700"
+    },
+    {
+      icon: <CheckCircle className="w-8 h-8" />,
+      title: "Portail client dédié",
+      description: "Vos clients accèdent à leurs dossiers en ligne, signent électroniquement et suivent l'avancement en temps réel.",
+      color: "from-orange-700 to-red-700"
     }
   ];
 
@@ -80,65 +53,49 @@ export default function NotairesMetier() {
       <div className="p-6 pt-28">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-8">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-600 to-orange-700 flex items-center justify-center shadow-lg">
-                <Landmark className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold">Études Notariales</h1>
-                <p className="text-gray-600 mt-1">Rôles et permissions dans l'espace collaboratif</p>
-              </div>
+        <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-12 text-center">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-600 to-orange-700 flex items-center justify-center shadow-lg">
+              <Landmark className="w-10 h-10 text-white" />
             </div>
-            <Button onClick={() => navigate(-1)} className="bg-orange-600 hover:bg-orange-700 text-white">Retour</Button>
           </div>
+          <h1 className="text-5xl font-bold mb-3">Neira pour les Notaires</h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            La plateforme digitale conçue spécialement pour moderniser votre étude notariale
+          </p>
         </div>
 
-        {/* Roles Container */}
-        <div className="bg-white rounded-xl shadow-md border border-border p-8 mb-8">
-          <h2 className="text-2xl font-bold mb-6">Rôles et permissions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {roles.map((role, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              <div className={`bg-gradient-to-r ${role.color} p-6 text-white`}>
-                <div className="flex items-center gap-3">
-                  {role.icon}
-                  <h3 className="text-xl font-bold">{role.title}</h3>
+        {/* Benefits Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {benefits.map((benefit, index) => (
+            <Card key={index} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className={`bg-gradient-to-r ${benefit.color} p-6 text-white`}>
+                <div className="flex items-center gap-3 mb-3">
+                  {benefit.icon}
+                  <h3 className="text-xl font-bold">{benefit.title}</h3>
                 </div>
               </div>
               <div className="p-6">
-                <h4 className="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">
-                  Permissions
-                </h4>
-                <ul className="space-y-2.5">
-                  {role.permissions.map((permission, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm">
-                      <ArrowRight className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span>{permission}</span>
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-gray-700 leading-relaxed">{benefit.description}</p>
               </div>
             </Card>
           ))}
-          </div>
         </div>
 
         {/* CTA */}
-        <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl shadow-lg p-8 text-white text-center">
-          <h2 className="text-2xl font-bold mb-3">Prêt à moderniser votre étude ?</h2>
-          <p className="text-orange-100 mb-6 max-w-2xl mx-auto">
-            Commencez à utiliser Neira pour gérer vos équipes, vos actes et vos clients de manière collaborative et sécurisée.
+        <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-xl shadow-lg p-12 text-white text-center">
+          <h2 className="text-3xl font-bold mb-4">Prêt à digitaliser votre étude ?</h2>
+          <p className="text-orange-100 mb-8 max-w-2xl mx-auto text-lg">
+            Rejoignez les études notariales qui modernisent leur pratique avec Neira.
           </p>
           <Button 
             size="lg" 
             variant="secondary"
             onClick={() => navigate('/notaires/auth')}
-            className="gap-2"
+            className="gap-2 text-lg px-8 py-6"
           >
-            Créer mon espace
-            <ArrowRight className="w-4 h-4" />
+            Créer mon espace gratuitement
+            <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
       </div>
