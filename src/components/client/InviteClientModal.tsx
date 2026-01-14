@@ -35,22 +35,54 @@ export function InviteClientModal({
   const [email, setEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [accessCode, setAccessCode] = useState("");
+  const [loading, setLoading] = useState(false);
   const hasClientEmail = clientEmail && clientEmail.includes("@");
 
-  // Générer le code d'accès à l'ouverture de la modal
+  // Charger ou générer le code d'accès à l'ouverture de la modal
   useEffect(() => {
     if (isOpen) {
       setEmail(clientEmail || "");
-      
-      // Générer un code d'accès unique à 6 caractères (lettres majuscules et chiffres)
+      loadOrGenerateAccessCode();
+    }
+  }, [isOpen, clientEmail, clientId]);
+
+  const loadOrGenerateAccessCode = async () => {
+    setLoading(true);
+    try {
+      // Vérifier si une invitation existe déjà pour ce client
+      const { data: existingInvitation } = await supabase
+        .from("client_invitations")
+        .select("access_code")
+        .eq("client_id", clientId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (existingInvitation?.access_code) {
+        // Utiliser le code existant
+        setAccessCode(existingInvitation.access_code);
+      } else {
+        // Générer un nouveau code d'accès unique à 6 caractères (lettres majuscules et chiffres)
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let newAccessCode = '';
+        for (let i = 0; i < 6; i++) {
+          newAccessCode += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        setAccessCode(newAccessCode);
+      }
+    } catch (error) {
+      console.error("Error loading access code:", error);
+      // En cas d'erreur, générer un nouveau code
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let newAccessCode = '';
       for (let i = 0; i < 6; i++) {
         newAccessCode += characters.charAt(Math.floor(Math.random() * characters.length));
       }
       setAccessCode(newAccessCode);
+    } finally {
+      setLoading(false);
     }
-  }, [isOpen, clientEmail]);
+  };
 
   const handleSendInvitation = async () => {
     if (!email || !email.includes("@")) {
@@ -155,16 +187,24 @@ export function InviteClientModal({
           {/* Affichage du code d'accès généré */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <Label className="text-sm font-semibold text-gray-900 mb-2 block">
-              🔑 Code d'accès généré
+              🔑 Code d'accès client
             </Label>
-            <div className="flex items-center justify-center gap-3">
-              <code className="text-3xl font-bold text-blue-600 tracking-widest font-mono bg-white px-4 py-2 rounded border border-blue-300">
-                {accessCode}
-              </code>
-            </div>
-            <p className="text-xs text-gray-600 text-center mt-2">
-              Ce code sera envoyé au client par email et lui permettra d'accéder à son espace. Il ne peut pas être modifié.
-            </p>
+            {loading ? (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-center gap-3">
+                  <code className="text-3xl font-bold text-blue-600 tracking-widest font-mono bg-white px-4 py-2 rounded border border-blue-300">
+                    {accessCode || "------"}
+                  </code>
+                </div>
+                <p className="text-xs text-gray-600 text-center mt-2">
+                  {accessCode ? "Ce code est unique et permanent pour ce client. Il ne peut pas être modifié." : "Chargement du code..."}
+                </p>
+              </>
+            )}
           </div>
         </div>
 
