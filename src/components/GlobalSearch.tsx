@@ -104,6 +104,12 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
 
   // Focus l'input quand ouvert et bloquer le scroll
   useEffect(() => {
+    // L'instance avec hideButton (dans AppLayout) ne gère pas le scroll
+    // Seule l'instance du dashboard gère le scroll
+    if (hideButton) {
+      return; // Ne rien faire pour l'instance cachée
+    }
+    
     if (isOpen) {
       if (inputRef.current) {
         inputRef.current.focus();
@@ -137,7 +143,7 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
         window.scrollTo(0, parseInt(scrollY) * -1);
       }
     };
-  }, [isOpen]);
+  }, [isOpen, hideButton]);
 
   // Fermer si clic en dehors
   useEffect(() => {
