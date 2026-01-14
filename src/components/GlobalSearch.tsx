@@ -113,13 +113,18 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
     return () => document.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [isOpen, hideButton]);
 
-  // Focus l'input quand ouvert sans scroller
+  // Focus l'input quand ouvert sans scroller et réinitialiser le contenu quand fermé
   useEffect(() => {
     if (isOpen && inputRef.current) {
       // Utiliser setTimeout pour s'assurer que le DOM est rendu
       setTimeout(() => {
         inputRef.current?.focus({ preventScroll: true });
       }, 0);
+    } else if (!isOpen) {
+      // Réinitialiser la recherche quand on ferme
+      setQuery("");
+      setResults([]);
+      setSelectedIndex(0);
     }
   }, [isOpen]);
 
