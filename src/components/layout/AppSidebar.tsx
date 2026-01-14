@@ -14,6 +14,7 @@ import {
   Lock,
   Settings,
   Power,
+  UserCog,
 } from "lucide-react";
 import {
   Sidebar,
@@ -65,6 +66,7 @@ function getMenuItems(role: 'avocat' | 'notaire') {
     ],
     clientsCabinet: [
       { title: "Clients", url: `${prefix}/clients`, icon: Users, color: iconColor },
+      { title: "Espace Client", url: `${prefix}/client-spaces`, icon: UserCog, color: iconColor },
       { title: "Mon cabinet", url: `${prefix}/espace-collaboratif?tab=dashboard`, icon: Users, color: iconColor },
     ],
     outils: [

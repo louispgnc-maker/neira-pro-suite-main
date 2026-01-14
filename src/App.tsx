@@ -66,6 +66,8 @@ import ClientLogin from "./pages/ClientLogin";
 import ClientDashboard from "./pages/client/ClientDashboard";
 import ClientDocuments from "./pages/client/ClientDocuments";
 import ClientDossiers from "./pages/client/ClientDossiers";
+import ClientSpaces from "./pages/ClientSpaces";
+import ClientSpaceDetail from "./pages/ClientSpaceDetail";
 import ScrollToTop from "./components/ScrollToTop";
 import EmailConfirmHandler from "./components/EmailConfirmHandler";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
@@ -129,6 +131,8 @@ const App = () => (
             <Route path="/avocats/clients/create" element={<RoleProtectedRoute requiredRole="avocat"><CreateClientAvocat /></RoleProtectedRoute>} />
             <Route path="/avocats/clients/:id" element={<RoleProtectedRoute requiredRole="avocat"><ClientDetail /></RoleProtectedRoute>} />
             <Route path="/avocats/clients/:id/edit" element={<RoleProtectedRoute requiredRole="avocat"><EditClient /></RoleProtectedRoute>} />
+            <Route path="/avocats/client-spaces" element={<RoleProtectedRoute requiredRole="avocat"><ClientSpaces /></RoleProtectedRoute>} />
+            <Route path="/avocats/client-spaces/:id" element={<RoleProtectedRoute requiredRole="avocat"><ClientSpaceDetail /></RoleProtectedRoute>} />
             <Route path="/avocats/tasks" element={<RoleProtectedRoute requiredRole="avocat"><Tasks /></RoleProtectedRoute>} />
             <Route path="/avocats/contrats" element={<RoleProtectedRoute requiredRole="avocat"><Contrats /></RoleProtectedRoute>} />
             <Route path="/avocats/contrats/:id" element={<RoleProtectedRoute requiredRole="avocat"><ContratDetail /></RoleProtectedRoute>} />
@@ -158,6 +162,8 @@ const App = () => (
             <Route path="/notaires/clients/create" element={<RoleProtectedRoute requiredRole="notaire"><CreateClientNotaire /></RoleProtectedRoute>} />
             <Route path="/notaires/clients/:id" element={<RoleProtectedRoute requiredRole="notaire"><ClientDetail /></RoleProtectedRoute>} />
             <Route path="/notaires/clients/:id/edit" element={<RoleProtectedRoute requiredRole="notaire"><EditClient /></RoleProtectedRoute>} />
+            <Route path="/notaires/client-spaces" element={<RoleProtectedRoute requiredRole="notaire"><ClientSpaces /></RoleProtectedRoute>} />
+            <Route path="/notaires/client-spaces/:id" element={<RoleProtectedRoute requiredRole="notaire"><ClientSpaceDetail /></RoleProtectedRoute>} />
             <Route path="/notaires/tasks" element={<RoleProtectedRoute requiredRole="notaire"><Tasks /></RoleProtectedRoute>} />
             <Route path="/notaires/contrats" element={<RoleProtectedRoute requiredRole="notaire"><Contrats /></RoleProtectedRoute>} />
             <Route path="/notaires/contrats/:id" element={<RoleProtectedRoute requiredRole="notaire"><ContratDetail /></RoleProtectedRoute>} />
