@@ -6,9 +6,10 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Pencil, FileText, Download, Eye, Trash2 } from "lucide-react";
+import { ArrowLeft, Pencil, FileText, Download, Eye, Trash2, UserPlus, Mail } from "lucide-react";
 import { Share2 } from 'lucide-react';
 import ShareToCollaborativeButton from '@/components/cabinet/ShareToCollaborativeButton';
+import { InviteClientModal } from '@/components/client/InviteClientModal';
 
 interface Client {
   id: string;
@@ -89,6 +90,8 @@ export default function ClientDetail() {
     : 'bg-blue-600 hover:bg-blue-700 text-white';
 
   const [sharing, setSharing] = useState(false);
+  const [invitationStatus, setInvitationStatus] = useState<'none' | 'pending' | 'active'>('none');
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -146,6 +149,18 @@ export default function ClientDetail() {
         setDocuments([]);
       }
 
+      // Load invitation status
+      const { data: invitation } = await supabase
+        .from('client_invitations')
+        .select('status')
+        .eq('client_id', id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (mounted && invitation) {
+        setInvitationStatus(invitation.status as 'none' | 'pending' | 'active');
+      }
 
       if (mounted) setLoading(false);
     }
@@ -297,12 +312,44 @@ export default function ClientDetail() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold">Fiche client</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold">Fiche client</h1>
+              {invitationStatus === 'none' && (
+                <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-300">
+                  Espace client non activé
+                </Badge>
+              )}
+              {invitationStatus === 'pending' && (
+                <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-300">
+                  Invitation envoyée
+                </Badge>
+              )}
+              {invitationStatus === 'active' && (
+                <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
+                  Espace client actif
+                </Badge>
+              )}
+            </div>
             {client?.name && (
               <p className="text-gray-600 mt-1">{client.name}</p>
             )}
           </div>
           <div className="flex items-center gap-2">
+            {invitationStatus === 'none' && (
+              <Button className={mainButtonColor} onClick={() => setShowInviteModal(true)}>
+                <UserPlus className="h-4 w-4 mr-2" /> Inviter à l'espace client
+              </Button>
+            )}
+            {invitationStatus === 'pending' && (
+              <Button variant="outline" onClick={() => setShowInviteModal(true)}>
+                <Mail className="h-4 w-4 mr-2" /> Renvoyer l'invitation
+              </Button>
+            )}
+            {invitationStatus === 'active' && (
+              <Button variant="outline" onClick={() => window.open(`/client-space/${id}`, '_blank')}>
+                <Eye className="h-4 w-4 mr-2" /> Voir l'espace client
+              </Button>
+            )}
             <Button className={mainButtonColor} onClick={onEdit}>
               <Pencil className="h-4 w-4 mr-2" /> Modifier
             </Button>
@@ -650,6 +697,32 @@ export default function ClientDetail() {
           </div>
         )}
       </div>
+
+      <InviteClientModal
+        isOpen={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        clientId={id!}
+        clientName={client?.name || ''}
+        clientEmail={client?.email || ''}
+        onSuccess={() => {
+          // Reload invitation status
+          const loadInvitationStatus = async () => {
+            const { data, error } = await supabase
+              .from('client_invitations')
+              .select('status')
+              .eq('client_id', id)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .single();
+
+            if (!error && data) {
+              setInvitationStatus(data.status as 'none' | 'pending' | 'active');
+            }
+          };
+          loadInvitationStatus();
+          setShowInviteModal(false);
+        }}
+      />
     </AppLayout>
   );
 }
