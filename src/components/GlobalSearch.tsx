@@ -88,7 +88,13 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
   }, [location.pathname]);
 
   // Gérer Cmd+K / Ctrl+K pour ouvrir et Échap pour fermer (si pas en fullscreen)
+  // Seulement pour l'instance cachée dans AppLayout
   useEffect(() => {
+    // L'instance du dashboard (hideButton=false) ne gère pas les raccourcis clavier
+    if (!hideButton) {
+      return;
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
@@ -105,7 +111,7 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
     // Utiliser capture: true pour intercepter l'événement avant le plein écran
     document.addEventListener("keydown", handleKeyDown, { capture: true });
     return () => document.removeEventListener("keydown", handleKeyDown, { capture: true });
-  }, [isOpen]);
+  }, [isOpen, hideButton]);
 
   // Focus l'input quand ouvert sans scroller
   useEffect(() => {
