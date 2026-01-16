@@ -24,11 +24,20 @@ export default function ClientLogin() {
   // Pré-remplir le code depuis l'URL
   useEffect(() => {
     const codeFromUrl = searchParams.get('code');
+    const emailFromUrl = searchParams.get('email');
+    
     if (codeFromUrl) {
       setAccessCode(codeFromUrl);
       setMode('signup'); // Basculer en mode création de compte
-      toast.success('Code d\'accès détecté !', {
-        description: 'Créez votre mot de passe pour activer votre espace'
+    }
+    
+    if (emailFromUrl) {
+      setEmail(decodeURIComponent(emailFromUrl));
+    }
+    
+    if (codeFromUrl || emailFromUrl) {
+      toast.success('Invitation détectée !', {
+        description: 'Code et email pré-remplis. Créez votre mot de passe pour activer votre espace'
       });
     }
   }, [searchParams]);
@@ -275,9 +284,10 @@ export default function ClientLogin() {
                     placeholder="ABC123"
                     maxLength={6}
                     className="text-center text-xl tracking-widest font-mono"
+                    disabled={searchParams.get('code') !== null}
                     required
                   />
-                  <p className="text-xs text-gray-500">Code reçu par email</p>
+                  <p className="text-xs text-gray-500">{searchParams.get('code') ? 'Code pré-rempli depuis l\'invitation' : 'Code reçu par email'}</p>
                 </div>
 
                 <div className="space-y-2">
@@ -288,8 +298,12 @@ export default function ClientLogin() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="votre@email.com"
+                    disabled={searchParams.get('email') !== null}
                     required
                   />
+                  {searchParams.get('email') && (
+                    <p className="text-xs text-gray-500">Email pré-rempli depuis l'invitation</p>
+                  )}
                 </div>
 
                 <div className="space-y-3">

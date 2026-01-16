@@ -29,7 +29,7 @@ serve(async (req) => {
     }
 
     // Send email using Resend
-    const invitationUrl = `https://www.neira.fr/client-login?code=${accessCode}`;
+    const invitationUrl = `https://www.neira.fr/client-login?code=${accessCode}&email=${encodeURIComponent(email)}`;
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
