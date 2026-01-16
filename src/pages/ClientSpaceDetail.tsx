@@ -79,6 +79,20 @@ export default function ClientSpaceDetail() {
     try {
       setLoading(true);
 
+      // Récupérer les cabinets de l'utilisateur
+      const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+      const cabinets = Array.isArray(cabinetsData) ? cabinetsData : [];
+      
+      if (cabinets.length === 0) {
+        toast.error('Aucun cabinet trouvé');
+        navigate(`${prefix}/client-spaces`);
+        return;
+      }
+
+      // Prendre le premier cabinet avec le bon rôle, ou le premier disponible
+      const matchingCabinet = cabinets.find((c: any) => c.role === role) || cabinets[0];
+      const cabinetId = matchingCabinet.id;
+
       const { data: clientData, error } = await supabase
         .from('clients')
         .select(`
@@ -93,7 +107,7 @@ export default function ClientSpaceDetail() {
           )
         `)
         .eq('id', id)
-        .eq('owner_id', user.id)
+        .eq('owner_id', cabinetId)
         .single();
 
       if (error) throw error;
