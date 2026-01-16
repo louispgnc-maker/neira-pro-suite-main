@@ -72,6 +72,20 @@ export default function ClientSpaces() {
     try {
       setLoading(true);
 
+      // Récupérer les cabinets de l'utilisateur
+      const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+      const cabinets = Array.isArray(cabinetsData) ? cabinetsData : [];
+      
+      if (cabinets.length === 0) {
+        setClients([]);
+        setFilteredClients([]);
+        setLoading(false);
+        return;
+      }
+
+      // Prendre le premier cabinet (ou filtrer par rôle si nécessaire)
+      const cabinetId = cabinets[0].cabinet_id;
+
       // Récupérer tous les clients avec leurs invitations
       const { data: clientsData, error: clientsError } = await supabase
         .from('clients')
@@ -89,7 +103,7 @@ export default function ClientSpaces() {
             created_at
           )
         `)
-        .eq('owner_id', user.id)
+        .eq('owner_id', cabinetId)
         .order('created_at', { ascending: false });
 
       if (clientsError) throw clientsError;
