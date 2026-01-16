@@ -94,7 +94,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
                         ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        : 'text-gray-600 hover:bg-blue-50 hover:text-blue-700'
                     }`}
                   >
                     <Icon className="h-4 w-4 inline mr-2" />
@@ -114,7 +114,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                 onClick={handleSignOut}
                 variant="ghost"
                 size="sm"
-                className="hidden md:flex"
+                className="hidden md:flex text-red-600 hover:bg-red-50 hover:text-red-700"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Déconnexion
@@ -149,7 +149,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                       className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                         isActive
                           ? 'bg-blue-100 text-blue-700'
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                          : 'text-gray-600 hover:bg-blue-50 hover:text-blue-700'
                       }`}
                     >
                       <Icon className="h-4 w-4 mr-3" />
