@@ -15,7 +15,7 @@ interface ClientData {
   address?: string;
   cabinet_id: string;
   cabinet?: {
-    name: string;
+    nom: string;
   };
 }
 
@@ -60,7 +60,7 @@ export default function ClientSpace() {
         .select(`
           *,
           cabinet:cabinets (
-            name
+            nom
           )
         `)
         .eq('user_id', user?.id)
@@ -178,7 +178,7 @@ export default function ClientSpace() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Mon Espace Client</h1>
               {clientData?.cabinet && (
-                <p className="text-sm text-gray-600">Cabinet {clientData.cabinet.name}</p>
+                <p className="text-sm text-gray-600">Cabinet {clientData.cabinet.nom}</p>
               )}
             </div>
             <Button 
