@@ -41,19 +41,7 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
         
         // Si on cherche un client, vérifier dans la table clients
         if (requiredRole === 'client') {
-          // D'abord vérifier que l'utilisateur N'EST PAS un professionnel (sauf exception)
-          const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
-          const cabinets = Array.isArray(cabinetsData) ? cabinetsData : [];
-          
-          if (cabinets.length > 0 && !isTestException) {
-            // C'est un professionnel, il ne peut pas accéder à l'espace client
-            setUserRole(cabinets[0].role as 'avocat' | 'notaire');
-            console.log('[RoleProtectedRoute] User is a professional, cannot access client space:', cabinets[0].role);
-            setLoading(false);
-            return;
-          }
-          
-          // Ensuite vérifier s'il est bien client
+          // Vérifier s'il est bien client
           const { data: clientData, error: clientError } = await supabase
             .from('clients')
             .select('id')
@@ -62,13 +50,28 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
 
           console.log('[RoleProtectedRoute] Client check:', clientData, clientError);
 
-          if (clientData) {
+          if (clientData || isTestException) {
             setUserRole('client');
-            console.log('[RoleProtectedRoute] User is a client');
-          } else {
-            setUserRole(null);
-            console.log('[RoleProtectedRoute] User is not a client');
+            console.log('[RoleProtectedRoute] User is a client (or test exception)');
+            setLoading(false);
+            return;
           }
+          
+          // Si ce n'est pas un client ET pas l'exception, vérifier s'il est professionnel
+          const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+          const cabinets = Array.isArray(cabinetsData) ? cabinetsData : [];
+          
+          if (cabinets.length > 0) {
+            // C'est un professionnel, il ne peut pas accéder à l'espace client
+            setUserRole(cabinets[0].role as 'avocat' | 'notaire');
+            console.log('[RoleProtectedRoute] User is a professional, cannot access client space:', cabinets[0].role);
+            setLoading(false);
+            return;
+          }
+          
+          // Ni client ni professionnel
+          setUserRole(null);
+          console.log('[RoleProtectedRoute] User is not a client');
           setLoading(false);
           return;
         }
