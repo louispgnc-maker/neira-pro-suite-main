@@ -29,16 +29,10 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
   const loadClientData = async () => {
     try {
+      // Get client data
       const { data: client, error } = await supabase
         .from('clients')
-        .select(`
-          name,
-          cabinet_clients!inner (
-            cabinet:cabinets (
-              name
-            )
-          )
-        `)
+        .select('name, owner_id')
         .eq('user_id', user?.id)
         .single();
 
@@ -46,9 +40,18 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
       if (client) {
         setClientName(client.name);
-        const cabinetData = client.cabinet_clients?.[0]?.cabinet;
-        if (cabinetData) {
-          setCabinetName(cabinetData.name);
+        
+        // Get cabinet name separately
+        if (client.owner_id) {
+          const { data: cabinet } = await supabase
+            .from('cabinets')
+            .select('nom')
+            .eq('id', client.owner_id)
+            .single();
+          
+          if (cabinet) {
+            setCabinetName(cabinet.nom);
+          }
         }
       }
     } catch (err) {
