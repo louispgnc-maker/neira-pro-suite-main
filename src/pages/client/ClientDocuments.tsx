@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { FileText, Download, Search, Filter } from 'lucide-react';
+import { FileText, Download, Search, Filter, Upload, Eye, Trash2 } from 'lucide-react';
 import ClientLayout from '@/components/client/ClientLayout';
 
 interface Document {
@@ -25,6 +25,10 @@ export default function ClientDocuments() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredDocuments, setFilteredDocuments] = useState<Document[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [clientId, setClientId] = useState<string | null>(null);
+  const [cabinetId, setCabinetId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user) {
@@ -57,6 +61,8 @@ export default function ClientDocuments() {
 
       if (clientError) throw clientError;
 
+      setClientId(client.id);
+
       const { data: cabinetClient } = await supabase
         .from('cabinet_clients')
         .select('cabinet_id')
@@ -64,6 +70,8 @@ export default function ClientDocuments() {
         .single();
 
       if (cabinetClient) {
+        setCabinetId(cabinetClient.cabinet_id);
+        
         const { data: files, error: filesError } = await supabase.storage
           .from('documents')
           .list(`${cabinetClient.cabinet_id}/${client.id}`);
@@ -130,6 +138,61 @@ export default function ClientDocuments() {
     return `${mb.toFixed(1)} MB`;
   };
 
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !clientId || !cabinetId) return;
+
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const filePath = `${cabinetId}/${clientId}/${file.name}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(filePath, file, {
+            upsert: true,
+          });
+
+        if (uploadError) throw uploadError;
+      }
+
+      toast.success('Document(s) téléversé(s) avec succès');
+      await loadDocuments();
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      toast.error('Erreur lors du téléversement');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleDelete = async (fileName: string) => {
+    if (!cabinetId || !clientId) return;
+    
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce document ?')) return;
+
+    try {
+      const { error } = await supabase.storage
+        .from('documents')
+        .remove([`${cabinetId}/${clientId}/${fileName}`]);
+
+      if (error) throw error;
+
+      toast.success('Document supprimé');
+      await loadDocuments();
+    } catch (err) {
+      console.error('Delete error:', err);
+      toast.error('Erreur lors de la suppression');
+    }
+  };
+
+  const handleView = (url: string) => {
+    window.open(url, '_blank');
+  };
+
   if (loading) {
     return (
       <ClientLayout>
@@ -146,8 +209,28 @@ export default function ClientDocuments() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Mes documents</h1>
           <p className="mt-2 text-gray-600">
-            Accédez à tous vos documents partagés par votre professionnel
+            Accédez à tous vos documents partagés et déposez vos fichiers
           </p>
+        </div>
+
+        {/* Upload Button */}
+        <div className="flex gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            onChange={handleUpload}
+            className="hidden"
+            id="file-upload"
+          />
+          <Button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            {uploading ? 'Téléversement...' : 'Déposer un document'}
+          </Button>
         </div>
 
         {/* Search & Filters */}
@@ -211,14 +294,32 @@ export default function ClientDocuments() {
                         </p>
                       </div>
                     </div>
-                    <Button
-                      onClick={() => handleDownload(doc.url, doc.name)}
-                      variant="ghost"
-                      size="sm"
-                      className="ml-4"
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleView(doc.url)}
+                        variant="ghost"
+                        size="sm"
+                        className="hover:bg-blue-50 hover:text-blue-700"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        onClick={() => handleDownload(doc.url, doc.name)}
+                        variant="ghost"
+                        size="sm"
+                        className="hover:bg-blue-50 hover:text-blue-700"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        onClick={() => handleDelete(doc.name)}
+                        variant="ghost"
+                        size="sm"
+                        className="hover:bg-red-50 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>

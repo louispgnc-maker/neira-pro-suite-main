@@ -206,11 +206,11 @@ export default function ClientProfile() {
             </Button>
           ) : (
             <div className="flex gap-2">
-              <Button onClick={() => { setEditMode(false); setEditedData(clientData); }} variant="outline">
+              <Button onClick={() => { setEditMode(false); setEditedData(clientData); }} variant="outline" className="hover:bg-blue-50 hover:text-blue-700 hover:border-blue-700">
                 <X className="h-4 w-4 mr-2" />
                 Annuler
               </Button>
-              <Button onClick={handleSaveSuggestions} className="bg-blue-600 hover:bg-blue-700">
+              <Button onClick={handleSaveSuggestions} className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Save className="h-4 w-4 mr-2" />
                 Envoyer les suggestions
               </Button>
