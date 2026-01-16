@@ -181,7 +181,12 @@ export default function ClientSpace() {
                 <p className="text-sm text-gray-600">Cabinet {clientData.cabinet.name}</p>
               )}
             </div>
-            <Button onClick={handleSignOut} variant="outline" size="sm">
+            <Button 
+              onClick={handleSignOut} 
+              variant="ghost" 
+              size="sm"
+              className="text-red-600 hover:bg-red-50 hover:text-red-700"
+            >
               <LogOut className="h-4 w-4 mr-2" />
               Déconnexion
             </Button>
@@ -252,7 +257,7 @@ export default function ClientSpace() {
                 ) : (
                   <div className="space-y-3">
                     {dossiers.map((dossier) => (
-                      <div key={dossier.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                      <div key={dossier.id} className="border rounded-lg p-4 hover:bg-blue-50 transition-colors">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <h4 className="font-medium text-gray-900">{dossier.titre}</h4>
@@ -293,7 +298,7 @@ export default function ClientSpace() {
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
-                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-blue-50 transition-colors"
                       >
                         <div className="flex items-center space-x-3 flex-1 min-w-0">
                           <FileText className="h-5 w-5 text-blue-600 flex-shrink-0" />
@@ -308,6 +313,7 @@ export default function ClientSpace() {
                           onClick={() => handleDownload(doc.url, doc.name)}
                           variant="ghost"
                           size="sm"
+                          className="hover:bg-blue-50 hover:text-blue-700"
                         >
                           <Download className="h-4 w-4" />
                         </Button>
