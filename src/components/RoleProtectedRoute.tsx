@@ -37,7 +37,7 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
 
       try {
         // Exception pour l'email de test qui peut accéder à tout
-        const isTestException = user.email === 'louispoignonec@essca.eu';
+        const isTestException = user.email === 'louis.poignonec@essca.eu';
         
         // Si on cherche un client, vérifier dans la table clients
         if (requiredRole === 'client') {
