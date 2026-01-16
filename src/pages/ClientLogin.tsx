@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
@@ -6,29 +6,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Key, ArrowRight, Lock, CheckCircle2, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { ArrowRight, Lock, CheckCircle2, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import { PublicHeader } from '@/components/layout/PublicHeader';
-
-interface ClientInvitation {
-  id: string;
-  email: string;
-  status: 'pending' | 'active';
-  client_id: string;
-}
 
 export default function ClientLogin() {
   const navigate = useNavigate();
-  const [step, setStep] = useState<'code' | 'password' | 'create-password' | 'login'>('login');
+  const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [accessCode, setAccessCode] = useState('');
   const [email, setEmail] = useState('');
-  const [invitation, setInvitation] = useState<ClientInvitation | null>(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Fonction pour générer un mot de passe sécurisé
   const generateSecurePassword = () => {
     const length = 16;
     const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*';
@@ -52,28 +43,64 @@ export default function ClientLogin() {
     setConfirmPassword(newPassword);
     setShowPassword(true);
     setShowConfirmPassword(true);
-    toast.success('Mot de passe sécurisé généré !', {
-      description: 'Vous pouvez le copier ou le modifier selon vos préférences'
-    });
+    toast.success('Mot de passe sécurisé généré !');
   };
 
-  useEffect(() => {
-    if (step === 'create-password' && !password) {
-      handleGeneratePassword();
-    }
-  }, [step]);
-
-  const handleAccessCodeSubmit = async (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!accessCode || accessCode.length !== 6) {
-      toast.error('Veuillez entrer un code d\'accès à 6 caractères');
+    if (!email || !password) {
+      toast.error('Veuillez remplir tous les champs');
       return;
     }
 
     setLoading(true);
     try {
-      // Vérifier si le code d'accès existe
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        toast.error('Email ou mot de passe incorrect');
+        setLoading(false);
+        return;
+      }
+
+      toast.success('Connexion réussie !');
+      navigate('/client-space');
+    } catch (err: any) {
+      toast.error('Une erreur est survenue');
+      setLoading(false);
+    }
+  };
+
+  const handleSignupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!accessCode || accessCode.length !== 6) {
+      toast.error('Code d\'accès invalide (6 caractères requis)');
+      return;
+    }
+
+    if (!email || !password) {
+      toast.error('Veuillez remplir tous les champs');
+      return;
+    }
+
+    if (password.length < 8) {
+      toast.error('Le mot de passe doit contenir au moins 8 caractères');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error('Les mots de passe ne correspondent pas');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // 1. Vérifier le code d'accès
       const { data: invitationData, error: invitationError } = await supabase
         .from('client_invitations')
         .select('id, email, status, client_id')
@@ -86,118 +113,61 @@ export default function ClientLogin() {
         return;
       }
 
-      setInvitation(invitationData as ClientInvitation);
-
-      // Si status = 'pending', c'est la première connexion
-      if (invitationData.status === 'pending') {
-        setStep('create-password');
-      } else {
-        // Si status = 'active', demander le mot de passe
-        setStep('password');
-      }
-      
-      setLoading(false);
-    } catch (err: any) {
-      console.error('Error verifying access code:', err);
-      toast.error('Une erreur est survenue');
-      setLoading(false);
-    }
-  };
-
-  const handlePasswordLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!password) {
-      toast.error('Veuillez entrer votre mot de passe');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // Connexion classique email/password (sans code)
-      const emailToUse = invitation?.email || email;
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: emailToUse,
-        password: password,
-      });
-
-      if (error) {
-        console.error('Login error:', error);
-        toast.error('Email ou mot de passe incorrect');
+      if (invitationData.email.toLowerCase() !== email.toLowerCase()) {
+        toast.error('L\'email ne correspond pas au code d\'accès');
         setLoading(false);
         return;
       }
 
-      toast.success('Connexion réussie !');
-      navigate('/client-space');
-    } catch (err: any) {
-      console.error('Error during login:', err);
-      toast.error('Une erreur est survenue lors de la connexion');
-      setLoading(false);
-    }
-  };
+      if (invitationData.status !== 'pending') {
+        toast.error('Ce code a déjà été utilisé');
+        setLoading(false);
+        return;
+      }
 
-  const handleCreatePassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (password.length < 8) {
-      toast.error('Le mot de passe doit contenir au moins 8 caractères');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error('Les mots de passe ne correspondent pas');
-      return;
-    }
-
-    if (!invitation) return;
-
-    setLoading(true);
-
-    try {
-      // 1. Créer le compte utilisateur
+      // 2. Créer le compte
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: invitation.email,
-        password: password,
+        email: invitationData.email,
+        password,
         options: {
           data: {
             role: 'client',
-            client_id: invitation.client_id,
+            client_id: invitationData.client_id,
           },
         },
       });
 
-      if (authError) throw authError;
-
-      if (!authData.user) {
-        throw new Error('Erreur lors de la création du compte');
+      if (authError) {
+        // Vérifier si c'est une erreur de compte déjà existant
+        if (authError.message?.includes('already registered') || authError.message?.includes('User already registered')) {
+          toast.error('Ce compte existe déjà. Veuillez vous connecter.', {
+            description: 'Cliquez sur "Se connecter" pour accéder à votre espace'
+          });
+          setLoading(false);
+          // Basculer automatiquement vers le mode connexion
+          setTimeout(() => setMode('login'), 2000);
+          return;
+        }
+        throw authError;
       }
+      if (!authData.user) throw new Error('Erreur lors de la création du compte');
 
-      // 2. Mettre à jour le statut de l'invitation à 'active'
-      const { error: invitationError } = await supabase
+      // 3. Mettre à jour l'invitation
+      await supabase
         .from('client_invitations')
         .update({ status: 'active' })
-        .eq('id', invitation.id);
+        .eq('id', invitationData.id);
 
-      if (invitationError) throw invitationError;
-
-      // 3. Lier le client à l'utilisateur
-      const { error: clientError } = await supabase
+      // 4. Lier le client à l'utilisateur
+      await supabase
         .from('clients')
         .update({ user_id: authData.user.id })
-        .eq('id', invitation.client_id);
+        .eq('id', invitationData.client_id);
 
-      if (clientError) throw clientError;
-
-      toast.success('Compte créé avec succès ! Vous allez être redirigé...');
-
-      // 4. Rediriger vers l'espace client
-      setTimeout(() => {
-        navigate('/client-space');
-      }, 1500);
+      toast.success('Compte créé avec succès !');
+      setTimeout(() => navigate('/client-space'), 1500);
     } catch (err: any) {
-      console.error('Error creating account:', err);
+      console.error('Error:', err);
       toast.error(err.message || 'Erreur lors de la création du compte');
       setLoading(false);
     }
@@ -208,360 +178,202 @@ export default function ClientLogin() {
       <PublicHeader />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4 pt-20">
         <Card className="w-full max-w-md">
-          {/* Mode connexion classique (Email + Mot de passe) */}
-          {step === 'login' && (
-            <>
-              <CardHeader className="text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Lock className="h-8 w-8 text-blue-600" />
-                  </div>
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
+                <Lock className="h-8 w-8 text-blue-600" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl text-gray-900">Espace client</CardTitle>
+            <CardDescription className="text-gray-600">
+              {mode === 'login' ? 'Connectez-vous à votre espace' : 'Créez votre compte client'}
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            {/* Boutons de sélection */}
+            <div className="flex gap-2 mb-6">
+              <Button
+                type="button"
+                variant={mode === 'login' ? 'default' : 'outline'}
+                onClick={() => setMode('login')}
+                className={`flex-1 ${mode === 'login' ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+              >
+                Se connecter
+              </Button>
+              <Button
+                type="button"
+                variant={mode === 'signup' ? 'default' : 'outline'}
+                onClick={() => setMode('signup')}
+                className={`flex-1 ${mode === 'signup' ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+              >
+                Créer mon compte
+              </Button>
+            </div>
+
+            {/* Formulaire de connexion */}
+            {mode === 'login' && (
+              <form onSubmit={handleLoginSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="votre@email.com"
+                    required
+                  />
                 </div>
-                <CardTitle className="text-2xl text-gray-900">Espace client</CardTitle>
-                <CardDescription className="text-gray-600">
-                  Connectez-vous à votre espace
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handlePasswordLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="loginEmail" className="text-gray-900">
-                      Email
-                    </Label>
-                    <Input
-                      id="loginEmail"
-                      type="email"
-                      name="username"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="votre@email.com"
-                      required
-                      autoComplete="username"
-                      autoFocus
-                    />
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="loginPassword" className="text-gray-900">
-                      Mot de passe
-                    </Label>
-                    <Input
-                      id="loginPassword"
-                      name="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Votre mot de passe"
-                      required
-                      minLength={8}
-                      autoComplete="current-password"
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                    disabled={loading}
-                  >
-                    {loading ? 'Connexion...' : 'Se connecter'}
-                    {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
-                  </Button>
-
-                  <div className="text-center pt-4 space-y-2">
-                    <p className="text-sm text-gray-600">
-                      Première connexion ?{' '}
-                      <button
-                        type="button"
-                        onClick={() => setStep('code')}
-                        className="text-blue-600 hover:text-blue-700 font-medium"
-                      >
-                        Utilisez votre code d'accès
-                      </button>
-                    </p>
-                  </div>
-                </form>
-              </CardContent>
-            </>
-          )}
-
-          {/* Étape: Saisie du code d'accès (première activation) */}
-          {step === 'code' && (
-            <>
-              <CardHeader className="text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Key className="h-8 w-8 text-blue-600" />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Mot de passe</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                  />
                 </div>
-                <CardTitle className="text-2xl text-gray-900">Première connexion</CardTitle>
-                <CardDescription className="text-gray-600">
-                  Entrez votre code d'accès à 6 caractères
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleAccessCodeSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="accessCode" className="text-gray-900">
-                      Code d'accès
-                    </Label>
-                    <Input
-                      id="accessCode"
-                      type="text"
-                      value={accessCode}
-                      onChange={(e) => setAccessCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
-                      placeholder="ABC123"
-                      required
-                      maxLength={6}
-                      className="text-center text-2xl tracking-widest font-mono"
-                      autoFocus
-                    />
-                    <p className="text-xs text-gray-500">
-                      Vous avez reçu ce code par email lors de votre invitation
-                    </p>
-                  </div>
 
-                  <Button
-                    type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                    disabled={loading || accessCode.length !== 6}
-                  >
-                    {loading ? 'Vérification...' : 'Continuer'}
-                    {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
-                  </Button>
+                <Button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  disabled={loading}
+                >
+                  {loading ? 'Connexion...' : 'Se connecter'}
+                  {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
+                </Button>
+              </form>
+            )}
 
-                  <div className="text-center pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setStep('login')}
-                      className="text-sm text-blue-600 hover:text-blue-700"
-                    >
-                      ← Retour à la connexion
-                    </button>
-                  </div>
-                </form>
-              </CardContent>
-            </>
-          )}
-
-          {/* Étape: Connexion avec mot de passe après code (compte déjà créé) */}
-          {step === 'password' && invitation && (
-            <>
-              <CardHeader className="text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Lock className="h-8 w-8 text-blue-600" />
-                  </div>
+            {/* Formulaire d'inscription */}
+            {mode === 'signup' && (
+              <form onSubmit={handleSignupSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="code">Code d'accès *</Label>
+                  <Input
+                    id="code"
+                    type="text"
+                    value={accessCode}
+                    onChange={(e) => setAccessCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
+                    placeholder="ABC123"
+                    maxLength={6}
+                    className="text-center text-xl tracking-widest font-mono"
+                    required
+                  />
+                  <p className="text-xs text-gray-500">Code reçu par email</p>
                 </div>
-                <CardTitle className="text-2xl text-gray-900">Connexion</CardTitle>
-                <CardDescription className="text-gray-600">
-                  Connectez-vous à votre espace client
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handlePasswordLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="loginEmail" className="text-gray-900">
-                      Email
-                    </Label>
-                    <Input
-                      id="loginEmail"
-                      type="email"
-                      name="username"
-                      value={invitation.email}
-                      autoComplete="username"
-                      readOnly
-                      className="bg-gray-50"
-                    />
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-gray-900">
-                      Mot de passe
-                    </Label>
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Votre mot de passe"
-                      required
-                      minLength={8}
-                      autoComplete="current-password"
-                      autoFocus
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signupEmail">Email *</Label>
+                  <Input
+                    id="signupEmail"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="votre@email.com"
+                    required
+                  />
+                </div>
 
-                  <div className="flex gap-2">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="newPassword">Mot de passe *</Label>
                     <Button
                       type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setStep('code');
-                        setPassword('');
-                        setInvitation(null);
-                      }}
-                      className="w-1/3"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleGeneratePassword}
+                      className="text-blue-600 h-auto p-1"
                     >
-                      Retour
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
-                      disabled={loading}
-                    >
-                      {loading ? 'Connexion...' : 'Se connecter'}
-                      {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
+                      <RefreshCw className="w-3 h-3 mr-1" />
+                      Suggérer
                     </Button>
                   </div>
-                </form>
-              </CardContent>
-            </>
-          )}
-
-          {/* Étape 3: Création du mot de passe (première connexion) */}
-          {step === 'create-password' && invitation && (
-            <>
-              <CardHeader className="text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-                    <CheckCircle2 className="h-8 w-8 text-green-600" />
-                  </div>
-                </div>
-                <CardTitle className="text-2xl text-gray-900">Bienvenue !</CardTitle>
-                <CardDescription className="text-gray-600">
-                  Créez votre mot de passe pour accéder à votre espace
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleCreatePassword} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-gray-900">
-                      Email
-                    </Label>
+                  <div className="relative">
                     <Input
-                      id="email"
-                      type="email"
-                      name="username"
-                      value={invitation.email}
-                      autoComplete="username"
-                      readOnly
-                      className="bg-gray-50"
+                      id="newPassword"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Min. 8 caractères"
+                      minLength={8}
+                      className="pr-10"
+                      required
                     />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
                   </div>
+                  {password && password.length >= 8 && (
+                    <span className="text-xs text-green-600 flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Longueur suffisante
+                    </span>
+                  )}
+                </div>
 
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="newPassword" className="text-gray-900">
-                        Créer un mot de passe
-                      </Label>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleGeneratePassword}
-                        className="text-blue-600 hover:text-blue-700 h-auto p-1"
-                      >
-                        <RefreshCw className="w-3 h-3 mr-1" />
-                        Suggérer
-                      </Button>
-                    </div>
-                    <div className="relative">
-                      <Input
-                        id="newPassword"
-                        name="new-password"
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Minimum 8 caractères"
-                        required
-                        minLength={8}
-                        autoComplete="new-password"
-                        className="pr-10"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-400" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-gray-400" />
-                        )}
-                      </Button>
-                    </div>
-                    {password && password.length >= 8 && (
-                      <span className="text-xs text-green-600 flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Longueur suffisante
-                      </span>
-                    )}
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirmer *</Label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Retapez le mot de passe"
+                      minLength={8}
+                      className="pr-10"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
                   </div>
+                  {confirmPassword && password !== confirmPassword && (
+                    <p className="text-xs text-red-600">Les mots de passe ne correspondent pas</p>
+                  )}
+                  {confirmPassword && password === confirmPassword && (
+                    <p className="text-xs text-green-600 flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Mots de passe identiques
+                    </p>
+                  )}
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-gray-900">
-                      Confirmer le mot de passe
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="confirmPassword"
-                        name="confirm-password"
-                        type={showConfirmPassword ? "text" : "password"}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Retapez votre mot de passe"
-                        required
-                        minLength={8}
-                        autoComplete="new-password"
-                        className="pr-10"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4 text-gray-400" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-gray-400" />
-                        )}
-                      </Button>
-                    </div>
-                    {confirmPassword && password !== confirmPassword && (
-                      <p className="text-xs text-red-600">Les mots de passe ne correspondent pas</p>
-                    )}
-                    {confirmPassword && password === confirmPassword && (
-                      <p className="text-xs text-green-600 flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Les mots de passe correspondent
-                      </p>
-                    )}
-                  </div>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm font-semibold text-gray-900 mb-2">Votre espace client :</p>
+                  <ul className="space-y-1 text-xs text-gray-600">
+                    <li>✓ Consultez vos documents</li>
+                    <li>✓ Suivez vos dossiers</li>
+                    <li>✓ Échangez en sécurité</li>
+                    <li>✓ Accès 24h/24</li>
+                  </ul>
+                </div>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
-                    <h4 className="font-semibold text-gray-900 text-sm">Votre espace client vous permet de :</h4>
-                    <ul className="space-y-1 text-sm text-gray-600">
-                      <li>✓ Consulter vos documents en temps réel</li>
-                      <li>✓ Suivre l'avancement de vos dossiers</li>
-                      <li>✓ Échanger de manière sécurisée</li>
-                      <li>✓ Accéder à vos informations 24h/24</li>
-                    </ul>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700"
-                    disabled={loading}
-                  >
-                    {loading ? 'Création du compte...' : 'Créer mon compte'}
-                  </Button>
-                </form>
-              </CardContent>
-            </>
-          )}
+                <Button
+                  type="submit"
+                  className="w-full bg-green-600 hover:bg-green-700"
+                  disabled={loading}
+                >
+                  {loading ? 'Création...' : 'Créer mon compte'}
+                </Button>
+              </form>
+            )}
+          </CardContent>
         </Card>
       </div>
     </>
