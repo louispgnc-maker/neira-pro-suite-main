@@ -285,6 +285,42 @@ export default function ClientDetail() {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
+  const handleShareToPersonalSpace = async (doc: ClientDocument) => {
+    try {
+      // Download the file from client documents
+      const { data: fileData, error: downloadError } = await supabase.storage
+        .from('documents')
+        .download(doc.file_path);
+      
+      if (downloadError) throw downloadError;
+
+      // Get cabinet info for current user
+      const { data: cabinetMember } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id')
+        .eq('user_id', user?.id)
+        .single();
+
+      if (!cabinetMember) throw new Error('Cabinet non trouvé');
+
+      // Upload to professional's personal space
+      const personalPath = `${cabinetMember.cabinet_id}/personal/${doc.file_name}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(personalPath, fileData, {
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      alert('Document partagé vers votre espace personnel !');
+    } catch (error) {
+      console.error('Error sharing document:', error);
+      alert('Erreur lors du partage du document');
+    }
+  };
+
   const handleDeleteClient = async () => {
     if (!client) return;
     
@@ -754,6 +790,15 @@ export default function ClientDetail() {
                           >
                             <Download className="h-4 w-4" />
                             Télécharger
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleShareToPersonalSpace(doc)}
+                            className="flex items-center gap-1 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
+                          >
+                            <Share2 className="h-4 w-4" />
+                            Partager
                           </Button>
                           <Button
                             size="sm"
