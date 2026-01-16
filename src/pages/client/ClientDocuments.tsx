@@ -162,7 +162,7 @@ export default function ClientDocuments() {
               className="pl-10"
             />
           </div>
-          <Button variant="outline" className="sm:w-auto">
+          <Button variant="outline" className="sm:w-auto hover:bg-blue-50 hover:text-blue-700 hover:border-blue-700">
             <Filter className="h-4 w-4 mr-2" />
             Filtres
           </Button>
@@ -193,7 +193,7 @@ export default function ClientDocuments() {
                 {filteredDocuments.map((doc) => (
                   <div
                     key={doc.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-blue-50 transition-colors"
                   >
                     <div className="flex items-center space-x-3 flex-1 min-w-0">
                       <FileText className="h-5 w-5 text-blue-600 flex-shrink-0" />

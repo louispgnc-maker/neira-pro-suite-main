@@ -121,6 +121,7 @@ export default function ClientDossiers() {
             variant={filterStatus === 'all' ? 'default' : 'outline'}
             onClick={() => setFilterStatus('all')}
             size="sm"
+            className={filterStatus !== 'all' ? 'hover:bg-blue-50 hover:text-blue-700 hover:border-blue-700' : ''}
           >
             Tous ({dossiers.length})
           </Button>
@@ -128,6 +129,7 @@ export default function ClientDossiers() {
             variant={filterStatus === 'en_cours' ? 'default' : 'outline'}
             onClick={() => setFilterStatus('en_cours')}
             size="sm"
+            className={filterStatus !== 'en_cours' ? 'hover:bg-blue-50 hover:text-blue-700 hover:border-blue-700' : ''}
           >
             <Clock className="h-4 w-4 mr-2" />
             En cours ({dossiers.filter((d) => d.status === 'en_cours').length})
@@ -136,6 +138,7 @@ export default function ClientDossiers() {
             variant={filterStatus === 'en_attente' ? 'default' : 'outline'}
             onClick={() => setFilterStatus('en_attente')}
             size="sm"
+            className={filterStatus !== 'en_attente' ? 'hover:bg-blue-50 hover:text-blue-700 hover:border-blue-700' : ''}
           >
             <AlertCircle className="h-4 w-4 mr-2" />
             En attente ({dossiers.filter((d) => d.status === 'en_attente').length})
@@ -144,6 +147,7 @@ export default function ClientDossiers() {
             variant={filterStatus === 'termine' ? 'default' : 'outline'}
             onClick={() => setFilterStatus('termine')}
             size="sm"
+            className={filterStatus !== 'termine' ? 'hover:bg-blue-50 hover:text-blue-700 hover:border-blue-700' : ''}
           >
             <CheckCircle2 className="h-4 w-4 mr-2" />
             Terminés ({dossiers.filter((d) => d.status === 'termine').length})
