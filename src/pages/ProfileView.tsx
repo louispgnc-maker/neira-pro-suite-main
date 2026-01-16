@@ -247,12 +247,7 @@ export default function ProfileView() {
         throw dbError;
       }
 
-      // Ensuite, envoyer les emails via EmailJS
-      try {
-        // Send confirmation email to client
-        await emailjs.send(
-          'service_pplgv88',
-          'template_ss4jq2s',Resend
+      // Ensuite, envoyer les emails via Resend
       try {
         const { error: emailError } = await supabase.functions.invoke('send-support-email', {
           body: {
@@ -269,6 +264,11 @@ export default function ProfileView() {
         if (emailError) {
           console.log('Email notification failed (non-critical):', emailError);
         }
+      } catch (emailError) {
+        // L'email a échoué mais le message est sauvegardé dans la DB
+        console.log('Email notification failed (non-critical):', emailError);
+      }
+
       toast.success('Message envoyé avec succès !', {
         description: 'Nous vous répondrons dans les plus brefs délais.'
       });
