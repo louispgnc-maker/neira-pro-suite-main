@@ -143,9 +143,9 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
     return <Navigate to={authPath} state={{ from: location }} replace />;
   }
 
-  // Les admins ont accès à tous les espaces
-  if (user.email && ADMIN_EMAILS.includes(user.email)) {
-    console.log('[RoleProtectedRoute] Admin user detected:', user.email);
+  // Les admins ont accès uniquement aux espaces professionnels (avocat/notaire), PAS à l'espace client
+  if (user.email && ADMIN_EMAILS.includes(user.email) && requiredRole !== 'client') {
+    console.log('[RoleProtectedRoute] Admin user detected, access granted to professional space:', user.email);
     return <>{children}</>;
   }
 
