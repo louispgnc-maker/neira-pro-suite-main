@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { Mail, ArrowRight } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { supabase } from "@/lib/supabaseClient";
-import emailjs from '@emailjs/browser';
 
 export default function Contact() {
   const navigate = useNavigate();
@@ -21,11 +20,6 @@ export default function Contact() {
     subject: "",
     message: "",
   });
-
-  // Initialize EmailJS
-  useEffect(() => {
-    emailjs.init('5W-s-TGNKX6CkmGu3');
-  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -50,33 +44,22 @@ export default function Contact() {
         throw dbError;
       }
 
-      // Ensuite, envoyer les emails via EmailJS
+      // Ensuite, envoyer les emails via Resend
       try {
-        // Send confirmation email to client
-        await emailjs.send(
-          'service_pplgv88',
-          'template_ss4jq2s',
-          {
-            from_name: `${formData.firstName} ${formData.lastName}`,
-            from_email: formData.email,
-            company: formData.company,
+        const { error: emailError } = await supabase.functions.invoke('send-contact-email', {
+          body: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            company: formData.company || null,
             subject: formData.subject,
             message: formData.message,
           }
-        );
+        });
 
-        // Send notification email to Neira team
-        await emailjs.send(
-          'service_pplgv88',
-          'template_u6upq8f',
-          {
-            from_name: `${formData.firstName} ${formData.lastName}`,
-            from_email: formData.email,
-            company: formData.company,
-            subject: formData.subject,
-            message: formData.message,
-          }
-        );
+        if (emailError) {
+          console.log('Email notification failed (non-critical):', emailError);
+        }
       } catch (emailError) {
         // L'email a échoué mais le message est sauvegardé dans la DB
         console.log('Email notification failed (non-critical):', emailError);

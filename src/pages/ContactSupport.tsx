@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Mail, ArrowLeft, Send } from "lucide-react";
-import emailjs from '@emailjs/browser';
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
@@ -29,11 +28,6 @@ export default function ContactSupport() {
     subject: "",
     message: "",
   });
-
-  // Initialize EmailJS
-  useEffect(() => {
-    emailjs.init('5W-s-TGNKX6CkmGu3');
-  }, []);
 
   // Update form data when profile loads
   useEffect(() => {
@@ -71,33 +65,23 @@ export default function ContactSupport() {
         throw dbError;
       }
 
-      // Ensuite, envoyer les emails via EmailJS
+      // Ensuite, envoyer les emails via Resend
       try {
-        // Send confirmation email to client
-        await emailjs.send(
-          'service_pplgv88',
-          'template_ss4jq2s',
-          {
-            from_name: `${formData.firstName} ${formData.lastName}`,
-            from_email: formData.email,
-            company: formData.company,
+        const { error: emailError } = await supabase.functions.invoke('send-support-email', {
+          body: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            company: formData.company || null,
             subject: formData.subject,
             message: formData.message,
+            userId: user?.id,
           }
-        );
+        });
 
-        // Send notification email to Neira team
-        await emailjs.send(
-          'service_pplgv88',
-          'template_u6upq8f',
-          {
-            from_name: `${formData.firstName} ${formData.lastName}`,
-            from_email: formData.email,
-            company: formData.company,
-            subject: formData.subject,
-            message: formData.message,
-          }
-        );
+        if (emailError) {
+          console.log('Email notification failed (non-critical):', emailError);
+        }
       } catch (emailError) {
         // L'email a échoué mais le message est sauvegardé dans la DB
         console.log('Email notification failed (non-critical):', emailError);

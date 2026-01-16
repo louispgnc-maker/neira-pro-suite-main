@@ -12,7 +12,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import emailjs from '@emailjs/browser';
 import { createPortalSession } from "@/lib/stripeCheckout";
 
 export default function ProfileView() {
@@ -217,11 +216,6 @@ export default function ProfileView() {
     loadUserCabinet();
   }, [loadUserCabinet]);
 
-  // Initialize EmailJS
-  useEffect(() => {
-    emailjs.init('5W-s-TGNKX6CkmGu3');
-  }, []);
-
   const handleEditProfile = () => {
     navigate(role === 'notaire' ? '/notaires/profile/edit' : '/avocats/profile/edit');
   };
@@ -258,33 +252,23 @@ export default function ProfileView() {
         // Send confirmation email to client
         await emailjs.send(
           'service_pplgv88',
-          'template_ss4jq2s',
-          {
-            from_name: `${profile?.first_name || ''} ${profile?.last_name || ''}`,
-            from_email: user?.email || '',
-            company: cabinetName || '',
+          'template_ss4jq2s',Resend
+      try {
+        const { error: emailError } = await supabase.functions.invoke('send-support-email', {
+          body: {
+            firstName: profile?.first_name || profile?.nom || '',
+            lastName: profile?.last_name || profile?.prenom || '',
+            email: user?.email || '',
+            company: cabinetName || null,
             subject: contactForm.subject,
             message: contactForm.message,
+            userId: user?.id,
           }
-        );
+        });
 
-        // Send notification email to Neira team
-        await emailjs.send(
-          'service_pplgv88',
-          'template_u6upq8f',
-          {
-            from_name: `${profile?.first_name || ''} ${profile?.last_name || ''}`,
-            from_email: user?.email || '',
-            company: cabinetName || '',
-            subject: contactForm.subject,
-            message: contactForm.message,
-          }
-        );
-      } catch (emailError) {
-        // L'email a échoué mais le message est sauvegardé dans la DB
-        console.log('Email notification failed (non-critical):', emailError);
-      }
-
+        if (emailError) {
+          console.log('Email notification failed (non-critical):', emailError);
+        }
       toast.success('Message envoyé avec succès !', {
         description: 'Nous vous répondrons dans les plus brefs délais.'
       });
