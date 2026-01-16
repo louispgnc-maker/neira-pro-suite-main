@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
+import { sanitizeFileName } from '@/lib/storageHelpers';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -138,7 +139,9 @@ export default function ClientDocuments() {
     setUploading(true);
     try {
       for (const file of Array.from(files)) {
-        const filePath = `${cabinetId}/${clientId}/${file.name}`;
+        // Nettoyer le nom du fichier pour éviter les caractères spéciaux
+        const sanitizedFileName = sanitizeFileName(file.name);
+        const filePath = `${cabinetId}/${clientId}/${sanitizedFileName}`;
         
         const { error: uploadError } = await supabase.storage
           .from('documents')

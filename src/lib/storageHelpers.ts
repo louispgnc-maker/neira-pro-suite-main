@@ -1,5 +1,19 @@
 import { supabase } from './supabaseClient';
 
+/**
+ * Nettoie un nom de fichier pour le rendre compatible avec Supabase Storage
+ * - Supprime les accents
+ * - Remplace les espaces et caractères spéciaux par des underscores
+ * - Évite les underscores multiples
+ */
+export function sanitizeFileName(fileName: string): string {
+  return fileName
+    .normalize('NFD') // Décomposer les caractères accentués
+    .replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
+    .replace(/[^a-zA-Z0-9._-]/g, '_') // Remplacer les caractères spéciaux par _
+    .replace(/_+/g, '_'); // Éviter les underscores multiples
+}
+
 // Try to get a signed URL via an Edge Function that enforces cabinet membership.
 // Falls back to client-side createSignedUrl when the function is not available.
 export async function getSignedUrlForPath({ bucket = 'documents', path, cabinetId, expires = 60 }: { bucket?: string; path: string; cabinetId?: string | null; expires?: number; }) {
