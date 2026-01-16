@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,8 @@ import { PublicHeader } from '@/components/layout/PublicHeader';
 
 export default function ClientLogin() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [searchParams] = useSearchParams();
+  const [mode, setMode] = useState<'login' | 'signup'>('signup');
   const [accessCode, setAccessCode] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,6 +20,18 @@ export default function ClientLogin() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Pré-remplir le code depuis l'URL
+  useEffect(() => {
+    const codeFromUrl = searchParams.get('code');
+    if (codeFromUrl) {
+      setAccessCode(codeFromUrl);
+      setMode('signup'); // Basculer en mode création de compte
+      toast.success('Code d\'accès détecté !', {
+        description: 'Créez votre mot de passe pour activer votre espace'
+      });
+    }
+  }, [searchParams]);
 
   const generateSecurePassword = () => {
     const length = 16;
