@@ -66,6 +66,7 @@ import ClientLogin from "./pages/ClientLogin";
 import ClientDashboard from "./pages/client/ClientDashboard";
 import ClientDocuments from "./pages/client/ClientDocuments";
 import ClientDossiers from "./pages/client/ClientDossiers";
+import ClientProfile from "./pages/client/ClientProfile";
 import ClientSpaces from "./pages/ClientSpaces";
 import ClientSpaceDetail from "./pages/ClientSpaceDetail";
 import ScrollToTop from "./components/ScrollToTop";
@@ -109,6 +110,7 @@ const App = () => (
             <Route path="/client-space" element={<RoleProtectedRoute requiredRole="client"><ClientDashboard /></RoleProtectedRoute>} />
             <Route path="/client-space/documents" element={<RoleProtectedRoute requiredRole="client"><ClientDocuments /></RoleProtectedRoute>} />
             <Route path="/client-space/dossiers" element={<RoleProtectedRoute requiredRole="client"><ClientDossiers /></RoleProtectedRoute>} />
+            <Route path="/client-space/profile" element={<RoleProtectedRoute requiredRole="client"><ClientProfile /></RoleProtectedRoute>} />
             
             {/* Routes checkout publiques */}
             <Route path="/checkout/:planId" element={<CheckoutPublic />} />
