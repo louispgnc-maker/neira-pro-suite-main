@@ -12,7 +12,7 @@ import { PublicHeader } from '@/components/layout/PublicHeader';
 export default function ClientLogin() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [mode, setMode] = useState<'login' | 'signup'>('signup');
+  const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [accessCode, setAccessCode] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -217,17 +217,17 @@ export default function ClientLogin() {
             <div className="flex gap-2 mb-6">
               <Button
                 type="button"
-                variant={mode === 'login' ? 'default' : 'outline'}
+                variant="outline"
                 onClick={() => setMode('login')}
-                className={`flex-1 ${mode === 'login' ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                className={`flex-1 ${mode === 'login' ? 'border-blue-600 text-blue-600 bg-blue-50' : ''}`}
               >
                 Se connecter
               </Button>
               <Button
                 type="button"
-                variant={mode === 'signup' ? 'default' : 'outline'}
+                variant="outline"
                 onClick={() => setMode('signup')}
-                className={`flex-1 ${mode === 'signup' ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                className={`flex-1 ${mode === 'signup' ? 'border-blue-600 text-blue-600 bg-blue-50' : ''}`}
               >
                 Créer mon compte
               </Button>
