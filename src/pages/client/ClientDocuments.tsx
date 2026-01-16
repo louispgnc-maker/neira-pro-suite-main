@@ -55,26 +55,19 @@ export default function ClientDocuments() {
     try {
       const { data: client, error: clientError } = await supabase
         .from('clients')
-        .select('id')
+        .select('id, owner_id')
         .eq('user_id', user?.id)
         .single();
 
       if (clientError) throw clientError;
 
       setClientId(client.id);
+      setCabinetId(client.owner_id);
 
-      const { data: cabinetClient } = await supabase
-        .from('cabinet_clients')
-        .select('cabinet_id')
-        .eq('client_id', client.id)
-        .single();
-
-      if (cabinetClient) {
-        setCabinetId(cabinetClient.cabinet_id);
-        
+      if (client.owner_id) {
         const { data: files, error: filesError } = await supabase.storage
           .from('documents')
-          .list(`${cabinetClient.cabinet_id}/${client.id}`);
+          .list(`${client.owner_id}/${client.id}`);
 
         if (filesError) throw filesError;
 
@@ -84,7 +77,7 @@ export default function ClientDocuments() {
               const { data: urlData } = await supabase.storage
                 .from('documents')
                 .createSignedUrl(
-                  `${cabinetClient.cabinet_id}/${client.id}/${file.name}`,
+                  `${client.owner_id}/${client.id}/${file.name}`,
                   3600
                 );
 
