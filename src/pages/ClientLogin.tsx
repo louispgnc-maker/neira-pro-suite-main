@@ -219,7 +219,7 @@ export default function ClientLogin() {
                 type="button"
                 variant="outline"
                 onClick={() => setMode('login')}
-                className={`flex-1 ${mode === 'login' ? 'border-blue-600 text-blue-600 bg-blue-50' : ''}`}
+                className={`flex-1 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-700 ${mode === 'login' ? 'border-blue-600 text-blue-600 bg-blue-50' : ''}`}
               >
                 Se connecter
               </Button>
@@ -227,7 +227,7 @@ export default function ClientLogin() {
                 type="button"
                 variant="outline"
                 onClick={() => setMode('signup')}
-                className={`flex-1 ${mode === 'signup' ? 'border-blue-600 text-blue-600 bg-blue-50' : ''}`}
+                className={`flex-1 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-700 ${mode === 'signup' ? 'border-blue-600 text-blue-600 bg-blue-50' : ''}`}
               >
                 Créer mon compte
               </Button>
