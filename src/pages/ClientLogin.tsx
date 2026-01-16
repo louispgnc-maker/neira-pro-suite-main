@@ -287,7 +287,7 @@ export default function ClientLogin() {
                       variant="ghost"
                       size="sm"
                       onClick={handleGeneratePassword}
-                      className="text-blue-600 h-auto p-1"
+                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-auto p-1"
                     >
                       <RefreshCw className="w-3 h-3 mr-1" />
                       Suggérer
@@ -308,7 +308,7 @@ export default function ClientLogin() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="absolute right-0 top-0 h-full px-3"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-blue-50 text-gray-600 hover:text-blue-600"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -338,7 +338,7 @@ export default function ClientLogin() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="absolute right-0 top-0 h-full px-3"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-blue-50 text-gray-600 hover:text-blue-600"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
                       {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

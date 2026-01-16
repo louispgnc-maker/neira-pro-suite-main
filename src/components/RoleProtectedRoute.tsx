@@ -38,6 +38,19 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
       try {
         // Si on cherche un client, vérifier dans la table clients
         if (requiredRole === 'client') {
+          // D'abord vérifier que l'utilisateur N'EST PAS un professionnel
+          const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+          const cabinets = Array.isArray(cabinetsData) ? cabinetsData : [];
+          
+          if (cabinets.length > 0) {
+            // C'est un professionnel, il ne peut pas accéder à l'espace client
+            setUserRole(cabinets[0].role as 'avocat' | 'notaire');
+            console.log('[RoleProtectedRoute] User is a professional, cannot access client space:', cabinets[0].role);
+            setLoading(false);
+            return;
+          }
+          
+          // Ensuite vérifier s'il est bien client
           const { data: clientData, error: clientError } = await supabase
             .from('clients')
             .select('id')
@@ -57,6 +70,21 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
           return;
         }
 
+        // Pour avocat/notaire, vérifier qu'ils ne sont PAS clients
+        const { data: clientCheck } = await supabase
+          .from('clients')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (clientCheck) {
+          // C'est un client, il ne peut pas accéder aux espaces professionnels
+          setUserRole('client');
+          console.log('[RoleProtectedRoute] User is a client, cannot access professional space');
+          setLoading(false);
+          return;
+        }
+        
         // Pour avocat/notaire, utiliser la logique existante
         // Utiliser la même méthode que EspaceCollaboratif pour récupérer les cabinets
         const { data: cabinetsData, error: cabinetsError } = await supabase.rpc('get_user_cabinets');
