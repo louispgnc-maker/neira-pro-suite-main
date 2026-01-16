@@ -57,12 +57,7 @@ export default function ClientSpace() {
       // Get client data using user_id
       const { data: client, error: clientError } = await supabase
         .from('clients')
-        .select(`
-          *,
-          cabinet:cabinets (
-            nom
-          )
-        `)
+        .select('*')
         .eq('user_id', user?.id)
         .single();
 
@@ -73,31 +68,50 @@ export default function ClientSpace() {
         return;
       }
 
-      setClientData(client as ClientData);
+      // Get cabinet info separately if owner_id exists
+      let cabinetData = null;
+      if (client.owner_id) {
+        const { data: cabinet } = await supabase
+          .from('cabinets')
+          .select('nom')
+          .eq('id', client.owner_id)
+          .single();
+        
+        if (cabinet) {
+          cabinetData = { nom: cabinet.nom };
+        }
+      }
 
-      // Load documents
-      const { data: docs, error: docsError } = await supabase
-        .storage
-        .from('documents')
-        .list(`${client.cabinet_id}/${client.id}`);
+      setClientData({
+        ...client,
+        cabinet: cabinetData
+      } as ClientData);
 
-      if (!docsError && docs) {
-        const documentsWithUrls = await Promise.all(
-          docs.map(async (doc) => {
-            const { data: urlData } = await supabase.storage
-              .from('documents')
-              .createSignedUrl(`${client.cabinet_id}/${client.id}/${doc.name}`, 3600);
+      // Load documents - use owner_id instead of cabinet_id
+      if (client.owner_id) {
+        const { data: docs, error: docsError } = await supabase
+          .storage
+          .from('documents')
+          .list(`${client.owner_id}/${client.id}`);
 
-            return {
-              id: doc.id,
-              name: doc.name,
-              url: urlData?.signedUrl || '',
-              created_at: doc.created_at || '',
-              size: doc.metadata?.size,
-            };
-          })
-        );
-        setDocuments(documentsWithUrls);
+        if (!docsError && docs) {
+          const documentsWithUrls = await Promise.all(
+            docs.map(async (doc) => {
+              const { data: urlData } = await supabase.storage
+                .from('documents')
+                .createSignedUrl(`${client.owner_id}/${client.id}/${doc.name}`, 3600);
+
+              return {
+                id: doc.id,
+                name: doc.name,
+                url: urlData?.signedUrl || '',
+                created_at: doc.created_at || '',
+                size: doc.metadata?.size,
+              };
+            })
+          );
+          setDocuments(documentsWithUrls);
+        }
       }
 
       // Load dossiers
