@@ -38,7 +38,7 @@ serve(async (req) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Neira <noreply@neira.fr>",
+        from: "Neira <contact@neira.fr>",
         to: [email],
         subject: "Invitation à votre espace client Neira",
         html: `

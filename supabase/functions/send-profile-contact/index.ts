@@ -50,7 +50,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: 'Neira Contact Profil <contact@neira.fr>',
+        from: 'Neira Contact <contact@neira.fr>',
         to: [recipientEmail],
         reply_to: senderEmail,
         subject: `[Contact profil] ${subject}`,

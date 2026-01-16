@@ -42,7 +42,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: 'Neira Support <support@neira.fr>',
+        from: 'Neira Support <contact@neira.fr>',
         to: ['louispgnc@gmail.com'],
         reply_to: email,
         subject: `[Support Neira] ${subject}`,
@@ -111,7 +111,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: 'Support Neira <support@neira.fr>',
+        from: 'Neira Support <contact@neira.fr>',
         to: [email],
         subject: 'Votre demande de support a bien été reçue - Neira',
         html: `
