@@ -88,6 +88,7 @@ export default function ClientDetail() {
   const [client, setClient] = useState<Client | null>(null);
   const [contrats, setContrats] = useState<LinkedContrat[]>([]);
   const [documents, setDocuments] = useState<ClientDocument[]>([]);
+  const [sharedDocuments, setSharedDocuments] = useState<Array<{ id: string; name: string; created_at: string; size?: number }>>([]);
   const [loading, setLoading] = useState(true);
 
   const mainButtonColor = role === 'notaire'
@@ -167,6 +168,30 @@ export default function ClientDetail() {
       if (mounted && invitation) {
         setInvitationStatus(invitation.status as 'none' | 'pending' | 'active');
         setClientInvitation(invitation as ClientInvitation);
+      }
+
+      // Load shared documents from storage (espace collaboratif)
+      const { data: cabinetData } = await supabase
+        .from('cabinets')
+        .select('id')
+        .eq('owner_id', user.id)
+        .eq('role', role)
+        .maybeSingle();
+
+      if (cabinetData && id) {
+        const { data: files } = await supabase.storage
+          .from('documents')
+          .list(`${cabinetData.id}/${id}`);
+
+        if (files && mounted) {
+          const sharedDocs = files.map(file => ({
+            id: file.id,
+            name: file.name,
+            created_at: file.created_at || '',
+            size: file.metadata?.size
+          }));
+          setSharedDocuments(sharedDocs);
+        }
       }
 
       if (mounted) setLoading(false);
@@ -743,6 +768,94 @@ export default function ClientDetail() {
                       </div>
                     ))}
                   </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Documents de l'espace collaboratif */}
+            {invitationStatus === 'active' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-blue-600" />
+                    Espace collaboratif partagé
+                  </CardTitle>
+                  <CardDescription>
+                    Documents partagés entre vous et votre client ({sharedDocuments.length})
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {sharedDocuments.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <FileText className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                      <p>Aucun document dans l'espace partagé</p>
+                      <p className="text-sm mt-1">Les documents uploadés par vous ou votre client apparaîtront ici</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {sharedDocuments.map((doc) => (
+                        <div 
+                          key={doc.id}
+                          className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
+                        >
+                          <div className="flex-1 flex items-center gap-3">
+                            <FileText className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                            <div>
+                              <div className="font-medium text-gray-900">{doc.name}</div>
+                              <div className="text-xs text-gray-600">
+                                {doc.size && `${(doc.size / 1024).toFixed(1)} KB`} • {new Date(doc.created_at).toLocaleDateString('fr-FR', { 
+                                  day: 'numeric', 
+                                  month: 'short', 
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={async () => {
+                              try {
+                                const { data: cabinetData } = await supabase
+                                  .from('cabinets')
+                                  .select('id')
+                                  .eq('owner_id', user?.id)
+                                  .eq('role', role)
+                                  .maybeSingle();
+
+                                if (cabinetData && id) {
+                                  const { data, error } = await supabase.storage
+                                    .from('documents')
+                                    .download(`${cabinetData.id}/${id}/${doc.name}`);
+                                  
+                                  if (error) throw error;
+                                  
+                                  const url = URL.createObjectURL(data);
+                                  const a = document.createElement('a');
+                                  a.href = url;
+                                  a.download = doc.name;
+                                  document.body.appendChild(a);
+                                  a.click();
+                                  document.body.removeChild(a);
+                                  URL.revokeObjectURL(url);
+                                  toast.success('Téléchargement réussi');
+                                }
+                              } catch (error) {
+                                console.error('Download error:', error);
+                                toast.error('Erreur lors du téléchargement');
+                              }
+                            }}
+                            className="flex items-center gap-1 hover:bg-blue-200 hover:text-blue-700 hover:border-blue-300"
+                          >
+                            <Download className="h-4 w-4" />
+                            Télécharger
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}

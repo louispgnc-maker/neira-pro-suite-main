@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { FileText, Download, Search, Filter } from 'lucide-react';
+import { FileText, Download, Search, Filter, Upload } from 'lucide-react';
 import ClientLayout from '@/components/client/ClientLayout';
 
 interface Document {
@@ -25,6 +25,10 @@ export default function ClientDocuments() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredDocuments, setFilteredDocuments] = useState<Document[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [clientId, setClientId] = useState<string | null>(null);
+  const [cabinetId, setCabinetId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user) {
@@ -53,13 +57,17 @@ export default function ClientDocuments() {
         .from('clients')
         .select('id')
         .eq('user_id', user?.id)
-        .single();
-
-      if (clientError) throw clientError;
+      setClientId(client.id);
 
       const { data: cabinetClient } = await supabase
         .from('cabinet_clients')
         .select('cabinet_id')
+        .eq('client_id', client.id)
+        .single();
+
+      if (cabinetClient) {
+        setCabinetId(cabinetClient.cabinet_id);
+        d')
         .eq('client_id', client.id)
         .single();
 
@@ -124,7 +132,92 @@ export default function ClientDocuments() {
 
   const formatFileSize = (bytes?: number) => {
     if (!bytes) return 'N/A';
-    const kb = bytes / 1024;
+    
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !clientId || !cabinetId) return;
+
+    setUploading(true);
+    const uploadedFiles: string[] = [];
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        cons className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Mes documents</h1>
+            <p className="mt-2 text-gray-600">
+              Espace partagé avec votre professionnel - Consultez et partagez vos documents
+            </p>
+          </div>
+          <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={handleFileChange}
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+            />
+            <Button
+              onClick={handleUploadClick}
+              disabled={uploading}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {uploading ? 'Upload en cours...' : 'Ajouter des documents'}
+            </Button>
+          </div { error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false,
+          });
+
+        if (uploadError) {
+          toast.error(`Erreur lors de l'upload de ${file.name}`, {
+            description: uploadError.message,
+          });
+          continue;
+        }
+
+        uploadedFiles.push(file.name);
+      } mb-4">
+                  {searchQuery
+                    ? 'Aucun document trouvé pour cette recherche'
+                    : 'Aucun document pour le moment'}
+                </p>
+                {!searchQuery && (
+                  <Button
+                    onClick={handleUploadClick}
+                    variant="outline"
+                    className="mt-2"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Ajouter votre premier document
+                  </Button>
+                )}dFiles.length} document(s) uploadé(s) avec succès`,
+          {
+            description: 'Votre professionnel peut maintenant les consulter',
+          }
+        );
+        // Recharger la liste des documents
+        await loadDocuments();
+      }
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      toast.error('Erreur lors de l\'upload des documents');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };const kb = bytes / 1024;
     if (kb < 1024) return `${kb.toFixed(1)} KB`;
     const mb = kb / 1024;
     return `${mb.toFixed(1)} MB`;
