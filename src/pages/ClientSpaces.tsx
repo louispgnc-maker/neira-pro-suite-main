@@ -83,8 +83,9 @@ export default function ClientSpaces() {
         return;
       }
 
-      // Prendre le premier cabinet (ou filtrer par rôle si nécessaire)
-      const cabinetId = cabinets[0].cabinet_id;
+      // Prendre le premier cabinet avec le bon rôle, ou le premier disponible
+      const matchingCabinet = cabinets.find((c: any) => c.role === role) || cabinets[0];
+      const cabinetId = matchingCabinet.id;
 
       // Récupérer tous les clients avec leurs invitations
       const { data: clientsData, error: clientsError } = await supabase
