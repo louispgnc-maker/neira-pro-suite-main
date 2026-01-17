@@ -62,22 +62,74 @@ export default function Clients() {
         return;
       }
       setLoading(true);
-      let query = supabase
+      
+      // 1. Récupérer les cabinets de l'utilisateur
+      const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+      const cabinets = Array.isArray(cabinetsData) ? cabinetsData : [];
+      
+      if (cabinets.length === 0) {
+        console.log("Utilisateur sans cabinet");
+        if (isMounted) {
+          setClients([]);
+          setLoading(false);
+        }
+        return;
+      }
+
+      // Prendre le premier cabinet avec le bon rôle, ou le premier disponible
+      const matchingCabinet = cabinets.find((c: any) => c.role === role) || cabinets[0];
+      const cabinetId = matchingCabinet.id;
+      
+      // 2. Récupérer les clients directs du cabinet
+      let clientsQuery = supabase
         .from("clients")
         .select("*")
-        .eq("owner_id", user.id)
+        .eq("owner_id", cabinetId)
         .eq("role", role)
         .order("created_at", { ascending: false });
+      
       if (debounced) {
-        query = query.ilike('name', `%${debounced}%`);
+        clientsQuery = clientsQuery.ilike('name', `%${debounced}%`);
       }
-      const { data, error } = await query;
-      if (error) {
-        console.error("Erreur chargement clients:", error);
+      
+      const { data: directClients, error: directError } = await clientsQuery;
+      
+      // 3. Récupérer les clients partagés via cabinet_clients
+      let sharedQuery = supabase
+        .from("cabinet_clients")
+        .select(`
+          client_id,
+          clients (*)
+        `)
+        .eq("cabinet_id", cabinetId);
+      
+      const { data: sharedClients, error: sharedError } = await sharedQuery;
+      
+      if (directError || sharedError) {
+        console.error("Erreur chargement clients:", directError || sharedError);
         if (isMounted) setClients([]);
-      } else if (isMounted && data) {
+      } else if (isMounted) {
+        // Combiner les deux listes
+        const allClients = [...(directClients || [])];
+        
+        // Ajouter les clients partagés (en évitant les doublons)
+        if (sharedClients) {
+          for (const shared of sharedClients) {
+            const client = (shared as any).clients;
+            if (client && client.role === role) {
+              // Vérifier qu'il n'est pas déjà dans la liste
+              if (!allClients.some(c => c.id === client.id)) {
+                // Appliquer le filtre de recherche si nécessaire
+                if (!debounced || client.name?.toLowerCase().includes(debounced.toLowerCase())) {
+                  allClients.push(client);
+                }
+              }
+            }
+          }
+        }
+        
         // Recalculer le statut de complétude pour chaque client
-        const clientsWithUpdatedStatus = data.map(client => {
+        const clientsWithUpdatedStatus = allClients.map(client => {
           const { kyc_status, missing_info } = calculateClientCompleteness(client);
           
           // Si le statut a changé, on met à jour en base de données
