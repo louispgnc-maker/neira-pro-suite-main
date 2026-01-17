@@ -364,7 +364,7 @@ export default function ClientSpaceDetail() {
               variant="ghost"
               size="icon"
               onClick={() => navigate(`${prefix}/client-spaces`)}
-              className="hover:bg-gray-100"
+              className="hover:bg-blue-50 hover:text-blue-700"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
