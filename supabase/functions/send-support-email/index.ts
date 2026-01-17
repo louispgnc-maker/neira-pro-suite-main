@@ -165,10 +165,10 @@ serve(async (req) => {
       JSON.stringify({ success: true }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error sending support email:', error)
     return new Response(
-      JSON.stringify({ error: error.message || 'Erreur interne' }),
+      JSON.stringify({ error: error?.message || 'Erreur interne' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }

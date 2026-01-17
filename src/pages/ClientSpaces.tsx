@@ -27,6 +27,7 @@ interface ClientWithInvitation {
   prenom: string;
   email: string;
   telephone: string | null;
+  user_id: string | null;
   invitation_status: 'pending' | 'active' | null;
   invitation_email: string | null;
   access_code: string | null;
@@ -124,6 +125,7 @@ export default function ClientSpaces() {
           prenom: client.prenom,
           email: client.email,
           telephone: client.telephone,
+          user_id: client.user_id,
           invitation_status: invitation?.status || null,
           invitation_email: invitation?.email || null,
           access_code: invitation?.access_code || null,
@@ -145,7 +147,7 @@ export default function ClientSpaces() {
     navigate(`${prefix}/client-spaces/${clientId}`);
   };
 
-  const getStatusBadge = (status: 'pending' | 'active' | null) => {
+  const getStatusBadge = (status: 'pending' | 'active' | null, hasUserId?: boolean) => {
     if (!status) {
       return (
         <Badge variant="outline" className="gap-1">
@@ -154,7 +156,7 @@ export default function ClientSpaces() {
         </Badge>
       );
     }
-    if (status === 'pending') {
+    if (status === 'pending' && !hasUserId) {
       return (
         <div className="text-right">
           <Badge variant="outline" className="gap-1 border-orange-500 text-orange-700">
@@ -168,7 +170,7 @@ export default function ClientSpaces() {
     return (
       <Badge variant="outline" className="gap-1 border-green-500 text-green-700">
         <UserCheck className="w-3 h-3" />
-        Compte actif
+        Client actif dans l'espace
       </Badge>
     );
   };
@@ -295,7 +297,7 @@ export default function ClientSpaces() {
                         )}
                       </CardDescription>
                     </div>
-                    <div>{getStatusBadge(client.invitation_status)}</div>
+                    <div>{getStatusBadge(client.invitation_status, !!client.user_id)}</div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -316,8 +318,8 @@ export default function ClientSpaces() {
                     </div>
                     <Button
                       onClick={() => handleViewClientSpace(client.id)}
-                      variant={client.invitation_status === 'active' ? 'default' : 'outline'}
-                      className="gap-2"
+                      variant={client.invitation_status === 'active' || client.user_id ? 'default' : 'outline'}
+                      className="gap-2 hover:bg-blue-700"
                     >
                       <Eye className="w-4 h-4" />
                       Accéder à l'espace

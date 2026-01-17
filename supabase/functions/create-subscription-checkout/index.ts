@@ -117,21 +117,21 @@ serve(async (req) => {
         status: 200,
       }
     )
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ ERROR creating checkout session');
-    console.error('Error name:', error.name);
-    console.error('Error type:', error.type);
-    console.error('Error code:', error.code);
-    console.error('Error message:', error.message);
-    console.error('Error statusCode:', error.statusCode);
+    console.error('Error name:', error?.name);
+    console.error('Error type:', error?.type);
+    console.error('Error code:', error?.code);
+    console.error('Error message:', error?.message);
+    console.error('Error statusCode:', error?.statusCode);
     console.error('Full error:', JSON.stringify(error, null, 2))
     
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        type: error.type,
-        code: error.code,
-        statusCode: error.statusCode
+        error: error?.message || 'Erreur interne',
+        type: error?.type,
+        code: error?.code,
+        statusCode: error?.statusCode
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

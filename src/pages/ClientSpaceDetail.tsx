@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { DocumentManager } from '@/components/client-space/DocumentManager';
 
 interface ClientInfo {
   id: string;
@@ -58,12 +59,16 @@ interface ProfileSuggestion {
   created_at: string;
 }
 
-interface Document {
+interface DocumentFile {
   id: string;
-  name: string;
-  size: number;
-  created_at: string;
-  shared_by: string;
+  title: string;
+  file_name: string;
+  file_url: string;
+  file_size: number | null;
+  file_type: string | null;
+  uploaded_at: string;
+  uploaded_by: string | null;
+  description?: string | null;
 }
 
 interface Message {
@@ -80,12 +85,13 @@ export default function ClientSpaceDetail() {
   const location = useLocation();
   const { user } = useAuth();
   const [client, setClient] = useState<ClientInfo | null>(null);
-  const [documents, setDocuments] = useState<Document[]>([]);
+  const [documents, setDocuments] = useState<DocumentFile[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [suggestions, setSuggestions] = useState<ProfileSuggestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [messageContent, setMessageContent] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [cabinetId, setCabinetId] = useState<string>('');
 
   const role = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -118,6 +124,8 @@ export default function ClientSpaceDetail() {
       // Prendre le premier cabinet avec le bon rôle, ou le premier disponible
       const matchingCabinet = cabinets.find((c: any) => c.role === role) || cabinets[0];
       const cabinetId = matchingCabinet.id;
+
+      console.log('Cabinet ID for documents:', cabinetId);
 
       const { data: clientData, error } = await supabase
         .from('clients')
@@ -174,6 +182,7 @@ export default function ClientSpaceDetail() {
         employeur: clientData.employeur,
         kyc_status: clientData.kyc_status,
       });
+      setCabinetId(cabinetId);
     } catch (error) {
       console.error('Erreur lors du chargement du client:', error);
       toast.error('Client introuvable');
@@ -253,9 +262,22 @@ export default function ClientSpaceDetail() {
   };
 
   const loadDocuments = async () => {
-    // TODO: Implémenter le chargement des documents partagés avec ce client
-    // Pour l'instant, liste vide
-    setDocuments([]);
+    try {
+      if (!id) return;
+
+      const { data, error } = await supabase
+        .from('client_shared_documents')
+        .select('*')
+        .eq('client_id', id)
+        .order('uploaded_at', { ascending: false });
+
+      if (error) throw error;
+
+      setDocuments(data || []);
+    } catch (err) {
+      console.error('Erreur chargement documents:', err);
+      toast.error('Erreur lors du chargement des documents');
+    }
   };
 
   const loadMessages = async () => {
@@ -402,58 +424,23 @@ export default function ClientSpaceDetail() {
 
           {/* Documents Tab */}
           <TabsContent value="documents" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Documents partagés</CardTitle>
-                  <Button className="gap-2">
-                    <Upload className="w-4 h-4" />
-                    Partager un document
-                  </Button>
-                </div>
-                <CardDescription>
-                  Documents partagés avec ce client
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {documents.length === 0 ? (
-                  <div className="text-center py-12">
-                    <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground">Aucun document partagé</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Partagez des documents avec votre client pour commencer
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {documents.map((doc) => (
-                      <div
-                        key={doc.id}
-                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent"
-                      >
-                        <div className="flex items-center gap-3">
-                          <FileText className="w-5 h-5 text-blue-600" />
-                          <div>
-                            <div className="font-medium">{doc.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              Partagé par {doc.shared_by}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Download className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {!cabinetId ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <p className="text-muted-foreground">
+                    Chargement des informations du cabinet...
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <DocumentManager
+                clientId={client.id}
+                cabinetId={cabinetId}
+                documents={documents}
+                isProView={true}
+                onRefresh={loadDocuments}
+              />
+            )}
           </TabsContent>
 
           {/* Profil Tab */}

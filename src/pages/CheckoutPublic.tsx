@@ -49,7 +49,8 @@ const planConfigs = {
       { title: 'Espace collaboratif complet', description: 'Travaillez en équipe' },
       { title: 'Gestion documentaire avancée', description: 'Fonctionnalités avancées' },
       { title: 'Tableaux de bord', description: 'Suivez votre activité' },
-    ]
+    ],
+    notIncluded: []
   },
   'cabinet-plus': {
     name: 'Cabinet+',
@@ -68,7 +69,8 @@ const planConfigs = {
       { title: 'Tableaux de bord avancés', description: 'Analytics poussés' },
       { title: 'Onboarding & formation de l\'équipe', description: 'Accompagnement premium' },
       { title: 'Accès anticipé aux nouveautés', description: 'Soyez les premiers' },
-    ]
+    ],
+    notIncluded: []
   }
 };
 
