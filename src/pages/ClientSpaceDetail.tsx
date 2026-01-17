@@ -35,6 +35,7 @@ interface ClientInfo {
   telephone: string | null;
   invitation_status: 'pending' | 'active' | null;
   access_code: string | null;
+  user_id: string | null;
   // Informations complètes
   date_naissance: string | null;
   lieu_naissance: string | null;
@@ -135,6 +136,7 @@ export default function ClientSpaceDetail() {
           prenom,
           email,
           telephone,
+          user_id,
           date_naissance,
           lieu_naissance,
           adresse,
@@ -168,6 +170,7 @@ export default function ClientSpaceDetail() {
         telephone: clientData.telephone,
         invitation_status: invitation?.status || null,
         access_code: invitation?.access_code || null,
+        user_id: clientData.user_id,
         date_naissance: clientData.date_naissance,
         lieu_naissance: clientData.lieu_naissance,
         adresse: clientData.adresse,
@@ -318,6 +321,16 @@ export default function ClientSpaceDetail() {
   }
 
   const getStatusBadge = () => {
+    // Si le client a un user_id, il a créé son compte
+    if (client.user_id) {
+      return (
+        <Badge variant="outline" className="gap-1 border-green-500 text-green-700">
+          <UserCheck className="w-3 h-3" />
+          Compte actif
+        </Badge>
+      );
+    }
+    // Sinon, vérifier le statut de l'invitation
     if (!client.invitation_status) {
       return (
         <Badge variant="outline" className="gap-1">
@@ -351,6 +364,7 @@ export default function ClientSpaceDetail() {
               variant="ghost"
               size="icon"
               onClick={() => navigate(`${prefix}/client-spaces`)}
+              className="hover:bg-gray-100"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
