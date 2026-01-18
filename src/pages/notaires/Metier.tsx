@@ -50,14 +50,14 @@ export default function NotairesMetier() {
       <PublicHeader />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 overflow-hidden">
+      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100 overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(249 115 22 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
         </div>
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto">
             <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-600 to-orange-700 flex items-center justify-center shadow-lg">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center shadow-lg">
                 <Landmark className="w-10 h-10 text-white" />
               </div>
             </div>
@@ -93,7 +93,7 @@ export default function NotairesMetier() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 bg-gradient-to-br from-orange-600 via-red-600 to-orange-700">
+      <section className="py-20 px-6 bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700">
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Prêt à digitaliser votre étude ?

@@ -11,14 +11,23 @@ export default function Index() {
       <PublicHeader />
 
       {/* 1. HERO SECTION */}
-      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
-        </div>
+      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100 overflow-hidden">
+        {/* Accent coloré en haut */}
+        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600"></div>
+        
+        {/* Cercles décoratifs */}
+        <div className="absolute top-20 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
+        <div className="absolute top-40 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-20 right-1/3 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-4000"></div>
+        
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-              Pilotez votre cabinet juridique en toute simplicité
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Pilotez votre cabinet juridique
+              </span>
+              <br />
+              <span className="text-gray-900">en toute simplicité</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
               La plateforme tout-en-un qui automatise vos tâches, sécurise vos documents et optimise votre collaboration client
@@ -27,7 +36,7 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
               <Button 
                 size="lg" 
-                className="text-lg px-8 py-6 bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 group"
+                className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 group"
                 onClick={() => navigate("/solution")}
               >
                 Découvrir la solution
@@ -36,7 +45,7 @@ export default function Index() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="text-lg px-8 py-6 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 shadow-md hover:shadow-lg transition-all duration-200"
+                className="text-lg px-8 py-6 border-2 border-purple-600 text-purple-600 hover:bg-purple-50 shadow-md hover:shadow-lg transition-all duration-200"
                 onClick={() => navigate("/contact")}
               >
                 Demander une démo
@@ -45,15 +54,15 @@ export default function Index() {
 
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <CheckCircle2 className="h-5 w-5 text-blue-600" />
                 <span>Conforme RGPD</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <CheckCircle2 className="h-5 w-5 text-purple-600" />
                 <span>Données hébergées en France</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <CheckCircle2 className="h-5 w-5 text-purple-600" />
                 <span>Support dédié</span>
               </div>
             </div>
@@ -62,7 +71,7 @@ export default function Index() {
       </section>
 
       {/* 2. PROBLÈME → SOLUTION */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-20 px-6 bg-gradient-to-br from-slate-50 via-blue-100 to-purple-100">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12">
             <div>
@@ -90,24 +99,26 @@ export default function Index() {
             </div>
 
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 min-h-[100px]">
-                Neira transforme votre quotidien
+              <h2 className="text-3xl md:text-4xl font-bold mb-8 min-h-[100px]">
+                <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  Neira transforme votre quotidien
+                </span>
               </h2>
               <div className="space-y-4">
-                <div className="flex items-start gap-4 p-5 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
-                  <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
+                <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
+                  <CheckCircle2 className="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" />
                   <p className="text-gray-700"><strong>Automatisation intelligente</strong> de vos workflows juridiques</p>
                 </div>
-                <div className="flex items-start gap-4 p-5 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
-                  <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
+                <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
+                  <CheckCircle2 className="h-6 w-6 text-purple-600 flex-shrink-0 mt-0.5" />
                   <p className="text-gray-700"><strong>Gestion centralisée</strong> de tous vos documents en toute sécurité</p>
                 </div>
-                <div className="flex items-start gap-4 p-5 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
-                  <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
+                <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
+                  <CheckCircle2 className="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" />
                   <p className="text-gray-700"><strong>Espace collaboratif</strong> unique pour échanger avec votre équipe</p>
                 </div>
-                <div className="flex items-start gap-4 p-5 bg-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
-                  <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" />
+                <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
+                  <CheckCircle2 className="h-6 w-6 text-purple-600 flex-shrink-0 mt-0.5" />
                   <p className="text-gray-700"><strong>Tableau de bord complet</strong> pour piloter votre activité</p>
                 </div>
               </div>
@@ -117,11 +128,15 @@ export default function Index() {
       </section>
 
       {/* 3. CE QUE FAIT NEIRA */}
-      <section className="py-20 px-6 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-20 px-6 bg-gradient-to-br from-purple-100 via-blue-100 to-slate-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Une plateforme complète pour votre cabinet
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Une plateforme complète
+              </span>
+              <br />
+              <span className="text-gray-900">pour votre cabinet</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Neira réunit tous les outils essentiels pour gérer efficacement votre activité juridique
@@ -129,7 +144,7 @@ export default function Index() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group border border-blue-100">
               <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <FileText className="h-7 w-7 text-blue-600" />
               </div>
@@ -137,7 +152,7 @@ export default function Index() {
               <p className="text-gray-600">Stockage sécurisé, organisation intelligente, versionning et partage simplifié de tous vos documents</p>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group border border-purple-100">
               <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Zap className="h-7 w-7 text-purple-600" />
               </div>
@@ -145,33 +160,33 @@ export default function Index() {
               <p className="text-gray-600">Génération automatique de documents, workflows personnalisables et rappels intelligents</p>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
-              <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Users className="h-7 w-7 text-green-600" />
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group border border-purple-100">
+              <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Users className="h-7 w-7 text-purple-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Collaboration d'équipe</h3>
               <p className="text-gray-600">Espace partagé sécurisé, messagerie intégrée et suivi en temps réel des dossiers</p>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
-              <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Clock className="h-7 w-7 text-orange-600" />
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group border border-blue-100">
+              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Clock className="h-7 w-7 text-blue-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Suivi des échéances</h3>
               <p className="text-gray-600">Calendrier intelligent, notifications automatiques et gestion des délais critiques</p>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
-              <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Shield className="h-7 w-7 text-red-600" />
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group border border-purple-100">
+              <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Shield className="h-7 w-7 text-purple-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Sécurité & Conformité</h3>
               <p className="text-gray-600">Chiffrement des données, conformité RGPD et hébergement sécurisé en France</p>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group">
-              <div className="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <BarChart3 className="h-7 w-7 text-indigo-600" />
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group border border-blue-100">
+              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <BarChart3 className="h-7 w-7 text-blue-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Pilotage & Statistiques</h3>
               <p className="text-gray-600">Tableaux de bord personnalisés, indicateurs clés et rapports d'activité détaillés</p>
@@ -181,7 +196,7 @@ export default function Index() {
       </section>
 
       {/* 4. VALEUR APPORTÉE */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-20 px-6 bg-gradient-to-br from-slate-50 via-purple-100 to-blue-100">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -193,26 +208,26 @@ export default function Index() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-10 rounded-2xl border border-blue-100 hover:shadow-lg transition-shadow">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-10 rounded-2xl border-2 border-blue-200 hover:shadow-lg transition-shadow">
               <div className="text-5xl md:text-6xl font-bold text-blue-600 mb-4">-70%</div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Jusqu'à -70% de temps administratif</h3>
               <p className="text-gray-600 text-lg">Concentrez-vous sur votre cœur de métier en automatisant les tâches répétitives</p>
             </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-10 rounded-2xl border border-green-100 hover:shadow-lg transition-shadow">
-              <div className="text-5xl md:text-6xl font-bold text-green-600 mb-4">+45%</div>
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-10 rounded-2xl border-2 border-purple-200 hover:shadow-lg transition-shadow">
+              <div className="text-5xl md:text-6xl font-bold text-purple-600 mb-4">+45%</div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Jusqu'à +45% de productivité</h3>
               <p className="text-gray-600 text-lg">Optimisez l'organisation et la collaboration au sein de votre cabinet</p>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-10 rounded-2xl border border-purple-100 hover:shadow-lg transition-shadow">
-              <div className="text-5xl md:text-6xl font-bold text-purple-600 mb-4">100%</div>
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-10 rounded-2xl border-2 border-purple-200 hover:shadow-lg transition-shadow">
+              <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">100%</div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Sécurité renforcée & confidentialité</h3>
               <p className="text-gray-600 text-lg">Chiffrement & accès contrôlés pour garantir la protection de vos données</p>
             </div>
 
-            <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-10 rounded-2xl border border-orange-100 hover:shadow-lg transition-shadow">
-              <div className="text-5xl md:text-6xl font-bold text-orange-600 mb-4">24/7</div>
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-10 rounded-2xl border-2 border-blue-200 hover:shadow-lg transition-shadow">
+              <div className="text-5xl md:text-6xl font-bold text-blue-600 mb-4">24/7</div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Suivi en temps réel 24/7</h3>
               <p className="text-gray-600 text-lg">Suivez en temps réel l'avancement de vos dossiers</p>
             </div>
@@ -221,11 +236,13 @@ export default function Index() {
       </section>
 
       {/* 5. COMMENT ÇA FONCTIONNE */}
-      <section className="py-20 px-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+      <section className="py-20 px-6 bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Comment fonctionne Neira ?
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Comment fonctionne Neira ?
+              </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Une solution pensée pour simplifier chaque aspect de votre activité juridique

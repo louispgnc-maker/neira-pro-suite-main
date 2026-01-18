@@ -8,7 +8,7 @@ export default function About() {
       <PublicHeader />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
+      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100 overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
         </div>
@@ -109,23 +109,23 @@ export default function About() {
               </div>
               
               <div className="grid md:grid-cols-2 gap-4 mt-6">
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                <div className="p-4 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl">
                   <h3 className="font-bold text-blue-900 mb-2">📋 Organisation structurée</h3>
                   <p className="text-sm text-gray-700">Une gestion simple et efficace</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+                <div className="p-4 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl">
                   <h3 className="font-bold text-purple-900 mb-2">📁 Gestion documentaire</h3>
                   <p className="text-sm text-gray-700">Intelligente et intuitive</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl">
-                  <h3 className="font-bold text-indigo-900 mb-2">👥 Espace collaboratif</h3>
+                <div className="p-4 bg-gradient-to-br from-blue-100 to-purple-200 rounded-xl">
+                  <h3 className="font-bold text-blue-900 mb-2">👥 Espace collaboratif</h3>
                   <p className="text-sm text-gray-700">Dédié et performant</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-purple-100 rounded-xl">
+                <div className="p-4 bg-gradient-to-br from-blue-100 to-purple-200 rounded-xl">
                   <h3 className="font-bold text-blue-900 mb-2">⚡ Automatisations</h3>
                   <p className="text-sm text-gray-700">Gagnez un temps précieux</p>
                 </div>
-                <div className="md:col-span-2 p-4 bg-gradient-to-br from-purple-50 to-blue-100 rounded-xl">
+                <div className="md:col-span-2 p-4 bg-gradient-to-br from-purple-100 to-blue-200 rounded-xl">
                   <h3 className="font-bold text-purple-900 mb-2">🎯 Vision unifiée</h3>
                   <p className="text-sm text-gray-700">Chaque dossier, chaque client, chaque mission en un coup d'œil</p>
                 </div>
@@ -153,12 +153,12 @@ export default function About() {
                 Neira a été développée en collaboration avec des avocats, notaires et juristes, pour répondre à leurs besoins réels — pas à ceux imaginés derrière un bureau.
               </p>
               <div className="flex items-center gap-4 my-6">
-                <div className="flex-1 h-1 bg-gradient-to-r from-green-200 to-green-500 rounded"></div>
-                <span className="text-green-600 font-semibold">Échange</span>
-                <div className="flex-1 h-1 bg-gradient-to-r from-green-500 to-green-200 rounded"></div>
+                <div className="flex-1 h-1 bg-gradient-to-r from-blue-400 to-purple-600 rounded"></div>
+                <span className="text-purple-600 font-semibold">Échange</span>
+                <div className="flex-1 h-1 bg-gradient-to-r from-purple-600 to-blue-400 rounded"></div>
               </div>
               <p>Chaque fonctionnalité naît d'un échange, d'une problématique concrète, d'un retour terrain.</p>
-              <p className="font-semibold text-green-700">
+              <p className="font-semibold text-purple-700">
                 Nous continuons d'améliorer Neira avec et pour ses utilisateurs, afin de proposer une solution en constante évolution : plus pertinente, plus complète, plus intuitive.
               </p>
             </div>
@@ -216,16 +216,16 @@ export default function About() {
               <p className="text-lg">La technologie n'a de sens que si elle sert l'humain.</p>
               <p className="text-lg">Neira est pensée comme un partenaire, pas comme un logiciel de plus.</p>
               <div className="grid md:grid-cols-2 gap-4 mt-6">
-                <div className="p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg border border-gray-200">
+                <div className="p-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg border-2 border-blue-200">
                   <p className="text-lg font-semibold text-gray-900">✨ Plus de sérénité</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg border border-gray-200">
+                <div className="p-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg border-2 border-purple-200">
                   <p className="text-lg font-semibold text-gray-900">👁️ Plus de visibilité</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg border border-gray-200">
+                <div className="p-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg border-2 border-blue-200">
                   <p className="text-lg font-semibold text-gray-900">🎯 Plus de maîtrise</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg border border-gray-200">
+                <div className="p-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg border-2 border-purple-200">
                   <p className="text-lg font-semibold text-gray-900">🚀 Plus de liberté</p>
                 </div>
               </div>

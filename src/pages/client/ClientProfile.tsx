@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
+import { useClientTheme } from '@/contexts/ClientThemeContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -61,6 +62,7 @@ interface SuggestedChange {
 
 export default function ClientProfile() {
   const { user } = useAuth();
+  const { professionType } = useClientTheme();
   const navigate = useNavigate();
   const [clientData, setClientData] = useState<ClientData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -200,17 +202,17 @@ export default function ClientProfile() {
             <p className="text-gray-600 mt-1">Consultez et suggérez des modifications à votre professionnel</p>
           </div>
           {!editMode ? (
-            <Button onClick={() => setEditMode(true)} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={() => setEditMode(true)} className={professionType === 'avocat' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-orange-600 hover:bg-orange-700'}>
               <Edit2 className="h-4 w-4 mr-2" />
               Suggérer des modifications
             </Button>
           ) : (
             <div className="flex gap-2">
-              <Button onClick={() => { setEditMode(false); setEditedData(clientData); }} variant="outline" className="hover:bg-blue-50 hover:text-blue-700 hover:border-blue-700">
+              <Button onClick={() => { setEditMode(false); setEditedData(clientData); }} variant="outline" className={professionType === 'avocat' ? 'hover:bg-blue-50 hover:text-blue-700 hover:border-blue-700' : 'hover:bg-orange-50 hover:text-orange-700 hover:border-orange-700'}>
                 <X className="h-4 w-4 mr-2" />
                 Annuler
               </Button>
-              <Button onClick={handleSaveSuggestions} className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button onClick={handleSaveSuggestions} className={`text-white ${professionType === 'avocat' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-orange-600 hover:bg-orange-700'}`}>
                 <Save className="h-4 w-4 mr-2" />
                 Envoyer les suggestions
               </Button>
@@ -229,9 +231,9 @@ export default function ClientProfile() {
         </Card>
 
         {editMode && (
-          <Card className="border-blue-200 bg-blue-50">
+          <Card className={professionType === 'avocat' ? 'border-blue-200 bg-blue-50' : 'border-orange-200 bg-orange-50'}>
             <CardHeader>
-              <CardTitle className="text-blue-900">Raison de vos modifications</CardTitle>
+              <CardTitle className={professionType === 'avocat' ? 'text-blue-900' : 'text-orange-900'}>Raison de vos modifications</CardTitle>
               <CardDescription>Expliquez pourquoi vous souhaitez modifier ces informations</CardDescription>
             </CardHeader>
             <CardContent>

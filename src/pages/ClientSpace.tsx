@@ -42,6 +42,7 @@ export default function ClientSpace() {
   const [clientData, setClientData] = useState<ClientData | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [dossiers, setDossiers] = useState<Dossier[]>([]);
+  const [professionType, setProfessionType] = useState<'avocat' | 'notaire'>('avocat');
 
   useEffect(() => {
     if (!user) {
@@ -70,15 +71,17 @@ export default function ClientSpace() {
 
       // Get cabinet info separately if owner_id exists
       let cabinetData = null;
+      let professionType: 'avocat' | 'notaire' = 'avocat';
       if (client.owner_id) {
         const { data: cabinet } = await supabase
           .from('cabinets')
-          .select('nom')
+          .select('nom, role')
           .eq('id', client.owner_id)
           .single();
         
         if (cabinet) {
           cabinetData = { nom: cabinet.nom };
+          professionType = cabinet.role || 'avocat';
         }
       }
 
@@ -86,6 +89,8 @@ export default function ClientSpace() {
         ...client,
         cabinet: cabinetData
       } as ClientData);
+      
+      setProfessionType(professionType);
 
       // Load documents - use owner_id instead of cabinet_id
       if (client.owner_id) {
@@ -177,14 +182,14 @@ export default function ClientSpace() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className={`min-h-screen bg-gradient-to-br ${professionType === 'avocat' ? 'from-blue-50 via-white to-blue-100' : 'from-orange-50 via-white to-orange-100'} flex items-center justify-center`}>
+        <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${professionType === 'avocat' ? 'border-blue-600' : 'border-orange-600'}`}></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
+    <div className={`min-h-screen bg-gradient-to-br ${professionType === 'avocat' ? 'from-blue-50 via-white to-blue-100' : 'from-orange-50 via-white to-orange-100'}`}>
       {/* Header */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -271,7 +276,7 @@ export default function ClientSpace() {
                 ) : (
                   <div className="space-y-3">
                     {dossiers.map((dossier) => (
-                      <div key={dossier.id} className="border rounded-lg p-4 hover:bg-blue-50 transition-colors">
+                      <div key={dossier.id} className={`border rounded-lg p-4 transition-colors ${professionType === 'avocat' ? 'hover:bg-blue-50' : 'hover:bg-orange-50'}`}>
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <h4 className="font-medium text-gray-900">{dossier.titre}</h4>
@@ -312,10 +317,10 @@ export default function ClientSpace() {
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
-                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-blue-50 transition-colors"
+                        className={`flex items-center justify-between p-3 border rounded-lg transition-colors ${professionType === 'avocat' ? 'hover:bg-blue-50' : 'hover:bg-orange-50'}`}
                       >
                         <div className="flex items-center space-x-3 flex-1 min-w-0">
-                          <FileText className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                          <FileText className={`h-5 w-5 flex-shrink-0 ${professionType === 'avocat' ? 'text-blue-600' : 'text-orange-600'}`} />
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-gray-900 truncate">{doc.name}</p>
                             <p className="text-xs text-gray-500">
@@ -327,7 +332,7 @@ export default function ClientSpace() {
                           onClick={() => handleDownload(doc.url, doc.name)}
                           variant="ghost"
                           size="sm"
-                          className="hover:bg-blue-50 hover:text-blue-700"
+                          className={professionType === 'avocat' ? 'hover:bg-blue-50 hover:text-blue-700' : 'hover:bg-orange-50 hover:text-orange-700'}
                         >
                           <Download className="h-4 w-4" />
                         </Button>

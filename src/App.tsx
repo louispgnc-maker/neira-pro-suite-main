@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ClientThemeProvider } from "@/contexts/ClientThemeContext";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Auth from "./pages/Auth";
 import AvocatAuth from "./pages/AvocatAuth";
@@ -107,10 +108,10 @@ const App = () => (
             <Route path="/form/:token" element={<PublicClientForm />} />
             <Route path="/client-invitation/:token" element={<ClientInvitation />} />
             <Route path="/client-login" element={<ClientLogin />} />
-            <Route path="/client-space" element={<RoleProtectedRoute requiredRole="client"><ClientDashboard /></RoleProtectedRoute>} />
-            <Route path="/client-space/documents" element={<RoleProtectedRoute requiredRole="client"><ClientDocuments /></RoleProtectedRoute>} />
-            <Route path="/client-space/dossiers" element={<RoleProtectedRoute requiredRole="client"><ClientDossiers /></RoleProtectedRoute>} />
-            <Route path="/client-space/profile" element={<RoleProtectedRoute requiredRole="client"><ClientProfile /></RoleProtectedRoute>} />
+            <Route path="/client-space" element={<RoleProtectedRoute requiredRole="client"><ClientThemeProvider><ClientDashboard /></ClientThemeProvider></RoleProtectedRoute>} />
+            <Route path="/client-space/documents" element={<RoleProtectedRoute requiredRole="client"><ClientThemeProvider><ClientDocuments /></ClientThemeProvider></RoleProtectedRoute>} />
+            <Route path="/client-space/dossiers" element={<RoleProtectedRoute requiredRole="client"><ClientThemeProvider><ClientDossiers /></ClientThemeProvider></RoleProtectedRoute>} />
+            <Route path="/client-space/profile" element={<RoleProtectedRoute requiredRole="client"><ClientThemeProvider><ClientProfile /></ClientThemeProvider></RoleProtectedRoute>} />
             
             {/* Routes checkout publiques */}
             <Route path="/checkout/:planId" element={<CheckoutPublic />} />

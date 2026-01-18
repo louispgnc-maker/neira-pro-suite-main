@@ -78,9 +78,13 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">Neira</h1>
-              <span className="ml-3 text-sm text-gray-600 hidden sm:block">
+            <div className="flex items-center gap-3">
+              <img 
+                src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Nouveau%20logo%20Neira.png" 
+                alt="Neira" 
+                className="w-16 h-16 rounded-full object-cover"
+              />
+              <span className="text-sm text-gray-600 hidden sm:block">
                 Mon espace client
               </span>
             </div>

@@ -11,7 +11,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100"
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100"
       style={{
         paddingLeft: '1cm',
         paddingRight: '1cm',

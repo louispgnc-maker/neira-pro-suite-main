@@ -102,7 +102,7 @@ export default function Contact() {
       <PublicHeader />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
+      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100 overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
         </div>
@@ -138,7 +138,7 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl">
+              <div className="p-6 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl">
                 <h3 className="font-semibold text-gray-800 mb-2">Vous voulez en savoir plus ?</h3>
                 <p className="text-sm text-gray-600 mb-4">
                   Découvrez toutes les fonctionnalités de Neira et comment notre solution peut transformer votre cabinet.

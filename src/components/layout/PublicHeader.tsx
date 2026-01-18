@@ -6,8 +6,17 @@ export function PublicHeader() {
   const navigate = useNavigate();
   const [whoOpen, setWhoOpen] = useState(false);
   const [connOpen, setConnOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const whoRef = useRef<HTMLDivElement | null>(null);
   const connRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (!whoOpen) return;
@@ -30,19 +39,19 @@ export function PublicHeader() {
   }, [connOpen]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border">
-      <div className="max-w-[95%] mx-auto py-4 flex items-center justify-between gap-8">
+    <header className={`fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border transition-all duration-300 ${scrolled ? 'py-2' : 'py-0'}`}>
+      <div className={`max-w-[95%] mx-auto flex items-center justify-between gap-8 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4'}`}>
         {/* Gauche : Logo + Nom */}
-        <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="flex items-center gap-4 flex-shrink-0">
           <button 
             onClick={() => navigate('/')} 
-            className="w-12 h-12 rounded-full overflow-hidden transition-transform duration-200 hover:scale-110 active:scale-90 cursor-pointer"
+            className={`rounded-full overflow-hidden transition-all duration-300 hover:scale-110 active:scale-90 cursor-pointer ${scrolled ? 'w-12 h-12' : 'w-16 h-16'}`}
           >
             <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Nouveau%20logo%20Neira.png" alt="Neira" className="w-full h-full object-cover" />
           </button>
           <div className="leading-tight">
-            <div className="text-lg font-bold text-gray-900">Neira</div>
-            <div className="text-sm text-gray-600">Espace Professionnel Automatisé</div>
+            <div className={`font-bold text-gray-900 transition-all duration-300 ${scrolled ? 'text-xl' : 'text-2xl'}`}>Neira</div>
+            <div className={`text-gray-600 transition-all duration-300 ${scrolled ? 'text-sm' : 'text-base'}`}>Espace Professionnel Automatisé</div>
           </div>
         </div>
 
@@ -50,14 +59,14 @@ export function PublicHeader() {
         <div className="flex items-center gap-6 flex-1 justify-center">
           <button
             onClick={() => navigate('/solution')}
-            className="px-6 py-2.5 text-sm font-medium hover:text-gray-900 transition-all duration-200"
+            className={`px-6 font-medium hover:text-gray-900 transition-all duration-300 ${scrolled ? 'py-2 text-xs' : 'py-2.5 text-sm'}`}
           >
             Notre solution
           </button>
 
           <button
             onClick={() => navigate('/')}
-            className="px-8 py-3 text-lg font-semibold hover:text-gray-900 transition-all duration-200"
+            className={`px-8 font-semibold hover:text-gray-900 transition-all duration-300 ${scrolled ? 'py-2.5 text-base' : 'py-3 text-lg'}`}
           >
             Accueil
           </button>
@@ -65,7 +74,7 @@ export function PublicHeader() {
           <div ref={whoRef} className="relative">
             <button
               onClick={() => setWhoOpen(!whoOpen)}
-              className="px-6 py-2.5 text-sm font-medium hover:text-gray-900 transition-all duration-200 flex items-center gap-1.5"
+              className={`px-6 font-medium hover:text-gray-900 transition-all duration-300 flex items-center gap-1.5 ${scrolled ? 'py-2 text-xs' : 'py-2.5 text-sm'}`}
             >
               Pour qui ?
               <ChevronDown className="w-4 h-4" />

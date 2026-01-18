@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
+import { useClientTheme } from '@/contexts/ClientThemeContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Folder, FileText, Clock, CheckCircle2, AlertCircle, TrendingUp } from 'lucide-react';
@@ -32,6 +33,7 @@ interface RecentDocument {
 export default function ClientDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { professionType } = useClientTheme();
   const [loading, setLoading] = useState(true);
   const [clientId, setClientId] = useState<string | null>(null);
   const [dossierStats, setDossierStats] = useState<DossierStats>({
@@ -89,30 +91,22 @@ export default function ClientDashboard() {
         setRecentDossiers(dossiers.slice(0, 3));
       }
 
-      // Load recent documents from storage
-      const { data: cabinetClient } = await supabase
-        .from('cabinet_clients')
-        .select('cabinet_id')
+      // Load recent documents from client_shared_documents table
+      const { data: docsData, error: docsError } = await supabase
+        .from('client_shared_documents')
+        .select('id, title, file_name, uploaded_at')
         .eq('client_id', client.id)
-        .single();
+        .order('uploaded_at', { ascending: false })
+        .limit(5);
 
-      if (cabinetClient) {
-        const { data: files } = await supabase.storage
-          .from('documents')
-          .list(`${cabinetClient.cabinet_id}/${client.id}`, {
-            limit: 5,
-            sortBy: { column: 'created_at', order: 'desc' },
-          });
-
-        if (files) {
-          setRecentDocuments(
-            files.map((file) => ({
-              id: file.id,
-              name: file.name,
-              created_at: file.created_at || '',
-            }))
-          );
-        }
+      if (!docsError && docsData) {
+        setRecentDocuments(
+          docsData.map((doc) => ({
+            id: doc.id,
+            name: doc.title || doc.file_name,
+            created_at: doc.uploaded_at || '',
+          }))
+        );
       }
 
       setLoading(false);
@@ -262,7 +256,7 @@ export default function ClientDashboard() {
                   {recentDossiers.map((dossier) => (
                     <div
                       key={dossier.id}
-                      className="border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                      className={`border rounded-lg p-4 transition-colors cursor-pointer ${professionType === 'avocat' ? 'hover:bg-blue-50' : 'hover:bg-orange-50'}`}
                       onClick={() =>
                         navigate(`/client-space/dossiers/${dossier.id}`)
                       }
@@ -307,9 +301,9 @@ export default function ClientDashboard() {
                   {recentDocuments.map((doc) => (
                     <div
                       key={doc.id}
-                      className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                      className={`flex items-center gap-3 p-3 border rounded-lg transition-colors ${professionType === 'avocat' ? 'hover:bg-blue-50' : 'hover:bg-orange-50'}`}
                     >
-                      <FileText className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                      <FileText className={`h-5 w-5 flex-shrink-0 ${professionType === 'avocat' ? 'text-blue-600' : 'text-orange-600'}`} />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-900 truncate">
                           {doc.name}

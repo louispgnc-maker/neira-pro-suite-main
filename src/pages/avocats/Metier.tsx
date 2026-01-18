@@ -50,7 +50,7 @@ export default function AvocatsMetier() {
       <PublicHeader />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 overflow-hidden">
+      <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100 overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgb(59 130 246 / 0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
         </div>
@@ -93,7 +93,7 @@ export default function AvocatsMetier() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700">
+      <section className="py-20 px-6 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700">
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Prêt à transformer votre cabinet ?

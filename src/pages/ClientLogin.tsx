@@ -198,7 +198,7 @@ export default function ClientLogin() {
   return (
     <>
       <PublicHeader />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4 pt-20">
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100 flex items-center justify-center p-4 pt-20">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
