@@ -366,8 +366,7 @@ export function DocumentManager({
   return (
     <>
       <Card>
-        <CardContent className="pt-6">
-          {isProView && (
+          <CardContent className="pt-6">
             <div className="mb-4">
               <input
                 ref={fileInputRef}
@@ -387,92 +386,91 @@ export function DocumentManager({
                 ) : (
                   <Upload className="w-4 h-4" />
                 )}
-                {uploading ? 'Téléversement...' : 'Partager un document'}
+                {uploading ? 'Téléversement...' : isProView ? 'Partager un document' : 'Ajouter un document'}
               </Button>
             </div>
-          )}
 
-          {documents.length === 0 ? (
-            <div className="text-center py-12">
-              <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">Aucun document partagé</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                {isProView
-                  ? 'Partagez des documents avec ce client'
-                  : 'Aucun document disponible pour le moment'}
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {documents.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-blue-50 transition-colors"
-                >
-                  <div className="flex items-center gap-3 flex-1">
-                    <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <div className="font-medium truncate">{doc.file_name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {formatFileSize(doc.file_size)} •{' '}
-                        {new Date(doc.uploaded_at).toLocaleDateString('fr-FR')}
+            {documents.length === 0 ? (
+              <div className="text-center py-12">
+                <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Aucun document partagé</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {isProView
+                    ? 'Partagez des documents avec ce client'
+                    : 'Aucun document disponible pour le moment'}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {documents.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-blue-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 flex-1">
+                      <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium truncate">{doc.file_name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {formatFileSize(doc.file_size)} •{' '}
+                          {new Date(doc.uploaded_at).toLocaleDateString('fr-FR')}
+                        </div>
                       </div>
                     </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleView(doc)}
+                        title="Aperçu"
+                        className="hover:bg-blue-50 hover:text-blue-700"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDownload(doc)}
+                        title="Télécharger"
+                        className="hover:bg-blue-50 hover:text-blue-700"
+                      >
+                        <Download className="w-4 h-4" />
+                      </Button>
+                      {isProView && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-700">
+                              <MoreVertical className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedDoc(doc);
+                                setTransferDialogOpen(true);
+                              }}
+                              className="hover:bg-blue-50 hover:text-blue-700 cursor-pointer"
+                            >
+                              <Copy className="w-4 h-4 mr-2" />
+                              Copier vers...
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDelete(doc)}
+                              className="text-destructive hover:bg-red-50 hover:text-red-700 cursor-pointer"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleView(doc)}
-                      title="Aperçu"
-                      className="hover:bg-blue-50 hover:text-blue-700"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDownload(doc)}
-                      title="Télécharger"
-                      className="hover:bg-blue-50 hover:text-blue-700"
-                    >
-                      <Download className="w-4 h-4" />
-                    </Button>
-                    {isProView && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-700">
-                            <MoreVertical className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedDoc(doc);
-                              setTransferDialogOpen(true);
-                            }}
-                            className="hover:bg-blue-50 hover:text-blue-700 cursor-pointer"
-                          >
-                            <Copy className="w-4 h-4 mr-2" />
-                            Copier vers...
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDelete(doc)}
-                            className="text-destructive hover:bg-red-50 hover:text-red-700 cursor-pointer"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Supprimer
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
       {/* Transfer Dialog */}
       <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>

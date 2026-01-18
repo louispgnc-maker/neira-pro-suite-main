@@ -87,13 +87,11 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
           </div>
         ) : viewUrl ? (
           fileType.startsWith('image/') ? (
-            <div className="flex items-center justify-center h-[calc(90vh-5.5rem)] bg-white overflow-auto p-4">
-              <img 
-                src={viewUrl} 
-                alt={documentName}
-                className="max-w-full max-h-full object-contain"
-              />
-            </div>
+            <img 
+              src={viewUrl} 
+              alt={documentName}
+              className="w-full h-[calc(90vh-5.5rem)] object-contain bg-white"
+            />
           ) : (
             <iframe
               src={viewUrl}
