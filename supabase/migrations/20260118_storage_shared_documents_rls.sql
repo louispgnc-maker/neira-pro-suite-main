@@ -65,7 +65,7 @@ CREATE POLICY "Professionals and clients can read from shared-documents"
     )
   );
 
--- DELETE: Les professionnels peuvent supprimer les docs de leurs clients, les clients peuvent supprimer leurs docs
+-- DELETE: Les professionnels peuvent supprimer les docs de leurs clients, les clients peuvent supprimer UNIQUEMENT les docs qu'ils ont uploadés
 CREATE POLICY "Professionals and clients can delete from shared-documents"
   ON storage.objects
   FOR DELETE
@@ -82,11 +82,14 @@ CREATE POLICY "Professionals and clients can delete from shared-documents"
           AND cm.status = 'active'
       )
       OR
-      -- Le client peut supprimer ses propres documents
-      (storage.foldername(name))[2] IN (
-        SELECT c.id::text
-        FROM clients c
-        WHERE c.user_id = auth.uid()
+      -- Le client peut supprimer UNIQUEMENT les documents qu'il a lui-même uploadés
+      (
+        (storage.foldername(name))[2] IN (
+          SELECT c.id::text
+          FROM clients c
+          WHERE c.user_id = auth.uid()
+        )
+        AND owner = auth.uid()
       )
     )
   );

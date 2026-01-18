@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { sanitizeFileName } from '@/lib/storageHelpers';
 import { Button } from '@/components/ui/button';
@@ -66,7 +66,15 @@ export function DocumentManager({
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerUrl, setViewerUrl] = useState('');
   const [viewerDocName, setViewerDocName] = useState('');
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Get current user ID
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) setCurrentUserId(data.user.id);
+    });
+  }, []);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -200,12 +208,18 @@ export function DocumentManager({
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce document ?')) return;
 
     try {
-      // Delete from storage
-      const { error: storageError } = await supabase.storage
-        .from('documents')
-        .remove([doc.file_url]);
+      // Construct the file path for shared-documents bucket
+      const filePath = `${cabinetId}/${clientId}/${doc.file_name}`;
 
-      if (storageError) throw storageError;
+      // Delete from storage (shared-documents bucket)
+      const { error: storageError } = await supabase.storage
+        .from('shared-documents')
+        .remove([filePath]);
+
+      if (storageError) {
+        console.error('Storage error:', storageError);
+        throw storageError;
+      }
 
       // Delete from database
       const { error: dbError } = await supabase
@@ -436,7 +450,7 @@ export function DocumentManager({
                       >
                         <Download className="w-4 h-4" />
                       </Button>
-                      {isProView && (
+                      {isProView ? (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-700">
@@ -463,6 +477,19 @@ export function DocumentManager({
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
+                      ) : (
+                        // Client view: show delete button only for their own documents
+                        currentUserId && doc.uploaded_by === currentUserId && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(doc)}
+                            title="Supprimer"
+                            className="hover:bg-red-50 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )
                       )}
                     </div>
                   </div>
