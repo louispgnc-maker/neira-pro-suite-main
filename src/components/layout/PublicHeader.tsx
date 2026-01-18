@@ -38,7 +38,7 @@ export function PublicHeader() {
             onClick={() => navigate('/')} 
             className="w-12 h-12 rounded-full overflow-hidden transition-transform duration-200 hover:scale-110 active:scale-90 cursor-pointer"
           >
-            <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Logo%20Neira.png" alt="Neira" className="w-full h-full object-cover" />
+            <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Nouveau%20logo%20Neira.png" alt="Neira" className="w-full h-full object-cover" />
           </button>
           <div className="leading-tight">
             <div className="text-lg font-bold text-gray-900">Neira</div>

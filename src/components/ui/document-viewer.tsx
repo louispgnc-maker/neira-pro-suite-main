@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
@@ -11,12 +11,18 @@ interface DocumentViewerProps {
 }
 
 export function DocumentViewer({ open, onClose, documentUrl, documentName, role = 'avocat' }: DocumentViewerProps) {
-  const [blobUrl, setBlobUrl] = useState<string>("");
+  const [viewUrl, setViewUrl] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [fileType, setFileType] = useState<string>("");
 
   useEffect(() => {
-    if (!open || !documentUrl) return;
+    if (!open || !documentUrl) {
+      setViewUrl("");
+      setLoading(true);
+      setError(false);
+      return;
+    }
 
     let objectUrl = "";
     
@@ -25,16 +31,23 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
         setLoading(true);
         setError(false);
         
-        // Télécharger le PDF
+        // Détecter le type de fichier depuis l'extension
+        const fileExt = documentName.toLowerCase();
+        let type = '';
+        if (fileExt.endsWith('.png') || fileExt.endsWith('.jpg') || fileExt.endsWith('.jpeg') || fileExt.endsWith('.gif') || fileExt.endsWith('.webp') || fileExt.endsWith('.svg')) {
+          type = 'image/';
+        } else if (fileExt.endsWith('.pdf')) {
+          type = 'application/pdf';
+        }
+        setFileType(type);
+        
+        // Télécharger le document et créer blob URL
         const response = await fetch(documentUrl);
         if (!response.ok) throw new Error('Failed to fetch');
         
-        // Convertir en blob
         const blob = await response.blob();
-        
-        // Créer une URL blob locale (même origine, pas de CORS)
         objectUrl = URL.createObjectURL(blob);
-        setBlobUrl(objectUrl);
+        setViewUrl(objectUrl);
         setLoading(false);
       } catch (err) {
         console.error('Error loading document:', err);
@@ -45,20 +58,19 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
 
     loadDocument();
 
-    // Cleanup: libérer la mémoire quand on ferme
     return () => {
       if (objectUrl) {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [documentUrl, open]);
+  }, [documentUrl, documentName, open]);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-7xl h-[90vh] p-0">
-        <div className="px-4 py-3 border-b">
-          <h2 className="text-lg font-semibold truncate">{documentName || 'Document'}</h2>
-        </div>
+        <DialogHeader className="px-4 py-3 border-b">
+          <DialogTitle className="truncate">{documentName || 'Document'}</DialogTitle>
+        </DialogHeader>
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-gray-500">Chargement du document...</p>
@@ -73,17 +85,23 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
               Ouvrir dans un nouvel onglet
             </Button>
           </div>
-        ) : blobUrl ? (
-          <iframe
-            src={blobUrl}
-            className="w-full h-[calc(90vh-4rem)] border-0"
-            title={documentName}
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500">Aucun document à afficher</p>
-          </div>
-        )}
+        ) : viewUrl ? (
+          fileType.startsWith('image/') ? (
+            <div className="flex items-center justify-center h-[calc(90vh-5.5rem)] bg-white overflow-auto p-4">
+              <img 
+                src={viewUrl} 
+                alt={documentName}
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+          ) : (
+            <iframe
+              src={viewUrl}
+              className="w-full h-[calc(90vh-5.5rem)] border-0"
+              title={documentName}
+            />
+          )
+        ) : null}
       </DialogContent>
     </Dialog>
   );

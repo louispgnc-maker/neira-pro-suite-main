@@ -21,11 +21,15 @@ import {
   UserCheck,
   Mail,
   Folder,
-  User
+  User,
+  FileSignature,
+  Plus
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { DocumentManager } from '@/components/client-space/DocumentManager';
+import DossierManager from '@/components/client-space/DossierManager';
+import ContratManager from '@/components/client-space/ContratManager';
 
 interface ClientInfo {
   id: string;
@@ -390,7 +394,7 @@ export default function ClientSpaceDetail() {
 
         {/* Tabs */}
         <Tabs defaultValue="dossiers" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="dossiers" className="gap-2">
               <Folder className="w-4 h-4" />
               Dossiers
@@ -398,6 +402,10 @@ export default function ClientSpaceDetail() {
             <TabsTrigger value="documents" className="gap-2">
               <FileText className="w-4 h-4" />
               Documents
+            </TabsTrigger>
+            <TabsTrigger value="contrats" className="gap-2">
+              <FileSignature className="w-4 h-4" />
+              Contrats
             </TabsTrigger>
             <TabsTrigger value="profil" className="gap-2">
               <User className="w-4 h-4" />
@@ -411,29 +419,24 @@ export default function ClientSpaceDetail() {
 
           {/* Dossiers Tab */}
           <TabsContent value="dossiers" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Dossiers du client</CardTitle>
-                  <Button className="gap-2">
-                    <Folder className="w-4 h-4" />
-                    Créer un dossier
-                  </Button>
-                </div>
-                <CardDescription>
-                  Gérez les dossiers partagés avec ce client
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Folder className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">Aucun dossier</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Créez un dossier pour organiser les documents et informations du client
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            {!cabinetId ? (
+              <Card>
+                <CardContent className="py-12">
+                  <div className="text-center">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">Chargement...</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <DossierManager
+                clientId={id!}
+                cabinetId={cabinetId}
+                userId={user?.id || ''}
+                isProView={true}
+                onRefresh={() => {}}
+              />
+            )}
           </TabsContent>
 
           {/* Documents Tab */}
@@ -453,6 +456,27 @@ export default function ClientSpaceDetail() {
                 documents={documents}
                 isProView={true}
                 onRefresh={loadDocuments}
+              />
+            )}
+          </TabsContent>
+
+          {/* Contrats Tab */}
+          <TabsContent value="contrats" className="space-y-4">
+            {!cabinetId ? (
+              <Card>
+                <CardContent className="py-12">
+                  <div className="text-center">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">Chargement...</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <ContratManager
+                clientId={id!}
+                cabinetId={cabinetId}
+                isProView={true}
+                role={role}
               />
             )}
           </TabsContent>

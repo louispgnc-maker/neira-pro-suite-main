@@ -280,7 +280,7 @@ export default function ClientSpaces() {
                       <CardTitle className="text-xl">
                         {client.prenom} {client.nom}
                       </CardTitle>
-                      <CardDescription className="mt-1 space-y-1">
+                      <div className="mt-1 space-y-1 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                           <Mail className="w-3 h-3" />
                           {client.email}
@@ -295,7 +295,7 @@ export default function ClientSpaces() {
                             🔑 Code d'accès: <span className="font-bold tracking-wider">{client.access_code}</span>
                           </div>
                         )}
-                      </CardDescription>
+                      </div>
                     </div>
                     <div>{getStatusBadge(client.invitation_status, !!client.user_id)}</div>
                   </div>

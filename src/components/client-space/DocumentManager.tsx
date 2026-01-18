@@ -84,14 +84,14 @@ export function DocumentManager({
 
       for (const file of Array.from(files)) {
         const sanitizedFileName = sanitizeFileName(file.name);
-        // Upload vers l'espace client partagé
+        // Upload vers l'espace client partagé (bucket public shared-documents)
         const filePath = `${cabinetId}/${clientId}/${sanitizedFileName}`;
 
         console.log('Uploading to client space:', filePath);
 
-        // Upload to storage
+        // Upload to storage (shared-documents bucket public)
         const { error: uploadError } = await supabase.storage
-          .from('documents')
+          .from('shared-documents')
           .upload(filePath, file, {
             upsert: true,
           });
@@ -101,6 +101,13 @@ export function DocumentManager({
           throw uploadError;
         }
 
+        // Get public URL
+        const { data: publicUrlData } = supabase.storage
+          .from('shared-documents')
+          .getPublicUrl(filePath);
+
+        const fullUrl = publicUrlData.publicUrl;
+
         // Create record in client_shared_documents
         const { error: dbError } = await supabase
           .from('client_shared_documents')
@@ -108,7 +115,7 @@ export function DocumentManager({
             client_id: clientId,
             title: file.name,
             file_name: sanitizedFileName,
-            file_url: filePath,
+            file_url: fullUrl,
             file_size: file.size,
             file_type: file.type,
             uploaded_by: userData.user.id,
@@ -135,13 +142,20 @@ export function DocumentManager({
 
   const handleDownload = async (doc: DocumentFile) => {
     try {
-      const { data: urlData } = await supabase.storage
-        .from('documents')
-        .createSignedUrl(doc.file_url, 3600);
+      // Si c'est déjà une URL complète, l'utiliser directement
+      let fileUrl = doc.file_url;
+      
+      if (!doc.file_url.startsWith('http')) {
+        // Sinon, générer une URL publique (bucket shared-documents)
+        const { data: publicUrlData } = supabase.storage
+          .from('shared-documents')
+          .getPublicUrl(doc.file_url);
 
-      if (!urlData?.signedUrl) throw new Error('Could not generate download URL');
+        if (!publicUrlData?.publicUrl) throw new Error('Could not generate download URL');
+        fileUrl = publicUrlData.publicUrl;
+      }
 
-      const response = await fetch(urlData.signedUrl);
+      const response = await fetch(fileUrl);
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -160,13 +174,20 @@ export function DocumentManager({
 
   const handleView = async (doc: DocumentFile) => {
     try {
-      const { data: urlData } = await supabase.storage
-        .from('documents')
-        .createSignedUrl(doc.file_url, 3600);
+      // Si c'est déjà une URL complète, l'utiliser directement
+      let viewUrl = doc.file_url;
+      
+      if (!doc.file_url.startsWith('http')) {
+        // Sinon, générer une URL publique (bucket shared-documents)
+        const { data: publicUrlData } = supabase.storage
+          .from('shared-documents')
+          .getPublicUrl(doc.file_url);
 
-      if (!urlData?.signedUrl) throw new Error('Could not generate URL');
+        if (!publicUrlData?.publicUrl) throw new Error('Could not generate URL');
+        viewUrl = publicUrlData.publicUrl;
+      }
 
-      setViewerUrl(urlData.signedUrl);
+      setViewerUrl(viewUrl);
       setViewerDocName(doc.file_name);
       setViewerOpen(true);
     } catch (err) {
