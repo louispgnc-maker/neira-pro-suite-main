@@ -23,7 +23,7 @@ import {
   Crown,
   User
 } from 'lucide-react';
-import { Trash2, UploadCloud, Share2 } from 'lucide-react';
+import { Trash2, UploadCloud, Share2, Building2 } from 'lucide-react';
 import SharedCalendar from '@/components/collaborative/SharedCalendar';
 import { CabinetChat } from '@/components/cabinet/CabinetChat';
 import {
