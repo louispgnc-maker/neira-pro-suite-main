@@ -15,10 +15,10 @@ export default function Index() {
         {/* Accent coloré en haut */}
         <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600"></div>
         
-        {/* Cercles décoratifs */}
-        <div className="absolute top-20 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
-        <div className="absolute top-40 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-20 right-1/3 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-4000"></div>
+        {/* Cercles décoratifs (utilise radial-gradient + pointer-events-none pour éviter artefacts) */}
+        <div className="absolute top-20 right-10 w-72 h-72 rounded-full overflow-hidden pointer-events-none mix-blend-multiply filter blur-2xl opacity-40 animate-blob" style={{background: 'radial-gradient(circle at 30% 30%, rgba(139,92,246,0.9), rgba(99,102,241,0.6))'}} />
+        <div className="absolute top-40 left-10 w-72 h-72 rounded-full overflow-hidden pointer-events-none mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-2000" style={{background: 'radial-gradient(circle at 30% 30%, rgba(187,222,251,0.95), rgba(203,213,225,0.6))'}} />
+        <div className="absolute bottom-20 right-1/3 w-72 h-72 rounded-full overflow-hidden pointer-events-none mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-4000" style={{background: 'radial-gradient(circle at 30% 30%, rgba(167,139,250,0.9), rgba(99,102,241,0.5))'}} />
         
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto">
