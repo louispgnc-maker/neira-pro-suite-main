@@ -197,3 +197,11 @@ All colors MUST be HSL.
   color: #6b7280 !important;
 }
 
+/* User preference: force all text to dark (black) across the site.
+   This ensures no headings or CTAs use colored text. It intentionally
+   overrides utility color classes like `text-blue-600`, `text-primary`,
+   etc. */
+#root, #root * {
+  color: #0f172a !important; /* text-gray-900 */
+}
+
