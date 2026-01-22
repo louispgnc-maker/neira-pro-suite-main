@@ -345,32 +345,49 @@ export default function EspaceCollaboratif() {
     if (!documentToShare || !user || !cabinet) return;
     setSharingToClient(true);
     try {
-      // Get document from storage
+      // Get the actual document storage path from documents table
+      const { data: docData, error: docError } = await supabase
+        .from('documents')
+        .select('storage_path, file_name, file_type, file_size')
+        .eq('id', documentToShare.document_id)
+        .single();
+
+      if (docError || !docData) {
+        throw new Error('Document introuvable');
+      }
+
+      // Download from documents bucket
       const { data: fileData, error: downloadError } = await supabase.storage
         .from('documents')
-        .download(documentToShare.file_url || '');
+        .download(docData.storage_path);
       
-      if (downloadError) throw new Error('Impossible de télécharger le document');
+      if (downloadError) {
+        console.error('Download error:', downloadError);
+        throw new Error('Impossible de télécharger le document');
+      }
 
       // Upload to shared-documents with proper path
-      const newPath = `${cabinet.id}/${clientId}/${Date.now()}-${documentToShare.file_name}`;
+      const newPath = `${cabinet.id}/${clientId}/${Date.now()}-${docData.file_name}`;
       const { error: uploadError } = await supabase.storage
         .from('shared-documents')
         .upload(newPath, fileData, {
           cacheControl: '3600',
           upsert: false,
-          contentType: documentToShare.file_type || 'application/pdf',
+          contentType: docData.file_type || 'application/pdf',
         });
 
-      if (uploadError) throw new Error('Impossible d\'uploader le document partagé');
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw new Error('Impossible d\'uploader le document partagé');
+      }
 
       // Use RPC to create client_shared_documents entry
       const { data: result, error: rpcError } = await supabase.rpc('upload_client_document', {
         p_cabinet_id: cabinet.id,
         p_client_id: clientId,
-        p_file_name: documentToShare.file_name || 'document.pdf',
-        p_file_size: fileData.size,
-        p_file_type: documentToShare.file_type || 'application/pdf',
+        p_file_name: docData.file_name || 'document.pdf',
+        p_file_size: docData.file_size || fileData.size,
+        p_file_type: docData.file_type || 'application/pdf',
         p_storage_path: newPath,
         p_title: documentToShare.title,
         p_description: documentToShare.description
