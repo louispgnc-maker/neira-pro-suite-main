@@ -104,10 +104,14 @@ BEGIN
 
   -- Determine max storage based on plan
   v_max_storage := CASE v_subscription_plan
-    WHEN 'free' THEN 1073741824        -- 1 GB
-    WHEN 'essential' THEN 10737418240   -- 10 GB
-    WHEN 'premium' THEN 107374182400    -- 100 GB
-    ELSE NULL                            -- unlimited
+    WHEN 'free' THEN 1073741824              -- 1 GB
+    WHEN 'essential' THEN 10737418240         -- 10 GB
+    WHEN 'cabinet-essential' THEN 10737418240 -- 10 GB
+    WHEN 'premium' THEN 107374182400          -- 100 GB
+    WHEN 'cabinet-plus' THEN 107374182400     -- 100 GB
+    WHEN 'cabinet-premium' THEN 107374182400  -- 100 GB
+    WHEN 'unlimited' THEN NULL                -- unlimited
+    ELSE NULL                                  -- unlimited for unknown plans
   END;
 
   -- Check if upload would exceed quota
