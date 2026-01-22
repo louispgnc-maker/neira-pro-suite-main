@@ -1,5 +1,6 @@
 -- Get all clients belonging to a cabinet (not just shared ones)
 -- Used for sharing documents to client spaces
+-- Fix: use cabinet_clients junction table instead of direct cabinet_id column
 
 CREATE OR REPLACE FUNCTION public.get_all_cabinet_clients(
   p_cabinet_id uuid
@@ -27,20 +28,21 @@ BEGIN
   END IF;
 
   RETURN QUERY
-  SELECT
+  SELECT DISTINCT
     c.id,
     COALESCE(c.nom, p.nom, '') AS nom,
     COALESCE(c.prenom, p.prenom, '') AS prenom,
     COALESCE(c.email, p.email) AS email,
     COALESCE(
-      NULLIF(c.full_name, ''),
+      NULLIF(c.name, ''),
       NULLIF(p.full_name, ''),
       NULLIF(TRIM(CONCAT_WS(' ', COALESCE(c.prenom, p.prenom), COALESCE(c.nom, p.nom))), ''),
       c.id::text
     ) AS full_name
-  FROM public.clients c
+  FROM public.cabinet_clients cc
+  INNER JOIN public.clients c ON c.id = cc.client_id
   LEFT JOIN public.profiles p ON p.id = c.id
-  WHERE c.cabinet_id = p_cabinet_id
+  WHERE cc.cabinet_id = p_cabinet_id
   ORDER BY COALESCE(c.nom, p.nom, c.id::text) ASC;
 END;
 $$;
