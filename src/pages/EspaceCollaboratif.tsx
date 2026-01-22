@@ -205,6 +205,7 @@ export default function EspaceCollaboratif() {
   const [collabLoading, setCollabLoading] = useState(true);
   // Share to client states
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [shareStep, setShareStep] = useState<'choice' | 'select-client'>('choice');
   const [documentToShare, setDocumentToShare] = useState<SharedDocument | null>(null);
   const [clients, setClients] = useState<Client[]>([]);
   const [clientSearch, setClientSearch] = useState('');
@@ -2348,64 +2349,126 @@ export default function EspaceCollaboratif() {
     />
 
     {/* Share to Client Dialog */}
-    <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+    <Dialog open={shareDialogOpen} onOpenChange={(open) => {
+      setShareDialogOpen(open);
+      if (!open) {
+        setShareStep('choice');
+        setDocumentToShare(null);
+        setClientSearch('');
+      }
+    }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Partager avec un client</DialogTitle>
+          <DialogTitle>Partager le document</DialogTitle>
           <DialogDescription>
-            Sélectionnez le client avec qui partager ce document
+            {shareStep === 'choice' 
+              ? "Choisissez où partager ce document"
+              : "Sélectionnez le client avec qui partager ce document"
+            }
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <Input
-            placeholder="Rechercher un client..."
-            value={clientSearch}
-            onChange={(e) => setClientSearch(e.target.value)}
-            className="w-full"
-          />
-          <div className="max-h-[300px] overflow-y-auto space-y-2">
-            {clients
-              .filter(c => {
+
+        {shareStep === 'choice' ? (
+          <div className="space-y-3">
+            <button
+              onClick={() => {
+                // Share to personal space - just close dialog as it's already in cabinet
+                toast({ title: 'Déjà dans l\'espace perso', description: 'Ce document est déjà dans l\'espace collaboratif du cabinet' });
+                setShareDialogOpen(false);
+              }}
+              className={`w-full p-4 text-left rounded-md border transition-colors ${
+                cabinetRole === 'notaire'
+                  ? 'hover:bg-orange-50 border-orange-200'
+                  : 'hover:bg-blue-50 border-blue-200'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Building2 className="h-5 w-5" />
+                <div>
+                  <div className="font-medium">Espace personnel du cabinet</div>
+                  <div className="text-sm text-gray-600">Document déjà accessible ici</div>
+                </div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setShareStep('select-client')}
+              className={`w-full p-4 text-left rounded-md border transition-colors ${
+                cabinetRole === 'notaire'
+                  ? 'hover:bg-orange-50 border-orange-200'
+                  : 'hover:bg-blue-50 border-blue-200'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <User className="h-5 w-5" />
+                <div>
+                  <div className="font-medium">Espace client</div>
+                  <div className="text-sm text-gray-600">Partager avec un client spécifique</div>
+                </div>
+              </div>
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShareStep('choice')}
+              className="mb-2"
+            >
+              ← Retour
+            </Button>
+            
+            <Input
+              placeholder="Rechercher un client..."
+              value={clientSearch}
+              onChange={(e) => setClientSearch(e.target.value)}
+              className="w-full"
+            />
+            <div className="max-h-[300px] overflow-y-auto space-y-2">
+              {clients
+                .filter(c => {
+                  const search = clientSearch.toLowerCase();
+                  return (
+                    c.nom.toLowerCase().includes(search) ||
+                    c.prenom.toLowerCase().includes(search) ||
+                    (c.email && c.email.toLowerCase().includes(search))
+                  );
+                })
+                .map((client) => (
+                  <button
+                    key={client.id}
+                    onClick={() => shareDocumentToClient(client.id)}
+                    disabled={sharingToClient}
+                    className={`w-full p-3 text-left rounded-md border transition-colors ${
+                      cabinetRole === 'notaire'
+                        ? 'hover:bg-orange-50 border-orange-200'
+                        : 'hover:bg-blue-50 border-blue-200'
+                    } ${sharingToClient ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                  >
+                    <div className="font-medium">
+                      {client.prenom} {client.nom}
+                    </div>
+                    {client.email && (
+                      <div className="text-sm text-gray-600">{client.email}</div>
+                    )}
+                  </button>
+                ))}
+              {clients.filter(c => {
                 const search = clientSearch.toLowerCase();
                 return (
                   c.nom.toLowerCase().includes(search) ||
                   c.prenom.toLowerCase().includes(search) ||
                   (c.email && c.email.toLowerCase().includes(search))
                 );
-              })
-              .map((client) => (
-                <button
-                  key={client.id}
-                  onClick={() => shareDocumentToClient(client.id)}
-                  disabled={sharingToClient}
-                  className={`w-full p-3 text-left rounded-md border transition-colors ${
-                    cabinetRole === 'notaire'
-                      ? 'hover:bg-orange-50 border-orange-200'
-                      : 'hover:bg-blue-50 border-blue-200'
-                  } ${sharingToClient ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                >
-                  <div className="font-medium">
-                    {client.prenom} {client.nom}
-                  </div>
-                  {client.email && (
-                    <div className="text-sm text-gray-600">{client.email}</div>
-                  )}
-                </button>
-              ))}
-            {clients.filter(c => {
-              const search = clientSearch.toLowerCase();
-              return (
-                c.nom.toLowerCase().includes(search) ||
-                c.prenom.toLowerCase().includes(search) ||
-                (c.email && c.email.toLowerCase().includes(search))
-              );
-            }).length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                Aucun client trouvé
-              </div>
-            )}
+              }).length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  Aucun client trouvé
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
     </AppLayout>
