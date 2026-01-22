@@ -23,7 +23,7 @@ export default function Index() {
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              <span className="text-blue-600">
+              <span className="text-gray-900">
                 Pilotez votre cabinet juridique
               </span>
               <br />
@@ -100,7 +100,7 @@ export default function Index() {
 
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-8 min-h-[100px]">
-                <span className="text-purple-600">
+                <span className="text-gray-900">
                   Neira transforme votre quotidien
                 </span>
               </h2>
@@ -132,7 +132,7 @@ export default function Index() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="text-blue-600">
+              <span className="text-gray-900">
                 Une plateforme complète
               </span>
               <br />
