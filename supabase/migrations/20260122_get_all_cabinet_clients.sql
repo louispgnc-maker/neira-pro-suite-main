@@ -1,6 +1,7 @@
 -- Get all clients belonging to a cabinet (not just shared ones)
 -- Used for sharing documents to client spaces
--- Fix: use cabinet_clients junction table instead of direct cabinet_id column
+-- Fix: use cabinet_clients junction table and correct column names
+-- (profiles has first_name/last_name, clients has nom/prenom)
 
 CREATE OR REPLACE FUNCTION public.get_all_cabinet_clients(
   p_cabinet_id uuid
@@ -30,20 +31,20 @@ BEGIN
   RETURN QUERY
   SELECT DISTINCT
     c.id,
-    COALESCE(c.nom, p.nom, '') AS nom,
-    COALESCE(c.prenom, p.prenom, '') AS prenom,
-    COALESCE(c.email, p.email) AS email,
+    COALESCE(c.nom, p.last_name, '') AS nom,
+    COALESCE(c.prenom, p.first_name, '') AS prenom,
+    COALESCE(c.email, p.email_pro) AS email,
     COALESCE(
       NULLIF(c.name, ''),
-      NULLIF(p.full_name, ''),
-      NULLIF(TRIM(CONCAT_WS(' ', COALESCE(c.prenom, p.prenom), COALESCE(c.nom, p.nom))), ''),
+      NULLIF(TRIM(CONCAT_WS(' ', p.first_name, p.last_name)), ''),
+      NULLIF(TRIM(CONCAT_WS(' ', c.prenom, c.nom)), ''),
       c.id::text
     ) AS full_name
   FROM public.cabinet_clients cc
   INNER JOIN public.clients c ON c.id = cc.client_id
   LEFT JOIN public.profiles p ON p.id = c.id
   WHERE cc.cabinet_id = p_cabinet_id
-  ORDER BY COALESCE(c.nom, p.nom, c.id::text) ASC;
+  ORDER BY COALESCE(c.nom, p.last_name, c.id::text) ASC;
 END;
 $$;
 
