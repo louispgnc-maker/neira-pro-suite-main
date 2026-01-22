@@ -23,7 +23,7 @@ export default function Index() {
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-blue-600">
                 Pilotez votre cabinet juridique
               </span>
               <br />
@@ -45,7 +45,7 @@ export default function Index() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="text-lg px-8 py-6 border-2 border-purple-600 text-purple-600 hover:bg-purple-50 shadow-md hover:shadow-lg transition-all duration-200"
+                className="text-lg px-8 py-6 border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white shadow-md hover:shadow-lg transition-all duration-200"
                 onClick={() => navigate("/contact")}
               >
                 Demander une démo
@@ -100,7 +100,7 @@ export default function Index() {
 
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-8 min-h-[100px]">
-                <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                <span className="text-purple-600">
                   Neira transforme votre quotidien
                 </span>
               </h2>
@@ -132,7 +132,7 @@ export default function Index() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-blue-600">
                 Une plateforme complète
               </span>
               <br />
