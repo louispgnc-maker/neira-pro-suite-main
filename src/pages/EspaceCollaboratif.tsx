@@ -268,6 +268,22 @@ export default function EspaceCollaboratif() {
           toast({ title: 'Format non supporté', description: `${file.name} n'est pas un PDF`, variant: 'destructive' });
           continue;
         }
+
+        // Check quota BEFORE upload
+        const { data: quotaCheck, error: quotaError } = await supabase.rpc('check_storage_quota', {
+          p_cabinet_id: cabinet.id,
+          p_file_size: file.size
+        });
+
+        if (quotaError || !quotaCheck?.allowed) {
+          toast({ 
+            title: 'Limite de stockage atteinte', 
+            description: quotaCheck?.error || 'Passez à un abonnement supérieur',
+            variant: 'destructive' 
+          });
+          continue;
+        }
+
         const path = `${user.id}/${Date.now()}-${file.name}`;
         const { error: upErr } = await supabase.storage.from('documents').upload(path, file, {
           cacheControl: '3600',
@@ -279,22 +295,24 @@ export default function EspaceCollaboratif() {
           continue;
         }
 
-        const { data: inserted, error: dbErr } = await supabase.from('documents').insert({
-          owner_id: user.id,
-          name: file.name,
-          client_name: null,
-          status: 'En cours',
-          role: cabinetRole,
-          storage_path: path,
-        }).select().single();
-        if (dbErr || !inserted) {
-          toast({ title: 'Erreur DB', description: dbErr?.message || 'Impossible de référencer le document', variant: 'destructive' });
+        // Use secure RPC to create document with audit logging
+        const { data: result, error: rpcErr } = await supabase.rpc('upload_cabinet_document', {
+          p_cabinet_id: cabinet.id,
+          p_file_name: file.name,
+          p_file_size: file.size,
+          p_file_type: file.type,
+          p_storage_path: path,
+          p_client_name: null
+        });
+
+        if (rpcErr || !result?.success) {
+          toast({ title: 'Erreur', description: result?.error || rpcErr?.message || 'Impossible de référencer le document', variant: 'destructive' });
+          // Cleanup uploaded file
+          await supabase.storage.from('documents').remove([path]);
           continue;
         }
 
-        // Sharing subsystem removed: we keep the upload to the user's storage and documents table,
-        // but we no longer call any client-side copy or RPCs to create cabinet_* share rows.
-        toast({ title: 'Upload', description: `${file.name} ajouté à l'espace collaboratif` });
+        toast({ title: 'Upload réussi', description: `${file.name} ajouté à l'espace collaboratif` });
       }
 
       // Refresh lists
