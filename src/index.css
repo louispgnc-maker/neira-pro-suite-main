@@ -197,11 +197,10 @@ All colors MUST be HSL.
   color: #6b7280 !important;
 }
 
-/* User preference: force all text to dark (black) across the site.
-   This ensures no headings or CTAs use colored text. It intentionally
-   overrides utility color classes like `text-blue-600`, `text-primary`,
-   etc. */
-#root, #root * {
+/* User preference: force headings to dark (black) across the site.
+   This targets large headings only instead of overriding every element.
+   Keep it specific so buttons/links/icons keep their intended styles. */
+h1, h2, h3, h4, h5, h6, .hero-title {
   color: #0f172a !important; /* text-gray-900 */
 }
 
