@@ -23,7 +23,7 @@ import {
   Crown,
   User
 } from 'lucide-react';
-import { Trash2, UploadCloud } from 'lucide-react';
+import { Trash2, UploadCloud, Share2 } from 'lucide-react';
 import SharedCalendar from '@/components/collaborative/SharedCalendar';
 import { CabinetChat } from '@/components/cabinet/CabinetChat';
 import {
@@ -134,6 +134,13 @@ interface CollabTask {
   };
 }
 
+interface Client {
+  id: string;
+  nom: string;
+  prenom: string;
+  email?: string;
+}
+
 type CombinedActivity = (SharedDocument & { type: 'Document' }) | (SharedDossier & { type: 'Dossier' }) | (SharedContrat & { type: 'Contrat' });
 
 export default function EspaceCollaboratif() {
@@ -196,6 +203,12 @@ export default function EspaceCollaboratif() {
   const [editTaskSaving, setEditTaskSaving] = useState(false);
   const [collabTasks, setCollabTasks] = useState<CollabTask[]>([]);
   const [collabLoading, setCollabLoading] = useState(true);
+  // Share to client states
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [documentToShare, setDocumentToShare] = useState<SharedDocument | null>(null);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [clientSearch, setClientSearch] = useState('');
+  const [sharingToClient, setSharingToClient] = useState(false);
   // Load collaborative tasks from cabinet_tasks
   useEffect(() => {
     let mounted = true;
@@ -324,6 +337,59 @@ export default function EspaceCollaboratif() {
     } finally {
       setUploadingToCollab(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const shareDocumentToClient = async (clientId: string) => {
+    if (!documentToShare || !user || !cabinet) return;
+    setSharingToClient(true);
+    try {
+      // Get document from storage
+      const { data: fileData, error: downloadError } = await supabase.storage
+        .from('documents')
+        .download(documentToShare.file_url || '');
+      
+      if (downloadError) throw new Error('Impossible de télécharger le document');
+
+      // Upload to shared-documents with proper path
+      const newPath = `${cabinet.id}/${clientId}/${Date.now()}-${documentToShare.file_name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('shared-documents')
+        .upload(newPath, fileData, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: documentToShare.file_type || 'application/pdf',
+        });
+
+      if (uploadError) throw new Error('Impossible d\'uploader le document partagé');
+
+      // Use RPC to create client_shared_documents entry
+      const { data: result, error: rpcError } = await supabase.rpc('upload_client_document', {
+        p_cabinet_id: cabinet.id,
+        p_client_id: clientId,
+        p_file_name: documentToShare.file_name || 'document.pdf',
+        p_file_size: fileData.size,
+        p_file_type: documentToShare.file_type || 'application/pdf',
+        p_storage_path: newPath,
+        p_title: documentToShare.title,
+        p_description: documentToShare.description
+      });
+
+      if (rpcError || !result?.success) {
+        await supabase.storage.from('shared-documents').remove([newPath]);
+        throw new Error(result?.error || rpcError?.message || 'Erreur lors du partage');
+      }
+
+      toast({ title: 'Document partagé', description: 'Le document a été ajouté à l\'espace client' });
+      setShareDialogOpen(false);
+      setDocumentToShare(null);
+      setClientSearch('');
+    } catch (e: unknown) {
+      console.error('Share to client error', e);
+      const msg = e instanceof Error ? e.message : String(e);
+      toast({ title: 'Erreur', description: msg, variant: 'destructive' });
+    } finally {
+      setSharingToClient(false);
     }
   };
 
@@ -744,6 +810,24 @@ export default function EspaceCollaboratif() {
       } catch (e) {
         console.error('Exception fetching clients:', e);
         setClientsShared([]);
+      }
+
+      // Load all clients for sharing dialog (not just shared ones)
+      try {
+        const { data: allClientsData, error: allClientsError } = await supabase
+          .from('clients')
+          .select('id, nom, prenom, email')
+          .eq('cabinet_id', userCabinet.id)
+          .order('nom', { ascending: true });
+        
+        if (!allClientsError && Array.isArray(allClientsData)) {
+          setClients(allClientsData as Client[]);
+        } else {
+          setClients([]);
+        }
+      } catch (e) {
+        console.error('Exception fetching all clients:', e);
+        setClients([]);
       }
 
       // Owner check
@@ -1532,6 +1616,18 @@ export default function EspaceCollaboratif() {
                                   Partagé le {new Date(doc.shared_at).toLocaleDateString()}
                                 </p>
                                 <div className="flex items-center gap-3">
+                                  <button
+                                    onClick={(e) => { 
+                                      e.stopPropagation(); 
+                                      setDocumentToShare(doc);
+                                      setShareDialogOpen(true);
+                                    }}
+                                    className="p-1 rounded hover:bg-gray-100"
+                                    title="Partager avec un client"
+                                  >
+                                    <Share2 className="h-4 w-4 text-gray-900" />
+                                  </button>
+
                                   {(user && (doc.shared_by === user.id || isCabinetOwner)) && (
                                     <button
                                       onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_documents', doc.id); }}
@@ -2250,6 +2346,68 @@ export default function EspaceCollaboratif() {
       documentName={viewerDocName}
       role={cabinetRole}
     />
+
+    {/* Share to Client Dialog */}
+    <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Partager avec un client</DialogTitle>
+          <DialogDescription>
+            Sélectionnez le client avec qui partager ce document
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <Input
+            placeholder="Rechercher un client..."
+            value={clientSearch}
+            onChange={(e) => setClientSearch(e.target.value)}
+            className="w-full"
+          />
+          <div className="max-h-[300px] overflow-y-auto space-y-2">
+            {clients
+              .filter(c => {
+                const search = clientSearch.toLowerCase();
+                return (
+                  c.nom.toLowerCase().includes(search) ||
+                  c.prenom.toLowerCase().includes(search) ||
+                  (c.email && c.email.toLowerCase().includes(search))
+                );
+              })
+              .map((client) => (
+                <button
+                  key={client.id}
+                  onClick={() => shareDocumentToClient(client.id)}
+                  disabled={sharingToClient}
+                  className={`w-full p-3 text-left rounded-md border transition-colors ${
+                    cabinetRole === 'notaire'
+                      ? 'hover:bg-orange-50 border-orange-200'
+                      : 'hover:bg-blue-50 border-blue-200'
+                  } ${sharingToClient ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <div className="font-medium">
+                    {client.prenom} {client.nom}
+                  </div>
+                  {client.email && (
+                    <div className="text-sm text-gray-600">{client.email}</div>
+                  )}
+                </button>
+              ))}
+            {clients.filter(c => {
+              const search = clientSearch.toLowerCase();
+              return (
+                c.nom.toLowerCase().includes(search) ||
+                c.prenom.toLowerCase().includes(search) ||
+                (c.email && c.email.toLowerCase().includes(search))
+              );
+            }).length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                Aucun client trouvé
+              </div>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
     </AppLayout>
   );
 }
