@@ -44,7 +44,7 @@ BEGIN
   INNER JOIN public.clients c ON c.id = cc.client_id
   LEFT JOIN public.profiles p ON p.id = c.id
   WHERE cc.cabinet_id = p_cabinet_id
-  ORDER BY COALESCE(c.nom, p.last_name, c.id::text) ASC;
+  ORDER BY nom ASC;
 END;
 $$;
 
