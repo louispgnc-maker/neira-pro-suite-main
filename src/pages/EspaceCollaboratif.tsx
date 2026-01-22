@@ -815,14 +815,17 @@ export default function EspaceCollaboratif() {
 
       // Load all clients for sharing dialog (not just shared ones)
       try {
-        const { data: allClientsData, error: allClientsError } = await supabase
-          .from('clients')
-          .select('id, nom, prenom, email')
-          .eq('cabinet_id', userCabinet.id)
-          .order('nom', { ascending: true });
+        const { data: allClientsData, error: allClientsError } = await supabase.rpc('get_cabinet_clients_with_names', { cabinet_id_param: userCabinet?.id });
         
         if (!allClientsError && Array.isArray(allClientsData)) {
-          setClients(allClientsData as Client[]);
+          // Map to Client interface (extract id, nom, prenom, email)
+          const mappedClients = (allClientsData as SharedClient[]).map(c => ({
+            id: c.client_id,
+            nom: c.nom || '',
+            prenom: c.prenom || '',
+            email: c.email
+          }));
+          setClients(mappedClients as Client[]);
         } else {
           setClients([]);
         }
