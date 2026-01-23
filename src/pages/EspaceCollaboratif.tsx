@@ -481,24 +481,32 @@ export default function EspaceCollaboratif() {
       // Otherwise treat it as a storage path. Trim leading slashes.
       let storagePath = raw.replace(/^\/+/, '');
 
-      // If the stored path includes an explicit bucket prefix like "shared_documents/...",
-      // split bucket and path accordingly. Otherwise assume 'shared-documents' bucket.
-      let bucket = 'shared-documents';
+      // Determine bucket based on path structure
+      let bucket: string;
+      
+      // Check if path has explicit bucket prefix
       if (storagePath.startsWith('shared_documents/') || storagePath.startsWith('shared-documents/')) {
-        // Normalize any historical variant to the canonical bucket name
         bucket = 'shared-documents';
         storagePath = storagePath.replace(/^shared[-_]documents\//, '');
       } else if (storagePath.startsWith('documents/')) {
         bucket = 'documents';
         storagePath = storagePath.replace(/^documents\//, '');
-      } else if (storagePath.includes('/')) {
-        const maybeBucket = storagePath.split('/')[0];
-        if (maybeBucket === 'documents' || maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') {
-          if (maybeBucket === 'shared_documents' || maybeBucket === 'shared-documents') bucket = 'shared-documents';
-          else if (maybeBucket === 'documents') bucket = 'documents';
-          storagePath = storagePath.split('/').slice(1).join('/');
+      } else {
+        // No prefix - determine by path structure
+        // Cabinet documents: userId/timestamp-filename.pdf (UUID/...)
+        // Shared documents: cabinetId/clientId/timestamp-filename.pdf (UUID/UUID/...)
+        const parts = storagePath.split('/');
+        
+        // If path has 3+ parts (cabinetId/clientId/file), it's shared-documents
+        // If path has 2 parts (userId/file), it's documents
+        if (parts.length >= 3) {
+          bucket = 'shared-documents';
+        } else {
+          bucket = 'documents';
         }
       }
+
+      console.log('Opening document:', { bucket, storagePath, raw });
 
       // Create signed URL for private buckets
       const { data: signedData, error: signedError } = await supabase.storage
