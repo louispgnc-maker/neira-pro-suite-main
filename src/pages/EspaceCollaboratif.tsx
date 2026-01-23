@@ -500,13 +500,13 @@ export default function EspaceCollaboratif() {
         }
       }
 
-      // Utiliser getPublicUrl pour éviter l'expiration des URLs (comme dans Documents.tsx)
-      const { data: publicData } = supabase.storage
+      // Create signed URL for private buckets
+      const { data: signedData, error: signedError } = await supabase.storage
         .from(bucket)
-        .getPublicUrl(storagePath);
+        .createSignedUrl(storagePath, 3600); // 1 hour expiry
       
-      if (!publicData?.publicUrl) {
-        console.error('getPublicUrl failed for', bucket, storagePath);
+      if (signedError || !signedData?.signedUrl) {
+        console.error('createSignedUrl failed for', bucket, storagePath, signedError);
         toast({
           title: 'Erreur',
           description: 'Impossible d\'accéder au document',
@@ -515,7 +515,7 @@ export default function EspaceCollaboratif() {
         return;
       }
 
-      setViewerUrl(publicData.publicUrl);
+      setViewerUrl(signedData.signedUrl);
       setViewerDocName(doc.title);
       setViewerOpen(true);
     } catch (error) {
