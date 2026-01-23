@@ -216,6 +216,27 @@ BEGIN
       p_storage_path
     ) RETURNING id INTO v_document_id;
 
+    -- Insert into cabinet_documents to make it visible in cabinet space
+    INSERT INTO cabinet_documents (
+      cabinet_id,
+      document_id,
+      title,
+      file_name,
+      file_size,
+      file_type,
+      file_url,
+      shared_by
+    ) VALUES (
+      p_cabinet_id,
+      v_document_id,
+      p_file_name,
+      p_file_name,
+      p_file_size,
+      p_file_type,
+      p_storage_path,
+      v_user_id
+    );
+
     -- Update cabinet storage usage
     UPDATE cabinets
     SET storage_used = COALESCE(storage_used, 0) + p_file_size
