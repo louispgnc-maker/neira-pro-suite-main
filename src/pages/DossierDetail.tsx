@@ -430,7 +430,7 @@ export default function DossierDetail() {
 
   const saveDossier = async () => {
     if (!user || !dossier) return;
-    if (!editTitle.trim()) {
+    if (!editTitle || !editTitle.trim()) {
       toast.error("Le titre est obligatoire");
       return;
     }
@@ -440,9 +440,9 @@ export default function DossierDetail() {
       const { error: updateErrorNew } = await supabase
         .from('client_dossiers_new')
         .update({
-          titre: editTitle,
+          titre: editTitle.trim(),
           status: editStatus,
-          description: editDescription
+          description: editDescription || null
         })
         .eq('id', dossier.id);
 
