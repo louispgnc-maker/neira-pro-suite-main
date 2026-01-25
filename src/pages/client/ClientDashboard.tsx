@@ -74,7 +74,7 @@ export default function ClientDashboard() {
 
       // Load dossiers
       const { data: dossiers, error: dossiersError } = await supabase
-        .from('dossiers')
+        .from('client_dossiers_new')
         .select('*')
         .eq('client_id', client.id)
         .order('updated_at', { ascending: false });
@@ -301,7 +301,8 @@ export default function ClientDashboard() {
                   {recentDocuments.map((doc) => (
                     <div
                       key={doc.id}
-                      className={`flex items-center gap-3 p-3 border rounded-lg transition-colors ${professionType === 'avocat' ? 'hover:bg-blue-50' : 'hover:bg-orange-50'}`}
+                      className={`flex items-center gap-3 p-3 border rounded-lg transition-colors cursor-pointer ${professionType === 'avocat' ? 'hover:bg-blue-50' : 'hover:bg-orange-50'}`}
+                      onClick={() => navigate('/client-space/documents')}
                     >
                       <FileText className={`h-5 w-5 flex-shrink-0 ${professionType === 'avocat' ? 'text-blue-600' : 'text-orange-600'}`} />
                       <div className="flex-1 min-w-0">
