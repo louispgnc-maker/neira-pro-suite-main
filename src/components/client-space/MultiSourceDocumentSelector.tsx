@@ -135,14 +135,21 @@ export default function MultiSourceDocumentSelector({
 
       if (cabinetError) throw cabinetError;
 
-      // Les documents cabinet ont déjà des URLs complètes
+      // Générer les URLs publiques pour les documents cabinet
       const cabinetDocsWithUrls = (cabinetData || []).map((doc) => {
+        let publicUrl = doc.file_url;
+        
+        // Si file_url n'est pas une URL complète, générer l'URL publique
+        if (publicUrl && !publicUrl.startsWith('http')) {
+          publicUrl = getPublicUrl(publicUrl, 'documents');
+        }
+        
         return {
           id: doc.id,
           nom: doc.title || doc.file_name,
           type: doc.file_type || 'application/pdf',
           taille: doc.file_size || 0,
-          chemin: doc.file_url || '',
+          chemin: publicUrl || '',
           source: 'cabinet_shared' as const,
           created_at: doc.created_at
         };
