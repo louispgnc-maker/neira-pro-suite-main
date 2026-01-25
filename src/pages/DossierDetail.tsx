@@ -1099,33 +1099,26 @@ export default function DossierDetail() {
                   Ajouter des documents
                 </Button>
               </div>
-              {editSelectedDocuments.length > 0 ? (
-                <div className="border rounded-md p-3 space-y-2 max-h-48 overflow-y-auto">
+              {editSelectedDocuments.length > 0 && (
+                <div className="border rounded-md p-3 space-y-2 max-h-32 overflow-y-auto">
                   {editSelectedDocuments.map((doc) => (
-                    <div key={doc.id} className="flex items-center justify-between text-sm p-2 hover:bg-accent/50 rounded">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <FileText className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="truncate font-medium">{doc.nom}</p>
-                          <Badge variant="outline" className="text-xs mt-1">
-                            {doc.source === 'personal' ? 'Personnel' : doc.source === 'client_shared' ? 'Client' : 'Cabinet'}
-                          </Badge>
-                        </div>
+                    <div key={doc.id} className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-blue-600" />
+                        <span className="truncate">{doc.nom}</span>
                       </div>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => setEditSelectedDocuments(prev => prev.filter(d => d.id !== doc.id))}
-                        className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 flex-shrink-0"
+                        className="h-6 w-6 p-0 hover:bg-red-50 hover:text-red-600"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        ×
                       </Button>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">Aucun document sélectionné</p>
               )}
             </div>
           </div>
