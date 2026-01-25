@@ -167,10 +167,10 @@ export function ShareContractDialog({
 
     setSharingToClient(true);
     try {
-      // Get contract details
+      // Get contract details to verify it exists
       const { data: contrat, error: contratError } = await supabase
         .from('contrats')
-        .select('name, type, category, content, contenu_json')
+        .select('client_id')
         .eq('id', contractId)
         .single();
 
@@ -180,36 +180,21 @@ export function ShareContractDialog({
         return;
       }
 
-      // Check if already shared with this client
-      const { data: existing } = await supabase
-        .from('client_contrats')
-        .select('id')
-        .eq('contract_id', contractId)
-        .eq('client_id', clientId)
-        .maybeSingle();
-
-      if (existing) {
-        toast.info('Ce contrat est déjà partagé avec ce client');
+      // Check if already shared with a client
+      if (contrat.client_id) {
+        toast.info('Ce contrat est déjà partagé avec un client');
         handleClose();
         return;
       }
 
-      // Share contract with client
-      const { error: insertError } = await supabase
-        .from('client_contrats')
-        .insert({
-          client_id: clientId,
-          contract_id: contractId,
-          contract_name: contrat.name,
-          contract_type: contrat.type,
-          category: contrat.category,
-          status: 'shared',
-          shared_by: user.id,
-          shared_at: new Date().toISOString()
-        });
+      // Share contract with client by updating client_id
+      const { error: updateError } = await supabase
+        .from('contrats')
+        .update({ client_id: clientId })
+        .eq('id', contractId);
 
-      if (insertError) {
-        console.error('Insert failed', insertError);
+      if (updateError) {
+        console.error('Update failed', updateError);
         toast.error('Partage impossible');
         setSharingToClient(false);
         return;
