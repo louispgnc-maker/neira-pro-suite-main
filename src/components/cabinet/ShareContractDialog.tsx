@@ -56,15 +56,33 @@ export function ShareContractDialog({
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
-        .from('clients')
-        .select('id, nom, prenom, email')
-        .eq('owner_id', user.id)
-        .eq('role', role)
-        .order('nom', { ascending: true });
+      // Get user's cabinet
+      const { data: cabinetsData, error: cabinetsErr } = await supabase.rpc('get_user_cabinets');
+      if (cabinetsErr || !Array.isArray(cabinetsData)) {
+        console.error('Error loading cabinets:', cabinetsErr);
+        toast.error('Impossible de récupérer votre cabinet');
+        return;
+      }
 
-      if (error) throw error;
-      setClients(data || []);
+      type MaybeCab = { role?: string; role_cabinet?: string; id?: string };
+      const found = cabinetsData.find((c) => ((c as MaybeCab).role || (c as MaybeCab).role_cabinet) === role) as MaybeCab | undefined;
+      const cabinetId = found?.id || (cabinetsData[0] && (cabinetsData[0] as MaybeCab).id);
+
+      if (!cabinetId) {
+        toast.error('Aucun cabinet trouvé');
+        return;
+      }
+
+      // Load all clients from cabinet using the same RPC as EspaceCollaboratif
+      const { data: allClientsData, error: allClientsError } = await supabase.rpc('get_all_cabinet_clients', { p_cabinet_id: cabinetId });
+      
+      if (allClientsError) {
+        console.error('Error loading clients:', allClientsError);
+        toast.error('Erreur lors du chargement des clients');
+        return;
+      }
+
+      setClients(allClientsData || []);
     } catch (error) {
       console.error('Erreur chargement clients:', error);
       toast.error('Erreur lors du chargement des clients');
