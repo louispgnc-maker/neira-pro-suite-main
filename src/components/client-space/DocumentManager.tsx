@@ -260,11 +260,20 @@ export function DocumentManager({
         return;
       }
 
-      // Download the file from current location
+      // Download the file from current location (shared-documents bucket)
       console.log('3. Downloading file from:', selectedDoc.file_url);
+      
+      // Extract the path from the URL or use as-is
+      let downloadPath = selectedDoc.file_url;
+      if (downloadPath.startsWith('http')) {
+        // Si c'est une URL complète, extraire le chemin
+        const urlParts = downloadPath.split('/storage/v1/object/public/shared-documents/');
+        downloadPath = urlParts.length > 1 ? decodeURIComponent(urlParts[1]) : `${cabinetId}/${clientId}/${selectedDoc.file_name}`;
+      }
+      
       const { data: fileData, error: downloadError } = await supabase.storage
-        .from('documents')
-        .download(selectedDoc.file_url);
+        .from('shared-documents')
+        .download(downloadPath);
 
       if (downloadError) {
         console.error('Download error:', downloadError);
@@ -328,10 +337,17 @@ export function DocumentManager({
       const { data: userData } = await supabase.auth.getUser();
       if (!userData?.user) throw new Error('Not authenticated');
 
-      // Download the file from current location
+      // Download the file from current location (shared-documents bucket)
+      let downloadPath = selectedDoc.file_url;
+      if (downloadPath.startsWith('http')) {
+        // Si c'est une URL complète, extraire le chemin
+        const urlParts = downloadPath.split('/storage/v1/object/public/shared-documents/');
+        downloadPath = urlParts.length > 1 ? decodeURIComponent(urlParts[1]) : `${cabinetId}/${clientId}/${selectedDoc.file_name}`;
+      }
+      
       const { data: fileData, error: downloadError } = await supabase.storage
-        .from('documents')
-        .download(selectedDoc.file_url);
+        .from('shared-documents')
+        .download(downloadPath);
 
       if (downloadError) throw downloadError;
 
@@ -418,7 +434,8 @@ export function DocumentManager({
                 {documents.map((doc) => (
                   <div
                     key={doc.id}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-blue-50 transition-colors"
+                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-blue-50 transition-colors cursor-pointer"
+                    onDoubleClick={() => handleView(doc)}
                   >
                     <div className="flex items-center gap-3 flex-1">
                       <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />

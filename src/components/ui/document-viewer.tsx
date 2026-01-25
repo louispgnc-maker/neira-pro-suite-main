@@ -34,14 +34,25 @@ export function DocumentViewer({ open, onClose, documentUrl, documentName, role 
         // Détecter le type de fichier depuis l'extension
         const fileExt = documentName.toLowerCase();
         let type = '';
-        if (fileExt.endsWith('.png') || fileExt.endsWith('.jpg') || fileExt.endsWith('.jpeg') || fileExt.endsWith('.gif') || fileExt.endsWith('.webp') || fileExt.endsWith('.svg')) {
+        const isImage = fileExt.endsWith('.png') || fileExt.endsWith('.jpg') || fileExt.endsWith('.jpeg') || fileExt.endsWith('.gif') || fileExt.endsWith('.webp') || fileExt.endsWith('.svg');
+        const isPdf = fileExt.endsWith('.pdf');
+        
+        if (isImage) {
           type = 'image/';
-        } else if (fileExt.endsWith('.pdf')) {
+        } else if (isPdf) {
           type = 'application/pdf';
         }
         setFileType(type);
         
-        // Télécharger le document et créer blob URL
+        // Pour les PDFs, utiliser directement l'URL au lieu de télécharger tout le fichier
+        // Cela améliore grandement les performances car le navigateur gère le streaming
+        if (isPdf) {
+          setViewUrl(documentUrl);
+          setLoading(false);
+          return;
+        }
+        
+        // Pour les images, télécharger et créer blob URL pour gérer les CORS
         const response = await fetch(documentUrl);
         if (!response.ok) throw new Error('Failed to fetch');
         
