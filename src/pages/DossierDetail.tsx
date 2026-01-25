@@ -436,33 +436,48 @@ export default function DossierDetail() {
     }
 
     try {
-      // Mettre à jour les infos du dossier
-      const { error: updateError } = await supabase
-        .from('dossiers')
+      // Essayer de mettre à jour dans client_dossiers_new d'abord
+      const { error: updateErrorNew } = await supabase
+        .from('client_dossiers_new')
         .update({
-          title: editTitle,
+          titre: editTitle,
           status: editStatus,
           description: editDescription
         })
         .eq('id', dossier.id);
 
-      if (updateError) throw updateError;
-
-      // Mettre à jour les associations clients
-      await supabase.from('dossier_clients').delete().eq('dossier_id', dossier.id);
-      if (editSelectedClients.length > 0) {
-        const clientLinks = editSelectedClients.map(cid => ({ dossier_id: dossier.id, client_id: cid }));
-        await supabase.from('dossier_clients').insert(clientLinks);
+      // Si pas trouvé, essayer l'ancienne table dossiers
+      if (updateErrorNew) {
+        const { error: updateErrorOld } = await supabase
+          .from('dossiers')
+          .update({
+            title: editTitle,
+            status: editStatus,
+            description: editDescription
+          })
+          .eq('id', dossier.id);
+        
+        if (updateErrorOld) throw updateErrorOld;
       }
 
-      // Mettre à jour les associations contrats
-      await supabase.from('dossier_contrats').delete().eq('dossier_id', dossier.id);
-      if (editSelectedContrats.length > 0) {
-        const contratLinks = editSelectedContrats.map(cid => ({ dossier_id: dossier.id, contrat_id: cid }));
-        await supabase.from('dossier_contrats').insert(contratLinks);
+      // Mettre à jour les associations documents pour client_dossiers_new
+      await supabase.from('client_dossier_documents').delete().eq('dossier_id', dossier.id);
+      if (editSelectedDocuments.length > 0) {
+        const docLinks = editSelectedDocuments.map(did => {
+          const doc = allDocuments.find(d => d.id === did);
+          return {
+            dossier_id: dossier.id,
+            document_id: did,
+            document_nom: doc?.name || 'Document',
+            document_type: 'application/pdf',
+            document_taille: 0,
+            source: 'personal'
+          };
+        });
+        await supabase.from('client_dossier_documents').insert(docLinks);
       }
 
-      // Mettre à jour les associations documents
+      // Mettre à jour aussi dans l'ancienne table si elle existe
       await supabase.from('dossier_documents').delete().eq('dossier_id', dossier.id);
       if (editSelectedDocuments.length > 0) {
         const docLinks = editSelectedDocuments.map(did => ({ dossier_id: dossier.id, document_id: did }));
