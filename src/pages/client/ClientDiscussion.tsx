@@ -55,21 +55,32 @@ export default function ClientDiscussion() {
       if (!user) return;
 
       try {
-        // Get client info to find the professional
+        // Get client info to find the cabinet
         const { data: clientData } = await supabase
           .from('clients')
-          .select('owner_id, profiles!clients_owner_id_fkey(id, first_name, last_name, photo_url, email)')
+          .select('owner_id')
           .eq('user_id', user.id)
           .single();
 
-        if (clientData && clientData.profiles) {
-          setProfessional({
-            id: clientData.profiles.id,
-            first_name: clientData.profiles.first_name || '',
-            last_name: clientData.profiles.last_name || '',
-            photo_url: clientData.profiles.photo_url,
-            email: clientData.profiles.email,
-          });
+        if (clientData) {
+          // Get the first cabinet member (professional) from the cabinet
+          const { data: cabinetMember } = await supabase
+            .from('cabinet_members')
+            .select('user_id, profiles(id, first_name, last_name, photo_url, email)')
+            .eq('cabinet_id', clientData.owner_id)
+            .eq('status', 'active')
+            .limit(1)
+            .single();
+
+          if (cabinetMember?.profiles) {
+            setProfessional({
+              id: cabinetMember.profiles.id,
+              first_name: cabinetMember.profiles.first_name || '',
+              last_name: cabinetMember.profiles.last_name || '',
+              photo_url: cabinetMember.profiles.photo_url,
+              email: cabinetMember.profiles.email,
+            });
+          }
         }
       } catch (error) {
         console.error('Error loading professional:', error);
