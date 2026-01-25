@@ -39,6 +39,14 @@ export function ShareContractDialog({
   const [sharingToCabinet, setSharingToCabinet] = useState(false);
 
   useEffect(() => {
+    if (open) {
+      // Réinitialiser à l'étape de choix quand le dialogue s'ouvre
+      setShareStep('choice');
+      setClientSearch('');
+    }
+  }, [open]);
+
+  useEffect(() => {
     if (open && shareStep === 'select-client') {
       loadClients();
     }
