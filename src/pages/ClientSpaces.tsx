@@ -148,6 +148,16 @@ export default function ClientSpaces() {
   };
 
   const getStatusBadge = (status: 'pending' | 'active' | null, hasUserId?: boolean) => {
+    // Prioriser la vérification du user_id (client a créé son compte)
+    if (hasUserId) {
+      return (
+        <Badge variant="outline" className="gap-1 border-green-500 text-green-700">
+          <UserCheck className="w-3 h-3" />
+          Compte actif
+        </Badge>
+      );
+    }
+    
     if (!status) {
       return (
         <Badge variant="outline" className="gap-1">
@@ -156,7 +166,8 @@ export default function ClientSpaces() {
         </Badge>
       );
     }
-    if (status === 'pending' && !hasUserId) {
+    
+    if (status === 'pending') {
       return (
         <div className="text-right">
           <Badge variant="outline" className="gap-1 border-orange-500 text-orange-700">
@@ -167,10 +178,11 @@ export default function ClientSpaces() {
         </div>
       );
     }
+    
     return (
       <Badge variant="outline" className="gap-1 border-green-500 text-green-700">
         <UserCheck className="w-3 h-3" />
-        Client actif dans l'espace
+        Compte actif
       </Badge>
     );
   };
