@@ -239,7 +239,15 @@ export default function DossierDetail() {
           });
           
           const docList = await Promise.all(docListPromises);
-          setDocuments(docList);
+          // Filtrer les documents qui ont un nom et une URL valides
+          const validDocuments = docList.filter(doc => 
+            doc.name && 
+            doc.name.trim() !== '' && 
+            doc.name !== 'Document' && 
+            doc.file_url && 
+            doc.file_url.trim() !== ''
+          );
+          setDocuments(validDocuments);
         } else {
           // Fallback: essayer l'ancienne table dossier_documents
           const { data: oldDocLinks } = await supabase
@@ -265,7 +273,15 @@ export default function DossierDetail() {
                 file_name: doc.name
               };
             });
-            setDocuments(docList);
+            // Filtrer les documents qui ont un nom et une URL valides
+            const validDocuments = docList.filter(doc => 
+              doc.name && 
+              doc.name.trim() !== '' && 
+              doc.name !== 'Document' && 
+              doc.file_url && 
+              doc.file_url.trim() !== ''
+            );
+            setDocuments(validDocuments);
           }
         }
 
@@ -350,7 +366,9 @@ export default function DossierDetail() {
   }, [user, id, role]);
 
   const openSharedDocument = async (fileUrl: string | null | undefined, name?: string) => {
-    if (!fileUrl) {
+    if (!fileUrl || !fileUrl.trim()) {
+      console.warn('Tentative d\'ouverture d\'un document sans URL');
+      toast.error('Document non disponible');
       return;
     }
     const raw = (fileUrl || '').trim();
@@ -358,7 +376,7 @@ export default function DossierDetail() {
     // Si c'est une URL complète HTTP, on peut l'utiliser directement
     if (/^https?:\/\//i.test(raw)) {
       setViewerUrl(raw);
-      setViewerDocName(name || 'Document');
+      setViewerDocName(name && name.trim() ? name : 'Document sans nom');
       setViewerOpen(true);
       return;
     }
@@ -377,13 +395,15 @@ export default function DossierDetail() {
       const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(storagePath);
       if (!publicData?.publicUrl) {
         console.error('getPublicUrl failed for', bucket, storagePath);
+        toast.error('Impossible de charger le document');
         return;
       }
       setViewerUrl(publicData.publicUrl);
-      setViewerDocName(name || 'Document');
+      setViewerDocName(name && name.trim() ? name : 'Document sans nom');
       setViewerOpen(true);
     } catch (e) {
       console.error('Erreur ouverture pièce jointe partagée:', e);
+      toast.error('Erreur lors de l\'ouverture du document');
     }
   };
 
