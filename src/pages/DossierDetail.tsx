@@ -279,15 +279,6 @@ export default function DossierDetail() {
     load();
     return () => { mounted = false; };
   }, [user, id, role]);
-      } catch (e) {
-        console.error('Error loading dossier:', e);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
-    load();
-    return () => { mounted = false; };
-  }, [user, id, role]);
 
   const openSharedDocument = async (fileUrl: string | null | undefined, name?: string) => {
     if (!fileUrl) {
