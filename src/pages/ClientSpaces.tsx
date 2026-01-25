@@ -97,6 +97,7 @@ export default function ClientSpaces() {
           prenom,
           email,
           telephone,
+          user_id,
           created_at,
           client_invitations (
             status,
@@ -189,8 +190,8 @@ export default function ClientSpaces() {
 
   const stats = {
     total: clients.length,
-    active: clients.filter((c) => c.invitation_status === 'active').length,
-    pending: clients.filter((c) => c.invitation_status === 'pending').length,
+    active: clients.filter((c) => c.user_id !== null).length,
+    pending: clients.filter((c) => c.invitation_status === 'pending' && !c.user_id).length,
     notInvited: clients.filter((c) => !c.invitation_status).length,
   };
 
