@@ -44,7 +44,7 @@ export default function ClientDossiers() {
       if (clientError) throw clientError;
 
       const { data: dossiersList, error: dossiersError } = await supabase
-        .from('dossiers')
+        .from('client_dossiers_new')
         .select('*')
         .eq('client_id', client.id)
         .order('updated_at', { ascending: false });

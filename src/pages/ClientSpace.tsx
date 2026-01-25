@@ -121,7 +121,7 @@ export default function ClientSpace() {
 
       // Load dossiers
       const { data: dossiersList, error: dossiersError } = await supabase
-        .from('dossiers')
+        .from('client_dossiers_new')
         .select('*')
         .eq('client_id', client.id)
         .order('created_at', { ascending: false });
