@@ -117,9 +117,16 @@ export default function DossierDetail() {
         // D'abord essayer de charger depuis client_dossiers (nouveaux dossiers)
         const { data: clientDossier } = await supabase
           .from('client_dossiers')
-          .select('id, titre as title, status, description, created_at')
+          .select('id, titre, status, description, created_at')
           .eq('id', id)
           .maybeSingle();
+        
+        if (clientDossier) {
+          dossierData = {
+            ...clientDossier,
+            title: clientDossier.titre
+          };
+        }
         
         if (clientDossier) {
           dossierData = clientDossier;
