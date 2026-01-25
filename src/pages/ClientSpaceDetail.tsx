@@ -394,7 +394,7 @@ export default function ClientSpaceDetail() {
 
         {/* Tabs */}
         <Tabs defaultValue="dossiers" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="dossiers" className="gap-2">
               <Folder className="w-4 h-4" />
               Dossiers
@@ -406,6 +406,10 @@ export default function ClientSpaceDetail() {
             <TabsTrigger value="contrats" className="gap-2">
               <FileSignature className="w-4 h-4" />
               Contrats
+            </TabsTrigger>
+            <TabsTrigger value="messagerie" className="gap-2">
+              <MessageSquare className="w-4 h-4" />
+              Messagerie
             </TabsTrigger>
             <TabsTrigger value="profil" className="gap-2">
               <User className="w-4 h-4" />
@@ -478,6 +482,95 @@ export default function ClientSpaceDetail() {
                 role={role}
               />
             )}
+          </TabsContent>
+
+          {/* Messagerie Tab */}
+          <TabsContent value="messagerie" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5" />
+                  Discussion avec {client.prenom} {client.nom}
+                </CardTitle>
+                <CardDescription>
+                  Échangez directement avec votre client
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {/* Zone de messages */}
+                <div className="space-y-4">
+                  {messages.length === 0 ? (
+                    <div className="text-center py-12">
+                      <MessageSquare className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground">Aucun message pour le moment</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Commencez une conversation avec votre client
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                      {messages.map((msg) => (
+                        <div
+                          key={msg.id}
+                          className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div
+                            className={`max-w-[70%] rounded-lg p-3 ${
+                              msg.sender_id === user?.id
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-900'
+                            }`}
+                          >
+                            <p className="text-sm">{msg.content}</p>
+                            <p className={`text-xs mt-1 ${
+                              msg.sender_id === user?.id ? 'text-blue-100' : 'text-gray-500'
+                            }`}>
+                              {new Date(msg.created_at).toLocaleString('fr-FR')}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Formulaire d'envoi */}
+                  <div className="border-t pt-4 mt-4">
+                    <div className="flex gap-2">
+                      <Textarea
+                        placeholder="Écrivez votre message..."
+                        value={messageContent}
+                        onChange={(e) => setMessageContent(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendMessage();
+                          }
+                        }}
+                        className="flex-1"
+                        rows={3}
+                      />
+                      <Button
+                        onClick={handleSendMessage}
+                        disabled={!messageContent.trim() || sendingMessage}
+                        className="self-end"
+                      >
+                        {sendingMessage ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Send className="w-4 h-4 mr-2" />
+                            Envoyer
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Appuyez sur Entrée pour envoyer, Shift+Entrée pour un retour à la ligne
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Profil Tab */}

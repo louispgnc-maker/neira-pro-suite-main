@@ -54,7 +54,7 @@ CREATE POLICY "Professionals can send messages to clients"
     sender_id = auth.uid()
     AND sender_type = 'professional'
     AND client_id IN (
-      SELECT id FROM clients WHERE created_by = auth.uid()
+      SELECT id FROM clients WHERE owner_id = auth.uid()
     )
   );
 
