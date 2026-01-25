@@ -328,13 +328,15 @@ export default function DossierDetail() {
           setAllContrats(allContratsData as AssocContrat[]);
         }
 
-        const { data: allDocumentsData } = await supabase
+        // Charger les documents disponibles pour la sélection
+        const { data: allDocumentsData, error: docsError } = await supabase
           .from('documents')
           .select('id, name')
-          .eq('owner_id', user.id)
-          .eq('role', role);
+          .eq('owner_id', user.id);
         
-        if (allDocumentsData && mounted) {
+        if (docsError) {
+          console.error('Error loading documents:', docsError);
+        } else if (allDocumentsData && mounted) {
           setAllDocuments(allDocumentsData as AssocDocument[]);
         }
       } catch (e) {
