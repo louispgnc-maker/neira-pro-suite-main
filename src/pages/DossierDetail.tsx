@@ -114,9 +114,9 @@ export default function DossierDetail() {
       try {
         let dossierData: any = null;
         
-        // D'abord essayer de charger depuis client_dossiers (nouveaux dossiers)
+        // D'abord essayer de charger depuis client_dossiers_new (nouveaux dossiers)
         const { data: clientDossier } = await supabase
-          .from('client_dossiers')
+          .from('client_dossiers_new')
           .select('id, titre, status, description, created_at')
           .eq('id', id)
           .maybeSingle();
