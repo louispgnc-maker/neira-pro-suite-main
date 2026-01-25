@@ -976,28 +976,20 @@ export default function ClientSpaceDetail() {
                   <FileText className="w-5 h-5" />
                   {viewerName}
                 </DialogTitle>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const link = document.createElement('a');
-                      link.href = viewerUrl;
-                      link.download = viewerName;
-                      link.click();
-                    }}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Télécharger
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setViewerOpen(false)}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                  onClick={() => {
+                    const link = document.createElement('a');
+                    link.href = viewerUrl;
+                    link.download = viewerName;
+                    link.click();
+                  }}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Télécharger
+                </Button>
               </div>
             </DialogHeader>
             <div className="p-6 overflow-auto max-h-[calc(90vh-100px)]">
@@ -1014,6 +1006,7 @@ export default function ClientSpaceDetail() {
                   <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
                   <p className="text-gray-600 mb-4">Aperçu non disponible pour ce type de fichier</p>
                   <Button
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                     onClick={() => {
                       const link = document.createElement('a');
                       link.href = viewerUrl;
