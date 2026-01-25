@@ -467,7 +467,7 @@ export default function ClientDetail() {
                   <p className="text-sm text-gray-600">Le client a accès à son espace sécurisé</p>
                 </div>
               </div>
-              <Button variant="outline" onClick={() => window.open(`/client-space/${id}`, '_blank')} className="border-green-300 text-green-700 hover:bg-green-50">
+              <Button variant="outline" onClick={() => navigate(`/${role}s/client-spaces/${id}`)} className="border-green-300 text-green-700 hover:bg-green-50">
                 <Eye className="h-4 w-4 mr-2" /> Voir l'espace client
               </Button>
             </div>
