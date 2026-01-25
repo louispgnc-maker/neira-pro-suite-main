@@ -2,14 +2,15 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DocumentViewer } from "@/components/ui/document-viewer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { ArrowLeft, ExternalLink, Edit } from "lucide-react";
+import { ArrowLeft, ExternalLink, Edit, Clock, CheckCircle2, FileText, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -967,91 +968,102 @@ export default function DossierDetail() {
       <Dialog open={editMode} onOpenChange={(v) => { 
         if (!v) cancelEdit(); 
       }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Modifier le dossier</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Titre</label>
-                <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Ex: Litige commercial - DUPONT" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Statut</label>
-                <Select value={editStatus} onValueChange={setEditStatus}>
-                  <SelectTrigger><SelectValue placeholder="Statut" /></SelectTrigger>
-                  <SelectContent className={selectContentClass}>
-                    <SelectItem className={selectItemClass} value="Nouveau">Nouveau</SelectItem>
-                    <SelectItem className={selectItemClass} value="En cours">En cours</SelectItem>
-                    <SelectItem className={selectItemClass} value="En attente de signature">En attente de signature</SelectItem>
-                    <SelectItem className={selectItemClass} value="Terminé">Terminé</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-titre">Titre</Label>
+              <Input 
+                id="edit-titre"
+                value={editTitle} 
+                onChange={(e) => setEditTitle(e.target.value)} 
+                placeholder="Ex: Litige commercial - DUPONT" 
+              />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Description</label>
-              <Textarea rows={3} value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
+              <Label htmlFor="edit-description">Description</Label>
+              <Textarea 
+                id="edit-description"
+                rows={3} 
+                value={editDescription} 
+                onChange={(e) => setEditDescription(e.target.value)}
+                placeholder="Description du dossier..." 
+              />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Clients</label>
-                <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
-                  {allClients.length === 0 ? (
-                    <div className="text-sm text-gray-900 px-1">Aucun client</div>
-                  ) : allClients.map((c) => {
-                    const checked = editSelectedClients.includes(c.id);
-                    return (
-                      <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer">
-                        <input type="checkbox" className="h-4 w-4" checked={checked} onChange={(e) => setEditSelectedClients((prev) => e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id))} />
-                        <span>{c.name}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Contrats</label>
-                <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
-                  {allContrats.length === 0 ? (
-                    <div className="text-sm text-gray-900 px-1">Aucun contrat</div>
-                  ) : allContrats.map((c) => {
-                    const checked = editSelectedContrats.includes(c.id);
-                    return (
-                      <label key={c.id} className="flex items-start gap-2 text-sm cursor-pointer">
-                        <input type="checkbox" className="mt-1 h-4 w-4" checked={checked} onChange={(e) => setEditSelectedContrats((prev) => e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id))} />
-                        <span>
-                          <span className="font-medium">{c.name}</span>
-                          <span className="text-gray-900"> — {c.category}</span>
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Documents</label>
-                <div className="border rounded-md p-2 max-h-48 overflow-y-auto">
-                  {allDocuments.length === 0 ? (
-                    <div className="text-sm text-gray-900 px-1">Aucun document</div>
-                  ) : allDocuments.map((d) => {
-                    const checked = editSelectedDocuments.includes(d.id);
-                    return (
-                      <label key={d.id} className="flex items-center gap-2 text-sm cursor-pointer">
-                        <input type="checkbox" className="h-4 w-4" checked={checked} onChange={(e) => setEditSelectedDocuments((prev) => e.target.checked ? [...prev, d.id] : prev.filter((id) => id !== d.id))} />
-                        <span>{d.name}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-status">Statut</Label>
+              <Select value={editStatus} onValueChange={setEditStatus}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez un statut" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en_cours">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-blue-600" />
+                      <span>En cours</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="en_attente">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-yellow-600" />
+                      <span>En attente</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="termine">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                      <span>Terminé</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={cancelEdit}>Annuler</Button>
-              <Button className={mainColor} onClick={saveDossier}>Enregistrer</Button>
+
+            {/* Documents sélectionnés */}
+            <div className="space-y-2">
+              <Label>Documents ({editSelectedDocuments.length})</Label>
+              {editSelectedDocuments.length > 0 ? (
+                <div className="border rounded-md p-3 space-y-2 max-h-32 overflow-y-auto">
+                  {allDocuments.filter(d => editSelectedDocuments.includes(d.id)).map((doc) => (
+                    <div key={doc.id} className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-blue-600" />
+                        <span className="truncate">{doc.name}</span>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditSelectedDocuments(prev => prev.filter(id => id !== doc.id))}
+                        className="h-6 w-6 p-0 hover:bg-red-50 hover:text-red-600"
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Aucun document sélectionné</p>
+              )}
             </div>
           </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={cancelEdit}
+              className={role === 'notaire' ? "hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300" : "hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"}
+            >
+              Annuler
+            </Button>
+            <Button 
+              className={mainColor} 
+              onClick={saveDossier}
+            >
+              Enregistrer
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </AppLayout>
