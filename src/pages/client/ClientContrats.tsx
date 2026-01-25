@@ -124,7 +124,11 @@ export default function ClientContrats() {
         ) : (
           <div className="grid gap-4">
             {contrats.map((contrat) => (
-              <Card key={contrat.id} className="hover:shadow-lg transition-shadow">
+              <Card 
+                key={contrat.id} 
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+                onDoubleClick={() => handleViewContrat(contrat)}
+              >
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -152,8 +156,11 @@ export default function ClientContrats() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleViewContrat(contrat)}
-                        className="gap-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewContrat(contrat);
+                        }}
+                        className="gap-2 bg-blue-600 text-white hover:bg-blue-700 border-blue-600"
                       >
                         <Eye className="w-4 h-4" />
                         Voir
@@ -177,12 +184,12 @@ export default function ClientContrats() {
             </DialogHeader>
             <div className="py-4">
               {selectedContrat?.contenu_json?.sections ? (
-                <div className="space-y-6">
+                <div className="space-y-8">
                   {selectedContrat.contenu_json.sections.map((section: any, index: number) => (
-                    <div key={index} className="space-y-2">
-                      <h3 className="font-semibold text-lg">{section.titre}</h3>
+                    <div key={index} className="space-y-3">
+                      <h3 className="font-bold text-xl text-gray-900 border-b pb-2">{section.titre}</h3>
                       <div
-                        className="prose prose-sm max-w-none"
+                        className="prose prose-base max-w-none text-gray-700 leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: section.contenu }}
                       />
                     </div>
@@ -190,7 +197,7 @@ export default function ClientContrats() {
                 </div>
               ) : selectedContrat?.content ? (
                 <div
-                  className="prose prose-sm max-w-none"
+                  className="prose prose-base max-w-none text-gray-700 leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: selectedContrat.content }}
                 />
               ) : (
