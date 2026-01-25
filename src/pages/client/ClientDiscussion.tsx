@@ -100,18 +100,32 @@ export default function ClientDiscussion() {
         }
 
         // Load messages
-        const { data, error } = await supabase
+        const { data: messagesData, error } = await supabase
           .from('client_messages')
-          .select(`
-            *,
-            sender_profile:profiles(first_name, last_name, photo_url)
-          `)
+          .select('*')
           .eq('client_id', clientData.id)
           .order('created_at', { ascending: true });
 
         if (error) throw error;
 
-        setMessages(data || []);
+        // Load sender profiles for all messages
+        if (messagesData && messagesData.length > 0) {
+          const senderIds = [...new Set(messagesData.map(m => m.sender_id))];
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, first_name, last_name, photo_url')
+            .in('id', senderIds);
+
+          // Map profiles to messages
+          const messagesWithProfiles = messagesData.map(msg => ({
+            ...msg,
+            sender_profile: profilesData?.find(p => p.id === msg.sender_id)
+          }));
+
+          setMessages(messagesWithProfiles || []);
+        } else {
+          setMessages([]);
+        }
       } catch (error) {
         console.error('Error loading messages:', error);
         toast({
