@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -18,6 +19,7 @@ interface DossierManagerProps {
   cabinetId: string;
   userId: string;
   isProView: boolean;
+  role?: 'avocat' | 'notaire';
   onRefresh?: () => void;
 }
 
@@ -30,7 +32,11 @@ interface Dossier {
   updated_at: string;
 }
 
-export default function DossierManager({ clientId, cabinetId, userId, isProView, onRefresh }: DossierManagerProps) {
+export default function DossierManager({ clientId, cabinetId, userId, isProView, role: propRole, onRefresh }: DossierManagerProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const role = propRole || (location.pathname.includes('/notaires') ? 'notaire' : 'avocat');
+  
   const [dossiers, setDossiers] = useState<Dossier[]>([]);
   const [loading, setLoading] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -225,10 +231,15 @@ export default function DossierManager({ clientId, cabinetId, userId, isProView,
               {dossiers.map((dossier) => (
                 <div
                   key={dossier.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                  className={`flex items-center justify-between p-4 border rounded-lg transition-colors cursor-pointer ${
+                    role === 'notaire'
+                      ? 'bg-orange-50 border-orange-200 hover:bg-orange-100'
+                      : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
+                  }`}
+                  onDoubleClick={() => navigate(`/${role}s/dossiers/${dossier.id}`)}
                 >
                   <div className="flex items-center gap-3 flex-1">
-                    <Folder className="w-5 h-5 text-blue-600" />
+                    <Folder className={`w-5 h-5 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium">{dossier.titre}</h4>
@@ -248,8 +259,9 @@ export default function DossierManager({ clientId, cabinetId, userId, isProView,
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="hover:bg-blue-50 hover:text-blue-700"
-                      onClick={() => setSelectedDossier(dossier.id)}
+                      className={role === 'notaire' ? 'hover:bg-orange-100 hover:text-orange-700' : 'hover:bg-blue-100 hover:text-blue-700'}
+                      onClick={() => navigate(`/${role}s/dossiers/${dossier.id}`)}
+                      title="Voir le détail du dossier"
                     >
                       <Eye className="w-4 h-4" />
                     </Button>

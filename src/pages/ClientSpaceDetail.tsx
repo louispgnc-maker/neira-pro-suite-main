@@ -433,8 +433,7 @@ export default function ClientSpaceDetail() {
                 clientId={id!}
                 cabinetId={cabinetId}
                 userId={user?.id || ''}
-                isProView={true}
-                onRefresh={() => {}}
+                isProView={true}                role={role}                onRefresh={() => {}}
               />
             )}
           </TabsContent>
