@@ -196,10 +196,18 @@ export default function ClientContrats() {
                   ))}
                 </div>
               ) : selectedContrat?.content ? (
-                <div
-                  className="prose prose-base max-w-none text-gray-700 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: selectedContrat.content }}
-                />
+                <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed">
+                  <div
+                    className="whitespace-pre-line"
+                    dangerouslySetInnerHTML={{ 
+                      __html: selectedContrat.content
+                        .replace(/Article\s+(\d+)\s*-\s*([^:]+):/g, '<div class="mt-8 mb-4"><h4 class="text-lg font-bold text-gray-900 mb-3">Article $1 - $2</h4></div>')
+                        .replace(/\.\s+([A-Z])/g, '.</p><p class="mb-4">$1')
+                        .replace(/^(.)/g, '<p class="mb-4">$1')
+                        .replace(/<\/p><p class="mb-4">Article/g, '</p><p class="mb-4">Article')
+                    }}
+                  />
+                </div>
               ) : (
                 <div className="text-center py-8 text-gray-500">
                   Contenu du contrat non disponible
