@@ -108,7 +108,7 @@ export default function ClientDetail() {
       // Try loading with owner_id first
       const { data: c, error } = await supabase
         .from('clients')
-        .select(`id,name,role,created_at,kyc_status,missing_info,source,
+        .select(`id,name,role,created_at,kyc_status,missing_info,source,user_id,
           nom,prenom,date_naissance,lieu_naissance,adresse,telephone,email,nationalite,sexe,etat_civil,situation_familiale,situation_matrimoniale,
           type_identite,numero_identite,date_expiration_identite,id_doc_path,
           profession,employeur,adresse_professionnelle,siret,situation_fiscale,revenus,justificatifs_financiers,comptes_bancaires,
@@ -166,8 +166,16 @@ export default function ClientDetail() {
         .maybeSingle();
       
       if (mounted && invitation) {
-        setInvitationStatus(invitation.status as 'none' | 'pending' | 'active');
+        // Si le client a un user_id, son compte est actif peu importe le statut de l'invitation
+        if (c?.user_id) {
+          setInvitationStatus('active');
+        } else {
+          setInvitationStatus(invitation.status as 'none' | 'pending' | 'active');
+        }
         setClientInvitation(invitation as ClientInvitation);
+      } else if (mounted && c?.user_id) {
+        // Si pas d'invitation mais client a un user_id, le compte est actif
+        setInvitationStatus('active');
       }
 
       // Load shared documents from storage (espace collaboratif)
@@ -917,6 +925,13 @@ export default function ClientDetail() {
         onSuccess={() => {
           // Reload invitation status
           const loadInvitationStatus = async () => {
+            // Charger à la fois l'invitation et vérifier le user_id du client
+            const { data: clientData } = await supabase
+              .from('clients')
+              .select('user_id')
+              .eq('id', id)
+              .single();
+
             const { data, error } = await supabase
               .from('client_invitations')
               .select('status')
@@ -926,7 +941,12 @@ export default function ClientDetail() {
               .single();
 
             if (!error && data) {
-              setInvitationStatus(data.status as 'none' | 'pending' | 'active');
+              // Si le client a un user_id, son compte est actif
+              if (clientData?.user_id) {
+                setInvitationStatus('active');
+              } else {
+                setInvitationStatus(data.status as 'none' | 'pending' | 'active');
+              }
             }
           };
           loadInvitationStatus();
