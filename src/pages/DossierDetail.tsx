@@ -547,21 +547,20 @@ export default function DossierDetail() {
                 {documents.length === 0 ? (
                   <div className="text-sm text-gray-600">Aucun document</div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="flex flex-wrap gap-3">
                     {documents.map(d => (
                       <div 
                         key={d.id} 
-                        className="border border-border rounded-lg overflow-hidden hover:border-primary hover:shadow-md transition-all cursor-pointer"
-                        onClick={() => openSharedDocument(d.file_url, d.file_name || d.name)}
+                        className="flex items-center gap-2 cursor-pointer group"
+                        onDoubleClick={() => openSharedDocument(d.file_url, d.file_name || d.name)}
+                        title="Double-cliquez pour ouvrir"
                       >
-                        <div className={`h-32 flex items-center justify-center ${role === 'notaire' ? 'bg-orange-50' : 'bg-blue-50'}`}>
-                          <svg className={`h-12 w-12 ${role === 'notaire' ? 'text-orange-400' : 'text-blue-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className={`p-2 rounded ${role === 'notaire' ? 'bg-orange-100 group-hover:bg-orange-200' : 'bg-blue-100 group-hover:bg-blue-200'} transition-colors`}>
+                          <svg className={`h-5 w-5 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                           </svg>
                         </div>
-                        <div className="p-3">
-                          <div className="font-medium text-sm line-clamp-2">{d.name}</div>
-                        </div>
+                        <span className="text-sm font-medium group-hover:underline">{d.name}</span>
                       </div>
                     ))}
                   </div>
