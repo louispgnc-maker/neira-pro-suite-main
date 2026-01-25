@@ -125,13 +125,12 @@ export default function DossierDetail() {
         
         if (clientDossier) {
           dossierData = {
-            ...clientDossier,
-            title: clientDossier.titre
+            id: clientDossier.id,
+            title: clientDossier.titre,
+            status: clientDossier.status,
+            description: clientDossier.description,
+            created_at: clientDossier.created_at
           };
-        }
-        
-        if (clientDossier) {
-          dossierData = clientDossier;
         } else {
           // Sinon essayer l'ancienne table dossiers
           const { data: oldDossier } = await supabase
