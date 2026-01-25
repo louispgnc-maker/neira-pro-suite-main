@@ -93,6 +93,7 @@ export default function DossierDetail() {
   const [editSelectedClients, setEditSelectedClients] = useState<string[]>([]);
   const [editSelectedContrats, setEditSelectedContrats] = useState<string[]>([]);
   const [editSelectedDocuments, setEditSelectedDocuments] = useState<string[]>([]);
+  const [editDocumentSelectorOpen, setEditDocumentSelectorOpen] = useState(false);
   
   // Listes complètes pour les sélecteurs
   const [allClients, setAllClients] = useState<AssocClient[]>([]);
@@ -1025,47 +1026,39 @@ export default function DossierDetail() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label>Documents ({editSelectedDocuments.length})</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditDocumentSelectorOpen(true)}
+                  className="gap-2 text-blue-600 hover:bg-blue-100 hover:text-blue-700 border-blue-200"
+                >
+                  <Plus className="w-4 h-4" />
+                  Ajouter des documents
+                </Button>
               </div>
-              
-              {/* Documents disponibles à ajouter */}
-              {allDocuments.length > 0 && (
-                <div className="border rounded-md p-3 space-y-2 max-h-64 overflow-y-auto">
-                  {allDocuments.map((doc) => {
-                    const isSelected = editSelectedDocuments.includes(doc.id);
-                    return (
-                      <div
-                        key={doc.id}
-                        className={`flex items-center gap-3 p-2 rounded cursor-pointer transition-colors ${
-                          isSelected 
-                            ? 'bg-blue-50 border border-blue-200' 
-                            : 'hover:bg-accent/50'
-                        }`}
-                        onClick={() => {
-                          if (isSelected) {
-                            setEditSelectedDocuments(prev => prev.filter(id => id !== doc.id));
-                          } else {
-                            setEditSelectedDocuments(prev => [...prev, doc.id]);
-                          }
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => {}}
-                          className="cursor-pointer"
-                        />
-                        <FileText className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{doc.name}</p>
-                        </div>
+              {editSelectedDocuments.length > 0 ? (
+                <div className="border rounded-md p-3 space-y-2 max-h-32 overflow-y-auto">
+                  {allDocuments.filter(d => editSelectedDocuments.includes(d.id)).map((doc) => (
+                    <div key={doc.id} className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-blue-600" />
+                        <span className="truncate">{doc.name}</span>
                       </div>
-                    );
-                  })}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditSelectedDocuments(prev => prev.filter(id => id !== doc.id))}
+                        className="h-6 w-6 p-0 hover:bg-red-50 hover:text-red-600"
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
                 </div>
-              )}
-              
-              {allDocuments.length === 0 && (
-                <p className="text-sm text-muted-foreground">Aucun document disponible</p>
+              ) : (
+                <p className="text-sm text-muted-foreground">Aucun document sélectionné</p>
               )}
             </div>
           </div>
@@ -1082,6 +1075,62 @@ export default function DossierDetail() {
               onClick={saveDossier}
             >
               Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Document Selector Dialog */}
+      <Dialog open={editDocumentSelectorOpen} onOpenChange={setEditDocumentSelectorOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Ajouter des documents</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            {allDocuments.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">Aucun document disponible</p>
+            ) : (
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {allDocuments.map((doc) => {
+                  const isSelected = editSelectedDocuments.includes(doc.id);
+                  return (
+                    <div
+                      key={doc.id}
+                      className={`flex items-center gap-3 p-3 rounded cursor-pointer transition-colors ${
+                        isSelected 
+                          ? 'bg-blue-50 border border-blue-200' 
+                          : 'border border-transparent hover:bg-accent/50'
+                      }`}
+                      onClick={() => {
+                        if (isSelected) {
+                          setEditSelectedDocuments(prev => prev.filter(id => id !== doc.id));
+                        } else {
+                          setEditSelectedDocuments(prev => [...prev, doc.id]);
+                        }
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        className="cursor-pointer"
+                      />
+                      <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{doc.name}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setEditDocumentSelectorOpen(false)}
+            >
+              Fermer
             </Button>
           </DialogFooter>
         </DialogContent>
