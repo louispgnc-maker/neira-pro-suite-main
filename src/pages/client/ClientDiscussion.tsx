@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Send, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import ClientLayout from '@/components/client/ClientLayout';
 
 interface Message {
   id: string;
@@ -253,20 +254,23 @@ export default function ClientDiscussion() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-200px)]">
-        <div className="text-gray-500">Chargement...</div>
-      </div>
+      <ClientLayout>
+        <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+          <div className="text-gray-500">Chargement...</div>
+        </div>
+      </ClientLayout>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Discussion</h1>
-        <p className="text-gray-600">
-          Communiquez avec votre professionnel
-        </p>
-      </div>
+    <ClientLayout>
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Discussion</h1>
+          <p className="text-gray-600">
+            Communiquez avec votre professionnel
+          </p>
+        </div>
 
       <Card className="h-[calc(100vh-280px)] flex flex-col">
         {/* Header with professional info */}
@@ -376,5 +380,6 @@ export default function ClientDiscussion() {
         </div>
       </Card>
     </div>
+    </ClientLayout>
   );
 }
