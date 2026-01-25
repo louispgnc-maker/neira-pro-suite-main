@@ -104,7 +104,7 @@ export default function ClientDiscussion() {
           .from('client_messages')
           .select(`
             *,
-            sender_profile:profiles!client_messages_sender_id_fkey(first_name, last_name, photo_url)
+            sender_profile:profiles(first_name, last_name, photo_url)
           `)
           .eq('client_id', clientData.id)
           .order('created_at', { ascending: true });
