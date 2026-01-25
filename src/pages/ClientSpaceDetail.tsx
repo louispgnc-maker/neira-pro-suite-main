@@ -82,6 +82,11 @@ interface Message {
   sender_id: string;
   sender_type: 'client' | 'professional';
   created_at: string;
+  has_attachment?: boolean;
+  attachment_name?: string;
+  attachment_url?: string;
+  attachment_type?: string;
+  attachment_size?: number;
 }
 
 export default function ClientSpaceDetail() {
@@ -97,6 +102,7 @@ export default function ClientSpaceDetail() {
   const [messageContent, setMessageContent] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
   const [cabinetId, setCabinetId] = useState<string>('');
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
 
   const role = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -305,10 +311,37 @@ export default function ClientSpaceDetail() {
   };
 
   const handleSendMessage = async () => {
-    if (!messageContent.trim() || !client || !user) return;
+    if ((!messageContent.trim() && !attachedFile) || !client || !user) return;
 
     try {
       setSendingMessage(true);
+      
+      let attachmentData = {};
+      
+      // Upload file if attached
+      if (attachedFile) {
+        const fileExt = attachedFile.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `${cabinetId}/messages/${fileName}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(filePath, attachedFile);
+        
+        if (uploadError) throw uploadError;
+        
+        const { data: urlData } = await supabase.storage
+          .from('documents')
+          .createSignedUrl(filePath, 365 * 24 * 60 * 60); // 1 year
+        
+        attachmentData = {
+          has_attachment: true,
+          attachment_name: attachedFile.name,
+          attachment_url: urlData?.signedUrl || filePath,
+          attachment_type: attachedFile.type,
+          attachment_size: attachedFile.size,
+        };
+      }
       
       const { error } = await supabase
         .from('client_messages')
@@ -316,13 +349,15 @@ export default function ClientSpaceDetail() {
           client_id: client.id,
           sender_id: user.id,
           sender_type: 'professional',
-          message: messageContent.trim(),
+          message: messageContent.trim() || '📎 Fichier joint',
+          ...attachmentData,
         });
 
       if (error) throw error;
 
       toast.success('Message envoyé');
       setMessageContent('');
+      setAttachedFile(null);
       await loadMessages();
     } catch (error) {
       console.error('Erreur lors de l\'envoi du message:', error);
@@ -546,6 +581,19 @@ export default function ClientSpaceDetail() {
                               }`}
                             >
                               <p className="text-sm">{msg.message}</p>
+                              {msg.has_attachment && msg.attachment_url && (
+                                <a
+                                  href={msg.attachment_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={`flex items-center gap-2 mt-2 text-xs ${
+                                    isProfessional ? 'text-blue-100 hover:text-white' : 'text-blue-600 hover:text-blue-700'
+                                  }`}
+                                >
+                                  <FileText className="w-4 h-4" />
+                                  {msg.attachment_name}
+                                </a>
+                              )}
                               <p className={`text-xs mt-1 ${
                                 isProfessional ? 'text-blue-100' : 'text-gray-500'
                               }`}>
@@ -560,34 +608,68 @@ export default function ClientSpaceDetail() {
 
                   {/* Formulaire d'envoi */}
                   <div className="border-t pt-4 mt-4">
+                    {attachedFile && (
+                      <div className="mb-3 flex items-center gap-2 p-2 bg-blue-50 rounded-md">
+                        <FileText className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm text-blue-900 flex-1">{attachedFile.name}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setAttachedFile(null)}
+                          className="h-6 w-6 p-0"
+                        >
+                          ×
+                        </Button>
+                      </div>
+                    )}
                     <div className="flex gap-2">
-                      <Textarea
-                        placeholder="Écrivez votre message..."
-                        value={messageContent}
-                        onChange={(e) => setMessageContent(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSendMessage();
-                          }
-                        }}
-                        className="flex-1"
-                        rows={3}
-                      />
-                      <Button
-                        onClick={handleSendMessage}
-                        disabled={!messageContent.trim() || sendingMessage}
-                        className="self-end"
-                      >
-                        {sendingMessage ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <>
-                            <Send className="w-4 h-4 mr-2" />
-                            Envoyer
-                          </>
-                        )}
-                      </Button>
+                      <div className="flex flex-col gap-2 flex-1">
+                        <Textarea
+                          placeholder="Écrivez votre message..."
+                          value={messageContent}
+                          onChange={(e) => setMessageContent(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              handleSendMessage();
+                            }
+                          }}
+                          className="flex-1"
+                          rows={3}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label className="cursor-pointer">
+                          <input
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) setAttachedFile(file);
+                            }}
+                          />
+                          <Button variant="outline" type="button" className="w-full" asChild>
+                            <span>
+                              <Upload className="w-4 h-4 mr-2" />
+                              Joindre
+                            </span>
+                          </Button>
+                        </label>
+                        <Button
+                          onClick={handleSendMessage}
+                          disabled={(!messageContent.trim() && !attachedFile) || sendingMessage}
+                          className="self-end"
+                        >
+                          {sendingMessage ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <>
+                              <Send className="w-4 h-4 mr-2" />
+                              Envoyer
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
                       Appuyez sur Entrée pour envoyer, Shift+Entrée pour un retour à la ligne

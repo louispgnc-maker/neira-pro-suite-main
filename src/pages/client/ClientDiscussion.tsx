@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare, Upload, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ClientLayout from '@/components/client/ClientLayout';
 
@@ -16,6 +16,11 @@ interface Message {
   sender_type: 'client' | 'professional';
   message: string;
   created_at: string;
+  has_attachment?: boolean;
+  attachment_name?: string;
+  attachment_url?: string;
+  attachment_type?: string;
+  attachment_size?: number;
   sender_profile?: {
     first_name?: string;
     last_name?: string;
@@ -40,6 +45,7 @@ export default function ClientDiscussion() {
   const [sending, setSending] = useState(false);
   const [professional, setProfessional] = useState<Professional | null>(null);
   const [loading, setLoading] = useState(true);
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -204,7 +210,7 @@ export default function ClientDiscussion() {
   }, [user]);
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !user || sending) return;
+    if ((!newMessage.trim() && !attachedFile) || !user || sending) return;
 
     try {
       setSending(true);
@@ -212,11 +218,38 @@ export default function ClientDiscussion() {
       // Get client ID
       const { data: clientData } = await supabase
         .from('clients')
-        .select('id')
+        .select('id, owner_id')
         .eq('user_id', user.id)
         .single();
 
       if (!clientData) throw new Error('Client not found');
+
+      let attachmentData = {};
+      
+      // Upload file if attached
+      if (attachedFile) {
+        const fileExt = attachedFile.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `${clientData.owner_id}/messages/${fileName}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(filePath, attachedFile);
+        
+        if (uploadError) throw uploadError;
+        
+        const { data: urlData } = await supabase.storage
+          .from('documents')
+          .createSignedUrl(filePath, 365 * 24 * 60 * 60); // 1 year
+        
+        attachmentData = {
+          has_attachment: true,
+          attachment_name: attachedFile.name,
+          attachment_url: urlData?.signedUrl || filePath,
+          attachment_type: attachedFile.type,
+          attachment_size: attachedFile.size,
+        };
+      }
 
       const { error } = await supabase
         .from('client_messages')
@@ -224,12 +257,14 @@ export default function ClientDiscussion() {
           client_id: clientData.id,
           sender_id: user.id,
           sender_type: 'client',
-          message: newMessage.trim(),
+          message: newMessage.trim() || '📎 Fichier joint',
+          ...attachmentData,
         });
 
       if (error) throw error;
 
       setNewMessage('');
+      setAttachedFile(null);
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
@@ -345,6 +380,19 @@ export default function ClientDiscussion() {
                         }`}
                       >
                         <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                        {msg.has_attachment && msg.attachment_url && (
+                          <a
+                            href={msg.attachment_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`flex items-center gap-2 mt-2 text-xs ${
+                              isOwnMessage ? 'text-blue-100 hover:text-white' : 'text-blue-600 hover:text-blue-700'
+                            }`}
+                          >
+                            <FileText className="w-4 h-4" />
+                            {msg.attachment_name}
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -357,22 +405,56 @@ export default function ClientDiscussion() {
 
         {/* Input */}
         <div className="border-t p-4">
+          {attachedFile && (
+            <div className="mb-3 flex items-center gap-2 p-2 bg-blue-50 rounded-md">
+              <FileText className="w-4 h-4 text-blue-600" />
+              <span className="text-sm text-blue-900 flex-1">{attachedFile.name}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setAttachedFile(null)}
+                className="h-6 w-6 p-0"
+              >
+                ×
+              </Button>
+            </div>
+          )}
           <div className="flex gap-2">
-            <Textarea
-              placeholder="Écrivez votre message... (Entrée pour envoyer, Shift+Entrée pour nouvelle ligne)"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={handleKeyPress}
-              className="resize-none"
-              rows={2}
-            />
-            <Button
-              onClick={handleSendMessage}
-              disabled={!newMessage.trim() || sending}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <Send className="w-4 h-4" />
-            </Button>
+            <div className="flex-1">
+              <Textarea
+                placeholder="Écrivez votre message... (Entrée pour envoyer, Shift+Entrée pour nouvelle ligne)"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={handleKeyPress}
+                className="resize-none"
+                rows={2}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setAttachedFile(file);
+                  }}
+                />
+                <Button variant="outline" type="button" size="sm" asChild>
+                  <span>
+                    <Upload className="w-4 h-4" />
+                  </span>
+                </Button>
+              </label>
+              <Button
+                onClick={handleSendMessage}
+                disabled={(!newMessage.trim() && !attachedFile) || sending}
+                className="bg-blue-600 hover:bg-blue-700"
+                size="sm"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </Card>
