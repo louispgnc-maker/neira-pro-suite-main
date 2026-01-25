@@ -140,11 +140,8 @@ export default function ClientDiscussion() {
         }
       } catch (error) {
         console.error('Error loading messages:', error);
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les messages",
-          variant: "destructive",
-        });
+        // Silent fail - just set empty messages
+        setMessages([]);
       } finally {
         setLoading(false);
       }
