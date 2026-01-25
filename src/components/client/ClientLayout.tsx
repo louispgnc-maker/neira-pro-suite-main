@@ -3,7 +3,7 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, Home, FileText, Folder, User, Menu, X } from 'lucide-react';
+import { LogOut, Home, FileText, Folder, User, Menu, X, FileSignature } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ClientLayoutProps {
@@ -68,6 +68,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const navItems = [
     { path: '/client-space', label: 'Tableau de bord', icon: Home },
     { path: '/client-space/dossiers', label: 'Mes dossiers', icon: Folder },
+    { path: '/client-space/contrats', label: 'Mes contrats', icon: FileSignature },
     { path: '/client-space/documents', label: 'Mes documents', icon: FileText },
     { path: '/client-space/profile', label: 'Mon profil', icon: User },
   ];
