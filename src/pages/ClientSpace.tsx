@@ -276,7 +276,11 @@ export default function ClientSpace() {
                 ) : (
                   <div className="space-y-3">
                     {dossiers.map((dossier) => (
-                      <div key={dossier.id} className={`border rounded-lg p-4 transition-colors ${professionType === 'avocat' ? 'hover:bg-blue-50' : 'hover:bg-orange-50'}`}>
+                      <div 
+                        key={dossier.id} 
+                        className={`border rounded-lg p-4 transition-colors cursor-pointer ${professionType === 'avocat' ? 'hover:bg-blue-50' : 'hover:bg-orange-50'}`}
+                        onClick={() => navigate(`/client-space/dossiers/${dossier.id}`)}
+                      >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <h4 className="font-medium text-gray-900">{dossier.titre}</h4>

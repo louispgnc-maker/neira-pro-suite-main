@@ -67,6 +67,7 @@ import ClientLogin from "./pages/ClientLogin";
 import ClientDashboard from "./pages/client/ClientDashboard";
 import ClientDocuments from "./pages/client/ClientDocuments";
 import ClientDossiers from "./pages/client/ClientDossiers";
+import ClientDossierDetail from "./pages/client/ClientDossierDetail";
 import ClientProfile from "./pages/client/ClientProfile";
 import ClientSpaces from "./pages/ClientSpaces";
 import ClientSpaceDetail from "./pages/ClientSpaceDetail";
@@ -111,6 +112,7 @@ const App = () => (
             <Route path="/client-space" element={<RoleProtectedRoute requiredRole="client"><ClientThemeProvider><ClientDashboard /></ClientThemeProvider></RoleProtectedRoute>} />
             <Route path="/client-space/documents" element={<RoleProtectedRoute requiredRole="client"><ClientThemeProvider><ClientDocuments /></ClientThemeProvider></RoleProtectedRoute>} />
             <Route path="/client-space/dossiers" element={<RoleProtectedRoute requiredRole="client"><ClientThemeProvider><ClientDossiers /></ClientThemeProvider></RoleProtectedRoute>} />
+            <Route path="/client-space/dossiers/:id" element={<RoleProtectedRoute requiredRole="client"><ClientThemeProvider><ClientDossierDetail /></ClientThemeProvider></RoleProtectedRoute>} />
             <Route path="/client-space/profile" element={<RoleProtectedRoute requiredRole="client"><ClientThemeProvider><ClientProfile /></ClientThemeProvider></RoleProtectedRoute>} />
             
             {/* Routes checkout publiques */}
