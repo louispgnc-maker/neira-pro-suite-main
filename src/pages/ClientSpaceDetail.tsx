@@ -78,10 +78,10 @@ interface DocumentFile {
 
 interface Message {
   id: string;
-  content: string;
-  sender_name: string;
+  message: string;
+  sender_id: string;
+  sender_type: 'client' | 'professional';
   created_at: string;
-  is_from_client: boolean;
 }
 
 export default function ClientSpaceDetail() {
@@ -288,20 +288,42 @@ export default function ClientSpaceDetail() {
   };
 
   const loadMessages = async () => {
-    // TODO: Implémenter le chargement des messages avec ce client
-    // Pour l'instant, liste vide
-    setMessages([]);
+    if (!id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('client_messages')
+        .select('*')
+        .eq('client_id', id)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setMessages(data || []);
+    } catch (error) {
+      console.error('Erreur lors du chargement des messages:', error);
+    }
   };
 
   const handleSendMessage = async () => {
-    if (!messageContent.trim() || !client) return;
+    if (!messageContent.trim() || !client || !user) return;
 
     try {
       setSendingMessage(true);
-      // TODO: Implémenter l'envoi de message
+      
+      const { error } = await supabase
+        .from('client_messages')
+        .insert({
+          client_id: client.id,
+          sender_id: user.id,
+          sender_type: 'professional',
+          message: messageContent.trim(),
+        });
+
+      if (error) throw error;
+
       toast.success('Message envoyé');
       setMessageContent('');
-      loadMessages();
+      await loadMessages();
     } catch (error) {
       console.error('Erreur lors de l\'envoi du message:', error);
       toast.error('Erreur lors de l\'envoi du message');
@@ -521,7 +543,7 @@ export default function ClientSpaceDetail() {
                                 : 'bg-gray-100 text-gray-900'
                             }`}
                           >
-                            <p className="text-sm">{msg.content}</p>
+                            <p className="text-sm">{msg.message}</p>
                             <p className={`text-xs mt-1 ${
                               msg.sender_id === user?.id ? 'text-blue-100' : 'text-gray-500'
                             }`}>
