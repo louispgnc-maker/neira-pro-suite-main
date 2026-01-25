@@ -173,12 +173,71 @@ export default function DossierDetail() {
           .eq('dossier_id', id);
         
         if (docLinks && mounted) {
-          const docList = docLinks.map((link: any) => ({
-            id: link.document_id,
-            name: link.document_nom,
-            file_url: '', // Sera généré si nécessaire
-            file_name: link.document_nom
-          }));
+          // Charger les détails de chaque document selon sa source
+          const docListPromises = docLinks.map(async (link: any) => {
+            let fileUrl = '';
+            
+            if (link.source === 'personal') {
+              // Document personnel du cabinet
+              const { data: docData } = await supabase
+                .from('documents')
+                .select('storage_path')
+                .eq('id', link.document_id)
+                .single();
+              
+              if (docData?.storage_path) {
+                const { data: urlData } = supabase.storage
+                  .from('documents')
+                  .getPublicUrl(docData.storage_path);
+                fileUrl = urlData.publicUrl;
+              }
+            } else if (link.source === 'client_shared') {
+              // Document partagé du client
+              const { data: docData } = await supabase
+                .from('client_shared_documents')
+                .select('file_url')
+                .eq('id', link.document_id)
+                .single();
+              
+              if (docData?.file_url) {
+                if (docData.file_url.startsWith('http')) {
+                  fileUrl = docData.file_url;
+                } else {
+                  const { data: urlData } = supabase.storage
+                    .from('shared-documents')
+                    .getPublicUrl(docData.file_url);
+                  fileUrl = urlData.publicUrl;
+                }
+              }
+            } else if (link.source === 'cabinet_shared') {
+              // Document du cabinet
+              const { data: docData } = await supabase
+                .from('cabinet_documents')
+                .select('file_url')
+                .eq('id', link.document_id)
+                .single();
+              
+              if (docData?.file_url) {
+                if (docData.file_url.startsWith('http')) {
+                  fileUrl = docData.file_url;
+                } else {
+                  const { data: urlData } = supabase.storage
+                    .from('documents')
+                    .getPublicUrl(docData.file_url);
+                  fileUrl = urlData.publicUrl;
+                }
+              }
+            }
+            
+            return {
+              id: link.document_id,
+              name: link.document_nom,
+              file_url: fileUrl,
+              file_name: link.document_nom
+            };
+          });
+          
+          const docList = await Promise.all(docListPromises);
           setDocuments(docList);
         } else {
           // Fallback: essayer l'ancienne table dossier_documents
