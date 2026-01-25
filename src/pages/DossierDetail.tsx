@@ -10,10 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DocumentViewer } from "@/components/ui/document-viewer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { ArrowLeft, ExternalLink, Edit, Clock, CheckCircle2, FileText, Plus } from "lucide-react";
+import { ArrowLeft, ExternalLink, Edit, Clock, CheckCircle2, FileText, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import MultiSourceDocumentSelector from "@/components/client-space/MultiSourceDocumentSelector";
 
 interface Dossier {
   id: string;
@@ -21,6 +22,8 @@ interface Dossier {
   status: string;
   description?: string | null;
   created_at: string | null;
+  cabinet_id?: string;
+  client_id?: string;
 }
 
 interface AssocClient { id: string; name: string }
@@ -92,7 +95,7 @@ export default function DossierDetail() {
   const [editDescription, setEditDescription] = useState("");
   const [editSelectedClients, setEditSelectedClients] = useState<string[]>([]);
   const [editSelectedContrats, setEditSelectedContrats] = useState<string[]>([]);
-  const [editSelectedDocuments, setEditSelectedDocuments] = useState<string[]>([]);
+  const [editSelectedDocuments, setEditSelectedDocuments] = useState<any[]>([]);
   const [editDocumentSelectorOpen, setEditDocumentSelectorOpen] = useState(false);
   
   // Listes complètes pour les sélecteurs
@@ -119,7 +122,7 @@ export default function DossierDetail() {
         // D'abord essayer de charger depuis client_dossiers_new (nouveaux dossiers)
         const { data: clientDossier } = await supabase
           .from('client_dossiers_new')
-          .select('id, titre, status, description, created_at')
+          .select('id, titre, status, description, created_at, cabinet_id, client_id')
           .eq('id', id)
           .maybeSingle();
         
@@ -129,7 +132,9 @@ export default function DossierDetail() {
             title: clientDossier.titre,
             status: clientDossier.status,
             description: clientDossier.description,
-            created_at: clientDossier.created_at
+            created_at: clientDossier.created_at,
+            cabinet_id: clientDossier.cabinet_id,
+            client_id: clientDossier.client_id
           };
         } else {
           // Sinon essayer l'ancienne table dossiers
@@ -428,14 +433,36 @@ export default function DossierDetail() {
     }
   };
 
-  const openEditDialog = () => {
+  const openEditDialog = async () => {
     if (!dossier) return;
     setEditTitle(dossier.title);
     setEditStatus(dossier.status);
     setEditDescription(dossier.description || "");
     setEditSelectedClients(clients.map(c => c.id));
     setEditSelectedContrats(contrats.map(c => c.id));
-    setEditSelectedDocuments(documents.map(d => d.id));
+    
+    // Charger les documents actuels avec leurs sources
+    const { data: docLinks } = await supabase
+      .from('client_dossier_documents')
+      .select('document_id, document_nom, source')
+      .eq('dossier_id', dossier.id);
+    
+    if (docLinks && docLinks.length > 0) {
+      // Convertir en format compatible avec MultiSourceDocumentSelector
+      const currentDocs = docLinks.map((link: any) => ({
+        id: link.document_id,
+        nom: link.document_nom,
+        type: 'application/pdf',
+        taille: 0,
+        chemin: '',
+        source: link.source,
+        created_at: ''
+      }));
+      setEditSelectedDocuments(currentDocs);
+    } else {
+      setEditSelectedDocuments([]);
+    }
+    
     setEditMode(true);
   };
 
@@ -484,35 +511,23 @@ export default function DossierDetail() {
       // Mettre à jour les associations documents pour client_dossiers_new
       await supabase.from('client_dossier_documents').delete().eq('dossier_id', dossier.id);
       if (editSelectedDocuments.length > 0) {
-        const docLinks = editSelectedDocuments
-          .map(did => {
-            const doc = allDocuments.find(d => d.id === did);
-            if (!doc) return null;
-            return {
-              dossier_id: dossier.id,
-              document_id: did,
-              document_nom: doc.name,
-              document_type: 'application/pdf',
-              document_taille: 0,
-              source: 'personal'
-            };
-          })
-          .filter(link => link !== null);
+        const docLinks = editSelectedDocuments.map(doc => ({
+          dossier_id: dossier.id,
+          document_id: doc.id,
+          document_nom: doc.nom,
+          document_type: doc.type || 'application/pdf',
+          document_taille: doc.taille || 0,
+          source: doc.source
+        }));
         
         if (docLinks.length > 0) {
-          await supabase.from('client_dossier_documents').insert(docLinks);
-        }
-      }
-
-      // Mettre à jour aussi dans l'ancienne table si elle existe
-      await supabase.from('dossier_documents').delete().eq('dossier_id', dossier.id);
-      if (editSelectedDocuments.length > 0) {
-        const validDocIds = editSelectedDocuments.filter(did => 
-          allDocuments.find(d => d.id === did)
-        );
-        if (validDocIds.length > 0) {
-          const docLinks = validDocIds.map(did => ({ dossier_id: dossier.id, document_id: did }));
-          await supabase.from('dossier_documents').insert(docLinks);
+          const { error: insertError } = await supabase
+            .from('client_dossier_documents')
+            .insert(docLinks);
+          
+          if (insertError) {
+            console.error('Erreur insertion documents:', insertError);
+          }
         }
       }
 
@@ -1085,21 +1100,26 @@ export default function DossierDetail() {
                 </Button>
               </div>
               {editSelectedDocuments.length > 0 ? (
-                <div className="border rounded-md p-3 space-y-2 max-h-32 overflow-y-auto">
-                  {allDocuments.filter(d => editSelectedDocuments.includes(d.id)).map((doc) => (
-                    <div key={doc.id} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-blue-600" />
-                        <span className="truncate">{doc.name}</span>
+                <div className="border rounded-md p-3 space-y-2 max-h-48 overflow-y-auto">
+                  {editSelectedDocuments.map((doc) => (
+                    <div key={doc.id} className="flex items-center justify-between text-sm p-2 hover:bg-accent/50 rounded">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <FileText className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="truncate font-medium">{doc.nom}</p>
+                          <Badge variant="outline" className="text-xs mt-1">
+                            {doc.source === 'personal' ? 'Personnel' : doc.source === 'client_shared' ? 'Client' : 'Cabinet'}
+                          </Badge>
+                        </div>
                       </div>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => setEditSelectedDocuments(prev => prev.filter(id => id !== doc.id))}
-                        className="h-6 w-6 p-0 hover:bg-red-50 hover:text-red-600"
+                        onClick={() => setEditSelectedDocuments(prev => prev.filter(d => d.id !== doc.id))}
+                        className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 flex-shrink-0"
                       >
-                        ×
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   ))}
@@ -1127,61 +1147,20 @@ export default function DossierDetail() {
         </DialogContent>
       </Dialog>
 
-      {/* Document Selector Dialog */}
-      <Dialog open={editDocumentSelectorOpen} onOpenChange={setEditDocumentSelectorOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Ajouter des documents</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2">
-            {allDocuments.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">Aucun document disponible</p>
-            ) : (
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {allDocuments.map((doc) => {
-                  const isSelected = editSelectedDocuments.includes(doc.id);
-                  return (
-                    <div
-                      key={doc.id}
-                      className={`flex items-center gap-3 p-3 rounded cursor-pointer transition-colors ${
-                        isSelected 
-                          ? 'bg-blue-50 border border-blue-200' 
-                          : 'border border-transparent hover:bg-accent/50'
-                      }`}
-                      onClick={() => {
-                        if (isSelected) {
-                          setEditSelectedDocuments(prev => prev.filter(id => id !== doc.id));
-                        } else {
-                          setEditSelectedDocuments(prev => [...prev, doc.id]);
-                        }
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}}
-                        className="cursor-pointer"
-                      />
-                      <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{doc.name}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setEditDocumentSelectorOpen(false)}
-            >
-              Fermer
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* MultiSourceDocumentSelector */}
+      {dossier?.cabinet_id && (
+        <MultiSourceDocumentSelector
+          open={editDocumentSelectorOpen}
+          onClose={() => setEditDocumentSelectorOpen(false)}
+          onSelect={(selectedDocs) => {
+            setEditSelectedDocuments(selectedDocs);
+            setEditDocumentSelectorOpen(false);
+          }}
+          cabinetId={dossier.cabinet_id}
+          userId={user?.id || ''}
+          clientId={dossier.client_id}
+        />
+      )}
     </AppLayout>
   );
 }
