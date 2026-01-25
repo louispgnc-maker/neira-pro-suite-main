@@ -462,25 +462,36 @@ export default function DossierDetail() {
       // Mettre à jour les associations documents pour client_dossiers_new
       await supabase.from('client_dossier_documents').delete().eq('dossier_id', dossier.id);
       if (editSelectedDocuments.length > 0) {
-        const docLinks = editSelectedDocuments.map(did => {
-          const doc = allDocuments.find(d => d.id === did);
-          return {
-            dossier_id: dossier.id,
-            document_id: did,
-            document_nom: doc?.name || 'Document',
-            document_type: 'application/pdf',
-            document_taille: 0,
-            source: 'personal'
-          };
-        });
-        await supabase.from('client_dossier_documents').insert(docLinks);
+        const docLinks = editSelectedDocuments
+          .map(did => {
+            const doc = allDocuments.find(d => d.id === did);
+            if (!doc) return null;
+            return {
+              dossier_id: dossier.id,
+              document_id: did,
+              document_nom: doc.name,
+              document_type: 'application/pdf',
+              document_taille: 0,
+              source: 'personal'
+            };
+          })
+          .filter(link => link !== null);
+        
+        if (docLinks.length > 0) {
+          await supabase.from('client_dossier_documents').insert(docLinks);
+        }
       }
 
       // Mettre à jour aussi dans l'ancienne table si elle existe
       await supabase.from('dossier_documents').delete().eq('dossier_id', dossier.id);
       if (editSelectedDocuments.length > 0) {
-        const docLinks = editSelectedDocuments.map(did => ({ dossier_id: dossier.id, document_id: did }));
-        await supabase.from('dossier_documents').insert(docLinks);
+        const validDocIds = editSelectedDocuments.filter(did => 
+          allDocuments.find(d => d.id === did)
+        );
+        if (validDocIds.length > 0) {
+          const docLinks = validDocIds.map(did => ({ dossier_id: dossier.id, document_id: did }));
+          await supabase.from('dossier_documents').insert(docLinks);
+        }
       }
 
       toast.success("Dossier modifié avec succès");
