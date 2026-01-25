@@ -58,8 +58,9 @@ export default function ContratManager({ clientId, cabinetId, isProView, role }:
   };
 
   const handleCreateContrat = () => {
-    // Rediriger vers la page de création de contrat avec le client pré-sélectionné
-    navigate(`${prefix}/contrats/create?client_id=${clientId}`);
+    // Rediriger vers la page des contrats où l'utilisateur peut créer un contrat
+    // Le client_id sera disponible dans l'état de navigation pour pré-sélection
+    navigate(`${prefix}/contrats`, { state: { preselectedClientId: clientId } });
   };
 
   const handleViewContrat = (contrat: Contrat) => {
