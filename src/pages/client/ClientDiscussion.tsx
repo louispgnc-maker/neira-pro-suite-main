@@ -58,7 +58,7 @@ export default function ClientDiscussion() {
         // Get client info to find the professional
         const { data: clientData } = await supabase
           .from('clients')
-          .select('created_by, profiles!clients_created_by_fkey(id, first_name, last_name, photo_url, email)')
+          .select('owner_id, profiles!clients_owner_id_fkey(id, first_name, last_name, photo_url, email)')
           .eq('user_id', user.id)
           .single();
 

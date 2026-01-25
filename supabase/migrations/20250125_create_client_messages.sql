@@ -32,7 +32,7 @@ CREATE POLICY "Professionals can view client messages"
   ON client_messages FOR SELECT
   USING (
     client_id IN (
-      SELECT id FROM clients WHERE created_by = auth.uid()
+      SELECT id FROM clients WHERE owner_id = auth.uid()
     )
   );
 
