@@ -112,37 +112,97 @@ export default function DossierDetail() {
 
       setLoading(true);
       try {
-        // Essayer de charger le dossier en tant que propriétaire
-        let { data: d, error } = await supabase
-          .from('dossiers')
-          .select('id,title,status,description,created_at')
-          .eq('owner_id', user.id)
-          .eq('role', role)
+        let dossierData: any = null;
+        
+        // D'abord essayer de charger depuis client_dossiers (nouveaux dossiers)
+        const { data: clientDossier } = await supabase
+          .from('client_dossiers')
+          .select('id, titre as title, status, description, created_at')
           .eq('id', id)
           .maybeSingle();
         
-        // Si pas trouvé, essayer de charger depuis cabinet_dossiers (dossier partagé)
-        if (!d) {
-          const { data: sharedDossier } = await supabase
-            .from('cabinet_dossiers')
-            .select('dossier_id, title, description, status, dossiers(created_at)')
-            .eq('dossier_id', id)
+        if (clientDossier) {
+          dossierData = clientDossier;
+        } else {
+          // Sinon essayer l'ancienne table dossiers
+          const { data: oldDossier } = await supabase
+            .from('dossiers')
+            .select('id, title, status, description, created_at')
+            .eq('owner_id', user.id)
+            .eq('role', role)
+            .eq('id', id)
             .maybeSingle();
           
-          if (sharedDossier) {
-            d = {
-              id: sharedDossier.dossier_id,
-              title: sharedDossier.title,
-              status: sharedDossier.status,
-              description: sharedDossier.description,
-              created_at: (sharedDossier as any).dossiers?.created_at || null
-            };
+          if (oldDossier) {
+            dossierData = oldDossier;
+          } else {
+            // Dernier essai: cabinet_dossiers (dossiers partagés)
+            const { data: sharedDossier } = await supabase
+              .from('cabinet_dossiers')
+              .select('dossier_id, title, description, status, dossiers(created_at)')
+              .eq('dossier_id', id)
+              .maybeSingle();
+            
+            if (sharedDossier) {
+              dossierData = {
+                id: sharedDossier.dossier_id,
+                title: sharedDossier.title,
+                status: sharedDossier.status,
+                description: sharedDossier.description,
+                created_at: (sharedDossier as any).dossiers?.created_at || null
+              };
+            }
           }
         }
         
-        if (!error && d && mounted) setDossier(d as Dossier);
+        if (dossierData && mounted) {
+          setDossier(dossierData as Dossier);
+        }
         
-        // Charger les clients liés
+        // Charger les documents liés depuis client_dossier_documents
+        const { data: docLinks } = await supabase
+          .from('client_dossier_documents')
+          .select('document_id, document_nom, source')
+          .eq('dossier_id', id);
+        
+        if (docLinks && mounted) {
+          const docList = docLinks.map((link: any) => ({
+            id: link.document_id,
+            name: link.document_nom,
+            file_url: '', // Sera généré si nécessaire
+            file_name: link.document_nom
+          }));
+          setDocuments(docList);
+        } else {
+          // Fallback: essayer l'ancienne table dossier_documents
+          const { data: oldDocLinks } = await supabase
+            .from('dossier_documents')
+            .select('document_id, documents(id, name, storage_path)')
+            .eq('dossier_id', id);
+          
+          if (oldDocLinks && mounted) {
+            const docList = oldDocLinks.map((link: any) => {
+              const doc = link.documents;
+              let fileUrl = doc.storage_path;
+              if (doc.storage_path && !doc.storage_path.startsWith('http')) {
+                const storagePath = doc.storage_path.replace(/^\/+/, '');
+                const { data: publicData } = supabase.storage.from('documents').getPublicUrl(storagePath);
+                if (publicData?.publicUrl) {
+                  fileUrl = publicData.publicUrl;
+                }
+              }
+              return {
+                id: doc.id,
+                name: doc.name,
+                file_url: fileUrl,
+                file_name: doc.name
+              };
+            });
+            setDocuments(docList);
+          }
+        }
+
+        // Pour les clients et contrats, garder l'ancien code si nécessaire
         const { data: clientLinks } = await supabase
           .from('dossier_clients')
           .select('client_id, clients(id, nom, prenom)')
@@ -174,34 +234,6 @@ export default function DossierDetail() {
             contenu_json: link.contrats.contenu_json
           }));
           setContrats(contratList);
-        }
-        
-        // Charger les documents liés
-        const { data: docLinks } = await supabase
-          .from('dossier_documents')
-          .select('document_id, documents(id, name, storage_path)')
-          .eq('dossier_id', id);
-        
-        if (docLinks && mounted) {
-          const docList = docLinks.map((link: any) => {
-            const doc = link.documents;
-            // Générer l'URL publique
-            let fileUrl = doc.storage_path;
-            if (doc.storage_path && !doc.storage_path.startsWith('http')) {
-              const storagePath = doc.storage_path.replace(/^\/+/, '');
-              const { data: publicData } = supabase.storage.from('documents').getPublicUrl(storagePath);
-              if (publicData?.publicUrl) {
-                fileUrl = publicData.publicUrl;
-              }
-            }
-            return {
-              id: doc.id,
-              name: doc.name,
-              file_url: fileUrl,
-              file_name: doc.name
-            };
-          });
-          setDocuments(docList);
         }
 
         // Charger toutes les listes pour le dialogue de modification
@@ -238,6 +270,15 @@ export default function DossierDetail() {
         if (allDocumentsData && mounted) {
           setAllDocuments(allDocumentsData as AssocDocument[]);
         }
+      } catch (e) {
+        console.error('Error loading dossier:', e);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    load();
+    return () => { mounted = false; };
+  }, [user, id, role]);
       } catch (e) {
         console.error('Error loading dossier:', e);
       } finally {
