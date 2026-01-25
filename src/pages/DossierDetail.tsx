@@ -484,31 +484,7 @@ export default function DossierDetail() {
 
             <Card>
               <CardHeader>
-                <CardTitle>2. Clients associés</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {clients.length === 0 ? (
-                  <div className="text-sm text-gray-600">Aucun client</div>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {clients.map(c => (
-                      <Badge 
-                        key={c.id} 
-                        variant="secondary"
-                        className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                        onClick={() => openClientModal(c.id)}
-                      >
-                        {c.name}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>3. Contrats associés</CardTitle>
+                <CardTitle>2. Contrats associés</CardTitle>
               </CardHeader>
               <CardContent>
                 {contrats.length === 0 ? (
@@ -565,29 +541,27 @@ export default function DossierDetail() {
 
             <Card>
               <CardHeader>
-                <CardTitle>4. Documents associés</CardTitle>
+                <CardTitle>3. Documents associés</CardTitle>
               </CardHeader>
               <CardContent>
                 {documents.length === 0 ? (
                   <div className="text-sm text-gray-600">Aucun document</div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {documents.map(d => (
                       <div 
                         key={d.id} 
-                        className="text-sm p-3 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors flex items-center justify-between"
+                        className="border border-border rounded-lg overflow-hidden hover:border-primary hover:shadow-md transition-all cursor-pointer"
+                        onClick={() => openSharedDocument(d.file_url, d.file_name || d.name)}
                       >
-                        <div className="font-medium">{d.name}</div>
-                        {d.file_url ? (
-                          <Button 
-                            size="sm" 
-                            variant="ghost"
-                            className={role === 'notaire' ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50' : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'}
-                            onClick={() => openSharedDocument(d.file_url, d.file_name || d.name)}
-                          >
-                            Ouvrir
-                          </Button>
-                        ) : null}
+                        <div className={`h-32 flex items-center justify-center ${role === 'notaire' ? 'bg-orange-50' : 'bg-blue-50'}`}>
+                          <svg className={`h-12 w-12 ${role === 'notaire' ? 'text-orange-400' : 'text-blue-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="p-3">
+                          <div className="font-medium text-sm line-clamp-2">{d.name}</div>
+                        </div>
                       </div>
                     ))}
                   </div>
