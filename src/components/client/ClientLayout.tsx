@@ -92,7 +92,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-1">
+            <nav className="hidden md:flex items-center gap-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -100,14 +100,14 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                       isActive
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-600 hover:bg-blue-50 hover:text-blue-700'
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-200'
+                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 hover:shadow-sm'
                     }`}
                   >
-                    <Icon className="h-4 w-4 inline mr-2" />
-                    {item.label}
+                    <Icon className="h-4 w-4" />
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
@@ -123,10 +123,10 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                 onClick={handleSignOut}
                 variant="ghost"
                 size="sm"
-                className="hidden md:flex text-red-600 hover:bg-red-50 hover:text-red-700"
+                className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-700 hover:shadow-sm transition-all duration-200"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                Déconnexion
+                <LogOut className="h-4 w-4" />
+                <span>Déconnexion</span>
               </Button>
 
               {/* Mobile menu button */}
@@ -146,7 +146,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
             <div className="md:hidden py-4 border-t">
-              <nav className="space-y-1">
+              <nav className="space-y-2">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = location.pathname === item.path;
@@ -155,23 +155,23 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                       key={item.path}
                       to={item.path}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                         isActive
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'text-gray-600 hover:bg-blue-50 hover:text-blue-700'
+                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-200'
+                          : 'text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 hover:shadow-sm'
                       }`}
                     >
-                      <Icon className="h-4 w-4 mr-3" />
-                      {item.label}
+                      <Icon className="h-5 w-5" />
+                      <span>{item.label}</span>
                     </Link>
                   );
                 })}
                 <button
                   onClick={handleSignOut}
-                  className="w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50"
+                  className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:shadow-sm transition-all duration-200"
                 >
-                  <LogOut className="h-4 w-4 mr-3" />
-                  Déconnexion
+                  <LogOut className="h-5 w-5" />
+                  <span>Déconnexion</span>
                 </button>
               </nav>
             </div>
