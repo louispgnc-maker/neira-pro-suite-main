@@ -582,17 +582,15 @@ export default function ClientSpaceDetail() {
                             >
                               <p className="text-sm">{msg.message}</p>
                               {msg.has_attachment && msg.attachment_url && (
-                                <a
-                                  href={msg.attachment_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className={`flex items-center gap-2 mt-2 text-xs ${
-                                    isProfessional ? 'text-blue-100 hover:text-white' : 'text-blue-600 hover:text-blue-700'
+                                <button
+                                  onClick={() => window.open(msg.attachment_url, '_blank')}
+                                  className={`flex items-center gap-2 mt-2 px-3 py-1.5 rounded text-xs ${
+                                    isProfessional ? 'bg-blue-700 hover:bg-blue-800 text-white' : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
                                   }`}
                                 >
                                   <FileText className="w-4 h-4" />
                                   {msg.attachment_name}
-                                </a>
+                                </button>
                               )}
                               <p className={`text-xs mt-1 ${
                                 isProfessional ? 'text-blue-100' : 'text-gray-500'
@@ -648,7 +646,7 @@ export default function ClientSpaceDetail() {
                               if (file) setAttachedFile(file);
                             }}
                           />
-                          <Button variant="outline" type="button" className="w-full" asChild>
+                          <Button variant="outline" type="button" className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
                             <span>
                               <Upload className="w-4 h-4 mr-2" />
                               Joindre
