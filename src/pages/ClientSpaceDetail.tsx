@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -23,7 +24,8 @@ import {
   Folder,
   User,
   FileSignature,
-  Plus
+  Plus,
+  X
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -103,6 +105,10 @@ export default function ClientSpaceDetail() {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [cabinetId, setCabinetId] = useState<string>('');
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerUrl, setViewerUrl] = useState('');
+  const [viewerName, setViewerName] = useState('');
+  const [viewerType, setViewerType] = useState('');
 
   const role = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -583,7 +589,12 @@ export default function ClientSpaceDetail() {
                               <p className="text-sm">{msg.message}</p>
                               {msg.has_attachment && msg.attachment_url && (
                                 <button
-                                  onClick={() => window.open(msg.attachment_url, '_blank')}
+                                  onClick={() => {
+                                    setViewerUrl(msg.attachment_url!);
+                                    setViewerName(msg.attachment_name || 'Fichier');
+                                    setViewerType(msg.attachment_type || '');
+                                    setViewerOpen(true);
+                                  }}
                                   className={`flex items-center gap-2 mt-2 px-3 py-1.5 rounded text-xs ${
                                     isProfessional ? 'bg-blue-700 hover:bg-blue-800 text-white' : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
                                   }`}
@@ -955,6 +966,69 @@ export default function ClientSpaceDetail() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* File Viewer Dialog */}
+        <Dialog open={viewerOpen} onOpenChange={setViewerOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] p-0">
+            <DialogHeader className="p-6 pb-4 border-b">
+              <div className="flex items-center justify-between">
+                <DialogTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  {viewerName}
+                </DialogTitle>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = viewerUrl;
+                      link.download = viewerName;
+                      link.click();
+                    }}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Télécharger
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setViewerOpen(false)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </DialogHeader>
+            <div className="p-6 overflow-auto max-h-[calc(90vh-100px)]">
+              {viewerType.startsWith('image/') ? (
+                <img src={viewerUrl} alt={viewerName} className="w-full h-auto" />
+              ) : viewerType === 'application/pdf' ? (
+                <iframe
+                  src={viewerUrl}
+                  className="w-full h-[70vh]"
+                  title={viewerName}
+                />
+              ) : (
+                <div className="text-center py-12">
+                  <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-600 mb-4">Aperçu non disponible pour ce type de fichier</p>
+                  <Button
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = viewerUrl;
+                      link.download = viewerName;
+                      link.click();
+                    }}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Télécharger le fichier
+                  </Button>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   );
