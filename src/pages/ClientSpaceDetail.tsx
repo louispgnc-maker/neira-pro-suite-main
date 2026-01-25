@@ -531,27 +531,30 @@ export default function ClientSpaceDetail() {
                     </div>
                   ) : (
                     <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                      {messages.map((msg) => (
-                        <div
-                          key={msg.id}
-                          className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
-                        >
+                      {messages.map((msg) => {
+                        const isProfessional = msg.sender_type === 'professional';
+                        return (
                           <div
-                            className={`max-w-[70%] rounded-lg p-3 ${
-                              msg.sender_id === user?.id
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-100 text-gray-900'
-                            }`}
+                            key={msg.id}
+                            className={`flex ${isProfessional ? 'justify-end' : 'justify-start'}`}
                           >
-                            <p className="text-sm">{msg.message}</p>
-                            <p className={`text-xs mt-1 ${
-                              msg.sender_id === user?.id ? 'text-blue-100' : 'text-gray-500'
-                            }`}>
-                              {new Date(msg.created_at).toLocaleString('fr-FR')}
-                            </p>
+                            <div
+                              className={`max-w-[70%] rounded-lg p-3 ${
+                                isProfessional
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-gray-100 text-gray-900'
+                              }`}
+                            >
+                              <p className="text-sm">{msg.message}</p>
+                              <p className={`text-xs mt-1 ${
+                                isProfessional ? 'text-blue-100' : 'text-gray-500'
+                              }`}>
+                                {new Date(msg.created_at).toLocaleString('fr-FR')}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
 

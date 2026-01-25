@@ -295,7 +295,7 @@ export default function ClientDiscussion() {
           ) : (
             <>
               {messages.map((msg) => {
-                const isOwnMessage = msg.sender_id === user?.id;
+                const isOwnMessage = msg.sender_type === 'client';
                 const senderName = msg.sender_profile
                   ? `${msg.sender_profile.first_name || ''} ${msg.sender_profile.last_name || ''}`.trim()
                   : 'Utilisateur';
