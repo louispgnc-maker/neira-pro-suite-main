@@ -235,6 +235,12 @@ export default function ClientDossierDetail() {
               <div className="text-sm text-gray-600">Créé le</div>
               <div className="font-medium">{dossier.created_at ? new Date(dossier.created_at).toLocaleDateString('fr-FR') : '—'}</div>
             </div>
+            {dossier.description && (
+              <div className="md:col-span-2">
+                <div className="text-sm text-gray-600">Description</div>
+                <div className="font-medium whitespace-pre-wrap mt-1">{dossier.description}</div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
