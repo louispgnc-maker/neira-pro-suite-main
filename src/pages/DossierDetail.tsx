@@ -1021,31 +1021,51 @@ export default function DossierDetail() {
               </Select>
             </div>
 
-            {/* Documents sélectionnés */}
+            {/* Documents */}
             <div className="space-y-2">
-              <Label>Documents ({editSelectedDocuments.length})</Label>
-              {editSelectedDocuments.length > 0 ? (
-                <div className="border rounded-md p-3 space-y-2 max-h-32 overflow-y-auto">
-                  {allDocuments.filter(d => editSelectedDocuments.includes(d.id)).map((doc) => (
-                    <div key={doc.id} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-blue-600" />
-                        <span className="truncate">{doc.name}</span>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setEditSelectedDocuments(prev => prev.filter(id => id !== doc.id))}
-                        className="h-6 w-6 p-0 hover:bg-red-50 hover:text-red-600"
+              <div className="flex items-center justify-between">
+                <Label>Documents ({editSelectedDocuments.length})</Label>
+              </div>
+              
+              {/* Documents disponibles à ajouter */}
+              {allDocuments.length > 0 && (
+                <div className="border rounded-md p-3 space-y-2 max-h-64 overflow-y-auto">
+                  {allDocuments.map((doc) => {
+                    const isSelected = editSelectedDocuments.includes(doc.id);
+                    return (
+                      <div
+                        key={doc.id}
+                        className={`flex items-center gap-3 p-2 rounded cursor-pointer transition-colors ${
+                          isSelected 
+                            ? 'bg-blue-50 border border-blue-200' 
+                            : 'hover:bg-accent/50'
+                        }`}
+                        onClick={() => {
+                          if (isSelected) {
+                            setEditSelectedDocuments(prev => prev.filter(id => id !== doc.id));
+                          } else {
+                            setEditSelectedDocuments(prev => [...prev, doc.id]);
+                          }
+                        }}
                       >
-                        ×
-                      </Button>
-                    </div>
-                  ))}
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {}}
+                          className="cursor-pointer"
+                        />
+                        <FileText className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{doc.name}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">Aucun document sélectionné</p>
+              )}
+              
+              {allDocuments.length === 0 && (
+                <p className="text-sm text-muted-foreground">Aucun document disponible</p>
               )}
             </div>
           </div>
