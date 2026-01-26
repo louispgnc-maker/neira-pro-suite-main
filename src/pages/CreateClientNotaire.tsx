@@ -135,6 +135,20 @@ export default function CreateClientNotaire() {
     }
     setLoading(true);
     try {
+      // Récupérer le cabinet_id du professionnel
+      const { data: cabinetMember, error: cabinetError } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .single();
+      
+      if (cabinetError || !cabinetMember) {
+        toast.error('Erreur', { description: 'Impossible de trouver votre cabinet' });
+        setLoading(false);
+        return;
+      }
+
       let idDocPath: string | null = null;
       if (idDocFile) {
         const fileName = `${user.id}/${Date.now()}-${idDocFile.name}`;
@@ -147,7 +161,7 @@ export default function CreateClientNotaire() {
       const situationFamilialeData = etatCivil ? { situation_familiale: etatCivil } : null;
 
       const { data: inserted, error: insertErr } = await supabase.from('clients').insert({
-        owner_id: user.id,
+        owner_id: cabinetMember.cabinet_id,
         role,
         name: `${prenom} ${nom}`,
         nom,
