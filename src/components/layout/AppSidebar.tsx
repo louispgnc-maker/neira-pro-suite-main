@@ -288,9 +288,11 @@ export function AppSidebar() {
         <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} gap-2`}>
           {!isCollapsed && (
             <div className="flex items-center gap-2">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${role === 'notaire' ? 'bg-gradient-to-br from-orange-500 to-orange-600' : 'bg-gradient-to-br from-blue-500 to-blue-600'}`}>
-                <span className="text-white font-bold text-sm">N</span>
-              </div>
+              <img 
+                src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Nouveau%20logo%20Neira.png" 
+                alt="Neira" 
+                className="w-8 h-8 rounded-lg object-cover"
+              />
               <div>
                 <h2 className="font-semibold text-sm">Neira</h2>
                 <p className={`text-xs ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
