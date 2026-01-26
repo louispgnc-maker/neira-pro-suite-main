@@ -109,6 +109,7 @@ export default function ClientSpaceDetail() {
   const [viewerUrl, setViewerUrl] = useState('');
   const [viewerName, setViewerName] = useState('');
   const [viewerType, setViewerType] = useState('');
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const role = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
@@ -124,12 +125,53 @@ export default function ClientSpaceDetail() {
       loadDocuments();
       loadMessages();
       loadSuggestions();
+      loadNotificationsCount();
     }
   }, [id, user]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const loadNotificationsCount = async () => {
+    if (!id) return;
+    
+    try {
+      const { count } = await supabase
+        .from('client_notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('client_id', id)
+        .eq('is_read', false);
+      
+      setUnreadNotificationsCount(count || 0);
+    } catch (error) {
+      console.error('Error loading notifications count:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!id) return;
+    
+    const channel = supabase
+      .channel(`client-space-notifications-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'client_notifications',
+          filter: `client_id=eq.${id}`
+        },
+        () => {
+          loadNotificationsCount();
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      channel.unsubscribe();
+    };
+  }, [id]);
 
   const loadClientInfo = async () => {
     if (!id || !user) return;
@@ -488,9 +530,14 @@ export default function ClientSpaceDetail() {
               <FileSignature className="w-4 h-4" />
               Contrats
             </TabsTrigger>
-            <TabsTrigger value="messagerie" className="gap-2">
+            <TabsTrigger value="messagerie" className="gap-2 relative">
               <MessageSquare className="w-4 h-4" />
               Messagerie
+              {unreadNotificationsCount > 0 && (
+                <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                  {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="profil" className="gap-2">
               <User className="w-4 h-4" />
