@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabaseClient';
-import { Bell, Check, Folder, FileText, User, MessageSquare, FileSignature, X } from 'lucide-react';
+import { Bell, Check, Folder, FileText, User, MessageSquare, FileSignature, X, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -113,6 +113,29 @@ export default function NotificationsCard({ clientId, professionType = 'avocat' 
     }
   };
 
+  const deleteReadNotifications = async () => {
+    try {
+      const readIds = notifications.filter((n) => n.is_read).map((n) => n.id);
+      if (readIds.length === 0) {
+        toast.info('Aucune notification lue à supprimer');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('client_notifications')
+        .delete()
+        .in('id', readIds);
+
+      if (error) throw error;
+
+      setNotifications((prev) => prev.filter((n) => !n.is_read));
+      toast.success(`${readIds.length} notification(s) supprimée(s)`);
+    } catch (error) {
+      console.error('Error deleting read notifications:', error);
+      toast.error('Erreur lors de la suppression des notifications');
+    }
+  };
+
   const handleNotificationClick = (notification: Notification) => {
     markAsRead(notification.id);
 
@@ -194,17 +217,30 @@ export default function NotificationsCard({ clientId, professionType = 'avocat' 
               </Badge>
             )}
           </div>
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={markAllAsRead}
-              className="text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-            >
-              <Check className="h-3 w-3 mr-1" />
-              Tout marquer lu
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {notifications.some(n => n.is_read) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={deleteReadNotifications}
+                className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="h-3 w-3 mr-1" />
+                Effacer lues
+              </Button>
+            )}
+            {unreadCount > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={markAllAsRead}
+                className="text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              >
+                <Check className="h-3 w-3 mr-1" />
+                Tout marquer lu
+              </Button>
+            )}
+          </div>
         </div>
         <CardDescription>Restez informé de toutes les nouveautés</CardDescription>
       </CardHeader>
