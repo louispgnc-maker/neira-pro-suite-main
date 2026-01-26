@@ -264,9 +264,30 @@ export default function ClientDiscussion() {
           sender_type: 'client',
           message: newMessage.trim() || '📎 Fichier joint',
           ...attachmentData,
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Ajouter le message immédiatement à l'état local
+      if (error) {
+        const newMsg: Message = {
+          id: error.id,
+          client_id: clientData.id,
+          sender_id: user.id,
+          sender_type: 'client',
+          message: newMessage.trim() || '📎 Fichier joint',
+          created_at: new Date().toISOString(),
+          sender_profile: {
+            first_name: profile?.first_name,
+            last_name: profile?.last_name,
+            photo_url: profile?.photo_url,
+          },
+          ...attachmentData,
+        };
+        setMessages(prev => [...prev, newMsg]);
+      }
 
       setNewMessage('');
       setAttachedFile(null);
