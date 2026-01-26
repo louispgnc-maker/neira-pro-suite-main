@@ -29,7 +29,7 @@ export default function ClientDocuments() {
 
   useEffect(() => {
     if (user) {
-      loadClientData();
+      loadClientInfo();
     }
   }, [user]);
 
