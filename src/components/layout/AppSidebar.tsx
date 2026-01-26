@@ -288,16 +288,16 @@ export function AppSidebar() {
         <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} gap-2`}>
           {!isCollapsed && (
             <div className="flex items-center gap-2">
-              <a 
-                href="https://www.neira.fr/avocats/dashboard"
-                className="flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+              <NavLink 
+                to={role === 'notaire' ? '/notaires/dashboard' : '/avocats/dashboard'}
+                className="flex-shrink-0 cursor-pointer hover:opacity-80 transition-all active:scale-95"
               >
                 <img 
                   src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Nouveau%20logo%20Neira.png" 
                   alt="Neira" 
                   className="w-16 h-16 rounded-lg object-cover"
                 />
-              </a>
+              </NavLink>
               <div>
                 <h2 className="font-semibold text-sm">Neira</h2>
                 <p className={`text-xs ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
