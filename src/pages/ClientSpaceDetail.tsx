@@ -111,6 +111,7 @@ export default function ClientSpaceDetail() {
   const [viewerType, setViewerType] = useState('');
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [unreadDocumentsCount, setUnreadDocumentsCount] = useState(0);
+  const [unreadProfileSuggestionsCount, setUnreadProfileSuggestionsCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const role = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
@@ -159,6 +160,17 @@ export default function ClientSpaceDetail() {
         .eq('is_read', false);
       
       setUnreadDocumentsCount(documentsCount || 0);
+      
+      // Compter les notifications de suggestions de profil
+      const { count: profileSuggestionsCount } = await supabase
+        .from('professional_notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('client_id', id)
+        .eq('professional_id', user.id)
+        .eq('type', 'profile_suggestion')
+        .eq('is_read', false);
+      
+      setUnreadProfileSuggestionsCount(profileSuggestionsCount || 0);
     } catch (error) {
       console.error('Error loading notifications count:', error);
     }
@@ -197,6 +209,24 @@ export default function ClientSpaceDetail() {
       loadNotificationsCount();
     } catch (error) {
       console.error('Error marking documents as read:', error);
+    }
+  };
+
+  const markProfileSuggestionsAsRead = async () => {
+    if (!id || !user) return;
+    
+    try {
+      await supabase
+        .from('professional_notifications')
+        .update({ is_read: true })
+        .eq('client_id', id)
+        .eq('professional_id', user.id)
+        .eq('type', 'profile_suggestion')
+        .eq('is_read', false);
+      
+      loadNotificationsCount();
+    } catch (error) {
+      console.error('Error marking profile suggestions as read:', error);
     }
   };
 
@@ -572,6 +602,8 @@ export default function ClientSpaceDetail() {
             markMessagesAsRead();
           } else if (value === 'documents') {
             markDocumentsAsRead();
+          } else if (value === 'profil') {
+            markProfileSuggestionsAsRead();
           }
         }}>
           <TabsList className="grid w-full grid-cols-6">
@@ -601,9 +633,14 @@ export default function ClientSpaceDetail() {
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="profil" className="gap-2">
+            <TabsTrigger value="profil" className="gap-2 relative">
               <User className="w-4 h-4" />
               Profil
+              {unreadProfileSuggestionsCount > 0 && (
+                <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                  {unreadProfileSuggestionsCount > 99 ? '99+' : unreadProfileSuggestionsCount}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="signatures" className="gap-2">
               <PenTool className="w-4 h-4" />
