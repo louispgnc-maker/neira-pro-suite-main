@@ -379,21 +379,29 @@ export default function EspaceCollaboratif() {
         throw new Error('Impossible d\'uploader le document partagé');
       }
 
-      // Use RPC to create client_shared_documents entry
-      const { data: result, error: rpcError } = await supabase.rpc('upload_client_document', {
-        p_cabinet_id: cabinet.id,
-        p_client_id: clientId,
-        p_file_name: fileName,
-        p_file_size: documentToShare.file_size || fileData.size,
-        p_file_type: fileType,
-        p_storage_path: newPath,
-        p_title: documentToShare.title,
-        p_description: documentToShare.description
-      });
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('shared-documents')
+        .getPublicUrl(newPath);
 
-      if (rpcError || !result?.success) {
+      // Insert directly into client_shared_documents
+      const { error: insertError } = await supabase
+        .from('client_shared_documents')
+        .insert({
+          client_id: clientId,
+          file_name: fileName,
+          file_url: publicUrlData.publicUrl,
+          file_size: documentToShare.file_size || fileData.size,
+          file_type: fileType,
+          uploaded_by: user?.id,
+          title: documentToShare.title || fileName,
+          description: documentToShare.description,
+        });
+
+      if (insertError) {
+        console.error('Insert error:', insertError);
         await supabase.storage.from('shared-documents').remove([newPath]);
-        throw new Error(result?.error || rpcError?.message || 'Erreur lors du partage');
+        throw new Error(insertError.message || 'Erreur lors du partage');
       }
 
       toast({ title: 'Document partagé', description: 'Le document a été ajouté à l\'espace client' });

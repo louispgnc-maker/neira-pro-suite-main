@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -109,15 +109,26 @@ export default function ClientSpaceDetail() {
   const [viewerUrl, setViewerUrl] = useState('');
   const [viewerName, setViewerName] = useState('');
   const [viewerType, setViewerType] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const role = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
     if (id) {
       loadClientInfo();
       loadDocuments();
       loadMessages();
+    }
+  }, [id, user]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
       loadSuggestions();
     }
   }, [id, user]);
@@ -621,6 +632,7 @@ export default function ClientSpaceDetail() {
                           </div>
                         );
                       })}
+                      <div ref={messagesEndRef} />
                     </div>
                   )}
 

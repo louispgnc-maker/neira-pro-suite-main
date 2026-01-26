@@ -116,21 +116,24 @@ export function DocumentManager({
 
         const fullUrl = publicUrlData.publicUrl;
 
-        // Use secure RPC to create record with audit logging
-        const { data: result, error: rpcError } = await supabase.rpc('upload_client_document', {
-          p_client_id: clientId,
-          p_file_name: sanitizedFileName,
-          p_file_size: file.size,
-          p_file_type: file.type,
-          p_file_url: fullUrl,
-          p_description: null
-        });
+        // Insert directly into client_shared_documents
+        const { error: insertError } = await supabase
+          .from('client_shared_documents')
+          .insert({
+            client_id: clientId,
+            file_name: sanitizedFileName,
+            file_url: fullUrl,
+            file_size: file.size,
+            file_type: file.type,
+            uploaded_by: userData.user.id,
+            title: sanitizedFileName,
+          });
 
-        if (rpcError || !result?.success) {
-          console.error('RPC error:', rpcError);
+        if (insertError) {
+          console.error('Insert error:', insertError);
           // Cleanup uploaded file
           await supabase.storage.from('shared-documents').remove([filePath]);
-          throw new Error(result?.error || rpcError?.message || 'Erreur lors de l\'enregistrement');
+          throw new Error(insertError.message || 'Erreur lors de l\'enregistrement');
         }
       }
 
