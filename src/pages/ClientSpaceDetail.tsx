@@ -123,15 +123,13 @@ export default function ClientSpaceDetail() {
       loadClientInfo();
       loadDocuments();
       loadMessages();
+      loadSuggestions();
     }
   }, [id, user]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-      loadSuggestions();
-    }
-  }, [id, user]);
 
   const loadClientInfo = async () => {
     if (!id || !user) return;
