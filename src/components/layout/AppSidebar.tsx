@@ -284,7 +284,7 @@ export function AppSidebar() {
   
   return (
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
-      <SidebarHeader className={`border-b border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'}`}>
+      <SidebarHeader className={`border-b border-sidebar-border ${isCollapsed ? 'p-2' : 'p-2'}`}>
         <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} gap-2`}>
           {!isCollapsed && (
             <div className="flex items-center gap-2">
