@@ -149,6 +149,23 @@ export default function ClientSpaceDetail() {
     }
   };
 
+  const markNotificationsAsRead = async () => {
+    if (!id) return;
+    
+    try {
+      await supabase
+        .from('client_notifications')
+        .update({ is_read: true })
+        .eq('client_id', id)
+        .eq('is_read', false);
+      
+      // Recharger le compteur
+      loadNotificationsCount();
+    } catch (error) {
+      console.error('Error marking notifications as read:', error);
+    }
+  };
+
   useEffect(() => {
     if (!id) return;
     
@@ -516,7 +533,11 @@ export default function ClientSpaceDetail() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="dossiers" className="w-full">
+        <Tabs defaultValue="dossiers" className="w-full" onValueChange={(value) => {
+          if (value === 'messagerie') {
+            markNotificationsAsRead();
+          }
+        }}>
           <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="dossiers" className="gap-2">
               <Folder className="w-4 h-4" />
