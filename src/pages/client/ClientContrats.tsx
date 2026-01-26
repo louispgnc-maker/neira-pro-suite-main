@@ -31,13 +31,10 @@ export default function ClientContrats() {
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      navigate('/auth');
-      return;
+    if (user) {
+      loadContrats();
     }
-
-    loadContrats();
-  }, [user, navigate]);
+  }, [user]);
 
   const loadContrats = async () => {
     try {

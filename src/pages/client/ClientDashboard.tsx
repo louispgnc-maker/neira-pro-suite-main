@@ -47,13 +47,10 @@ export default function ClientDashboard() {
   const [recentDocuments, setRecentDocuments] = useState<RecentDocument[]>([]);
 
   useEffect(() => {
-    if (!user) {
-      navigate('/auth');
-      return;
+    if (user) {
+      loadDashboardData();
     }
-
-    loadDashboardData();
-  }, [user, navigate]);
+  }, [user]);
 
   const loadDashboardData = async () => {
     try {

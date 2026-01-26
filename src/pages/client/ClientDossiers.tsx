@@ -25,13 +25,10 @@ export default function ClientDossiers() {
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
   useEffect(() => {
-    if (!user) {
-      navigate('/auth');
-      return;
+    if (user) {
+      loadDossiers();
     }
-
-    loadDossiers();
-  }, [user, navigate]);
+  }, [user]);
 
   const loadDossiers = async () => {
     try {

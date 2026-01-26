@@ -28,13 +28,10 @@ export default function ClientDocuments() {
   const [cabinetId, setCabinetId] = useState<string>('');
 
   useEffect(() => {
-    if (!user) {
-      navigate('/auth');
-      return;
+    if (user) {
+      loadClientData();
     }
-
-    loadClientInfo();
-  }, [user, navigate]);
+  }, [user]);
 
   const loadClientInfo = async () => {
     try {

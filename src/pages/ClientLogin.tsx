@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { PublicHeader } from '@/components/layout/PublicHeader';
 
 export default function ClientLogin() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [accessCode, setAccessCode] = useState('');
@@ -90,7 +91,9 @@ export default function ClientLogin() {
       }
 
       toast.success('Connexion réussie !');
-      navigate('/client-space');
+      // Rediriger vers la page d'origine ou le dashboard
+      const from = (location.state as any)?.from?.pathname || '/client-space';
+      navigate(from);
     } catch (err: any) {
       toast.error('Une erreur est survenue');
       setLoading(false);
@@ -187,7 +190,9 @@ export default function ClientLogin() {
         .eq('id', invitationData.client_id);
 
       toast.success('Compte créé avec succès !');
-      setTimeout(() => navigate('/client-space'), 1500);
+      // Rediriger vers la page d'origine ou le dashboard
+      const from = (location.state as any)?.from?.pathname || '/client-space';
+      setTimeout(() => navigate(from), 1500);
     } catch (err: any) {
       console.error('Error:', err);
       toast.error(err.message || 'Erreur lors de la création du compte');
