@@ -199,7 +199,7 @@ export default function NotificationsCard({ clientId, professionType = 'avocat' 
               variant="ghost"
               size="sm"
               onClick={markAllAsRead}
-              className="text-xs"
+              className="text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
             >
               <Check className="h-3 w-3 mr-1" />
               Tout marquer lu
@@ -222,7 +222,7 @@ export default function NotificationsCard({ clientId, professionType = 'avocat' 
             </p>
           </div>
         ) : (
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+          <div className="space-y-2 max-h-[240px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
             {notifications.map((notification) => (
               <div
                 key={notification.id}
