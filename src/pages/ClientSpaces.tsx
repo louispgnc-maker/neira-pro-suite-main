@@ -222,28 +222,6 @@ export default function ClientSpaces() {
     }
   };
 
-  const loadNotificationCounts = async (clientIds: string[]) => {
-    if (clientIds.length === 0) return;
-    
-    try {
-      const counts: Record<string, number> = {};
-      
-      for (const clientId of clientIds) {
-        const { count } = await supabase
-          .from('client_notifications')
-          .select('*', { count: 'exact', head: true })
-          .eq('client_id', clientId)
-          .eq('is_read', false);
-        
-        counts[clientId] = count || 0;
-      }
-      
-      setNotificationCounts(counts);
-    } catch (error) {
-      console.error('Error loading notification counts:', error);
-    }
-  };
-
   const handleViewClientSpace = (clientId: string) => {
     navigate(`${prefix}/client-spaces/${clientId}`);
   };
