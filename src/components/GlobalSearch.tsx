@@ -58,6 +58,15 @@ const searchIndex: SearchItem[] = [
   
   // Support
   { title: "Support", path: "/contact-support", keywords: ["aide", "support", "contact", "assistance", "question"], category: "Support" },
+  
+  // Espace Client
+  { title: "Espace Client - Dashboard", path: "/client-space", keywords: ["espace client", "portail client", "accès client", "client dashboard"], category: "Espace Client" },
+  { title: "Espace Client - Documents", path: "/client-space/documents", keywords: ["documents client", "fichiers client", "documents partagés client"], category: "Espace Client" },
+  { title: "Espace Client - Contrats", path: "/client-space/contrats", keywords: ["contrats client", "voir contrats", "mes contrats"], category: "Espace Client" },
+  { title: "Espace Client - Dossiers", path: "/client-space/dossiers", keywords: ["dossiers client", "affaires client", "mes dossiers"], category: "Espace Client" },
+  { title: "Espace Client - Messagerie", path: "/client-space/messagerie", keywords: ["messagerie client", "messages client", "contacter avocat", "contacter notaire", "discussion"], category: "Espace Client" },
+  { title: "Espace Client - Profil", path: "/client-space/profil", keywords: ["profil client", "informations client", "coordonnées client"], category: "Espace Client" },
+  { title: "Fiche Client", path: "/clients/:id", keywords: ["voir client", "fiche client", "détails client", "profil client", "espace collaboratif client"], category: "Gestion" },
 ];
 
 interface GlobalSearchProps {
