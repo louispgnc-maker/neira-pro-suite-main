@@ -361,6 +361,15 @@ export default function ClientSpaceDetail() {
 
       if (error) throw error;
 
+      // Create notification for client
+      await supabase.rpc('create_client_notification', {
+        p_client_id: client.id,
+        p_title: 'Nouveau message',
+        p_message: 'Vous avez reçu un nouveau message de votre professionnel',
+        p_type: 'new_message',
+        p_reference_id: null,
+      });
+
       toast.success('Message envoyé');
       setMessageContent('');
       setAttachedFile(null);

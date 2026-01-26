@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Folder, FileText, Clock, CheckCircle2, AlertCircle, TrendingUp } from 'lucide-react';
 import ClientLayout from '@/components/client/ClientLayout';
+import NotificationsCard from '@/components/client/NotificationsCard';
 
 interface DossierStats {
   total: number;
@@ -235,6 +236,11 @@ export default function ClientDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Notifications Section */}
+        {clientId && (
+          <NotificationsCard clientId={clientId} professionType={professionType} />
+        )}
 
         {/* Recent Dossiers & Documents */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

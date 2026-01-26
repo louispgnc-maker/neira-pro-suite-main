@@ -86,13 +86,15 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                 alt="Neira" 
                 className="w-16 h-16 rounded-full object-cover"
               />
-              <span className="text-sm text-gray-600 hidden sm:block">
-                Mon espace client
-              </span>
+              <div className="flex flex-col justify-center">
+                <span className="text-sm font-semibold text-gray-900 whitespace-nowrap hidden sm:block">
+                  Mon espace client
+                </span>
+              </div>
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-2">
+            <nav className="hidden md:flex items-center gap-1.5">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -100,14 +102,14 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 whitespace-nowrap ${
                       isActive
                         ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-200'
                         : 'text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 hover:shadow-sm'
                     }`}
                   >
-                    <Icon className="h-4 w-4" />
-                    <span>{item.label}</span>
+                    <Icon className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span className="leading-none">{item.label}</span>
                   </Link>
                 );
               })}
@@ -115,18 +117,20 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
             {/* User info & Sign out */}
             <div className="flex items-center gap-3">
-              <div className="hidden sm:block text-right">
-                <p className="text-sm font-medium text-gray-900">{clientName}</p>
-                <p className="text-xs text-gray-500">{cabinetName}</p>
+              <div className="hidden sm:flex items-center gap-3 px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100 shadow-sm">
+                <div className="text-right">
+                  <p className="text-xs font-semibold text-gray-900">{clientName}</p>
+                  <p className="text-[10px] text-gray-600">{cabinetName}</p>
+                </div>
               </div>
               <Button
                 onClick={handleSignOut}
                 variant="ghost"
                 size="sm"
-                className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-700 hover:shadow-sm transition-all duration-200"
+                className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-700 hover:shadow-sm transition-all duration-200 whitespace-nowrap"
               >
-                <LogOut className="h-4 w-4" />
-                <span>Déconnexion</span>
+                <LogOut className="h-3.5 w-3.5 flex-shrink-0" />
+                <span className="leading-none">Déconnexion</span>
               </Button>
 
               {/* Mobile menu button */}
