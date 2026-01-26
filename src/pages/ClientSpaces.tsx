@@ -42,10 +42,33 @@ export default function ClientSpaces() {
   const [filteredClients, setFilteredClients] = useState<ClientWithInvitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [notificationCounts, setNotificationCounts] = useState<Record<string, number>>({});
 
   // Déterminer le rôle depuis l'URL
   const role = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
+
+  const loadNotificationCounts = async (clientIds: string[]) => {
+    if (clientIds.length === 0) return;
+    
+    try {
+      const counts: Record<string, number> = {};
+      
+      for (const clientId of clientIds) {
+        const { count } = await supabase
+          .from('client_notifications')
+          .select('*', { count: 'exact', head: true })
+          .eq('client_id', clientId)
+          .eq('is_read', false);
+        
+        counts[clientId] = count || 0;
+      }
+      
+      setNotificationCounts(counts);
+    } catch (error) {
+      console.error('Error loading notification counts:', error);
+    }
+  };
 
   useEffect(() => {
     loadClients();
@@ -66,6 +89,57 @@ export default function ClientSpaces() {
       );
     }
   }, [searchQuery, clients]);
+
+  // Realtime pour les notifications
+  useEffect(() => {
+    if (clients.length === 0) return;
+    
+    const clientIds = clients.map(c => c.id);
+    
+    const channel = supabase
+      .channel('client-notifications-counts')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'client_notifications'
+        },
+        () => {
+          loadNotificationCounts(clientIds);
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      channel.unsubscribe();
+    };
+  }, [clients]);
+
+  useEffect(() => {
+    if (clients.length === 0) return;
+    
+    const clientIds = clients.map(c => c.id);
+    
+    const channel = supabase
+      .channel('client-notifications-counts')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'client_notifications'
+        },
+        () => {
+          loadNotificationCounts(clientIds);
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      channel.unsubscribe();
+    };
+  }, [clients]);
 
   const loadClients = async () => {
     if (!user) return;
@@ -136,11 +210,37 @@ export default function ClientSpaces() {
 
       setClients(mappedClients);
       setFilteredClients(mappedClients);
+      
+      // Charger les compteurs de notifications
+      const clientIds = mappedClients.map(c => c.id);
+      await loadNotificationCounts(clientIds);
     } catch (error) {
       console.error('Erreur lors du chargement des clients:', error);
       toast.error('Erreur lors du chargement des clients');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadNotificationCounts = async (clientIds: string[]) => {
+    if (clientIds.length === 0) return;
+    
+    try {
+      const counts: Record<string, number> = {};
+      
+      for (const clientId of clientIds) {
+        const { count } = await supabase
+          .from('client_notifications')
+          .select('*', { count: 'exact', head: true })
+          .eq('client_id', clientId)
+          .eq('is_read', false);
+        
+        counts[clientId] = count || 0;
+      }
+      
+      setNotificationCounts(counts);
+    } catch (error) {
+      console.error('Error loading notification counts:', error);
     }
   };
 
@@ -290,10 +390,20 @@ export default function ClientSpaces() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-xl">
-                        {client.prenom} {client.nom}
-                      </CardTitle>
-                      <div className="mt-1 space-y-1 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-xl">
+                          {client.prenom} {client.nom}
+                        </CardTitle>
+                        {notificationCounts[client.id] > 0 && (
+                          <Badge className="bg-red-600 text-white">
+                            {notificationCounts[client.id]}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div>{getStatusBadge(client.invitation_status, !!client.user_id)}</div>
+                  </div>
+                  <div className="mt-1 space-y-1 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                           <Mail className="w-3 h-3" />
                           {client.email}
@@ -309,9 +419,6 @@ export default function ClientSpaces() {
                           </div>
                         )}
                       </div>
-                    </div>
-                    <div>{getStatusBadge(client.invitation_status, !!client.user_id)}</div>
-                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">

@@ -181,6 +181,41 @@ export function AppSidebar() {
 
   // Load unread message count
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+  
+  // Load unread client notifications count
+  const [clientNotificationsCount, setClientNotificationsCount] = useState(0);
+
+  const loadClientNotificationsCount = useCallback(async () => {
+    if (!user || !currentCabinetId) return;
+    
+    try {
+      // Récupérer tous les clients du cabinet
+      const { data: clients, error: clientsError } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('cabinet_id', currentCabinetId);
+      
+      if (clientsError || !clients || clients.length === 0) {
+        setClientNotificationsCount(0);
+        return;
+      }
+      
+      const clientIds = clients.map(c => c.id);
+      
+      // Compter les notifications non lues pour tous ces clients
+      const { count, error: countError } = await supabase
+        .from('client_notifications')
+        .select('*', { count: 'exact', head: true })
+        .in('client_id', clientIds)
+        .eq('is_read', false);
+      
+      if (!countError) {
+        setClientNotificationsCount(count || 0);
+      }
+    } catch (error) {
+      console.error('Error loading client notifications count:', error);
+    }
+  }, [user, currentCabinetId]);
 
   const loadUnreadCount = useCallback(async () => {
     if (!user || !currentCabinetId) return;
@@ -245,6 +280,22 @@ export function AppSidebar() {
     if (!user || !currentCabinetId) return;
     
     loadUnreadCount();
+    loadClientNotificationsCount();
+
+    const notifChannel = supabase
+      .channel(`sidebar-client-notifications-${currentCabinetId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'client_notifications'
+        },
+        () => {
+          loadClientNotificationsCount();
+        }
+      )
+      .subscribe();
 
     const channel = supabase
       .channel(`sidebar-unread-messages-${currentCabinetId}`)
@@ -379,9 +430,14 @@ export function AppSidebar() {
               {menuItems.clientsCabinet.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url} className="flex items-center gap-3" onClick={handleMenuItemClick}>
+                    <NavLink to={item.url} className="flex items-center gap-3 relative" onClick={handleMenuItemClick}>
                       <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span className="text-sm">{item.title}</span>}
+                      {item.title === "Espace Client" && clientNotificationsCount > 0 && (
+                        <Badge className="ml-auto bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                          {clientNotificationsCount > 99 ? '99+' : clientNotificationsCount}
+                        </Badge>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
