@@ -49,16 +49,17 @@ export default function ClientSpaces() {
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
 
   const loadNotificationCounts = async (clientIds: string[]) => {
-    if (clientIds.length === 0) return;
+    if (clientIds.length === 0 || !user) return;
     
     try {
       const counts: Record<string, number> = {};
       
       for (const clientId of clientIds) {
         const { count } = await supabase
-          .from('client_notifications')
+          .from('professional_notifications')
           .select('*', { count: 'exact', head: true })
           .eq('client_id', clientId)
+          .eq('professional_id', user.id)
           .eq('is_read', false);
         
         counts[clientId] = count || 0;
@@ -92,20 +93,20 @@ export default function ClientSpaces() {
 
   // Realtime pour les notifications
   useEffect(() => {
-    if (clients.length === 0) return;
-    
-    const clientIds = clients.map(c => c.id);
+    if (clients.length === 0 || !user) return;
     
     const channel = supabase
-      .channel('client-notifications-counts')
+      .channel('professional-notifications-counts')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'client_notifications'
+          table: 'professional_notifications',
+          filter: `professional_id=eq.${user.id}`
         },
         () => {
+          const clientIds = clients.map(c => c.id);
           loadNotificationCounts(clientIds);
         }
       )
@@ -114,7 +115,7 @@ export default function ClientSpaces() {
     return () => {
       channel.unsubscribe();
     };
-  }, [clients]);
+  }, [clients, user]);
 
   useEffect(() => {
     if (clients.length === 0) return;

@@ -186,36 +186,23 @@ export function AppSidebar() {
   const [clientNotificationsCount, setClientNotificationsCount] = useState(0);
 
   const loadClientNotificationsCount = useCallback(async () => {
-    if (!user || !currentCabinetId) return;
+    if (!user) return;
     
     try {
-      // Récupérer tous les clients du cabinet
-      const { data: clients, error: clientsError } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('cabinet_id', currentCabinetId);
-      
-      if (clientsError || !clients || clients.length === 0) {
-        setClientNotificationsCount(0);
-        return;
-      }
-      
-      const clientIds = clients.map(c => c.id);
-      
-      // Compter les notifications non lues pour tous ces clients
+      // Compter les notifications professionnelles non lues pour cet utilisateur
       const { count, error: countError } = await supabase
-        .from('client_notifications')
+        .from('professional_notifications')
         .select('*', { count: 'exact', head: true })
-        .in('client_id', clientIds)
+        .eq('professional_id', user.id)
         .eq('is_read', false);
       
       if (!countError) {
         setClientNotificationsCount(count || 0);
       }
     } catch (error) {
-      console.error('Error loading client notifications count:', error);
+      console.error('Error loading professional notifications count:', error);
     }
-  }, [user, currentCabinetId]);
+  }, [user]);
 
   const loadUnreadCount = useCallback(async () => {
     if (!user || !currentCabinetId) return;
@@ -283,13 +270,14 @@ export function AppSidebar() {
     loadClientNotificationsCount();
 
     const notifChannel = supabase
-      .channel(`sidebar-client-notifications-${currentCabinetId}`)
+      .channel(`sidebar-professional-notifications-${user.id}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'client_notifications'
+          table: 'professional_notifications',
+          filter: `professional_id=eq.${user.id}`
         },
         () => {
           loadClientNotificationsCount();

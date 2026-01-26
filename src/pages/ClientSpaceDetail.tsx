@@ -134,13 +134,14 @@ export default function ClientSpaceDetail() {
   }, [messages]);
 
   const loadNotificationsCount = async () => {
-    if (!id) return;
+    if (!id || !user) return;
     
     try {
       const { count } = await supabase
-        .from('client_notifications')
+        .from('professional_notifications')
         .select('*', { count: 'exact', head: true })
         .eq('client_id', id)
+        .eq('professional_id', user.id)
         .eq('is_read', false);
       
       setUnreadNotificationsCount(count || 0);
@@ -150,13 +151,14 @@ export default function ClientSpaceDetail() {
   };
 
   const markNotificationsAsRead = async () => {
-    if (!id) return;
+    if (!id || !user) return;
     
     try {
       await supabase
-        .from('client_notifications')
+        .from('professional_notifications')
         .update({ is_read: true })
         .eq('client_id', id)
+        .eq('professional_id', user.id)
         .eq('is_read', false);
       
       // Recharger le compteur
@@ -167,16 +169,16 @@ export default function ClientSpaceDetail() {
   };
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || !user) return;
     
     const channel = supabase
-      .channel(`client-space-notifications-${id}`)
+      .channel(`client-space-professional-notifications-${id}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'client_notifications',
+          table: 'professional_notifications',
           filter: `client_id=eq.${id}`
         },
         () => {
@@ -188,7 +190,7 @@ export default function ClientSpaceDetail() {
     return () => {
       channel.unsubscribe();
     };
-  }, [id]);
+  }, [id, user]);
 
   const loadClientInfo = async () => {
     if (!id || !user) return;
