@@ -67,15 +67,53 @@ export function InviteClientModal({
         console.log("✅ Code d'accès trouvé:", existingInvitation.access_code);
         setAccessCode(existingInvitation.access_code);
       } else {
-        // Aucun code trouvé - ce client n'a pas été créé avec le nouveau système
-        console.warn("⚠️ Aucun code trouvé pour ce client - fiche créée avant l'implémentation des codes");
-        setAccessCode("ERREUR");
+        // Aucun code trouvé - générer un nouveau code automatiquement
+        console.warn("⚠️ Aucun code trouvé - génération automatique d'un nouveau code");
+        await generateNewAccessCode();
       }
     } catch (error) {
       console.error("Error:", error);
       setAccessCode("ERREUR");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const generateNewAccessCode = async () => {
+    try {
+      // Générer un code à 6 caractères
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let newCode = '';
+      for (let i = 0; i < 6; i++) {
+        newCode += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+
+      const token = crypto.randomUUID();
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 720); // 30 jours
+
+      // Créer l'invitation avec le nouveau code
+      const { error: insertError } = await supabase
+        .from('client_invitations')
+        .insert({
+          client_id: clientId,
+          email: clientEmail || '',
+          token: token,
+          access_code: newCode,
+          expires_at: expiresAt.toISOString(),
+          status: 'pending',
+        });
+
+      if (insertError) {
+        console.error('Erreur création code:', insertError);
+        setAccessCode("ERREUR");
+      } else {
+        console.log('✅ Nouveau code généré:', newCode);
+        setAccessCode(newCode);
+      }
+    } catch (error) {
+      console.error('Erreur génération code:', error);
+      setAccessCode("ERREUR");
     }
   };
 
