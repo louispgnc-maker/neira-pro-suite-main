@@ -256,7 +256,7 @@ export default function ClientDiscussion() {
         };
       }
 
-      const { error } = await supabase
+      const { data: insertedMessage, error } = await supabase
         .from('client_messages')
         .insert({
           client_id: clientData.id,
@@ -271,20 +271,14 @@ export default function ClientDiscussion() {
       if (error) throw error;
 
       // Ajouter le message immédiatement à l'état local
-      if (error) {
+      if (insertedMessage) {
         const newMsg: Message = {
-          id: error.id,
-          client_id: clientData.id,
-          sender_id: user.id,
-          sender_type: 'client',
-          message: newMessage.trim() || '📎 Fichier joint',
-          created_at: new Date().toISOString(),
+          ...insertedMessage,
           sender_profile: {
             first_name: profile?.first_name,
             last_name: profile?.last_name,
             photo_url: profile?.photo_url,
           },
-          ...attachmentData,
         };
         setMessages(prev => [...prev, newMsg]);
       }
