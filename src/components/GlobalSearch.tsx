@@ -29,6 +29,7 @@ const searchIndex: SearchItem[] = [
   { title: "Clients", path: "/clients", keywords: ["clients", "contacts", "personnes", "liste clients"], category: "Gestion" },
   { title: "Nouveau Client", path: "/clients/nouveau", keywords: ["créer client", "ajouter client", "nouveau contact"], category: "Actions" },
   { title: "Clients - Recherche", path: "/clients", section: "Rechercher un client", keywords: ["chercher client", "trouver client", "filtrer clients"], category: "Gestion" },
+  { title: "Espace Client", path: "/client-spaces", keywords: ["espace client", "portail client", "accès client", "client space"], category: "Gestion" },
   
   // Cabinet
   { title: "Cabinet", path: "/cabinet", keywords: ["cabinet", "équipe", "collaborateurs", "membres", "gestion cabinet"], category: "Gestion" },
