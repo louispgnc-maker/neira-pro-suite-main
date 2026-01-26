@@ -109,7 +109,8 @@ export default function ClientSpaceDetail() {
   const [viewerUrl, setViewerUrl] = useState('');
   const [viewerName, setViewerName] = useState('');
   const [viewerType, setViewerType] = useState('');
-  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+  const [unreadDocumentsCount, setUnreadDocumentsCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const role = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
@@ -137,20 +138,33 @@ export default function ClientSpaceDetail() {
     if (!id || !user) return;
     
     try {
-      const { count } = await supabase
+      // Compter les notifications de messages
+      const { count: messagesCount } = await supabase
         .from('professional_notifications')
         .select('*', { count: 'exact', head: true })
         .eq('client_id', id)
         .eq('professional_id', user.id)
+        .eq('type', 'client_message')
         .eq('is_read', false);
       
-      setUnreadNotificationsCount(count || 0);
+      setUnreadMessagesCount(messagesCount || 0);
+      
+      // Compter les notifications de documents
+      const { count: documentsCount } = await supabase
+        .from('professional_notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('client_id', id)
+        .eq('professional_id', user.id)
+        .eq('type', 'client_document')
+        .eq('is_read', false);
+      
+      setUnreadDocumentsCount(documentsCount || 0);
     } catch (error) {
       console.error('Error loading notifications count:', error);
     }
   };
 
-  const markNotificationsAsRead = async () => {
+  const markMessagesAsRead = async () => {
     if (!id || !user) return;
     
     try {
@@ -159,12 +173,30 @@ export default function ClientSpaceDetail() {
         .update({ is_read: true })
         .eq('client_id', id)
         .eq('professional_id', user.id)
+        .eq('type', 'client_message')
         .eq('is_read', false);
       
-      // Recharger le compteur
       loadNotificationsCount();
     } catch (error) {
-      console.error('Error marking notifications as read:', error);
+      console.error('Error marking messages as read:', error);
+    }
+  };
+
+  const markDocumentsAsRead = async () => {
+    if (!id || !user) return;
+    
+    try {
+      await supabase
+        .from('professional_notifications')
+        .update({ is_read: true })
+        .eq('client_id', id)
+        .eq('professional_id', user.id)
+        .eq('type', 'client_document')
+        .eq('is_read', false);
+      
+      loadNotificationsCount();
+    } catch (error) {
+      console.error('Error marking documents as read:', error);
     }
   };
 
@@ -537,7 +569,9 @@ export default function ClientSpaceDetail() {
         {/* Tabs */}
         <Tabs defaultValue="dossiers" className="w-full" onValueChange={(value) => {
           if (value === 'messagerie') {
-            markNotificationsAsRead();
+            markMessagesAsRead();
+          } else if (value === 'documents') {
+            markDocumentsAsRead();
           }
         }}>
           <TabsList className="grid w-full grid-cols-6">
@@ -545,9 +579,14 @@ export default function ClientSpaceDetail() {
               <Folder className="w-4 h-4" />
               Dossiers
             </TabsTrigger>
-            <TabsTrigger value="documents" className="gap-2">
+            <TabsTrigger value="documents" className="gap-2 relative">
               <FileText className="w-4 h-4" />
               Documents
+              {unreadDocumentsCount > 0 && (
+                <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                  {unreadDocumentsCount > 99 ? '99+' : unreadDocumentsCount}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="contrats" className="gap-2">
               <FileSignature className="w-4 h-4" />
@@ -556,9 +595,9 @@ export default function ClientSpaceDetail() {
             <TabsTrigger value="messagerie" className="gap-2 relative">
               <MessageSquare className="w-4 h-4" />
               Messagerie
-              {unreadNotificationsCount > 0 && (
+              {unreadMessagesCount > 0 && (
                 <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                  {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                  {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
                 </Badge>
               )}
             </TabsTrigger>
