@@ -1195,11 +1195,14 @@ export default function EspaceCollaboratif() {
 
       if (error) {
         console.error('Error marking notifications as read:', error);
+      } else {
+        // Recharger les compteurs après marquage pour mise à jour immédiate
+        loadNotificationCounts();
       }
     } catch (error) {
       console.error('Error marking notifications as read:', error);
     }
-  }, [user]);
+  }, [user, loadNotificationCounts]);
 
   const handleTabChange = useCallback((value: string) => {
     setSelectedTab(value);
