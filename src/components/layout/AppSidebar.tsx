@@ -219,6 +219,7 @@ export function AppSidebar() {
         .eq('is_read', false);
       
       if (!countError) {
+        console.log('Cabinet notifications count (sidebar):', count);
         setCabinetNotificationsCount(count || 0);
       }
     } catch (error) {

@@ -1084,6 +1084,14 @@ export default function EspaceCollaboratif() {
         n.type === 'cabinet_client' || n.type === 'cabinet_message'
       ).length;
 
+      console.log('Notification counts by type:', {
+        total: notifications.length,
+        documents: documentsCount,
+        dossiers: dossiersCount,
+        clients: clientsCount,
+        types: notifications.map(n => n.type)
+      });
+
       setNotifDocumentsCount(documentsCount);
       setNotifDossiersCount(dossiersCount);
       setNotifClientsCount(clientsCount);
@@ -1168,8 +1176,41 @@ export default function EspaceCollaboratif() {
     }
   }, [location.search, selectedTab]);
 
+  // Mark notifications as read when viewing a tab
+  const markNotificationsAsRead = useCallback(async (types: string[]) => {
+    if (!user || types.length === 0) return;
+    
+    try {
+      const { error } = await supabase
+        .from('cabinet_notifications')
+        .update({ is_read: true })
+        .eq('recipient_id', user.id)
+        .eq('is_read', false)
+        .in('type', types);
+
+      if (error) {
+        console.error('Error marking notifications as read:', error);
+      } else {
+        // Reload counts after marking as read
+        loadNotificationCounts();
+      }
+    } catch (error) {
+      console.error('Error marking notifications as read:', error);
+    }
+  }, [user, loadNotificationCounts]);
+
   const handleTabChange = useCallback((value: string) => {
     setSelectedTab(value);
+    
+    // Mark relevant notifications as read based on tab
+    if (value === 'documents') {
+      markNotificationsAsRead(['cabinet_document', 'cabinet_contrat']);
+    } else if (value === 'dossiers') {
+      markNotificationsAsRead(['cabinet_dossier']);
+    } else if (value === 'clients') {
+      markNotificationsAsRead(['cabinet_client', 'cabinet_message']);
+    }
+    
     try {
       const params = new URLSearchParams(location.search);
       params.set('tab', value);
@@ -1178,7 +1219,7 @@ export default function EspaceCollaboratif() {
       // ignore
     }
     try { sessionStorage.setItem('collab_tab', value); } catch (e) { /* ignore */ }
-  }, [location.pathname, location.search, navigate]);
+  }, [location.pathname, location.search, navigate, markNotificationsAsRead]);
 
   // If navigated here from a notification, open the related resource
   useEffect(() => {
@@ -1462,17 +1503,32 @@ export default function EspaceCollaboratif() {
             <BarChart3 className="h-4 w-4 mr-2" />
             Tableau de bord
           </TabsTrigger>
-          <TabsTrigger value="documents">
+          <TabsTrigger value="documents" className="relative">
             <FileText className="h-4 w-4 mr-2" />
             Documents & Contrats
+            {notifDocumentsCount > 0 && (
+              <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                {notifDocumentsCount > 99 ? '99+' : notifDocumentsCount}
+              </Badge>
+            )}
           </TabsTrigger>
-          <TabsTrigger value="dossiers">
+          <TabsTrigger value="dossiers" className="relative">
             <FolderOpen className="h-4 w-4 mr-2" />
             Dossiers
+            {notifDossiersCount > 0 && (
+              <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                {notifDossiersCount > 99 ? '99+' : notifDossiersCount}
+              </Badge>
+            )}
           </TabsTrigger>
-          <TabsTrigger value="clients">
+          <TabsTrigger value="clients" className="relative">
             <Plus className="h-4 w-4 mr-2" />
             Clients
+            {notifClientsCount > 0 && (
+              <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                {notifClientsCount > 99 ? '99+' : notifClientsCount}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="calendrier">
             <Calendar className="h-4 w-4 mr-2" />
@@ -1486,14 +1542,8 @@ export default function EspaceCollaboratif() {
             <MessageSquare className="h-4 w-4 mr-2" />
             Discussion
             {totalUnreadCount > 0 && (
-              <Badge 
-                className={`ml-2 ${
-                  cabinetRole === 'notaire' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-blue-600 text-white'
-                }`}
-              >
-                {totalUnreadCount}
+              <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
               </Badge>
             )}
           </TabsTrigger>
@@ -1502,48 +1552,27 @@ export default function EspaceCollaboratif() {
         {/* Tableau de bord */}
         <TabsContent value="dashboard" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="relative">
+            <Card>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">Documents partagés</CardTitle>
-                  {notifDocumentsCount > 0 && (
-                    <Badge className="bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                      {notifDocumentsCount > 99 ? '99+' : notifDocumentsCount}
-                    </Badge>
-                  )}
-                </div>
+                <CardTitle className="text-sm font-medium">Documents partagés</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{documents.length + contrats.length}</div>
                 <p className="text-xs text-gray-900">documents et contrats au total</p>
               </CardContent>
             </Card>
-            <Card className="relative">
+            <Card>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">Dossiers partagés</CardTitle>
-                  {notifDossiersCount > 0 && (
-                    <Badge className="bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                      {notifDossiersCount > 99 ? '99+' : notifDossiersCount}
-                    </Badge>
-                  )}
-                </div>
+                <CardTitle className="text-sm font-medium">Dossiers partagés</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{dossiers.length}</div>
                 <p className="text-xs text-gray-900">dossiers partagés</p>
               </CardContent>
             </Card>
-            <Card className="relative">
+            <Card>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">Membres du cabinet</CardTitle>
-                  {notifClientsCount > 0 && (
-                    <Badge className="bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                      {notifClientsCount > 99 ? '99+' : notifClientsCount}
-                    </Badge>
-                  )}
-                </div>
+                <CardTitle className="text-sm font-medium">Membres du cabinet</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{members.length}</div>
