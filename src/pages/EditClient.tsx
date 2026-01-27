@@ -37,6 +37,7 @@ export default function EditClient() {
 
   const [loading, setLoading] = useState(false);
   const [idDocFile, setIdDocFile] = useState<File | null>(null);
+  const [originalEmail, setOriginalEmail] = useState(""); // Pour détecter le changement d'email
 
   // States same as create
   const [nom, setNom] = useState("");
@@ -127,6 +128,7 @@ export default function EditClient() {
         setAdresse(c.adresse || '');
         setTelephone(c.telephone || '');
         setEmail(c.email || '');
+        setOriginalEmail(c.email || ''); // Sauvegarder l'email original
         setNationalite(c.nationalite || '');
         setSexe(c.sexe || '');
   setEtatCivil(c.etat_civil || '');
@@ -271,6 +273,31 @@ export default function EditClient() {
         .eq('owner_id', user.id)
         .eq('role', role);
       if (upErr) throw upErr;
+
+      // Si l'email a changé, mettre à jour l'email dans auth.users
+      if (email !== originalEmail && email) {
+        // Récupérer le user_id du client
+        const { data: clientData } = await supabase
+          .from('clients')
+          .select('user_id')
+          .eq('id', id)
+          .single();
+
+        if (clientData?.user_id) {
+          // Mettre à jour l'email dans auth.users via l'API Admin
+          const { error: emailUpdateError } = await supabase.auth.admin.updateUserById(
+            clientData.user_id,
+            { email: email }
+          );
+
+          if (emailUpdateError) {
+            console.error('Erreur mise à jour email:', emailUpdateError);
+            toast.warning('Client mis à jour mais l\'email du compte n\'a pas pu être modifié');
+          } else {
+            console.log('✅ Email du compte utilisateur mis à jour:', email);
+          }
+        }
+      }
 
       // Reset and reinsert associations (simple approach)
       await supabase
