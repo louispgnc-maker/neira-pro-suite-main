@@ -90,7 +90,7 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
             {tasks.map((task) => (
               <div
                 key={task.id}
-                className={`flex items-start gap-2 p-3 rounded-lg border-2 ${
+                className={`flex items-start gap-2 p-3 rounded-lg border ${
                   task.done 
                     ? 'border-gray-300' 
                     : 'border-gray-700'
