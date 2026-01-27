@@ -5,15 +5,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 interface StatusCounts {
-  conforme: number;
+  termine: number;
+  en_attente_signature: number;
   en_cours: number;
-  bloque: number;
 }
 
 export function GlobalStatusBar({ role = 'avocat' }: { role?: 'avocat' | 'notaire' }) {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [counts, setCounts] = useState<StatusCounts>({ conforme: 0, en_cours: 0, bloque: 0 });
+  const [counts, setCounts] = useState<StatusCounts>({ termine: 0, en_attente_signature: 0, en_cours: 0 });
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function GlobalStatusBar({ role = 'avocat' }: { role?: 'avocat' | 'notair
 
     const loadCounts = async () => {
       if (!user) {
-        setCounts({ conforme: 0, en_cours: 0, bloque: 0 });
+        setCounts({ termine: 0, en_attente_signature: 0, en_cours: 0 });
         setLoading(false);
         return;
       }
@@ -35,10 +35,10 @@ export function GlobalStatusBar({ role = 'avocat' }: { role?: 'avocat' | 'notair
 
         if (!isActive) return;
         if (!error && data) {
-          const conforme = data.filter(d => d.status === 'Terminé' || d.status === 'Conforme').length;
+          const termine = data.filter(d => d.status === 'Terminé').length;
+          const en_attente_signature = data.filter(d => d.status === 'En attente de signature').length;
           const en_cours = data.filter(d => d.status === 'En cours').length;
-          const bloque = data.filter(d => d.status === 'Bloqué' || d.status === 'En attente').length;
-          setCounts({ conforme, en_cours, bloque });
+          setCounts({ termine, en_attente_signature, en_cours });
         }
       } catch (e: unknown) {
         console.error('Erreur chargement statuts:', e);
@@ -68,10 +68,10 @@ export function GlobalStatusBar({ role = 'avocat' }: { role?: 'avocat' | 'notair
     };
   }, [user, role]);
 
-  const total = counts.conforme + counts.en_cours + counts.bloque;
-  const conformePct = total === 0 ? 0 : (counts.conforme / total) * 100;
+  const total = counts.termine + counts.en_attente_signature + counts.en_cours;
+  const terminePct = total === 0 ? 0 : (counts.termine / total) * 100;
+  const enAttenteSignaturePct = total === 0 ? 0 : (counts.en_attente_signature / total) * 100;
   const enCoursPct = total === 0 ? 0 : (counts.en_cours / total) * 100;
-  const bloquePct = total === 0 ? 0 : (counts.bloque / total) * 100;
 
   return (
     <Card className="border-border">
@@ -91,39 +91,39 @@ export function GlobalStatusBar({ role = 'avocat' }: { role?: 'avocat' | 'notair
                 </div>
               ) : (
                 <>
-                  {counts.conforme > 0 && (
+                  {counts.termine > 0 && (
                     <div
                       className="h-full bg-green-500 hover:bg-green-600 cursor-pointer transition-colors flex items-center justify-center"
-                      style={{ width: `${conformePct}%` }}
-                      onClick={() => navigate(role === 'notaire' ? '/notaires/dossiers?status=Conforme' : '/avocats/dossiers?status=Terminé')}
-                      title={`${counts.conforme} conforme${counts.conforme > 1 ? 's' : ''}`}
+                      style={{ width: `${terminePct}%` }}
+                      onClick={() => navigate(role === 'notaire' ? '/notaires/dossiers?status=Terminé' : '/avocats/dossiers?status=Terminé')}
+                      title={`${counts.termine} terminé${counts.termine > 1 ? 's' : ''}`}
                     >
-                      {conformePct > 15 && (
-                        <span className="text-xs font-medium text-white">{counts.conforme}</span>
+                      {terminePct > 15 && (
+                        <span className="text-xs font-medium text-white">{counts.termine}</span>
+                      )}
+                    </div>
+                  )}
+                  {counts.en_attente_signature > 0 && (
+                    <div
+                      className="h-full bg-yellow-500 hover:bg-yellow-600 cursor-pointer transition-colors flex items-center justify-center"
+                      style={{ width: `${enAttenteSignaturePct}%` }}
+                      onClick={() => navigate(role === 'notaire' ? '/notaires/dossiers?status=En attente de signature' : '/avocats/dossiers?status=En attente de signature')}
+                      title={`${counts.en_attente_signature} en attente de signature`}
+                    >
+                      {enAttenteSignaturePct > 15 && (
+                        <span className="text-xs font-medium text-white">{counts.en_attente_signature}</span>
                       )}
                     </div>
                   )}
                   {counts.en_cours > 0 && (
                     <div
-                      className="h-full bg-yellow-500 hover:bg-yellow-600 cursor-pointer transition-colors flex items-center justify-center"
+                      className="h-full bg-red-500 hover:bg-red-600 cursor-pointer transition-colors flex items-center justify-center"
                       style={{ width: `${enCoursPct}%` }}
                       onClick={() => navigate(role === 'notaire' ? '/notaires/dossiers?status=En cours' : '/avocats/dossiers?status=En cours')}
                       title={`${counts.en_cours} en cours`}
                     >
                       {enCoursPct > 15 && (
                         <span className="text-xs font-medium text-white">{counts.en_cours}</span>
-                      )}
-                    </div>
-                  )}
-                  {counts.bloque > 0 && (
-                    <div
-                      className="h-full bg-red-500 hover:bg-red-600 cursor-pointer transition-colors flex items-center justify-center"
-                      style={{ width: `${bloquePct}%` }}
-                      onClick={() => navigate(role === 'notaire' ? '/notaires/dossiers?status=Bloqué' : '/avocats/dossiers?status=En attente')}
-                      title={`${counts.bloque} bloqué${counts.bloque > 1 ? 's' : ''}`}
-                    >
-                      {bloquePct > 15 && (
-                        <span className="text-xs font-medium text-white">{counts.bloque}</span>
                       )}
                     </div>
                   )}
@@ -137,11 +137,11 @@ export function GlobalStatusBar({ role = 'avocat' }: { role?: 'avocat' | 'notair
                 <span>Aucun dossier pour le moment</span>
               ) : (
                 <span>
-                  <span className="text-green-600 font-medium">{counts.conforme} conforme{counts.conforme > 1 ? 's' : ''}</span>
+                  <span className="text-green-600 font-medium">{counts.termine} terminé{counts.termine > 1 ? 's' : ''}</span>
                   {' · '}
-                  <span className="text-yellow-600 font-medium">{counts.en_cours} en cours</span>
+                  <span className="text-yellow-600 font-medium">{counts.en_attente_signature} en attente de signature</span>
                   {' · '}
-                  <span className="text-red-600 font-medium">{counts.bloque} bloqué{counts.bloque > 1 ? 's' : ''}</span>
+                  <span className="text-red-600 font-medium">{counts.en_cours} en cours</span>
                 </span>
               )}
             </div>
