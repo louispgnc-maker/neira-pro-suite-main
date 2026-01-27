@@ -27,9 +27,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   if (location.pathname.includes('/notaires')) role = 'notaire';
   
   // Définit le fond de page selon le rôle
-  const backgroundImage = role === 'notaire'
-    ? 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Fond%20orange.png)'
-    : 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Fond%20bleu%20avocat.png)';
+  const backgroundClass = role === 'notaire'
+    ? 'bg-gradient-to-br from-orange-100 to-red-100'
+    : 'bg-gradient-to-br from-blue-100 to-indigo-100';
   
   // Gestionnaire pour le toggle du sidebar - seulement via le bouton
   const handleSidebarChange = useCallback((open: boolean) => {
@@ -42,13 +42,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       onOpenChange={handleSidebarChange}
     >
       <div 
-        className="min-h-screen flex w-full bg-background" 
-        style={{ 
-          backgroundImage, 
-          backgroundSize: 'cover', 
-          backgroundPosition: 'center', 
-          backgroundAttachment: 'fixed' 
-        }}
+        className={`min-h-screen flex w-full ${backgroundClass}`}
       >
         <AppSidebar />
         <main className="flex-1 overflow-y-auto flex flex-col">

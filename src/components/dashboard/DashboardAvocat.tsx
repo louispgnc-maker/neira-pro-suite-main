@@ -152,7 +152,7 @@ export function DashboardAvocat() {
 
   return (
     <AppLayout>
-      <div className="w-full bg-gradient-to-br from-blue-100 to-indigo-100 min-h-screen">
+      <div className="w-full min-h-screen">
         <div className="p-8 space-y-8 max-w-[1400px] mx-auto">
         
         {/* 1️⃣ En-tête */}
