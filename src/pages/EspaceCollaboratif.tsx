@@ -26,6 +26,7 @@ import {
 import { Trash2, UploadCloud, Share2, Building2 } from 'lucide-react';
 import SharedCalendar from '@/components/collaborative/SharedCalendar';
 import { CabinetChat } from '@/components/cabinet/CabinetChat';
+import { CabinetNotificationsCard } from '@/components/cabinet/CabinetNotificationsCard';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -1467,6 +1468,9 @@ export default function EspaceCollaboratif() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Notifications Cabinet */}
+          <CabinetNotificationsCard />
 
           <Card>
             <CardHeader>

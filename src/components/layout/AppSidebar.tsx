@@ -184,6 +184,9 @@ export function AppSidebar() {
   
   // Load unread client notifications count
   const [clientNotificationsCount, setClientNotificationsCount] = useState(0);
+  
+  // Load unread cabinet notifications count
+  const [cabinetNotificationsCount, setCabinetNotificationsCount] = useState(0);
 
   const loadClientNotificationsCount = useCallback(async () => {
     if (!user) return;
@@ -201,6 +204,25 @@ export function AppSidebar() {
       }
     } catch (error) {
       console.error('Error loading professional notifications count:', error);
+    }
+  }, [user]);
+  
+  const loadCabinetNotificationsCount = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      // Compter les notifications cabinet non lues pour cet utilisateur
+      const { count, error: countError } = await supabase
+        .from('cabinet_notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('recipient_id', user.id)
+        .eq('is_read', false);
+      
+      if (!countError) {
+        setCabinetNotificationsCount(count || 0);
+      }
+    } catch (error) {
+      console.error('Error loading cabinet notifications count:', error);
     }
   }, [user]);
 
@@ -268,6 +290,7 @@ export function AppSidebar() {
     
     loadUnreadCount();
     loadClientNotificationsCount();
+    loadCabinetNotificationsCount();
 
     const notifChannel = supabase
       .channel(`sidebar-professional-notifications-${user.id}`)
@@ -281,6 +304,22 @@ export function AppSidebar() {
         },
         () => {
           loadClientNotificationsCount();
+        }
+      )
+      .subscribe();
+    
+    const cabinetNotifChannel = supabase
+      .channel(`sidebar-cabinet-notifications-${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'cabinet_notifications',
+          filter: `recipient_id=eq.${user.id}`
+        },
+        () => {
+          loadCabinetNotificationsCount();
         }
       )
       .subscribe();
@@ -312,9 +351,11 @@ export function AppSidebar() {
 
     return () => {
       supabase.removeChannel(channel);
+      supabase.removeChannel(notifChannel);
+      supabase.removeChannel(cabinetNotifChannel);
       window.removeEventListener('cabinet-conversation-read', handleConversationRead);
     };
-  }, [user, currentCabinetId, loadUnreadCount]);
+  }, [user, currentCabinetId, loadUnreadCount, loadClientNotificationsCount, loadCabinetNotificationsCount]);
 
   // Couleurs espace selon rôle
   const spaceBtnClass = role === 'notaire'
@@ -424,6 +465,11 @@ export function AppSidebar() {
                       {item.title === "Espace Client" && clientNotificationsCount > 0 && (
                         <Badge className="ml-auto bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
                           {clientNotificationsCount > 99 ? '99+' : clientNotificationsCount}
+                        </Badge>
+                      )}
+                      {item.title === "Mon cabinet" && cabinetNotificationsCount > 0 && (
+                        <Badge className="ml-auto bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                          {cabinetNotificationsCount > 99 ? '99+' : cabinetNotificationsCount}
                         </Badge>
                       )}
                     </NavLink>
