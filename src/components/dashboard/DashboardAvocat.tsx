@@ -1,11 +1,10 @@
-import { FileText, PenTool, Users, Clock, FolderPlus, Crown } from "lucide-react";
+import { FileText, PenTool, Users, FolderPlus, Crown, UserPlus, FileUp, Share2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { TasksSummaryCard } from "@/components/dashboard/TasksSummaryCard";
-import { QuickActions } from "@/components/dashboard/QuickActions";
-import { StatusChart } from "@/components/dashboard/StatusChart";
-import { AlertsCompliance } from "@/components/dashboard/AlertsCompliance";
-import { Badge } from "@/components/ui/badge";
+import { GlobalStatusBar } from "@/components/dashboard/GlobalStatusBar";
+import { TodayActions } from "@/components/dashboard/TodayActions";
+import { PrimaryAction } from "@/components/dashboard/PrimaryAction";
+import { TrustIndicator } from "@/components/dashboard/TrustIndicator";
 import { Button } from "@/components/ui/button";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { useAuth } from "@/contexts/AuthContext";
@@ -45,10 +44,7 @@ export function DashboardAvocat() {
     }
   }, [searchParams, setSearchParams]);
   
-  const [docCount, setDocCount] = useState(0);
-  const [docPrevCount, setDocPrevCount] = useState(0);
   const [pendingSigCount, setPendingSigCount] = useState(0);
-  const [pendingSigPrevCount, setPendingSigPrevCount] = useState(0);
   const [clientsToFollow, setClientsToFollow] = useState(0);
   const [dossierCount, setDossierCount] = useState(0);
   const [todayTasks, setTodayTasks] = useState(0);
@@ -58,12 +54,10 @@ export function DashboardAvocat() {
     let isMounted = true;
     async function loadCounts() {
       if (!user) {
-        setDocCount(0);
-        setDocPrevCount(0);
         setPendingSigCount(0);
-        setPendingSigPrevCount(0);
         setClientsToFollow(0);
         setTodayTasks(0);
+        setDossierCount(0);
         return;
       }
 
@@ -98,34 +92,13 @@ export function DashboardAvocat() {
         }
       }
 
-      // Dates for current and previous month
       const now = new Date();
       const yyyy = now.getFullYear();
       const mm = String(now.getMonth() + 1).padStart(2, "0");
-      const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      const prevYyyy = prevMonth.getFullYear();
-      const prevMm = String(prevMonth.getMonth() + 1).padStart(2, "0");
-      
-      // Get last day of previous month
-      const lastDayPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+      const dd = String(now.getDate()).padStart(2, "0");
+      const dateStr = `${yyyy}-${mm}-${dd}`;
 
-      // Contrats en cours - TOUS les contrats actifs
-      const docsQuery = supabase
-        .from("contrats")
-        .select("id", { count: "exact", head: true })
-        .eq("owner_id", user.id)
-        .eq("role", "avocat");
-
-      // Contrats du mois précédent pour calculer la tendance
-      const docsPrevQuery = supabase
-        .from("contrats")
-        .select("id", { count: "exact", head: true })
-        .eq("owner_id", user.id)
-        .eq("role", "avocat")
-        .gte("created_at", `${prevYyyy}-${prevMm}-01T00:00:00`)
-        .lt("created_at", `${yyyy}-${mm}-01T00:00:00`);
-
-      // Signatures en attente - TOUTES les signatures en attente
+      // Signatures en attente
       const sigQuery = supabase
         .from("signatures")
         .select("id", { count: "exact", head: true })
@@ -133,15 +106,7 @@ export function DashboardAvocat() {
         .eq("role", "avocat")
         .eq("status", "pending");
 
-      // Signatures du mois précédent pour calculer la tendance
-      const sigPrevQuery = supabase
-        .from("signatures")
-        .select("id", { count: "exact", head: true })
-        .eq("owner_id", user.id)
-        .eq("role", "avocat")
-        .eq("status", "pending");
-
-      // Clients à relancer (kyc_status = 'Partiel')
+      // Clients à relancer
       const clientsQuery = supabase
         .from("clients")
         .select("id", { count: "exact", head: true })
@@ -150,39 +115,34 @@ export function DashboardAvocat() {
         .eq("kyc_status", "Partiel");
 
       // Tâches du jour
-      const dd = String(now.getDate()).padStart(2, "0");
-      const dateStr = `${yyyy}-${mm}-${dd}`;
       const tasksQuery = supabase
         .from("tasks")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "avocat")
-        .eq("due_date", dateStr);
+        .eq("done", false)
+        .gte("due_at", `${dateStr}T00:00:00`)
+        .lte("due_at", `${dateStr}T23:59:59`);
 
+      // Dossiers actifs
       const dossiersQuery = supabase
         .from("dossiers")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .eq("role", "avocat");
 
-      const [docsRes, docsPrevRes, sigRes, sigPrevRes, clientsRes, tasksRes, dossiersRes] = await Promise.allSettled([
-        docsQuery,
-        docsPrevQuery,
+      const [sigRes, clientsRes, tasksRes, dossiersRes] = await Promise.allSettled([
         sigQuery,
-        sigPrevQuery,
         clientsQuery,
         tasksQuery,
         dossiersQuery,
       ]);
 
       if (!isMounted) return;
-      setDocCount(docsRes.status === "fulfilled" && docsRes.value.count ? docsRes.value.count : 0);
-      setDocPrevCount(docsPrevRes.status === "fulfilled" && docsPrevRes.value.count ? docsPrevRes.value.count : 0);
       setPendingSigCount(sigRes.status === "fulfilled" && sigRes.value.count ? sigRes.value.count : 0);
-      setPendingSigPrevCount(sigPrevRes.status === "fulfilled" && sigPrevRes.value.count ? sigPrevRes.value.count : 0);
       setClientsToFollow(clientsRes.status === "fulfilled" && clientsRes.value.count ? clientsRes.value.count : 0);
-  setTodayTasks(tasksRes.status === "fulfilled" && tasksRes.value.count ? tasksRes.value.count : 0);
-  setDossierCount(dossiersRes.status === "fulfilled" && dossiersRes.value.count ? dossiersRes.value.count : 0);
+      setTodayTasks(tasksRes.status === "fulfilled" && tasksRes.value.count ? tasksRes.value.count : 0);
+      setDossierCount(dossiersRes.status === "fulfilled" && dossiersRes.value.count ? dossiersRes.value.count : 0);
     }
     loadCounts();
     return () => {
@@ -192,21 +152,20 @@ export function DashboardAvocat() {
 
   return (
     <AppLayout>
-      <div className="w-full">
-        <div className="p-6 space-y-6 max-w-[1600px] mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Bienvenue sur votre espace{profile?.first_name ? `, ${profile.first_name}` : ''}
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
+      <div className="w-full bg-white min-h-screen">
+        <div className="p-8 space-y-8 max-w-[1400px] mx-auto">
+        
+        {/* 1️⃣ En-tête */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Bienvenue sur votre espace{profile?.first_name ? `, ${profile.first_name}` : ''}
+              </h1>
+              <p className="text-gray-600 mt-1">Aperçu de votre activité juridique</p>
+            </div>
             <button
-              onClick={() => {
-                console.log('Dashboard subscription button clicked', { subscriptionTier });
-                navigate('/avocats/subscription');
-              }}
+              onClick={() => navigate('/avocats/subscription')}
               className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 px-5 py-2 rounded-md text-sm font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-shadow cursor-pointer"
             >
               <Crown className="h-4 w-4" />
@@ -219,35 +178,24 @@ export function DashboardAvocat() {
               </span>
             </button>
           </div>
-        </div>
-        <p className="text-lg text-gray-600 mt-2">
-          Voici un aperçu de votre activité juridique
-        </p>
 
-        {/* Barre de recherche */}
-        <div className="flex justify-center mb-8">
-          <GlobalSearch userRole="avocat" />
+          {/* Barre de recherche globale */}
+          <div className="flex justify-center">
+            <div className="w-full max-w-2xl">
+              <GlobalSearch userRole="avocat" />
+            </div>
+          </div>
         </div>
 
-        {/* KPI Cards - Grid 2x3 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {/* 2️⃣ KPI principaux - 4 cards maximum */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard
-            title="Contrats en cours"
-            value={docCount}
+            title="À faire aujourd'hui"
+            value={todayTasks}
             icon={FileText}
             iconColor="text-blue-600"
             iconBgColor="bg-blue-100"
-            onClick={() => navigate('/avocats/contrats')}
-            trend={(() => {
-              const prev = docPrevCount;
-              const curr = docCount;
-              if (prev === 0) return undefined;
-              const pct = Math.round(((curr - prev) / prev) * 100);
-              return {
-                value: `${Math.abs(pct)}%`,
-                positive: pct >= 0,
-              };
-            })()}
+            onClick={() => navigate('/avocats/tasks')}
           />
           <StatCard
             title="Signatures en attente"
@@ -256,16 +204,6 @@ export function DashboardAvocat() {
             iconColor="text-blue-600"
             iconBgColor="bg-blue-100"
             onClick={() => navigate('/avocats/signatures')}
-            trend={(() => {
-              const prev = pendingSigPrevCount;
-              const curr = pendingSigCount;
-              if (prev === 0) return undefined;
-              const pct = Math.round(((curr - prev) / prev) * 100);
-              return {
-                value: `${Math.abs(pct)}%`,
-                positive: pct >= 0,
-              };
-            })()}
           />
           <StatCard
             title="Dossiers actifs"
@@ -283,18 +221,56 @@ export function DashboardAvocat() {
             iconBgColor="bg-blue-100"
             onClick={() => navigate('/avocats/clients')}
           />
-          <TasksSummaryCard role="avocat" />
-          <StatusChart role="avocat" />
         </div>
 
-        {/* Quick Actions */}
-        <QuickActions 
-          role="avocat"
-          primaryButtonColor="bg-blue-600 hover:bg-blue-700 text-white" 
-        />
+        {/* 3️⃣ Bloc central - État global des dossiers */}
+        <GlobalStatusBar role="avocat" />
 
-        {/* Alerts Compliance - Full width */}
-        <AlertsCompliance />
+        {/* 4️⃣ Bloc secondaire - À faire aujourd'hui */}
+        <TodayActions role="avocat" />
+
+        {/* 5️⃣ Action principale */}
+        <PrimaryAction role="avocat" />
+
+        {/* 6️⃣ Actions rapides secondaires */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Button
+            onClick={() => navigate('/avocats/clients')}
+            variant="outline"
+            className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-gray-50"
+          >
+            <UserPlus className="h-6 w-6 text-gray-600" />
+            <span className="text-sm font-medium">Ajouter un client</span>
+          </Button>
+          <Button
+            onClick={() => navigate('/avocats/documents')}
+            variant="outline"
+            className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-gray-50"
+          >
+            <FileUp className="h-6 w-6 text-gray-600" />
+            <span className="text-sm font-medium">Importer un document</span>
+          </Button>
+          <Button
+            onClick={() => navigate('/avocats/signatures')}
+            variant="outline"
+            className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-gray-50"
+          >
+            <PenTool className="h-6 w-6 text-gray-600" />
+            <span className="text-sm font-medium">Lancer une signature</span>
+          </Button>
+          <Button
+            onClick={() => navigate('/avocats/cabinet')}
+            variant="outline"
+            className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-gray-50"
+          >
+            <Share2 className="h-6 w-6 text-gray-600" />
+            <span className="text-sm font-medium">Espace collaboratif</span>
+          </Button>
+        </div>
+
+        {/* 7️⃣ Indicateur de confiance */}
+        <TrustIndicator />
+
       </div>
       </div>
     </AppLayout>

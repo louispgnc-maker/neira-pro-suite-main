@@ -15,9 +15,13 @@ interface StatCardProps {
 }
 
 export function StatCard({ title, value, icon: Icon, trend, iconColor = "text-primary", iconBgColor = "bg-primary/10", onClick }: StatCardProps) {
+  // Détecter si le statut nécessite une alerte (orange/rouge)
+  const needsAlert = typeof value === 'number' && value > 0 && (title.includes('attente') || title.includes('relancer'));
+  const alertColor = needsAlert ? 'text-orange-600' : 'text-gray-900';
+
   return (
     <Card 
-      className={`relative overflow-hidden border-border bg-gradient-card transition-shadow hover:shadow-md ${onClick ? 'cursor-pointer' : ''}`}
+      className={`relative overflow-hidden border-border transition-shadow hover:shadow-md ${onClick ? 'cursor-pointer' : ''}`}
       onClick={onClick}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -29,12 +33,7 @@ export function StatCard({ title, value, icon: Icon, trend, iconColor = "text-pr
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold text-gray-900">{value}</div>
-        {trend && (
-          <p className={`text-xs ${trend.positive ? 'text-success' : 'text-destructive'}`}>
-            {trend.positive ? '+' : '-'}{trend.value} ce mois
-          </p>
-        )}
+        <div className={`text-3xl font-bold ${alertColor}`}>{value}</div>
       </CardContent>
     </Card>
   );
