@@ -239,32 +239,32 @@ export function DashboardAvocat() {
             variant="outline"
             className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
           >
-            <UserPlus className="h-6 w-6 text-gray-600" />
-            <span className="text-sm font-medium">Ajouter un client</span>
+            <UserPlus className="h-6 w-6 text-gray-700 group-hover:text-blue-700" />
+            <span className="text-sm font-medium text-gray-900">Ajouter un client</span>
           </Button>
           <Button
             onClick={() => navigate('/avocats/documents')}
             variant="outline"
             className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
           >
-            <FileUp className="h-6 w-6 text-gray-600" />
-            <span className="text-sm font-medium">Importer un document</span>
+            <FileUp className="h-6 w-6 text-gray-700 group-hover:text-blue-700" />
+            <span className="text-sm font-medium text-gray-900">Importer un document</span>
           </Button>
           <Button
             onClick={() => navigate('/avocats/signatures')}
             variant="outline"
             className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
           >
-            <PenTool className="h-6 w-6 text-gray-600" />
-            <span className="text-sm font-medium">Lancer une signature</span>
+            <PenTool className="h-6 w-6 text-gray-700 group-hover:text-blue-700" />
+            <span className="text-sm font-medium text-gray-900">Lancer une signature</span>
           </Button>
           <Button
             onClick={() => navigate('/avocats/cabinet')}
             variant="outline"
             className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
           >
-            <Share2 className="h-6 w-6 text-gray-600" />
-            <span className="text-sm font-medium">Espace collaboratif</span>
+            <Share2 className="h-6 w-6 text-gray-700 group-hover:text-blue-700" />
+            <span className="text-sm font-medium text-gray-900">Espace collaboratif</span>
           </Button>
         </div>
 
