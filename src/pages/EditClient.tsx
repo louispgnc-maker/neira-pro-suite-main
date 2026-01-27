@@ -211,6 +211,20 @@ export default function EditClient() {
 
     setLoading(true);
     try {
+      // Récupérer le cabinet_id
+      const { data: cabinetMember } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .single();
+
+      if (!cabinetMember) {
+        toast.error('Vous n\'êtes membre d\'aucun cabinet');
+        setLoading(false);
+        return;
+      }
+
       let idDocPath: string | null = null;
       if (idDocFile) {
         const fileName = `${user.id}/${Date.now()}-${idDocFile.name}`;
@@ -223,8 +237,6 @@ export default function EditClient() {
 
       // Update client
   const updates: Record<string, unknown> = {
-        owner_id: user.id,
-        role,
         name: `${prenom} ${nom}`,
         nom, prenom,
         date_naissance: dateNaissance || null,
@@ -270,8 +282,7 @@ export default function EditClient() {
         .from('clients')
         .update(updates)
         .eq('id', id)
-        .eq('owner_id', user.id)
-        .eq('role', role);
+        .eq('owner_id', cabinetMember.cabinet_id);
       if (upErr) throw upErr;
 
       // Si l'email a changé, mettre à jour l'email dans auth.users
