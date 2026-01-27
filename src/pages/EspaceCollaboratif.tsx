@@ -26,7 +26,6 @@ import {
 import { Trash2, UploadCloud, Share2, Building2 } from 'lucide-react';
 import SharedCalendar from '@/components/collaborative/SharedCalendar';
 import { CabinetChat } from '@/components/cabinet/CabinetChat';
-import { CabinetNotificationsCard } from '@/components/cabinet/CabinetNotificationsCard';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -158,6 +157,11 @@ export default function EspaceCollaboratif() {
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+  
+  // Compteurs de notifications par type
+  const [notifDocumentsCount, setNotifDocumentsCount] = useState(0);
+  const [notifDossiersCount, setNotifDossiersCount] = useState(0);
+  const [notifClientsCount, setNotifClientsCount] = useState(0);
   
   const { toast } = useToast();
 
@@ -1049,10 +1053,50 @@ export default function EspaceCollaboratif() {
     }
   }, [user, cabinet]);
 
+  // Load notification counts by type
+  const loadNotificationCounts = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      const { data: notifications, error } = await supabase
+        .from('cabinet_notifications')
+        .select('type, is_read')
+        .eq('recipient_id', user.id)
+        .eq('is_read', false);
+
+      if (error) {
+        console.error('Error loading notifications:', error);
+        return;
+      }
+
+      if (!notifications) return;
+
+      // Count by type
+      const documentsCount = notifications.filter(n => 
+        n.type === 'cabinet_document' || n.type === 'cabinet_contrat'
+      ).length;
+      
+      const dossiersCount = notifications.filter(n => 
+        n.type === 'cabinet_dossier'
+      ).length;
+      
+      const clientsCount = notifications.filter(n => 
+        n.type === 'cabinet_client' || n.type === 'cabinet_message'
+      ).length;
+
+      setNotifDocumentsCount(documentsCount);
+      setNotifDossiersCount(dossiersCount);
+      setNotifClientsCount(clientsCount);
+    } catch (error) {
+      console.error('Error loading notification counts:', error);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!user || !cabinet || !cabinet.id) return;
     
     loadUnreadCount();
+    loadNotificationCounts();
 
     // Subscribe to new messages to update counter in real-time
     const channel = supabase
@@ -1073,6 +1117,23 @@ export default function EspaceCollaboratif() {
         }
       )
       .subscribe();
+    
+    // Subscribe to cabinet notifications to update counts in real-time
+    const notifChannel = supabase
+      .channel(`cabinet-notifications-${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'cabinet_notifications',
+          filter: `recipient_id=eq.${user.id}`
+        },
+        () => {
+          loadNotificationCounts();
+        }
+      )
+      .subscribe();
 
     // Listen for conversation read events from CabinetChat
     const handleConversationRead = () => {
@@ -1083,9 +1144,10 @@ export default function EspaceCollaboratif() {
 
     return () => {
       supabase.removeChannel(channel);
+      supabase.removeChannel(notifChannel);
       window.removeEventListener('cabinet-conversation-read', handleConversationRead);
     };
-  }, [user, cabinet, loadUnreadCount]);
+  }, [user, cabinet, loadUnreadCount, loadNotificationCounts]);
 
   // Reset unread count when discussion tab is opened
   useEffect(() => {
@@ -1440,27 +1502,48 @@ export default function EspaceCollaboratif() {
         {/* Tableau de bord */}
         <TabsContent value="dashboard" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
+            <Card className="relative">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Documents partagés</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-medium">Documents partagés</CardTitle>
+                  {notifDocumentsCount > 0 && (
+                    <Badge className="bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                      {notifDocumentsCount > 99 ? '99+' : notifDocumentsCount}
+                    </Badge>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{documents.length + contrats.length}</div>
                 <p className="text-xs text-gray-900">documents et contrats au total</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="relative">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Dossiers partagés</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-medium">Dossiers partagés</CardTitle>
+                  {notifDossiersCount > 0 && (
+                    <Badge className="bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                      {notifDossiersCount > 99 ? '99+' : notifDossiersCount}
+                    </Badge>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{dossiers.length}</div>
                 <p className="text-xs text-gray-900">dossiers partagés</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="relative">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Membres du cabinet</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-medium">Membres du cabinet</CardTitle>
+                  {notifClientsCount > 0 && (
+                    <Badge className="bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                      {notifClientsCount > 99 ? '99+' : notifClientsCount}
+                    </Badge>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{members.length}</div>
@@ -1468,9 +1551,6 @@ export default function EspaceCollaboratif() {
               </CardContent>
             </Card>
           </div>
-
-          {/* Notifications Cabinet */}
-          <CabinetNotificationsCard />
 
           <Card>
             <CardHeader>
