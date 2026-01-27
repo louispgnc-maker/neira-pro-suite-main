@@ -616,7 +616,7 @@ export default function ClientSpaceDetail() {
               Documents
               {unreadDocumentsCount > 0 && (
                 <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                  {unreadDocumentsCount > 99 ? '99+' : unreadDocumentsCount}
+                  !
                 </Badge>
               )}
             </TabsTrigger>
@@ -629,7 +629,7 @@ export default function ClientSpaceDetail() {
               Messagerie
               {unreadMessagesCount > 0 && (
                 <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                  {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
+                  !
                 </Badge>
               )}
             </TabsTrigger>
@@ -638,7 +638,7 @@ export default function ClientSpaceDetail() {
               Profil
               {unreadProfileSuggestionsCount > 0 && (
                 <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                  {unreadProfileSuggestionsCount > 99 ? '99+' : unreadProfileSuggestionsCount}
+                  !
                 </Badge>
               )}
             </TabsTrigger>
