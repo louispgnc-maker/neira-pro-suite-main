@@ -3,12 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { TasksSummaryCard } from "@/components/dashboard/TasksSummaryCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
-import { RecentDocuments } from "@/components/dashboard/RecentDocuments";
-import { RecentContrats } from "@/components/dashboard/RecentContrats";
-import { RecentDossiers } from "@/components/dashboard/RecentDossiers";
-import { PendingSignatures } from "@/components/dashboard/PendingSignatures";
-import { TasksCalendar } from "@/components/dashboard/TasksCalendar";
-import { RecentClients } from "@/components/dashboard/RecentClients";
+import { StatusChart } from "@/components/dashboard/StatusChart";
 import { AlertsCompliance } from "@/components/dashboard/AlertsCompliance";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -289,11 +284,14 @@ export function DashboardAvocat() {
             onClick={() => navigate('/avocats/clients')}
           />
           <TasksSummaryCard role="avocat" />
-          <QuickActions 
-            role="avocat"
-            primaryButtonColor="bg-blue-600 hover:bg-blue-700 text-white" 
-          />
+          <StatusChart role="avocat" />
         </div>
+
+        {/* Quick Actions */}
+        <QuickActions 
+          role="avocat"
+          primaryButtonColor="bg-blue-600 hover:bg-blue-700 text-white" 
+        />
 
         {/* Alerts Compliance - Full width */}
         <AlertsCompliance />
