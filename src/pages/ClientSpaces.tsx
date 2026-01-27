@@ -375,7 +375,7 @@ export default function ClientSpaces() {
                         </CardTitle>
                         {notificationCounts[client.id] > 0 && (
                           <Badge className="bg-red-600 text-white">
-                            {notificationCounts[client.id]}
+                            !
                           </Badge>
                         )}
                       </div>
