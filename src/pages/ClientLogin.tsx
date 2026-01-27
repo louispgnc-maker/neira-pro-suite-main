@@ -79,7 +79,7 @@ export default function ClientLogin() {
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -88,6 +88,33 @@ export default function ClientLogin() {
         toast.error('Email ou mot de passe incorrect');
         setLoading(false);
         return;
+      }
+
+      // Vérifier s'il existe un client avec cet email qui n'a pas encore de user_id
+      if (authData.user) {
+        const { data: clientToLink } = await supabase
+          .from('clients')
+          .select('id')
+          .eq('email', email.toLowerCase())
+          .is('user_id', null)
+          .maybeSingle();
+
+        // Si un client existe sans user_id, le lier automatiquement
+        if (clientToLink) {
+          await supabase
+            .from('clients')
+            .update({ user_id: authData.user.id })
+            .eq('id', clientToLink.id);
+
+          // Mettre à jour aussi l'invitation si elle existe
+          await supabase
+            .from('client_invitations')
+            .update({ status: 'active' })
+            .eq('client_id', clientToLink.id)
+            .eq('status', 'pending');
+
+          console.log('✅ Client lié automatiquement:', clientToLink.id);
+        }
       }
 
       toast.success('Connexion réussie !');
