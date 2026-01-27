@@ -42,6 +42,12 @@ export default function Tasks() {
   const [taskDate, setTaskDate] = useState("");
   const [taskTime, setTaskTime] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editingTask, setEditingTask] = useState<TaskRow | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editText, setEditText] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [editDate, setEditDate] = useState("");
+  const [editTime, setEditTime] = useState("");
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(search.trim()), 300);
@@ -163,6 +169,67 @@ export default function Tasks() {
     }
   }
 
+  async function updateTask() {
+    if (!user || !editingTask) return;
+    const title = editText.trim();
+    if (!title) {
+      toast.error("Merci de saisir la tâche");
+      return;
+    }
+    setSaving(true);
+    try {
+      let due_at: string | null = null;
+      if (editDate) {
+        due_at = editTime ? `${editDate}T${editTime}` : `${editDate}T00:00`;
+      }
+      const { error } = await supabase
+        .from("tasks")
+        .update({
+          title,
+          description: editNotes || null,
+          due_at,
+        })
+        .eq("id", editingTask.id)
+        .eq("owner_id", user.id);
+      if (error) throw error;
+      toast.success("Tâche modifiée");
+      setEditOpen(false);
+      setEditingTask(null);
+      // Reload tasks list
+      const query = supabase
+        .from("tasks")
+        .select("id,title,description,due_date,due_at,done")
+        .eq("owner_id", user.id)
+        .eq("role", role)
+        .order("due_at", { ascending: true, nullsFirst: false });
+      const { data } = await query;
+      setTasks((data || []) as TaskRow[]);
+    } catch (err: unknown) {
+      console.error("Erreur modification tâche:", err);
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error("Erreur lors de la modification", { description: message });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function openEditDialog(task: TaskRow) {
+    setEditingTask(task);
+    setEditText(task.title);
+    setEditNotes(task.description || "");
+    if (task.due_at) {
+      const d = new Date(task.due_at);
+      setEditDate(d.toISOString().split('T')[0]);
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      setEditTime(`${hours}:${minutes}`);
+    } else {
+      setEditDate("");
+      setEditTime("");
+    }
+    setEditOpen(true);
+  }
+
   const activeTasks = tasks.filter((t) => !t.done);
 
   return (
@@ -259,6 +326,10 @@ export default function Tasks() {
                 return (
                   <div key={task.id} className={`relative rounded-lg shadow p-4 bg-white border border-border flex flex-col min-h-[140px]`}>
                     <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEditDialog(task);
+                      }}
                       className={`absolute top-2 right-2 p-1 rounded-full ${role === "notaire" ? "text-orange-600 hover:bg-orange-100" : "text-blue-600 hover:bg-blue-100"}`}
                       title="Éditer la tâche"
                     >
@@ -293,6 +364,42 @@ export default function Tasks() {
           </Card>
         )}
       </div>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Modifier la tâche</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Tâche</label>
+              <Textarea rows={3} placeholder="Décrivez la tâche à réaliser" value={editText} onChange={(e) => setEditText(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Notes (optionnel)</label>
+              <Textarea rows={2} placeholder="Notes complémentaires" value={editNotes} onChange={(e) => setEditNotes(e.target.value)} />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Date (optionnel)</label>
+                <input type="date" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={editDate} onChange={(e) => setEditDate(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Heure (optionnel)</label>
+                <input type="time" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={editTime} onChange={(e) => setEditTime(e.target.value)} />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setEditOpen(false)}>
+                Annuler
+              </Button>
+              <Button className={mainButtonColor} disabled={saving} onClick={updateTask}>
+                {saving ? "Enregistrement…" : "Modifier"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }

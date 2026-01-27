@@ -18,6 +18,20 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  async function toggleDone(taskId: string, currentDone: boolean, e: React.MouseEvent) {
+    e.stopPropagation();
+    const newDone = !currentDone;
+    const { error } = await supabase
+      .from('tasks')
+      .update({ done: newDone })
+      .eq('id', taskId)
+      .eq('owner_id', user?.id || '')
+      .eq('role', role);
+    if (!error) {
+      setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, done: newDone } : t)));
+    }
+  }
+
   useEffect(() => {
     let isActive = true;
 
@@ -96,11 +110,13 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
                     : 'border-gray-700'
                 }`}
               >
-                {task.done ? (
-                  <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
-                ) : (
-                  <Circle className="h-4 w-4 text-gray-700 flex-shrink-0 mt-0.5" />
-                )}
+                <div onClick={(e) => toggleDone(task.id, task.done, e)} className="cursor-pointer">
+                  {task.done ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
+                  ) : (
+                    <Circle className="h-4 w-4 text-gray-700 flex-shrink-0 mt-0.5" />
+                  )}
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-medium ${task.done ? 'line-through text-gray-400' : 'text-gray-800'}`}>
                     {task.title}
