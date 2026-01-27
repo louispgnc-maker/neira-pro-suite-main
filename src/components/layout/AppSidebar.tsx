@@ -441,7 +441,9 @@ export function AppSidebar() {
                       <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span className="text-sm">{item.title}</span>}
                       {item.badge && unreadEmailCount > 0 && (
-                        <Badge className="ml-auto bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                        <Badge className={`bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs ${
+                          isCollapsed ? 'absolute -top-1 -right-1' : 'ml-auto'
+                        }`}>
                           {unreadEmailCount > 99 ? '99+' : unreadEmailCount}
                         </Badge>
                       )}
@@ -463,12 +465,16 @@ export function AppSidebar() {
                       <item.icon className={`h-4 w-4 ${item.color}`} />
                       {!isCollapsed && <span className="text-sm">{item.title}</span>}
                       {item.title === "Espace Client" && clientNotificationsCount > 0 && (
-                        <Badge className="ml-auto bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                        <Badge className={`bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs ${
+                          isCollapsed ? 'absolute -top-1 -right-1' : 'ml-auto'
+                        }`}>
                           {clientNotificationsCount > 99 ? '99+' : clientNotificationsCount}
                         </Badge>
                       )}
                       {item.title === "Mon cabinet" && cabinetNotificationsCount > 0 && (
-                        <Badge className="ml-auto bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
+                        <Badge className={`bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs ${
+                          isCollapsed ? 'absolute -top-1 -right-1' : 'ml-auto'
+                        }`}>
                           {cabinetNotificationsCount > 99 ? '99+' : cabinetNotificationsCount}
                         </Badge>
                       )}
