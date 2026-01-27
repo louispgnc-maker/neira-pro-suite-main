@@ -1510,7 +1510,7 @@ export default function EspaceCollaboratif() {
             Documents & Contrats
             {notifDocumentsCount > 0 && (
               <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                {notifDocumentsCount > 99 ? '99+' : notifDocumentsCount}
+                !
               </Badge>
             )}
           </TabsTrigger>
@@ -1519,7 +1519,7 @@ export default function EspaceCollaboratif() {
             Dossiers
             {notifDossiersCount > 0 && (
               <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                {notifDossiersCount > 99 ? '99+' : notifDossiersCount}
+                !
               </Badge>
             )}
           </TabsTrigger>
@@ -1528,7 +1528,7 @@ export default function EspaceCollaboratif() {
             Clients
             {notifClientsCount > 0 && (
               <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                {notifClientsCount > 99 ? '99+' : notifClientsCount}
+                !
               </Badge>
             )}
           </TabsTrigger>
@@ -1545,7 +1545,7 @@ export default function EspaceCollaboratif() {
             Discussion
             {totalUnreadCount > 0 && (
               <Badge className="ml-2 bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs">
-                {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
+                !
               </Badge>
             )}
           </TabsTrigger>

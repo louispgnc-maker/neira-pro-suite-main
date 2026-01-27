@@ -452,7 +452,7 @@ export function AppSidebar() {
                         <Badge className={`bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs ${
                           isCollapsed ? 'absolute -top-1 -right-1' : 'ml-auto'
                         }`}>
-                          {unreadEmailCount > 99 ? '99+' : unreadEmailCount}
+                          !
                         </Badge>
                       )}
                     </NavLink>
@@ -476,14 +476,14 @@ export function AppSidebar() {
                         <Badge className={`bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs ${
                           isCollapsed ? 'absolute -top-1 -right-1' : 'ml-auto'
                         }`}>
-                          {clientNotificationsCount > 99 ? '99+' : clientNotificationsCount}
+                          !
                         </Badge>
                       )}
                       {item.title === "Mon cabinet" && cabinetNotificationsCount > 0 && (
                         <Badge className={`bg-red-600 text-white h-5 min-w-5 flex items-center justify-center text-xs ${
                           isCollapsed ? 'absolute -top-1 -right-1' : 'ml-auto'
                         }`}>
-                          {cabinetNotificationsCount > 99 ? '99+' : cabinetNotificationsCount}
+                          !
                         </Badge>
                       )}
                     </NavLink>
