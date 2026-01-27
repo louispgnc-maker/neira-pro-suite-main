@@ -142,7 +142,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
       <CardHeader>
         <CardTitle className="text-lg">Actions rapides</CardTitle>
       </CardHeader>
-  <CardContent className={`grid grid-cols-2 ${hasCollaborative ? 'md:grid-cols-5' : 'md:grid-cols-4'} gap-3`}>
+      <CardContent className="flex flex-wrap gap-3 justify-start">
         {/* Hidden file input for PDF import */}
         <input
           ref={fileInputRef}
@@ -156,44 +156,47 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
         {role === 'notaire' ? (
           <ContractSelectorNotaire />
         ) : (
-          <div className="md:col-span-1 [&>button]:w-full [&>button]:py-6 [&>button]:text-base [&>button]:gap-3"><ContractSelectorAvocat /></div>
+          <div className="[&>button]:w-full [&>button]:min-w-[140px] [&>button]:h-[100px] [&>button]:flex-col [&>button]:gap-2">
+            <ContractSelectorAvocat />
+          </div>
         )}
 
-        {/* Espace collaboratif - available for both avocats and notaires */}
+        {/* Espace collaboratif */}
         {hasCollaborative && (
           <Button
             onClick={handleCollaborative}
             disabled={checkingCabinet}
-            className={`${primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')} h-auto flex-col gap-2 py-4`}
+            className={`${primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')} min-w-[140px] h-[100px] flex flex-col items-center justify-center gap-2`}
           >
-            <Users className="h-5 w-5" />
-            <span className="text-xs">
+            <Users className="h-6 w-6" />
+            <span className="text-sm font-medium text-center">
               {checkingCabinet ? 'Chargement…' : 'Espace collaboratif'}
             </span>
           </Button>
         )}
+        
         {actions.slice(1).filter(a => a.key !== 'collect').map((action) => {
           const onClick = () => {
             if (action.key === 'import') return triggerImport();
             if (action.key === 'sign') return setSignatureDialogOpen(true);
-            // TODO: wire other actions
           };
           const colorClass = primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white');
-          const buttonClass = `${colorClass} w-full h-auto flex flex-col items-center ${hasCollaborative ? 'gap-2 py-4 text-sm' : 'gap-3 py-6 text-base'}`;
           return (
             <Button
               key={action.key}
-              variant={primaryButtonColor ? undefined : action.variant}
-              className={buttonClass}
+              className={`${colorClass} min-w-[140px] h-[100px] flex flex-col items-center justify-center gap-2`}
               onClick={onClick}
               disabled={uploading && action.key === 'import'}
             >
-              <action.icon className="h-5 w-5" />
-              <span className={`${hasCollaborative ? 'text-xs' : 'text-sm'}`}>{action.key === 'import' && uploading ? 'Import…' : action.label}</span>
+              <action.icon className="h-6 w-6" />
+              <span className="text-sm font-medium text-center">
+                {action.key === 'import' && uploading ? 'Import…' : action.label}
+              </span>
             </Button>
           );
         })}
-        {/* Remplace 'Lien de collecte' par menu Fiche client avec même contenu */}
+        
+        {/* Fiche client menu */}
         <FicheClientMenu
           variant="vertical"
           colorClass={primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')}
