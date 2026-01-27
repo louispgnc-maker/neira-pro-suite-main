@@ -1214,6 +1214,8 @@ export default function EspaceCollaboratif() {
       markNotificationsAsRead(['cabinet_dossier']);
     } else if (value === 'clients') {
       markNotificationsAsRead(['cabinet_client']);
+    } else if (value === 'discussion') {
+      markNotificationsAsRead(['cabinet_message']);
     }
     
     try {
