@@ -284,14 +284,26 @@ export default function EditClient() {
           .single();
 
         if (clientData?.user_id) {
-          // Mettre à jour l'email dans auth.users via l'API Admin
-          const { error: emailUpdateError } = await supabase.auth.admin.updateUserById(
-            clientData.user_id,
-            { email: email }
+          // Mettre à jour l'email via Edge Function
+          const { data: { session } } = await supabase.auth.getSession();
+          const response = await fetch(
+            `${supabase.supabaseUrl}/functions/v1/update-user-email`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session?.access_token}`,
+              },
+              body: JSON.stringify({
+                userId: clientData.user_id,
+                newEmail: email
+              })
+            }
           );
 
-          if (emailUpdateError) {
-            console.error('Erreur mise à jour email:', emailUpdateError);
+          if (!response.ok) {
+            const error = await response.json();
+            console.error('Erreur mise à jour email:', error);
             toast.warning('Client mis à jour mais l\'email du compte n\'a pas pu être modifié');
           } else {
             console.log('✅ Email du compte utilisateur mis à jour:', email);
