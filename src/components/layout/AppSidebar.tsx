@@ -213,16 +213,23 @@ export function AppSidebar() {
     try {
       // Compter les notifications cabinet non lues pour cet utilisateur
       // Exclure cabinet_message car les messages ont leur propre système de comptage
-      const { count, error: countError } = await supabase
+      const { data: allNotifs, error: fetchError } = await supabase
         .from('cabinet_notifications')
-        .select('*', { count: 'exact', head: true })
+        .select('id, type, is_read, title')
         .eq('recipient_id', user.id)
         .eq('is_read', false)
         .neq('type', 'cabinet_message');
       
-      if (!countError) {
-        console.log('Cabinet notifications count (sidebar):', count);
-        setCabinetNotificationsCount(count || 0);
+      if (!fetchError && allNotifs) {
+        console.log('📊 Cabinet notifications (sidebar) - détail:', {
+          total: allNotifs.length,
+          byType: allNotifs.reduce((acc, n) => {
+            acc[n.type] = (acc[n.type] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>),
+          notifications: allNotifs.map(n => ({ type: n.type, title: n.title }))
+        });
+        setCabinetNotificationsCount(allNotifs.length);
       }
     } catch (error) {
       console.error('Error loading cabinet notifications count:', error);

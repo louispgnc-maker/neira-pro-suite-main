@@ -1086,12 +1086,15 @@ export default function EspaceCollaboratif() {
         n.type === 'cabinet_client'
       ).length;
 
-      console.log('Notification counts by type:', {
+      console.log('📋 Notification counts by type (EspaceCollaboratif):', {
         total: notifications.length,
         documents: documentsCount,
         dossiers: dossiersCount,
         clients: clientsCount,
-        types: notifications.map(n => n.type)
+        byType: notifications.reduce((acc, n) => {
+          acc[n.type] = (acc[n.type] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>)
       });
 
       setNotifDocumentsCount(documentsCount);
