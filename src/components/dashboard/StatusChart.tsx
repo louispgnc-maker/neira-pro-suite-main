@@ -63,8 +63,6 @@ export function StatusChart({ role }: StatusChartProps) {
       <CardContent className="space-y-4">
         {loading ? (
           <div className="text-center text-gray-500 py-8">Chargement...</div>
-        ) : total === 0 ? (
-          <div className="text-center text-gray-500 py-8">Aucun contrat</div>
         ) : (
           <>
             {/* Terminé - Vert */}
@@ -79,7 +77,7 @@ export function StatusChart({ role }: StatusChartProps) {
               <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                 <div
                   className="bg-green-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${(counts.termine / maxCount) * 100}%` }}
+                  style={{ width: total === 0 ? '0%' : `${(counts.termine / maxCount) * 100}%` }}
                 />
               </div>
             </div>
@@ -96,7 +94,7 @@ export function StatusChart({ role }: StatusChartProps) {
               <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                 <div
                   className="bg-yellow-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${(counts.en_attente_signature / maxCount) * 100}%` }}
+                  style={{ width: total === 0 ? '0%' : `${(counts.en_attente_signature / maxCount) * 100}%` }}
                 />
               </div>
             </div>
@@ -113,7 +111,7 @@ export function StatusChart({ role }: StatusChartProps) {
               <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                 <div
                   className="bg-red-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${(counts.en_cours / maxCount) * 100}%` }}
+                  style={{ width: total === 0 ? '0%' : `${(counts.en_cours / maxCount) * 100}%` }}
                 />
               </div>
             </div>
