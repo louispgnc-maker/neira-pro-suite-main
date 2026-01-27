@@ -230,19 +230,19 @@ export function DashboardAvocat() {
         </p>
 
         {/* Barre de recherche */}
-        <div className="flex justify-center">
+        <div className="flex justify-center mb-8">
           <GlobalSearch userRole="avocat" />
         </div>
 
-  {/* KPI Cards single row */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {/* KPI Cards - Grid 2x3 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <StatCard
-            title="Dossiers en cours"
+            title="Contrats en cours"
             value={docCount}
             icon={FileText}
             iconColor="text-blue-600"
             iconBgColor="bg-blue-100"
-            onClick={() => navigate('/avocats/documents')}
+            onClick={() => navigate('/avocats/contrats')}
             trend={(() => {
               const prev = docPrevCount;
               const curr = docCount;
@@ -273,7 +273,7 @@ export function DashboardAvocat() {
             })()}
           />
           <StatCard
-            title="Dossiers"
+            title="Dossiers actifs"
             value={dossierCount}
             icon={FolderPlus}
             iconColor="text-blue-600"
@@ -289,15 +289,13 @@ export function DashboardAvocat() {
             onClick={() => navigate('/avocats/clients')}
           />
           <TasksSummaryCard role="avocat" />
+          <QuickActions 
+            role="avocat"
+            primaryButtonColor="bg-blue-600 hover:bg-blue-700 text-white" 
+          />
         </div>
 
-        {/* Quick Actions */}
-        <QuickActions 
-          role="avocat"
-          primaryButtonColor="bg-blue-600 hover:bg-blue-700 text-white" 
-        />
-
-        {/* Alerts Compliance */}
+        {/* Alerts Compliance - Full width */}
         <AlertsCompliance />
       </div>
       </div>
