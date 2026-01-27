@@ -26,6 +26,7 @@ import {
 import { Trash2, UploadCloud, Share2, Building2 } from 'lucide-react';
 import SharedCalendar from '@/components/collaborative/SharedCalendar';
 import { CabinetChat } from '@/components/cabinet/CabinetChat';
+import { CabinetNotificationsList } from '@/components/cabinet/CabinetNotificationsList';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -1176,41 +1177,8 @@ export default function EspaceCollaboratif() {
     }
   }, [location.search, selectedTab]);
 
-  // Mark notifications as read when viewing a tab
-  const markNotificationsAsRead = useCallback(async (types: string[]) => {
-    if (!user || types.length === 0) return;
-    
-    try {
-      const { error } = await supabase
-        .from('cabinet_notifications')
-        .update({ is_read: true })
-        .eq('recipient_id', user.id)
-        .eq('is_read', false)
-        .in('type', types);
-
-      if (error) {
-        console.error('Error marking notifications as read:', error);
-      } else {
-        // Reload counts after marking as read
-        loadNotificationCounts();
-      }
-    } catch (error) {
-      console.error('Error marking notifications as read:', error);
-    }
-  }, [user, loadNotificationCounts]);
-
   const handleTabChange = useCallback((value: string) => {
     setSelectedTab(value);
-    
-    // Mark relevant notifications as read based on tab
-    if (value === 'documents') {
-      markNotificationsAsRead(['cabinet_document', 'cabinet_contrat']);
-    } else if (value === 'dossiers') {
-      markNotificationsAsRead(['cabinet_dossier']);
-    } else if (value === 'clients') {
-      markNotificationsAsRead(['cabinet_client', 'cabinet_message']);
-    }
-    
     try {
       const params = new URLSearchParams(location.search);
       params.set('tab', value);
@@ -1219,7 +1187,7 @@ export default function EspaceCollaboratif() {
       // ignore
     }
     try { sessionStorage.setItem('collab_tab', value); } catch (e) { /* ignore */ }
-  }, [location.pathname, location.search, navigate, markNotificationsAsRead]);
+  }, [location.pathname, location.search, navigate]);
 
   // If navigated here from a notification, open the related resource
   useEffect(() => {
@@ -1679,6 +1647,13 @@ export default function EspaceCollaboratif() {
 
         {/* Documents & Contrats */}
         <TabsContent value="documents" className="space-y-4">
+          {/* Notifications pour documents et contrats */}
+          <CabinetNotificationsList 
+            types={['cabinet_document', 'cabinet_contrat']} 
+            title="Nouveaux documents et contrats"
+            emptyMessage="Aucun nouveau document ou contrat"
+          />
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Documents */}
             <Card>
@@ -1910,6 +1885,13 @@ export default function EspaceCollaboratif() {
 
         {/* Dossiers clients */}
         <TabsContent value="dossiers" className="space-y-4">
+          {/* Notifications pour dossiers */}
+          <CabinetNotificationsList 
+            types={['cabinet_dossier']} 
+            title="Nouveaux dossiers"
+            emptyMessage="Aucun nouveau dossier"
+          />
+          
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -2014,6 +1996,13 @@ export default function EspaceCollaboratif() {
 
         {/* Clients partagés */}
         <TabsContent value="clients" className="space-y-4">
+          {/* Notifications pour clients et messages */}
+          <CabinetNotificationsList 
+            types={['cabinet_client', 'cabinet_message']} 
+            title="Nouveaux clients et messages"
+            emptyMessage="Aucun nouveau client ou message"
+          />
+          
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
