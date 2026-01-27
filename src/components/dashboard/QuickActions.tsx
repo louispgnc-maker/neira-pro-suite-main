@@ -142,7 +142,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
       <CardHeader>
         <CardTitle className="text-lg">Actions rapides</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-wrap gap-3 justify-start">
+      <CardContent className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {/* Hidden file input for PDF import */}
         <input
           ref={fileInputRef}
@@ -156,7 +156,7 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
         {role === 'notaire' ? (
           <ContractSelectorNotaire />
         ) : (
-          <div className="[&>button]:w-full [&>button]:min-w-[140px] [&>button]:h-[100px] [&>button]:flex-col [&>button]:gap-2">
+          <div className="[&>button]:w-full [&>button]:h-full [&>button]:min-h-[120px] [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-3">
             <ContractSelectorAvocat />
           </div>
         )}
@@ -166,10 +166,10 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
           <Button
             onClick={handleCollaborative}
             disabled={checkingCabinet}
-            className={`${primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')} min-w-[140px] h-[100px] flex flex-col items-center justify-center gap-2`}
+            className={`${primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')} w-full min-h-[120px] flex flex-col items-center justify-center gap-3 p-4`}
           >
-            <Users className="h-6 w-6" />
-            <span className="text-sm font-medium text-center">
+            <Users className="h-7 w-7" />
+            <span className="text-sm font-medium text-center leading-tight">
               {checkingCabinet ? 'Chargement…' : 'Espace collaboratif'}
             </span>
           </Button>
@@ -184,12 +184,12 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
           return (
             <Button
               key={action.key}
-              className={`${colorClass} min-w-[140px] h-[100px] flex flex-col items-center justify-center gap-2`}
+              className={`${colorClass} w-full min-h-[120px] flex flex-col items-center justify-center gap-3 p-4`}
               onClick={onClick}
               disabled={uploading && action.key === 'import'}
             >
-              <action.icon className="h-6 w-6" />
-              <span className="text-sm font-medium text-center">
+              <action.icon className="h-7 w-7" />
+              <span className="text-sm font-medium text-center leading-tight">
                 {action.key === 'import' && uploading ? 'Import…' : action.label}
               </span>
             </Button>
@@ -197,10 +197,12 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
         })}
         
         {/* Fiche client menu */}
-        <FicheClientMenu
-          variant="vertical"
-          colorClass={primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')}
-        />
+        <div className="[&>button]:w-full [&>button]:h-full [&>button]:min-h-[120px] [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-3">
+          <FicheClientMenu
+            variant="vertical"
+            colorClass={primaryButtonColor || (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')}
+          />
+        </div>
       </CardContent>
       
       {/* Signature Dialog */}
