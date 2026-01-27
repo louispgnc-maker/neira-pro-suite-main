@@ -91,11 +91,25 @@ export default function EditClient() {
     let mounted = true;
     async function load() {
       if (!user || !id) return;
-      // Load client
+      
+      // D'abord, récupérer le cabinet_id de l'utilisateur
+      const { data: cabinetMember } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .single();
+
+      if (!cabinetMember) {
+        toast.error('Vous n\'êtes membre d\'aucun cabinet');
+        return;
+      }
+
+      // Load client avec le cabinet_id
       const { data: c, error } = await supabase
         .from('clients')
         .select('*')
-        .eq('owner_id', user.id)
+        .eq('owner_id', cabinetMember.cabinet_id)
         .eq('role', role)
         .eq('id', id)
         .maybeSingle();
@@ -154,7 +168,8 @@ export default function EditClient() {
         setConsentementRGPD(!!c.consentement_rgpd);
         setSignatureMandat(!!c.signature_mandat);
       }
-      // Load contrats
+      
+      // Load contrats du cabinet
       const { data, error: cErr } = await supabase
         .from('contrats')
         .select('id,name,type,category')
