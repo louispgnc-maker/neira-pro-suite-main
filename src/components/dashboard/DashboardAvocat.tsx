@@ -297,29 +297,8 @@ export function DashboardAvocat() {
           primaryButtonColor="bg-blue-600 hover:bg-blue-700 text-white" 
         />
 
-        {/* Main Section */}
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <RecentDocuments 
-              role="avocat"
-              statusColorOverride={{
-                "En cours": "bg-blue-100 text-blue-600 border-blue-200"
-              }} 
-            />
-            <RecentContrats role="avocat" />
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <RecentDossiers role="avocat" />
-            <PendingSignatures role="avocat" />
-          </div>
-          <AlertsCompliance />
-        </div>
-
-        {/* Bottom Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <TasksCalendar role="avocat" />
-          <RecentClients role="avocat" />
-        </div>
+        {/* Alerts Compliance */}
+        <AlertsCompliance />
       </div>
       </div>
     </AppLayout>
