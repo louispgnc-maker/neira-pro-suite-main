@@ -212,11 +212,13 @@ export function AppSidebar() {
     
     try {
       // Compter les notifications cabinet non lues pour cet utilisateur
+      // Exclure cabinet_message car les messages ont leur propre système de comptage
       const { count, error: countError } = await supabase
         .from('cabinet_notifications')
         .select('*', { count: 'exact', head: true })
         .eq('recipient_id', user.id)
-        .eq('is_read', false);
+        .eq('is_read', false)
+        .neq('type', 'cabinet_message');
       
       if (!countError) {
         console.log('Cabinet notifications count (sidebar):', count);
