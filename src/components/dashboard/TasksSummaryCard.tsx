@@ -90,16 +90,16 @@ export function TasksSummaryCard({ role = 'avocat' }: { role?: 'avocat' | 'notai
             {tasks.map((task) => (
               <div
                 key={task.id}
-                className={`flex items-start gap-2 p-3 rounded-lg transition-all border-l-4 shadow-sm ${
+                className={`flex items-start gap-2 p-3 rounded-lg border-2 ${
                   task.done 
-                    ? 'bg-gray-50 border-gray-300' 
-                    : 'bg-yellow-50 border-yellow-400 hover:shadow-md'
+                    ? 'border-gray-300' 
+                    : 'border-gray-700'
                 }`}
               >
                 {task.done ? (
                   <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
                 ) : (
-                  <Circle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <Circle className="h-4 w-4 text-gray-700 flex-shrink-0 mt-0.5" />
                 )}
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-medium ${task.done ? 'line-through text-gray-400' : 'text-gray-800'}`}>
