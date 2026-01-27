@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { getSignedUrlForPath } from '@/lib/storageHelpers';
+import { sanitizeFileName } from '@/lib/fileHelpers';
 import { DocumentViewer } from '@/components/ui/document-viewer';
 import { 
   FileText, 
@@ -216,6 +217,7 @@ export default function EspaceCollaboratif() {
   const [clients, setClients] = useState<Client[]>([]);
   const [clientSearch, setClientSearch] = useState('');
   const [sharingToClient, setSharingToClient] = useState(false);
+  
   // Load collaborative tasks from cabinet_tasks
   useEffect(() => {
     let mounted = true;
@@ -304,7 +306,7 @@ export default function EspaceCollaboratif() {
           continue;
         }
 
-        const path = `${user.id}/${Date.now()}-${file.name}`;
+        const path = `${user.id}/${Date.now()}-${sanitizeFileName(file.name)}`;
         const { error: upErr } = await supabase.storage.from('documents').upload(path, file, {
           cacheControl: '3600',
           upsert: false,
@@ -371,7 +373,7 @@ export default function EspaceCollaboratif() {
       }
 
       // Upload to shared-documents with proper path
-      const newPath = `${cabinet.id}/${clientId}/${Date.now()}-${fileName}`;
+      const newPath = `${cabinet.id}/${clientId}/${Date.now()}-${sanitizeFileName(fileName)}`;
       const { error: uploadError } = await supabase.storage
         .from('shared-documents')
         .upload(newPath, fileData, {
