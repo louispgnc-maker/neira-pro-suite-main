@@ -1083,7 +1083,7 @@ export default function EspaceCollaboratif() {
       ).length;
       
       const clientsCount = notifications.filter(n => 
-        n.type === 'cabinet_client' || n.type === 'cabinet_message'
+        n.type === 'cabinet_client'
       ).length;
 
       console.log('Notification counts by type:', {
@@ -1207,7 +1207,7 @@ export default function EspaceCollaboratif() {
     } else if (value === 'dossiers') {
       markNotificationsAsRead(['cabinet_dossier']);
     } else if (value === 'clients') {
-      markNotificationsAsRead(['cabinet_client', 'cabinet_message']);
+      markNotificationsAsRead(['cabinet_client']);
     }
     
     try {
