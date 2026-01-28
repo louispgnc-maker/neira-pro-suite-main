@@ -2,7 +2,7 @@ import { FileText, PenTool, Users, FolderPlus, Crown, UserPlus, FileUp, Share2 }
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { GlobalStatusBar } from "@/components/dashboard/GlobalStatusBar";
-import { TodayActions } from "@/components/dashboard/TodayActions";
+import { AllTasksCard } from "@/components/dashboard/AllTasksCard";
 import { PrimaryAction } from "@/components/dashboard/PrimaryAction";
 import { TrustIndicator } from "@/components/dashboard/TrustIndicator";
 import { Button } from "@/components/ui/button";
@@ -226,8 +226,8 @@ export function DashboardAvocat() {
         {/* 3️⃣ Bloc central - État global des dossiers */}
         <GlobalStatusBar role="avocat" />
 
-        {/* 4️⃣ Bloc secondaire - À faire aujourd'hui */}
-        <TodayActions role="avocat" />
+        {/* 4️⃣ Bloc secondaire - Toutes les tâches */}
+        <AllTasksCard role="avocat" />
 
         {/* 5️⃣ Action principale */}
         <PrimaryAction role="avocat" />
