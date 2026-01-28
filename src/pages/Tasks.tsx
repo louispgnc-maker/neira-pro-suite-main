@@ -271,7 +271,7 @@ export default function Tasks() {
                   </div>
                 </div>
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setOpen(false)} className="hover:bg-blue-50 hover:border-blue-300">
+                  <Button variant="outline" onClick={() => setOpen(false)} className="hover:bg-blue-50 hover:border-blue-300 hover:text-gray-900">
                     Annuler
                   </Button>
                   <Button className={mainButtonColor} disabled={saving} onClick={createTask}>
