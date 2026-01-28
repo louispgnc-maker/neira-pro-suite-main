@@ -641,6 +641,7 @@ export default function ProfileView() {
                     </div>
                     <Button 
                       variant="outline"
+                      className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'}
                       onClick={async () => {
                         if (!stripeCustomerId) {
                           toast.error('Aucun moyen de paiement configuré', {
