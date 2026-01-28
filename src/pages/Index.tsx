@@ -233,10 +233,8 @@ export default function Index() {
       <section className="py-20 px-6 bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Comment fonctionne Neira ?
-              </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Comment fonctionne Neira ?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Une solution pensée pour simplifier chaque aspect de votre activité juridique

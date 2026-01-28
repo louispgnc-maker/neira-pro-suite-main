@@ -251,7 +251,6 @@ export default function NotificationsCard({ clientId, professionType = 'avocat' 
           </div>
         ) : notifications.length === 0 ? (
           <div className="text-center py-8">
-            <Bell className="h-12 w-12 mx-auto text-gray-300 mb-3" />
             <p className="text-gray-500">Aucune notification</p>
             <p className="text-sm text-gray-400 mt-1">
               Vous serez notifié des nouveautés ici

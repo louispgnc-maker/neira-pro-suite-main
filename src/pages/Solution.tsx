@@ -68,20 +68,12 @@ export default function Solution() {
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-24 px-6 bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100 overflow-hidden">
-        {/* Barre de couleur en haut */}
-        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600"></div>
-        
-        {/* Cercles décoratifs */}
-        <div className="absolute top-20 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
-        <div className="absolute top-40 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-20 right-1/3 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-4000"></div>
+        {/* Decorative shapes removed */}
         
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Vous êtes responsable de cabinet ?
-              </span>
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              Vous êtes responsable de cabinet ?
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 mb-10 max-w-3xl mx-auto leading-relaxed">
               Choisissez la formule adaptée à la taille de votre équipe et équipez votre cabinet 
@@ -95,10 +87,8 @@ export default function Solution() {
       {/* Pricing Section */}
       <section className="py-20 px-6 bg-gradient-to-br from-slate-50 via-blue-100 to-purple-100">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Choisissez l'offre adaptée à votre équipe
-            </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
+            Choisissez l'offre adaptée à votre équipe
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
