@@ -355,12 +355,6 @@ export default function Statistiques() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm flex items-center gap-1">
-                      <Minus className="h-3 w-3 text-blue-500" /> Nouveau
-                    </span>
-                    <span className="text-sm font-medium">{dossierStats.nouveau}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm flex items-center gap-1">
                       <AlertCircle className="h-3 w-3 text-orange-500" /> En cours
                     </span>
                     <span className="text-sm font-medium">{dossierStats.enCours}</span>

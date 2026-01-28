@@ -677,7 +677,11 @@ export default function ProfileView() {
                 >
                   Modifier l'abonnement
                 </Button>
-                <Button variant="outline" size="lg">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'}
+                >
                   Voir les factures
                 </Button>
               </div>

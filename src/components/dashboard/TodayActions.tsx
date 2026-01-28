@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,6 +12,7 @@ interface Action {
   deadline: string | null;
   status: string;
   type: 'task' | 'signature' | 'dossier';
+  done?: boolean;
 }
 
 export function TodayActions({ role = 'avocat' }: { role?: 'avocat' | 'notaire' }) {
@@ -70,7 +72,8 @@ export function TodayActions({ role = 'avocat' }: { role?: 'avocat' | 'notaire' 
               title: task.title,
               deadline: task.due_at,
               status: 'À faire',
-              type: 'task'
+              type: 'task',
+              done: task.done
             });
           });
         }
@@ -83,7 +86,8 @@ export function TodayActions({ role = 'avocat' }: { role?: 'avocat' | 'notaire' 
               title: `Signature: ${sig.contract_title}`,
               deadline: sig.created_at,
               status: 'En attente',
-              type: 'signature'
+              type: 'signature',
+              done: false
             });
           });
         }
@@ -112,6 +116,26 @@ export function TodayActions({ role = 'avocat' }: { role?: 'avocat' | 'notaire' 
     }
   };
 
+  const handleCheckTask = async (action: Action, checked: boolean) => {
+    if (action.type === 'task') {
+      try {
+        const { error } = await supabase
+          .from('tasks')
+          .update({ done: checked })
+          .eq('id', action.id);
+
+        if (!error) {
+          // Mettre à jour l'état local
+          setActions(prev => prev.map(a => 
+            a.id === action.id ? { ...a, done: checked } : a
+          ));
+        }
+      } catch (e) {
+        console.error('Erreur mise à jour tâche:', e);
+      }
+    }
+  };
+
   return (
     <Card className="border-border">
       <CardHeader>
@@ -132,11 +156,21 @@ export function TodayActions({ role = 'avocat' }: { role?: 'avocat' | 'notaire' 
             {actions.map((action) => (
               <div
                 key={action.id}
-                onClick={() => handleActionClick(action)}
-                className="flex items-start justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">{action.title}</p>
+                <Checkbox
+                  checked={action.done || false}
+                  onCheckedChange={(checked) => handleCheckTask(action, checked as boolean)}
+                  className="mt-0.5"
+                  disabled={action.type !== 'task'}
+                />
+                <div 
+                  className="flex-1 cursor-pointer"
+                  onClick={() => handleActionClick(action)}
+                >
+                  <p className={`text-sm font-medium ${action.done ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                    {action.title}
+                  </p>
                   {action.deadline && (
                     <p className="text-xs text-gray-500 mt-1">
                       {action.type === 'task' ? '📅' : '⏰'} {new Date(action.deadline).toLocaleDateString('fr-FR', { 

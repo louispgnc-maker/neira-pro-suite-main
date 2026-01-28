@@ -127,7 +127,7 @@ export default function ContactSupport() {
         <div className="mb-8">
           <Button
             onClick={() => navigate(-1)}
-            className="bg-orange-500 hover:bg-orange-600 text-white"
+            className={role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour
@@ -237,7 +237,7 @@ export default function ContactSupport() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                className={`w-full ${role === 'notaire' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
               >
                 {isSubmitting ? (
                   "Envoi en cours..."
