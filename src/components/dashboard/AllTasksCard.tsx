@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
-import { CheckSquare, Plus } from "lucide-react";
+import { CheckSquare, Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface Task {
@@ -74,6 +74,22 @@ export function AllTasksCard({ role = 'avocat' }: { role?: 'avocat' | 'notaire' 
       }
     } catch (e) {
       console.error('Erreur mise à jour tâche:', e);
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskId);
+
+      if (!error) {
+        // Supprimer de l'état local
+        setTasks(prev => prev.filter(t => t.id !== taskId));
+      }
+    } catch (e) {
+      console.error('Erreur suppression tâche:', e);
     }
   };
 
@@ -192,6 +208,18 @@ export function AllTasksCard({ role = 'avocat' }: { role?: 'avocat' | 'notaire' 
                       </div>
                     )}
                   </div>
+                  {task.done && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteTask(task.id);
+                      }}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded transition-colors"
+                      title="Supprimer la tâche"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
               );
             })}
