@@ -133,9 +133,8 @@ export function AllTasksCard({ role = 'avocat' }: { role?: 'avocat' | 'notaire' 
         </CardTitle>
         <Button
           size="sm"
-          variant="ghost"
           onClick={() => navigate(role === 'notaire' ? '/notaires/tasks' : '/avocats/tasks')}
-          className={hoverClass}
+          className={role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}
         >
           <Plus className="h-4 w-4 mr-1" />
           Nouvelle tâche
