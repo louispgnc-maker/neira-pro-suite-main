@@ -597,8 +597,6 @@ export default function Subscription() {
                                               </div>
                                             </>
                                           )}
-                                            </div>
-                                          )}
                                         </div>
                                       </TooltipContent>
                                     </Tooltip>
