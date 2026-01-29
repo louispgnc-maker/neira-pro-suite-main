@@ -278,7 +278,7 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
             </div>
 
             {/* Section d'achat de forfaits signatures pour plans essentiel et professionnel seulement */}
-            {/* Cabinet+ a déjà signatures illimitées */}
+            {/* Cabinet+ a 100 signatures/mois incluses par utilisateur */}
             {(subscriptionPlan === 'essentiel' || subscriptionPlan === 'professionnel') && (
               <div className="border-t pt-4">
                 <Button
@@ -299,8 +299,8 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
             {subscriptionPlan === 'cabinet-plus' && (
               <div className="border-t pt-4">
                 <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-800">
-                  <p className="font-semibold">✓ Signatures illimitées incluses</p>
-                  <p className="text-xs mt-1">Votre plan Cabinet+ inclut déjà des signatures illimitées pour tous les membres.</p>
+                  <p className="font-semibold">✓ 100 signatures / mois incluses</p>
+                  <p className="text-xs mt-1">Votre plan Cabinet+ inclut 100 signatures par mois et par utilisateur.</p>
                 </div>
               </div>
             )}

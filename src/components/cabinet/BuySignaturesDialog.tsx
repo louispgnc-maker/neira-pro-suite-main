@@ -224,9 +224,9 @@ export function BuySignaturesDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Signatures illimitées</DialogTitle>
+            <DialogTitle>100 signatures / mois incluses</DialogTitle>
             <DialogDescription>
-              Votre plan Cabinet+ inclut déjà des signatures illimitées.
+              Votre plan Cabinet+ inclut 100 signatures par mois et par utilisateur. Pour des besoins supplémentaires, contactez-nous.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center py-8">

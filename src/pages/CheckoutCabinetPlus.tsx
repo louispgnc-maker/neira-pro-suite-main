@@ -192,7 +192,7 @@ export default function CheckoutCabinetPlus() {
             <Card className="lg:col-span-2 bg-white/90 backdrop-blur">
               <CardContent className="p-6">
                 <h3 className="font-semibold text-gray-900 mb-3">Caractéristiques</h3>
-                <p className="text-sm text-gray-700">Idéal pour cabinets de 10 à 50+ utilisateurs • Stockage illimité • Dossiers illimités • Clients illimités • Signatures illimitées</p>
+                <p className="text-sm text-gray-700">Idéal pour cabinets de 10 à 50+ utilisateurs • Stockage illimité • Dossiers illimités • Clients illimités • 100 signatures/mois/utilisateur</p>
               </CardContent>
             </Card>
           </div>
@@ -217,7 +217,7 @@ export default function CheckoutCabinetPlus() {
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-medium text-gray-900 text-sm">Signatures illimitées</h4>
+                        <h4 className="font-medium text-gray-900 text-sm">100 signatures / mois / utilisateur</h4>
                         <p className="text-xs text-gray-600 mt-0.5">Aucune limite mensuelle</p>
                       </div>
                     </div>
@@ -353,13 +353,13 @@ export default function CheckoutCabinetPlus() {
                       </p>
                     </div>
 
-                    {/* Info signatures illimitées */}
+                    {/* Info 100 signatures */}
                     <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                       <div className="flex items-start gap-3">
                         <div className="text-2xl">✨</div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-semibold text-orange-900 text-sm">Signatures illimitées par utilisateur</h4>
+                            <h4 className="font-semibold text-orange-900 text-sm">100 signatures / mois / utilisateur</h4>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Info className="w-4 h-4 text-orange-600 cursor-help" />
@@ -367,11 +367,12 @@ export default function CheckoutCabinetPlus() {
                               <TooltipContent className="max-w-xs">
                                 <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
                                 <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
-                                <p className="text-xs mt-1 text-orange-300">✨ Aucune limite mensuelle</p>
+                                <p className="text-xs mt-2 text-green-700 font-semibold">✅ Limite de 100 signatures/mois prise en charge</p>
+                                <p className="text-xs mt-1 text-orange-600">📦 Suppléments facturables si besoin</p>
                               </TooltipContent>
                             </Tooltip>
                           </div>
-                          <p className="text-xs text-orange-700">1 signature = 1 enveloppe (signataires illimités) • Aucun pack nécessaire • Aucune limite mensuelle</p>
+                          <p className="text-xs text-orange-700">1 signature = 1 enveloppe (signataires illimités) • 100 signatures/mois incluses • Suppléments disponibles si besoin</p>
                         </div>
                       </div>
                     </div>

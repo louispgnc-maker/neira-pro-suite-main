@@ -431,7 +431,7 @@ export default function Index() {
                 </div>
               </div>
               <ul className="space-y-4 mb-8">
-                {["100 Go de stockage", "600 dossiers actifs", "200 clients actifs", "80 signatures/mois/utilisateur", "Espace collaboratif complet", "Gestion documentaire avancée", "Tableaux de bord"].map((feature, i) => (
+                {["100 Go de stockage", "600 dossiers actifs", "200 clients actifs", "40 signatures/mois/utilisateur", "Espace collaboratif complet", "Gestion documentaire avancée", "Tableaux de bord"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <span className="text-gray-700">{feature}</span>
@@ -456,7 +456,7 @@ export default function Index() {
                 </div>
               </div>
               <ul className="space-y-4 mb-8">
-                {["Stockage illimité", "Dossiers illimités", "Clients illimités", "Signatures illimitées", "Collaboration sans limite", "Tableaux de bord avancés", "Onboarding & formation", "Accès anticipé aux nouveautés"].map((feature, i) => (
+                {["Stockage illimité", "Dossiers illimités", "Clients illimités", "100 signatures/mois/utilisateur", "Collaboration sans limite", "Tableaux de bord avancés", "Onboarding & formation", "Accès anticipé aux nouveautés"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <span className="text-gray-700">{feature}</span>

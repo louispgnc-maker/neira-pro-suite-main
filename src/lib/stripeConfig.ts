@@ -31,7 +31,7 @@ export const SUBSCRIPTION_PRICES = {
       '100 Go de stockage',
       'Dossiers illimités',
       'Clients illimités',
-      '50 signatures/mois par utilisateur',
+      '40 signatures/mois par utilisateur',
       'Support prioritaire',
       'Gestion de cabinet'
     ]
@@ -44,7 +44,7 @@ export const SUBSCRIPTION_PRICES = {
       'Stockage illimité',
       'Dossiers illimités',
       'Clients illimités',
-      'Signatures illimitées',
+      '100 signatures/mois par utilisateur',
       'Support 24/7',
       'Gestion multi-cabinets',
       'API accès',

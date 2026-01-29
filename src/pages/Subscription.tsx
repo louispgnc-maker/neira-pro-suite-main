@@ -65,12 +65,12 @@ const plans = [
       '100 Go de stockage',
       '600 dossiers actifs',
       '200 clients actifs',
-      '80 signatures / mois',
+      '40 signatures / mois',
       'Espace collaboratif complet',
       'Gestion documentaire avancée',
       'Tableaux de bord'
     ],
-    limits: '100 Go • 600 dossiers • 200 clients • 80 signatures/mois',
+    limits: '100 Go • 600 dossiers • 200 clients • 40 signatures/mois',
     notIncluded: [],
     icon: Crown,
     color: 'text-purple-600',
@@ -90,7 +90,7 @@ const plans = [
       'Stockage illimité',
       'Dossiers illimités',
       'Clients illimités',
-      'Signatures illimitées',
+      '100 signatures / mois / utilisateur',
       'Collaboration sans limite',
       'Tableaux de bord avancés',
       'Onboarding & formation de l\'équipe',
@@ -552,10 +552,13 @@ export default function Subscription() {
                                               <div className={`pt-2 border-t mt-2 ${
                                                 isEssentiel ? 'border-blue-200' : 'border-purple-200'
                                               }`}>
+                                                <p className="text-xs font-semibold text-green-700 mb-1.5">
+                                                  ✅ Limite de {isEssentiel ? '15' : '40'} signatures/mois prise en charge
+                                                </p>
                                                 <p className={`text-xs font-semibold mb-1.5 ${
                                                   isEssentiel ? 'text-blue-800' : 'text-purple-800'
                                                 }`}>
-                                                  📦 Packs optionnels :
+                                                  📦 Suppléments facturables si besoin :
                                                 </p>
                                                 <div className="space-y-1">
                                                   {isEssentiel ? (
@@ -586,8 +589,14 @@ export default function Subscription() {
                                             </>
                                           )}
                                           {isCabinetPlus && (
-                                            <div className="pt-1.5 border-t border-orange-200">
-                                              <p className="text-xs text-orange-700 font-medium">✨ Aucune limite mensuelle</p>
+                                            <>
+                                              <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
+                                              <div className="pt-2 border-t border-orange-200 mt-2">
+                                                <p className="text-xs font-semibold text-green-700 mb-1.5">✅ Limite de 100 signatures/mois prise en charge</p>
+                                                <p className="text-xs font-semibold text-orange-800">📦 Suppléments facturables si besoin</p>
+                                              </div>
+                                            </>
+                                          )}
                                             </div>
                                           )}
                                         </div>
