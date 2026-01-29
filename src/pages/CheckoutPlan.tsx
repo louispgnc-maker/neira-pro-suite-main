@@ -57,12 +57,12 @@ const planConfigs = {
   'cabinet-plus': {
     name: 'Cabinet+',
     monthlyPrice: 99,
-    description: 'Idéal pour cabinets de 10 à 50+ utilisateurs',
+    description: 'Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille',
     icon: Users,
     color: 'orange',
     limits: 'Tout illimité — aucune restriction',
     features: [
-      { title: 'Idéal pour cabinets de 10 à 50+ utilisateurs', description: 'Aucune limite d\'équipe' },
+      { title: 'Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille', description: 'Aucune limite d\'équipe' },
       { title: 'Stockage illimité', description: 'Espace sans limite' },
       { title: 'Dossiers illimités', description: 'Gérez autant de dossiers que nécessaire' },
       { title: 'Clients illimités', description: 'Portefeuille client sans limite' },

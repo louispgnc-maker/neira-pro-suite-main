@@ -192,7 +192,7 @@ export default function CheckoutCabinetPlus() {
             <Card className="lg:col-span-2 bg-white/90 backdrop-blur">
               <CardContent className="p-6">
                 <h3 className="font-semibold text-gray-900 mb-3">Caractéristiques</h3>
-                <p className="text-sm text-gray-700">Idéal pour cabinets de 10 à 50+ utilisateurs • Stockage illimité • Dossiers illimités • Clients illimités • Signatures illimitées</p>
+                <p className="text-sm text-gray-700">Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille • Stockage illimité • Dossiers illimités • Clients illimités • Signatures illimitées</p>
               </CardContent>
             </Card>
           </div>
