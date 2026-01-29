@@ -57,7 +57,7 @@ const planConfigs = {
   'cabinet-plus': {
     name: 'Cabinet+',
     monthlyPrice: 99,
-    description: 'Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille',
+    description: 'Idéal pour cabinets de 10 à 50+ utilisateurs',
     icon: Users,
     color: 'orange',
     limits: 'Tout illimité — aucune restriction',

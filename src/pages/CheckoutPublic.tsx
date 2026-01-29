@@ -60,7 +60,7 @@ const planConfigs = {
     color: 'orange',
     limits: 'Stockage illimité • Dossiers illimités • Clients illimités • Signatures illimitées',
     features: [
-      { title: 'Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille', description: 'Évolutivité maximale' },
+      { title: 'Idéal pour cabinets de 10 à 50+ utilisateurs', description: 'Évolutivité maximale' },
       { title: 'Stockage illimité', description: 'Sans limite de capacité' },
       { title: 'Dossiers illimités', description: 'Aucune restriction' },
       { title: 'Clients illimités', description: 'Gérez tous vos clients' },

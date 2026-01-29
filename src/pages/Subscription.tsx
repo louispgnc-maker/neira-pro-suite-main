@@ -83,10 +83,10 @@ const plans = [
     name: 'Cabinet+',
     price: '99€',
     period: '/mois',
-    description: 'Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille',
-    summary: 'Solution premium pour cabinets structurés avec tout illimité.',
+    description: 'Idéal pour cabinets de 10 à 50+ utilisateurs',
+    summary: 'Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille.',
     features: [
-      'Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille',
+      'Idéal pour cabinets de 10 à 50+ utilisateurs',
       'Stockage illimité',
       'Dossiers illimités',
       'Clients illimités',

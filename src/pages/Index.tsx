@@ -449,7 +449,7 @@ export default function Index() {
             <div className="bg-white border-2 border-orange-200 rounded-2xl p-8 hover:shadow-2xl transition-all hover:border-orange-400">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
-                <p className="text-gray-600 mb-6">Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille</p>
+                <p className="text-gray-600 mb-6">Idéal pour cabinets de 10 à 50+ utilisateurs</p>
                 <div className="mb-6">
                   <span className="text-5xl font-bold text-orange-600">99€</span>
                   <span className="text-gray-600">/mois/utilisateur</span>
