@@ -45,10 +45,17 @@ export default function ManageMembersCount() {
   let prorataAmount = 0;
   let remainingDays = 0;
   
-  if (nextBillingDate && memberDiff !== 0) {
+  if (memberDiff !== 0) {
     const now = new Date();
-    const diffTime = nextBillingDate.getTime() - now.getTime();
-    remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Si on a la date de billing, on l'utilise, sinon on estime 15 jours restants
+    if (nextBillingDate) {
+      const diffTime = nextBillingDate.getTime() - now.getTime();
+      remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    } else {
+      // Estimation : milieu du mois (15 jours restants en moyenne)
+      remainingDays = 15;
+    }
     
     // Calculer les jours totaux du cycle (environ 30 jours pour mensuel)
     const totalDays = billingPeriod === 'monthly' ? 30 : 365;
@@ -434,7 +441,7 @@ export default function ManageMembersCount() {
                       <p className={`text-xs mt-1 ${
                         role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
                       }`}>
-                        Pour {Math.abs(memberDiff)} membre{Math.abs(memberDiff) > 1 ? 's' : ''} × {remainingDays} jour{remainingDays > 1 ? 's' : ''}
+                        Pour {Math.abs(memberDiff)} membre{Math.abs(memberDiff) > 1 ? 's' : ''} × {remainingDays} jour{remainingDays > 1 ? 's' : ''}{!nextBillingDate ? ' (estimation)' : ''}
                       </p>
                     </div>
                   )}
