@@ -34,14 +34,12 @@ export default function ManageMembersCount() {
   const newMonthlyPrice = pricePerMember * newMembersCount;
   const currentPrice = billingPeriod === 'monthly' ? currentMonthlyPrice : Math.round(currentMonthlyPrice * 12 * 0.9);
   const newPrice = billingPeriod === 'monthly' ? newMonthlyPrice : Math.round(newMonthlyPrice * 12 * 0.9);
-  const currentTTC = Math.round((currentPrice + currentPrice * 0.2) * 100) / 100;
-  const newTTC = Math.round((newPrice + newPrice * 0.2) * 100) / 100;
 
   // Calcul du prorata
   const memberDiff = newMembersCount - currentMembers;
   const isAdding = memberDiff > 0;
   const isRemoving = memberDiff < 0;
-  const priceDiff = newTTC - currentTTC;
+  const priceDiff = newPrice - currentPrice;
 
   // Calcul du prorata pour affichage
   let prorataAmount = 0;
@@ -304,7 +302,7 @@ export default function ManageMembersCount() {
                 </p>
                 <div className="mt-3 pt-3 border-t border-gray-200">
                   <p className="text-base font-semibold text-black">
-                    Prix total actuel : <span className={role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}>{currentTTC}€ TTC / {billingPeriod === 'monthly' ? 'mois' : 'an'}</span>
+                    Prix total actuel : <span className={role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}>{currentPrice}€ / {billingPeriod === 'monthly' ? 'mois' : 'an'}</span>
                   </p>
                 </div>
               </div>
@@ -455,12 +453,12 @@ export default function ManageMembersCount() {
                     <p className={`text-2xl font-bold ${
                       role === 'notaire' ? 'text-orange-900' : 'text-blue-900'
                     }`}>
-                      {newPrice}€ HT/{billingPeriod === 'monthly' ? 'mois' : 'an'}
+                      {newPrice}€/{billingPeriod === 'monthly' ? 'mois' : 'an'}
                     </p>
                     <p className={`text-xs mt-1 ${
                       role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
                     }`}>
-                      Différence : {(newPrice - currentPrice) > 0 ? '+' : ''}{newPrice - currentPrice}€ HT/{billingPeriod === 'monthly' ? 'mois' : 'an'}
+                      Différence : {(newPrice - currentPrice) > 0 ? '+' : ''}{newPrice - currentPrice}€/{billingPeriod === 'monthly' ? 'mois' : 'an'}
                     </p>
                   </div>
                 </div>
