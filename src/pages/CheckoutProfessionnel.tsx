@@ -127,8 +127,8 @@ export default function CheckoutProfessionnel() {
         return;
       }
 
-      // Obtenir le price ID Stripe pour le plan Professionnel
-      const priceId = STRIPE_PRICE_IDS.professionnel;
+      // Obtenir le price ID Stripe pour le plan Professionnel selon la période
+      const priceId = STRIPE_PRICE_IDS.professionnel[billingPeriod];
       if (!priceId) {
         toast.error("Erreur de configuration", {
           description: "Plan non trouvé"

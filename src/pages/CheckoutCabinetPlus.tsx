@@ -127,8 +127,8 @@ export default function CheckoutCabinetPlus() {
         return;
       }
 
-      // Obtenir le price ID Stripe pour le plan Cabinet+
-      const priceId = STRIPE_PRICE_IDS['cabinet-plus'];
+      // Obtenir le price ID Stripe pour le plan Cabinet+ selon la période
+      const priceId = STRIPE_PRICE_IDS['cabinet-plus'][billingPeriod];
       if (!priceId) {
         toast.error("Erreur de configuration", {
           description: "Plan non trouvé"

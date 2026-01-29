@@ -2,12 +2,31 @@
 
 // Configuration des Price IDs Stripe pour les abonnements
 export const STRIPE_PRICE_IDS = {
-  essentiel: 'price_1SlF7K7epLIfQ2kH1CXhd7Qi',
-  professionnel: 'price_1SlF7u7epLIfQ2kH1rkjd80L',
-  'cabinet-plus': 'price_1SlF8H7epLIfQ2kHaupJK7eZ',
+  essentiel: {
+    monthly: 'price_1SlF7K7epLIfQ2kH1CXhd7Qi',
+    yearly: 'price_1Sv2qe7epLIfQ2kHzw7rHBQz'
+  },
+  professionnel: {
+    monthly: 'price_1SlF7u7epLIfQ2kH1rkjd80L',
+    yearly: 'price_1Sv2rG7epLIfQ2kHNZeDRYWr'
+  },
+  'cabinet-plus': {
+    monthly: 'price_1SlF8H7epLIfQ2kHaupJK7eZ',
+    yearly: 'price_1Sv2ra7epLIfQ2kHGqPRDIWP'
+  }
 } as const;
 
 export type SubscriptionTier = keyof typeof STRIPE_PRICE_IDS;
+
+// Price IDs Stripe pour les packs de signatures (paiements uniques)
+export const SIGNATURE_PACK_PRICE_IDS = {
+  urgence: 'price_1Sv2ys7epLIfQ2kHk3TJCXC5',      // 1 signature - 3€
+  mini: 'price_1Sv2zv7epLIfQ2kHJg3pclkw',         // 10 signatures - 20€
+  starter: 'price_1Sv30t7epLIfQ2kHsvb1ass1',      // 25 signatures - 30€
+  pro: 'price_1Sv31X7epLIfQ2kHrdT5gUaa',          // 50 signatures - 45€
+  business: 'price_1Sv32P7epLIfQ2kHfst7iOEU',     // 100 signatures - 70€
+  enterprise: 'price_1Sv32w7epLIfQ2kHPLbZCjDM'    // 250 signatures - 140€
+} as const;
 
 // Prix des formules (en euros)
 export const SUBSCRIPTION_PRICES = {
@@ -56,6 +75,8 @@ export const SUBSCRIPTION_PRICES = {
 // Packs de signatures électroniques
 export const SIGNATURE_PACKS = [
   {
+    id: 'urgence',
+    priceId: SIGNATURE_PACK_PRICE_IDS.urgence,
     quantity: 1,
     price: 3,
     pricePerSignature: 3.00,
@@ -63,18 +84,24 @@ export const SIGNATURE_PACKS = [
     isEmergency: true
   },
   {
+    id: 'mini',
+    priceId: SIGNATURE_PACK_PRICE_IDS.mini,
     quantity: 10,
     price: 20,
     pricePerSignature: 2.00,
     description: 'Pack Mini'
   },
   {
-    quantity: 20,
+    id: 'starter',
+    priceId: SIGNATURE_PACK_PRICE_IDS.starter,
+    quantity: 25,
     price: 30,
-    pricePerSignature: 1.50,
+    pricePerSignature: 1.20,
     description: 'Pack Starter'
   },
   {
+    id: 'pro',
+    priceId: SIGNATURE_PACK_PRICE_IDS.pro,
     quantity: 50,
     price: 45,
     pricePerSignature: 0.90,
@@ -82,12 +109,16 @@ export const SIGNATURE_PACKS = [
     popular: true
   },
   {
+    id: 'business',
+    priceId: SIGNATURE_PACK_PRICE_IDS.business,
     quantity: 100,
     price: 70,
     pricePerSignature: 0.70,
     description: 'Pack Business'
   },
   {
+    id: 'enterprise',
+    priceId: SIGNATURE_PACK_PRICE_IDS.enterprise,
     quantity: 250,
     price: 140,
     pricePerSignature: 0.56,

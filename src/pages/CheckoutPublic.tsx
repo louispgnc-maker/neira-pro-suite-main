@@ -107,8 +107,8 @@ export default function CheckoutPublic() {
     setLoading(true);
 
     try {
-      // Get price ID for the selected plan
-      const priceId = STRIPE_PRICE_IDS[planId as keyof typeof STRIPE_PRICE_IDS];
+      // Get price ID for the selected plan and billing period
+      const priceId = STRIPE_PRICE_IDS[planId as keyof typeof STRIPE_PRICE_IDS][billingPeriod];
       if (!priceId) {
         toast.error("Plan invalide");
         setLoading(false);

@@ -61,8 +61,8 @@ export default function CheckoutEssentiel() {
         return;
       }
 
-      // Obtenir le price ID Stripe pour le plan Essentiel
-      const priceId = STRIPE_PRICE_IDS.essentiel;
+      // Obtenir le price ID Stripe pour le plan Essentiel selon la période
+      const priceId = STRIPE_PRICE_IDS.essentiel[billingPeriod];
       if (!priceId) {
         toast.error("Erreur de configuration", {
           description: "Plan non trouvé"
