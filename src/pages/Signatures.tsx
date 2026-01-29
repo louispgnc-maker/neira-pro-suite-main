@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
 import { ResourceCounter } from "@/components/subscription/ResourceCounter";
 import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
+import { getCurrentBillingCycleStart } from "@/lib/billingCycle";
 
 type SignatureRow = {
   id: string;
@@ -24,6 +25,7 @@ type SignatureRow = {
   document_name: string;
   status: string;
   last_reminder_at?: string | null;
+  created_at?: string;
 };
 
 export default function Signatures() {
@@ -67,12 +69,20 @@ export default function Signatures() {
         return;
       }
       setLoading(true);
+      
+      // Calculer le début du cycle de facturation actuel
+      const { data: cabinetData } = await supabase.rpc('get_user_cabinets');
+      const cabinet = cabinetData?.find((c: any) => String(c.role) === role);
+      const cycleStartDate = getCurrentBillingCycleStart(cabinet?.subscription_started_at || null);
+
       let query = supabase
         .from("signatures")
-        .select("id,signer_name,document_name,status,last_reminder_at")
+        .select("id,signer_name,document_name,status,last_reminder_at,created_at")
         .eq("owner_id", user.id)
         .eq("role", role)
-        .order("last_reminder_at", { ascending: false, nullsFirst: false });
+        .gte("created_at", cycleStartDate.toISOString()) // Filtrer par cycle actuel
+        .order("last_reminder_at", { ascending: false, nullsFirst: false});
+        
       if (debounced) {
         query = query.or(`signer_name.ilike.%${debounced}%,document_name.ilike.%${debounced}%`);
       }
