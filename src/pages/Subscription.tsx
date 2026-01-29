@@ -624,6 +624,12 @@ export default function Subscription() {
                           <p className="text-sm text-green-700 font-semibold">⚡ Pensé pour les cabinets en croissance</p>
                         </div>
                       )}
+
+                      {isCabinetPlus && (
+                        <div className="mb-4 pt-4 border-t">
+                          <p className="text-sm text-green-700 font-semibold">🚀 Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille</p>
+                        </div>
+                      )}
                       
                       <Button 
                         className={`w-full ${

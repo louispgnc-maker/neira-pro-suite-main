@@ -332,7 +332,11 @@ export default function Solution() {
                 </div>
               </div>
               
-              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/checkout/cabinet-plus')}>
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-sm text-green-700 font-semibold">🚀 Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille</p>
+              </div>
+              
+              <Button className="w-full mt-6 bg-orange-600 hover:bg-orange-700 text-white" onClick={() => navigate('/checkout/cabinet-plus')}>
                 Choisir Cabinet+
               </Button>
             </Card>

@@ -463,6 +463,7 @@ export default function Index() {
                   </li>
                 ))}
               </ul>
+              <p className="text-gray-600 mb-6">🚀 Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille</p>
               <Button 
                 className="w-full bg-orange-600 hover:bg-orange-700 text-white py-6"
                 onClick={() => navigate("/checkout-cabinet-plus")}
