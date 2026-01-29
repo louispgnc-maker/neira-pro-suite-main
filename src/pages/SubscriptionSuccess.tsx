@@ -36,8 +36,13 @@ export default function SubscriptionSuccess() {
         
         setLoading(false);
         toast.success('Paiement confirmé !', {
-          description: 'Votre abonnement est maintenant actif.'
+          description: 'Créez maintenant votre compte pour accéder à votre espace.'
         });
+
+        // Redirection automatique après 3 secondes
+        setTimeout(() => {
+          navigate(`/create-account?session_id=${sessionIdParam}`);
+        }, 3000);
       } catch (error) {
         console.error('Erreur lors de la vérification:', error);
         setLoading(false);
@@ -52,8 +57,8 @@ export default function SubscriptionSuccess() {
   }, [searchParams]);
 
   const handleContinue = () => {
-    // Rediriger vers le choix de profession
-    navigate('/select-profession');
+    // Rediriger vers la création de compte avec session_id
+    navigate(`/create-account?session_id=${sessionId}`);
   };
 
   if (loading) {

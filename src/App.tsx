@@ -52,6 +52,7 @@ import CheckoutEssentiel from "./pages/CheckoutEssentiel";
 import CheckoutProfessionnel from "./pages/CheckoutProfessionnel";
 import CheckoutCabinetPlus from "./pages/CheckoutCabinetPlus";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
+import CreateAccountAfterPayment from "./pages/CreateAccountAfterPayment";
 import TestSubscription from "./pages/TestSubscription";
 import TestPayment from "./pages/test/TestPayment";
 import TestThanks from "./pages/test/TestThanks";
@@ -124,6 +125,7 @@ const App = () => (
             <Route path="/checkout-professionnel" element={<CheckoutProfessionnel />} />
             <Route path="/checkout-cabinet-plus" element={<CheckoutCabinetPlus />} />
             <Route path="/subscription/success" element={<SubscriptionSuccess />} />
+            <Route path="/create-account" element={<CreateAccountAfterPayment />} />
             
             {/* Routes onboarding */}
             <Route path="/select-profession" element={<SelectProfession />} />
