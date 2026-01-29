@@ -388,7 +388,7 @@ export default function ManageMembersCount() {
                       <p className={`text-xs ${
                         role === 'notaire' ? 'text-orange-700' : 'text-blue-700'
                       }`}>
-                        Vous serez facturé immédiatement au prorata du temps restant jusqu'à votre prochaine date de facturation (montant arrondi à l'euro supérieur). 
+                        Vous serez facturé immédiatement au prorata du temps restant jusqu'à votre prochaine date de facturation. 
                         À partir de votre prochaine facturation, vous paierez le montant complet pour {newMembersCount} membre{newMembersCount > 1 ? 's' : ''}.
                       </p>
                     </div>
