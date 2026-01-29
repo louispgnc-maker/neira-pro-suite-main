@@ -345,12 +345,6 @@ export default function ManageMembersCount() {
                 <div className="text-center flex-1">
                   <div className="text-3xl font-bold">{newMembersCount}</div>
                   <div className="text-sm text-gray-600">membre{newMembersCount > 1 ? 's' : ''}</div>
-                  <div className={`text-2xl font-bold mt-2 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
-                    {pricePerMember}€<span className="text-sm">/membre/mois</span>
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    Total : {newMonthlyPrice}€/mois
-                  </div>
                 </div>
                 
                 <div className="flex flex-col items-center">
@@ -378,12 +372,6 @@ export default function ManageMembersCount() {
                   )}
                 </div>
               </div>
-
-              <p className="text-xs text-gray-500 text-center">
-                {currentPlan === 'professionnel' 
-                  ? `Le plan Professionnel accepte entre 2 et 10 membres`
-                  : `Prix par membre : ${pricePerMember}€/mois`}
-              </p>
               
               {/* Avertissement si en dessous du nombre de membres actifs */}
               {newMembersCount < activeMembersCount && (
