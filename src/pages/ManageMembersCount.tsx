@@ -379,44 +379,6 @@ export default function ManageMembersCount() {
                   ? `Le plan Professionnel accepte entre 2 et 10 membres`
                   : `Prix par membre : ${pricePerMember}€/mois`}
               </p>
-
-              {/* Affichage du prorata */}
-              {memberDiff !== 0 && prorataAmount > 0 && (
-                <div className={`mt-4 rounded-lg p-4 ${
-                  isAdding 
-                    ? (role === 'notaire' ? 'bg-orange-50 border-2 border-orange-300' : 'bg-blue-50 border-2 border-blue-300')
-                    : 'bg-green-50 border-2 border-green-300'
-                }`}>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className={`text-sm font-semibold ${
-                        isAdding 
-                          ? (role === 'notaire' ? 'text-orange-900' : 'text-blue-900')
-                          : 'text-green-900'
-                      }`}>
-                        {isAdding ? '💳 À payer maintenant (prorata)' : '💰 Crédit à venir (prorata)'}
-                      </p>
-                      <p className="text-xs text-gray-600 mt-1">
-                        {isAdding 
-                          ? `Pour ${Math.abs(memberDiff)} membre${Math.abs(memberDiff) > 1 ? 's' : ''} × ${remainingDays} jour${remainingDays > 1 ? 's' : ''} restant${remainingDays > 1 ? 's' : ''}`
-                          : `Remboursement pour ${Math.abs(memberDiff)} membre${Math.abs(memberDiff) > 1 ? 's' : ''}`}
-                      </p>
-                    </div>
-                    <div className={`text-3xl font-bold ${
-                      isAdding 
-                        ? (role === 'notaire' ? 'text-orange-600' : 'text-blue-600')
-                        : 'text-green-600'
-                    }`}>
-                      {isAdding ? '' : '+'}{prorataAmount}€
-                    </div>
-                  </div>
-                  {nextBillingDate && (
-                    <p className="text-xs text-gray-500 mt-2">
-                      Prochaine facturation complète : {nextBillingDate.toLocaleDateString('fr-FR')}
-                    </p>
-                  )}
-                </div>
-              )}
               
               {/* Avertissement si en dessous du nombre de membres actifs */}
               {newMembersCount < activeMembersCount && (
@@ -445,7 +407,7 @@ export default function ManageMembersCount() {
                 <h3 className={`font-semibold mb-3 ${
                   role === 'notaire' ? 'text-orange-900' : 'text-blue-900'
                 }`}>Résumé de la modification</h3>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <p className={`text-sm ${
                     role === 'notaire' ? 'text-orange-800' : 'text-blue-800'
                   }`}>
@@ -453,35 +415,54 @@ export default function ManageMembersCount() {
                     <span className="font-semibold">{Math.abs(memberDiff)} membre{Math.abs(memberDiff) > 1 ? 's' : ''}</span>
                     {isAdding ? ' supplémentaire' : ''}{Math.abs(memberDiff) > 1 ? 's' : ''} :
                   </p>
-                  <p className={`text-lg font-semibold mt-2 ${
-                    role === 'notaire' ? 'text-orange-900' : 'text-blue-900'
-                  }`}>
-                    Nouveau total : {newTTC}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
-                  </p>
-                  <p className={`text-xs mt-1 ${
-                    role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                  }`}>
-                    Différence : {priceDiff > 0 ? '+' : ''}{priceDiff.toFixed(2)}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
-                  </p>
                   
-                  {/* Explication du prorata */}
-                  {isAdding && (
-                    <div className={`mt-3 pt-3 border-t ${
-                      role === 'notaire' ? 'border-orange-200' : 'border-blue-200'
+                  {/* Prix à payer maintenant (prorata) */}
+                  {isAdding && prorataAmount > 0 && (
+                    <div className={`p-3 rounded ${
+                      role === 'notaire' 
+                        ? 'bg-orange-100 border border-orange-300' 
+                        : 'bg-blue-100 border border-blue-300'
                     }`}>
                       <p className={`text-xs font-medium mb-1 ${
-                        role === 'notaire' ? 'text-orange-900' : 'text-blue-900'
-                      }`}>
-                        💡 Facturation au prorata
-                      </p>
-                      <p className={`text-xs ${
                         role === 'notaire' ? 'text-orange-700' : 'text-blue-700'
                       }`}>
-                        Vous serez facturé immédiatement au prorata du temps restant jusqu'à votre prochaine date de facturation. 
-                        À partir de votre prochaine facturation, vous paierez le montant complet pour {newMembersCount} membre{newMembersCount > 1 ? 's' : ''}.
+                        💳 À payer maintenant (prorata)
+                      </p>
+                      <p className={`text-2xl font-bold ${
+                        role === 'notaire' ? 'text-orange-900' : 'text-blue-900'
+                      }`}>
+                        {prorataAmount}€
+                      </p>
+                      <p className={`text-xs mt-1 ${
+                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                      }`}>
+                        Pour {Math.abs(memberDiff)} membre{Math.abs(memberDiff) > 1 ? 's' : ''} × {remainingDays} jour{remainingDays > 1 ? 's' : ''}
                       </p>
                     </div>
                   )}
+                  
+                  {/* Nouveau prix mensuel à partir de la prochaine facturation */}
+                  <div className={`p-3 rounded ${
+                    role === 'notaire' 
+                      ? 'bg-orange-100 border border-orange-300' 
+                      : 'bg-blue-100 border border-blue-300'
+                  }`}>
+                    <p className={`text-xs font-medium mb-1 ${
+                      role === 'notaire' ? 'text-orange-700' : 'text-blue-700'
+                    }`}>
+                      📅 À partir de la prochaine facturation{nextBillingDate ? ` (${nextBillingDate.toLocaleDateString('fr-FR')})` : ''}
+                    </p>
+                    <p className={`text-2xl font-bold ${
+                      role === 'notaire' ? 'text-orange-900' : 'text-blue-900'
+                    }`}>
+                      {newTTC}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
+                    </p>
+                    <p className={`text-xs mt-1 ${
+                      role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                    }`}>
+                      Différence : {priceDiff > 0 ? '+' : ''}{priceDiff.toFixed(2)}€/{billingPeriod === 'monthly' ? 'mois' : 'an'}
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
