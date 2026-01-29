@@ -27,7 +27,7 @@ export default function CheckoutEssentiel() {
   
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
 
-  const monthlyPrice = 39;
+  const monthlyPrice = 45;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
   const price = billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice;
   const total = Math.round(price * 100) / 100;
@@ -37,16 +37,54 @@ export default function CheckoutEssentiel() {
     setLoading(true);
     
     try {
-      console.log('🚀 Bypass Stripe - Redirection directe vers confirmation');
-      
-      // Simuler un délai de paiement
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Rediriger directement vers la page de succès
-      window.location.href = `${window.location.origin}/subscription/success?session_id=temp_bypass`;
+      // Vérifier que l'utilisateur est connecté
+      if (!user) {
+        toast.error("Erreur", {
+          description: "Vous devez être connecté pour souscrire"
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Récupérer le cabinet de l'utilisateur
+      const { data: memberData, error: memberError } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (memberError || !memberData?.cabinet_id) {
+        toast.error("Erreur", {
+          description: "Cabinet non trouvé. Veuillez contacter le support."
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Obtenir le price ID Stripe pour le plan Essentiel
+      const priceId = STRIPE_PRICE_IDS.essentiel;
+      if (!priceId) {
+        toast.error("Erreur de configuration", {
+          description: "Plan non trouvé"
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Créer la session de paiement Stripe
+      const checkoutUrl = await createStripeCheckoutSession({
+        priceId,
+        quantity: 1, // Plan Essentiel = 1 utilisateur
+        cabinetId: memberData.cabinet_id,
+        successUrl: `${window.location.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/checkout/essentiel`
+      });
+
+      // Rediriger vers Stripe
+      window.location.href = checkoutUrl;
       
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('Erreur lors de la création de la session Stripe:', error);
       toast.error("Erreur", {
         description: error instanceof Error ? error.message : "Veuillez réessayer"
       });

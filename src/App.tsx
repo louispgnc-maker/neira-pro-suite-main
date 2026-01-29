@@ -41,6 +41,7 @@ import ContactSupport from "./pages/ContactSupport";
 import CheckoutPlan from "./pages/CheckoutPlan";
 import CheckoutPublic from "./pages/CheckoutPublic";
 import ManageMembersCount from "./pages/ManageMembersCount";
+import PaymentHistory from "./pages/PaymentHistory";
 import EmailIntegration from "./pages/EmailIntegration";
 import EmailInbox from "./pages/EmailInbox";
 import OAuthCallback from "./pages/OAuthCallback";
@@ -155,6 +156,7 @@ const App = () => (
             <Route path="/avocats/messagerie" element={<RoleProtectedRoute requiredRole="avocat"><EmailInbox /></RoleProtectedRoute>} />
             <Route path="/avocats/subscription" element={<RoleProtectedRoute requiredRole="avocat"><Subscription /></RoleProtectedRoute>} />
             <Route path="/avocats/subscription/manage-members" element={<RoleProtectedRoute requiredRole="avocat"><ManageMembersCount /></RoleProtectedRoute>} />
+            <Route path="/avocats/payment-history" element={<RoleProtectedRoute requiredRole="avocat"><PaymentHistory /></RoleProtectedRoute>} />
             <Route path="/avocats/statistiques" element={<RoleProtectedRoute requiredRole="avocat"><Statistiques /></RoleProtectedRoute>} />
             <Route path="/avocats/contact-support" element={<RoleProtectedRoute requiredRole="avocat"><ContactSupport /></RoleProtectedRoute>} />
             <Route path="/avocats/checkout/:planId" element={<RoleProtectedRoute requiredRole="avocat"><CheckoutPlan /></RoleProtectedRoute>} />
@@ -186,6 +188,7 @@ const App = () => (
             <Route path="/notaires/messagerie" element={<RoleProtectedRoute requiredRole="notaire"><EmailInbox /></RoleProtectedRoute>} />
             <Route path="/notaires/subscription" element={<RoleProtectedRoute requiredRole="notaire"><Subscription /></RoleProtectedRoute>} />
             <Route path="/notaires/subscription/manage-members" element={<RoleProtectedRoute requiredRole="notaire"><ManageMembersCount /></RoleProtectedRoute>} />
+            <Route path="/notaires/payment-history" element={<RoleProtectedRoute requiredRole="notaire"><PaymentHistory /></RoleProtectedRoute>} />
             <Route path="/notaires/statistiques" element={<RoleProtectedRoute requiredRole="notaire"><Statistiques /></RoleProtectedRoute>} />
             <Route path="/notaires/contact-support" element={<RoleProtectedRoute requiredRole="notaire"><ContactSupport /></RoleProtectedRoute>} />
             <Route path="/notaires/checkout/:planId" element={<RoleProtectedRoute requiredRole="notaire"><CheckoutPlan /></RoleProtectedRoute>} />

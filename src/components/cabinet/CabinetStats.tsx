@@ -429,7 +429,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
         open={buyDialogOpen}
         onOpenChange={setBuyDialogOpen}
         subscriptionPlan={subscriptionPlan as 'essentiel' | 'professionnel' | 'cabinet-plus'}
-        currentMonthlyPrice={subscriptionPlan === 'essentiel' ? 39 : subscriptionPlan === 'professionnel' ? 59 : 89}
+        currentMonthlyPrice={subscriptionPlan === 'essentiel' ? 45 : subscriptionPlan === 'professionnel' ? 69 : 99}
         role={role}
         targetUserId={selectedMemberForPurchase?.userId}
         targetUserName={selectedMemberForPurchase?.name}

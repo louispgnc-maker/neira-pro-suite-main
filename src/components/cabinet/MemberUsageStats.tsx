@@ -312,7 +312,7 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
         open={buyDialogOpen}
         onOpenChange={setBuyDialogOpen}
         subscriptionPlan={subscriptionPlan as 'essentiel' | 'professionnel' | 'cabinet-plus'}
-        currentMonthlyPrice={subscriptionPlan === 'essentiel' ? 39 : subscriptionPlan === 'professionnel' ? 59 : 89}
+        currentMonthlyPrice={subscriptionPlan === 'essentiel' ? 45 : subscriptionPlan === 'professionnel' ? 69 : 99}
         role={role}
       />
     </Dialog>

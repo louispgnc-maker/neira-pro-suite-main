@@ -96,7 +96,7 @@ export default function Solution() {
             <Card className="p-6 bg-white transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-blue-500 border border-gray-200 rounded-xl shadow-lg">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
-                <div className="text-4xl font-bold text-blue-600 mb-2">39€</div>
+                <div className="text-4xl font-bold text-blue-600 mb-2">45€</div>
                 <p className="text-sm text-gray-600">par mois / utilisateur</p>
               </div>
               
@@ -192,7 +192,7 @@ export default function Solution() {
               
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA PROFESSIONNEL</h3>
-                <div className="text-4xl font-bold text-purple-600 mb-2">59€</div>
+                <div className="text-4xl font-bold text-purple-600 mb-2">69€</div>
                 <p className="text-sm text-gray-600">par mois / utilisateur</p>
               </div>
               
@@ -270,7 +270,7 @@ export default function Solution() {
             <Card className="p-6 bg-white transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-2 hover:border-orange-500 border border-gray-200 rounded-xl shadow-lg">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
-                <div className="text-4xl font-bold text-orange-600 mb-2">89€</div>
+                <div className="text-4xl font-bold text-orange-600 mb-2">99€</div>
                 <p className="text-sm text-gray-600">par mois / utilisateur</p>
               </div>
               

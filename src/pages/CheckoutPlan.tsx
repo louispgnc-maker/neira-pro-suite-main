@@ -17,7 +17,7 @@ import { STRIPE_PRICE_IDS } from "@/lib/stripeConfig";
 const planConfigs = {
   'essentiel': {
     name: 'Essentiel',
-    monthlyPrice: 39,
+    monthlyPrice: 45,
     description: 'Idéal pour avocats et notaires indépendants',
     icon: Zap,
     color: 'blue',
@@ -38,7 +38,7 @@ const planConfigs = {
   },
   'professionnel': {
     name: 'Professionnel',
-    monthlyPrice: 59,
+    monthlyPrice: 69,
     description: 'Idéal pour cabinets de 2 à 10 utilisateurs',
     icon: Crown,
     color: 'purple',
@@ -56,7 +56,7 @@ const planConfigs = {
   },
   'cabinet-plus': {
     name: 'Cabinet+',
-    monthlyPrice: 89,
+    monthlyPrice: 99,
     description: 'Idéal pour cabinets de 10 à 50+ utilisateurs',
     icon: Users,
     color: 'orange',

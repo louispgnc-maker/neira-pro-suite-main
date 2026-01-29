@@ -24,8 +24,8 @@ export default function ManageMembersCount() {
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
 
   const planPrices = {
-    'professionnel': 59,
-    'cabinet-plus': 89
+    'professionnel': 69,
+    'cabinet-plus': 99
   };
 
   const pricePerMember = planPrices[currentPlan];
@@ -147,10 +147,10 @@ export default function ManageMembersCount() {
         return;
       }
 
-      // Récupérer le cabinet_id pour le rôle actuel
+      // Récupérer le cabinet_id et le stripe_subscription_item_id pour le rôle actuel
       const { data: memberData } = await supabase
         .from('cabinet_members')
-        .select('cabinet_id, cabinets!inner(role)')
+        .select('cabinet_id, cabinets!inner(role, stripe_subscription_item_id)')
         .eq('user_id', user?.id)
         .eq('cabinets.role', role);
 
@@ -161,9 +161,33 @@ export default function ManageMembersCount() {
       }
 
       const cabinetId = memberData[0].cabinet_id;
+      const stripeSubscriptionItemId = (memberData[0].cabinets as any).stripe_subscription_item_id;
 
-      // Mettre à jour le nombre de membres
-      const { error } = await supabase
+      if (!stripeSubscriptionItemId) {
+        toast.error('Erreur de configuration', {
+          description: 'Abonnement Stripe non trouvé. Veuillez contacter le support.'
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Mettre à jour la quantité via Stripe (avec proratisation automatique)
+      const { data: stripeData, error: stripeError } = await supabase.functions.invoke(
+        'update-subscription-quantity',
+        {
+          body: {
+            subscriptionItemId: stripeSubscriptionItemId,
+            quantity: newMembersCount
+          }
+        }
+      );
+
+      if (stripeError) {
+        throw new Error(stripeError.message || 'Erreur lors de la mise à jour de l\'abonnement Stripe');
+      }
+
+      // Mettre à jour le nombre de membres dans la base de données
+      const { error: dbError } = await supabase
         .from('cabinets')
         .update({
           max_members: newMembersCount,
@@ -171,10 +195,10 @@ export default function ManageMembersCount() {
         })
         .eq('id', cabinetId);
 
-      if (error) throw error;
+      if (dbError) throw dbError;
 
       toast.success('Abonnement mis à jour !', {
-        description: `Votre abonnement comprend maintenant ${newMembersCount} membre${newMembersCount > 1 ? 's' : ''}.`
+        description: `Votre abonnement comprend maintenant ${newMembersCount} membre${newMembersCount > 1 ? 's' : ''}. ${memberDiff > 0 ? 'Une facture prorata a été générée.' : 'Un crédit prorata sera appliqué.'}`
       });
 
       setTimeout(() => {
@@ -183,7 +207,7 @@ export default function ManageMembersCount() {
     } catch (error: any) {
       console.error('Error updating members:', error);
       toast.error('Erreur', {
-        description: 'Une erreur est survenue lors de la mise à jour.'
+        description: error.message || 'Une erreur est survenue lors de la mise à jour.'
       });
       setLoading(false);
     }

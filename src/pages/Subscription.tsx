@@ -31,7 +31,7 @@ const plans = [
   {
     id: 'essentiel',
     name: 'Essentiel',
-    price: '39€',
+    price: '45€',
     period: '/mois',
     description: 'Idéal pour avocats et notaires indépendants',
     summary: 'Conçu pour un seul professionnel qui travaille en autonomie.',
@@ -57,7 +57,7 @@ const plans = [
   {
     id: 'professionnel',
     name: 'Professionnel',
-    price: '59€',
+    price: '69€',
     period: '/mois',
     description: 'Idéal pour cabinets de 2 à 10 utilisateurs',
     summary: 'Idéal pour les cabinets qui veulent structurer leurs workflows avec espace collaboratif complet.',
@@ -81,7 +81,7 @@ const plans = [
   {
     id: 'cabinet-plus',
     name: 'Cabinet+',
-    price: '89€',
+    price: '99€',
     period: '/mois',
     description: 'Idéal pour cabinets de 10 à 50+ utilisateurs',
     summary: 'Solution premium pour cabinets structurés avec tout illimité.',
@@ -466,8 +466,8 @@ export default function Subscription() {
                   </Button>
                   <p className="text-xs text-gray-600 mt-2">
                     {currentPlan === 'professionnel' 
-                      ? 'Prix : 59€/mois par membre (2 à 10 membres)'
-                      : 'Prix : 89€/mois par membre (illimité)'}
+                      ? 'Prix : 69€/mois par membre (2 à 10 membres)'
+                      : 'Prix : 99€/mois par membre (illimité)'}
                   </p>
                 </div>
               </CardContent>

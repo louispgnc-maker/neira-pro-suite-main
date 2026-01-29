@@ -398,7 +398,7 @@ export default function Index() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA ESSENTIEL</h3>
                 <p className="text-gray-600 mb-6">Idéal pour avocats et notaires indépendants</p>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-blue-600">39€</span>
+                  <span className="text-5xl font-bold text-blue-600">45€</span>
                   <span className="text-gray-600">/mois/utilisateur</span>
                 </div>
               </div>
@@ -451,7 +451,7 @@ export default function Index() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">NEIRA CABINET+</h3>
                 <p className="text-gray-600 mb-6">Idéal pour cabinets de 10 à 50+ utilisateurs</p>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-orange-600">89€</span>
+                  <span className="text-5xl font-bold text-orange-600">99€</span>
                   <span className="text-gray-600">/mois/utilisateur</span>
                 </div>
               </div>
