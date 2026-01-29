@@ -57,8 +57,8 @@ serve(async (req) => {
     // Configuration de la session Checkout pour paiements internationaux
     const sessionParams: any = {
       mode: 'subscription',
-      // Support de multiples méthodes de paiement pour tous les pays
-      payment_method_types: ['card', 'sepa_debit', 'bancontact', 'ideal', 'giropay', 'sofort'],
+      // Support des cartes bancaires (activation des autres méthodes requise dans Stripe Dashboard)
+      payment_method_types: ['card'],
       line_items: [
         {
           price: priceId,

@@ -151,7 +151,7 @@ export default function CheckoutPlan() {
         cabinetId,
         quantity: numberOfUsers,
         customerEmail: user.email || undefined,
-        successUrl: `${window.location.origin}${prefix}/subscription?success=true`,
+        successUrl: `${window.location.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${window.location.origin}${prefix}/subscription?canceled=true`
       });
 
