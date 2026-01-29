@@ -55,17 +55,21 @@ serve(async (req) => {
       prorataRounded: prorataEuros + '€'
     })
 
-    // Mettre à jour la quantity dans Stripe avec proratisation
+    // Mettre à jour la quantity dans Stripe
+    // Pour les ajouts: proratisation immédiate
+    // Pour les suppressions: changement effectif mais pas de remboursement prorata
     const updatedItem = await stripe.subscriptionItems.update(subscriptionItemId, {
       quantity: quantity,
-      proration_behavior: 'always_invoice', // Créer une facture prorata immédiatement
+      // Si on ajoute des membres: facturer au prorata immédiatement
+      // Si on enlève des membres: pas de remboursement, juste réduire à la prochaine facture
+      proration_behavior: quantityDiff > 0 ? 'always_invoice' : 'none',
     })
 
     console.log('✅ Subscription quantity updated:', {
       subscriptionItemId,
       newQuantity: quantity,
-      proration: 'always_invoice',
-      prorataAmount: prorataEuros + '€'
+      proration: quantityDiff > 0 ? 'always_invoice (ajout)' : 'none (suppression)',
+      prorataAmount: quantityDiff > 0 ? prorataEuros + '€' : '0€ (pas de remboursement)'
     })
 
     return new Response(

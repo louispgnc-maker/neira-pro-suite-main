@@ -41,11 +41,11 @@ export default function ManageMembersCount() {
   const isRemoving = memberDiff < 0;
   const priceDiff = newPrice - currentPrice;
 
-  // Calcul du prorata pour affichage
+  // Calcul du prorata pour affichage (seulement pour les ajouts, pas de remboursement pour les suppressions)
   let prorataAmount = 0;
   let remainingDays = 0;
   
-  if (memberDiff !== 0) {
+  if (memberDiff !== 0 && isAdding) {
     const now = new Date();
     
     // Si on a la date de billing, on l'utilise, sinon on estime 15 jours restants
