@@ -19,6 +19,7 @@ export default function ManageMembersCount() {
   const [newMembersCount, setNewMembersCount] = useState(0);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [currentPlan, setCurrentPlan] = useState<'professionnel' | 'cabinet-plus'>('cabinet-plus');
+  const [nextBillingDate, setNextBillingDate] = useState<Date | null>(null);
   
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
@@ -35,6 +36,32 @@ export default function ManageMembersCount() {
   const newPrice = billingPeriod === 'monthly' ? newMonthlyPrice : Math.round(newMonthlyPrice * 12 * 0.9);
   const currentTTC = Math.round((currentPrice + currentPrice * 0.2) * 100) / 100;
   const newTTC = Math.round((newPrice + newPrice * 0.2) * 100) / 100;
+
+  // Calcul du prorata
+  const memberDiff = newMembersCount - currentMembers;
+  const isAdding = memberDiff > 0;
+  const isRemoving = memberDiff < 0;
+  const priceDiff = newTTC - currentTTC;
+
+  // Calcul du prorata pour affichage
+  let prorataAmount = 0;
+  let remainingDays = 0;
+  
+  if (nextBillingDate && memberDiff !== 0) {
+    const now = new Date();
+    const diffTime = nextBillingDate.getTime() - now.getTime();
+    remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Calculer les jours totaux du cycle (environ 30 jours pour mensuel)
+    const totalDays = billingPeriod === 'monthly' ? 30 : 365;
+    
+    // Prorata = différence de prix × (jours restants / jours totaux)
+    const memberPriceDiff = Math.abs(memberDiff) * pricePerMember;
+    const prorataCalc = memberPriceDiff * (remainingDays / totalDays);
+    
+    // Arrondir à l'euro supérieur
+    prorataAmount = Math.ceil(prorataCalc);
+  }
 
   useEffect(() => {
     const loadCabinetData = async () => {
@@ -105,6 +132,19 @@ export default function ManageMembersCount() {
           setCurrentMembers(maxMembers);
           setNewMembersCount(maxMembers);
           setBillingPeriod(cabinet.billing_period || 'monthly');
+
+          // Calculer la prochaine date de facturation
+          if (cabinet.subscription_started_at) {
+            const startDate = new Date(cabinet.subscription_started_at);
+            const now = new Date();
+            let monthsDiff = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
+            if (now.getDate() < startDate.getDate()) monthsDiff--;
+            
+            const nextBilling = new Date(startDate);
+            nextBilling.setMonth(nextBilling.getMonth() + monthsDiff + 1);
+            setNextBillingDate(nextBilling);
+            console.log('Next billing date:', nextBilling);
+          }
 
           // Compter les membres
           const { data: membersData } = await supabase
@@ -226,11 +266,6 @@ export default function ManageMembersCount() {
     }
   };
 
-  const memberDiff = newMembersCount - currentMembers;
-  const isAdding = memberDiff > 0;
-  const isRemoving = memberDiff < 0;
-  const priceDiff = newTTC - currentTTC;
-
   return (
     <AppLayout>
       <div className="container mx-auto p-8 max-w-4xl">
@@ -344,6 +379,44 @@ export default function ManageMembersCount() {
                   ? `Le plan Professionnel accepte entre 2 et 10 membres`
                   : `Prix par membre : ${pricePerMember}€/mois`}
               </p>
+
+              {/* Affichage du prorata */}
+              {memberDiff !== 0 && prorataAmount > 0 && (
+                <div className={`mt-4 rounded-lg p-4 ${
+                  isAdding 
+                    ? (role === 'notaire' ? 'bg-orange-50 border-2 border-orange-300' : 'bg-blue-50 border-2 border-blue-300')
+                    : 'bg-green-50 border-2 border-green-300'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className={`text-sm font-semibold ${
+                        isAdding 
+                          ? (role === 'notaire' ? 'text-orange-900' : 'text-blue-900')
+                          : 'text-green-900'
+                      }`}>
+                        {isAdding ? '💳 À payer maintenant (prorata)' : '💰 Crédit à venir (prorata)'}
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        {isAdding 
+                          ? `Pour ${Math.abs(memberDiff)} membre${Math.abs(memberDiff) > 1 ? 's' : ''} × ${remainingDays} jour${remainingDays > 1 ? 's' : ''} restant${remainingDays > 1 ? 's' : ''}`
+                          : `Remboursement pour ${Math.abs(memberDiff)} membre${Math.abs(memberDiff) > 1 ? 's' : ''}`}
+                      </p>
+                    </div>
+                    <div className={`text-3xl font-bold ${
+                      isAdding 
+                        ? (role === 'notaire' ? 'text-orange-600' : 'text-blue-600')
+                        : 'text-green-600'
+                    }`}>
+                      {isAdding ? '' : '+'}{prorataAmount}€
+                    </div>
+                  </div>
+                  {nextBillingDate && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      Prochaine facturation complète : {nextBillingDate.toLocaleDateString('fr-FR')}
+                    </p>
+                  )}
+                </div>
+              )}
               
               {/* Avertissement si en dessous du nombre de membres actifs */}
               {newMembersCount < activeMembersCount && (
