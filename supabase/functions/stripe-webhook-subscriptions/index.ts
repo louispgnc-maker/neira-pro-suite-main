@@ -1,15 +1,19 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
 import Stripe from 'https://esm.sh/stripe@14.21.0'
+import { sendPaymentConfirmationEmail } from '../_shared/emailHelpers.ts'
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
   apiVersion: '2024-11-20.acacia',
 })
 
 const PRICE_TO_TIER: Record<string, string> = {
-  'price_1SlF7K7epLIfQ2kH1CXhd7Qi': 'essentiel',
-  'price_1SlF7u7epLIfQ2kH1rkjd80L': 'professionnel',
-  'price_1SlF8H7epLIfQ2kHaupJK7eZ': 'cabinet-plus',
+  'price_1Sv3Vl7epLIfQ2kHxrIagkmU': 'essentiel',    // TEST monthly
+  'price_1Sv3WB7epLIfQ2kH82SeKT89': 'essentiel',    // TEST yearly
+  'price_1Sv3Xr7epLIfQ2kHOjEwtgTE': 'professionnel', // TEST monthly
+  'price_1Sv3YJ7epLIfQ2kHKUBQGH6N': 'professionnel', // TEST yearly
+  'price_1Sv3ZB7epLIfQ2kHEtN8tlHO': 'cabinet-plus',  // TEST monthly
+  'price_1Sv3ZX7epLIfQ2kHGNU91j2Z': 'cabinet-plus',  // TEST yearly
 }
 
 serve(async (req) => {
@@ -46,6 +50,7 @@ serve(async (req) => {
           const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
           const priceId = subscription.items.data[0]?.price.id
           const tier = PRICE_TO_TIER[priceId] || 'essentiel'
+          const quantity = subscription.items.data[0]?.quantity || 1
           
           // Récupérer le payment method
           let paymentMethodType = 'unknown'
@@ -61,7 +66,8 @@ serve(async (req) => {
             }
           }
 
-          await supabaseAdmin
+          // Mettre à jour le cabinet
+          const { error: updateError } = await supabaseAdmin
             .from('cabinets')
             .update({
               stripe_customer_id: subscription.customer as string,
@@ -70,7 +76,7 @@ serve(async (req) => {
               subscription_tier: tier,
               subscription_status: 'active',
               current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-              quantity_members: subscription.items.data[0]?.quantity || 1,
+              quantity_members: quantity,
               payment_method_type: paymentMethodType,
               payment_method_last4: paymentMethodLast4,
               payment_method_brand: paymentMethodBrand,
@@ -78,7 +84,75 @@ serve(async (req) => {
             })
             .eq('id', cabinetId)
 
-          console.log('✅ Checkout completed:', { cabinetId, tier, quantity: subscription.items.data[0]?.quantity })
+          if (updateError) {
+            console.error('❌ Error updating cabinet:', updateError)
+          }
+
+          // Récupérer les infos du cabinet et du owner pour l'email
+          const { data: cabinetData } = await supabaseAdmin
+            .from('cabinets')
+            .select(`
+              id,
+              name,
+              cabinet_members!inner(
+                user_id,
+                role,
+                users(email, full_name)
+              )
+            `)
+            .eq('id', cabinetId)
+            .single()
+
+          if (cabinetData) {
+            // Trouver le owner
+            const owner = cabinetData.cabinet_members?.find((m: any) => m.role === 'owner')
+            
+            if (owner?.users) {
+              const customerEmail = owner.users.email
+              const customerName = owner.users.full_name || 'Client'
+              
+              // Récupérer l'invoice pour le montant et l'URL
+              const latestInvoiceId = subscription.latest_invoice
+              let amount = 0
+              let invoiceUrl = ''
+              
+              if (latestInvoiceId) {
+                const invoice = await stripe.invoices.retrieve(latestInvoiceId as string)
+                amount = invoice.total || 0
+                invoiceUrl = invoice.hosted_invoice_url || invoice.invoice_pdf || ''
+              }
+
+              // Créer la facture dans la base de données
+              await supabaseAdmin
+                .from('invoices')
+                .insert({
+                  cabinet_id: cabinetId,
+                  stripe_invoice_id: latestInvoiceId as string,
+                  amount: amount / 100, // Convertir en euros
+                  currency: 'eur',
+                  status: 'paid',
+                  invoice_pdf: invoiceUrl,
+                  period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+                  period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+                  created_at: new Date().toISOString(),
+                })
+
+              // Envoyer l'email de confirmation
+              await sendPaymentConfirmationEmail({
+                customerEmail,
+                customerName,
+                subscriptionTier: tier,
+                quantity,
+                amount,
+                currency: 'EUR',
+                invoiceUrl,
+              })
+
+              console.log('✅ Email envoyé et facture créée pour:', customerEmail)
+            }
+          }
+
+          console.log('✅ Checkout completed:', { cabinetId, tier, quantity })
         }
         break
       }

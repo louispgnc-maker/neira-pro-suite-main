@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
-import { PublicHeader } from '@/components/layout/PublicHeader';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
 
@@ -16,6 +15,12 @@ export default function SubscriptionSuccess() {
   useEffect(() => {
     const sessionIdParam = searchParams.get('session_id');
     setSessionId(sessionIdParam);
+
+    // Empêcher le retour arrière
+    window.history.pushState(null, '', window.location.href);
+    window.onpopstate = () => {
+      window.history.pushState(null, '', window.location.href);
+    };
 
     // Vérifier que le paiement est bien confirmé
     const verifyPayment = async () => {
@@ -40,6 +45,10 @@ export default function SubscriptionSuccess() {
     };
 
     verifyPayment();
+
+    return () => {
+      window.onpopstate = null;
+    };
   }, [searchParams]);
 
   const handleContinue = () => {
@@ -63,12 +72,12 @@ export default function SubscriptionSuccess() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-100 to-white">
-      <PublicHeader />
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+      {/* Pas de header - flux obligatoire */}
       
       <div className="container mx-auto px-4 py-24">
         <div className="max-w-2xl mx-auto">
-          <Card className="bg-white/90 backdrop-blur border-2 border-green-500">
+          <Card className="bg-white/95 backdrop-blur border-2 border-green-500 shadow-2xl">
             <CardHeader className="text-center">
               <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                 <CheckCircle2 className="w-10 h-10 text-green-600" />
