@@ -22,7 +22,40 @@ serve(async (req) => {
       throw new Error('Subscription item ID and quantity are required')
     }
 
-    // Mettre à jour la quantity dans Stripe
+    // Récupérer l'abonnement actuel pour calculer le prorata
+    const subscriptionItem = await stripe.subscriptionItems.retrieve(subscriptionItemId)
+    const subscription = await stripe.subscriptions.retrieve(subscriptionItem.subscription as string)
+    
+    // Calculer le prorata
+    const now = Math.floor(Date.now() / 1000)
+    const periodEnd = subscription.current_period_end
+    const periodStart = subscription.current_period_start
+    const totalPeriodDays = Math.ceil((periodEnd - periodStart) / 86400)
+    const remainingDays = Math.ceil((periodEnd - now) / 86400)
+    
+    const currentQuantity = subscriptionItem.quantity || 1
+    const quantityDiff = quantity - currentQuantity
+    const pricePerUnit = subscriptionItem.price?.unit_amount || 0 // en centimes
+    
+    // Calcul du prorata en centimes
+    const prorataAmountCents = Math.abs(quantityDiff) * pricePerUnit * (remainingDays / totalPeriodDays)
+    
+    // Arrondir à l'euro supérieur (en centimes: arrondir à 100 centimes près vers le haut)
+    const prorataRoundedCents = Math.ceil(prorataAmountCents / 100) * 100
+    const prorataEuros = prorataRoundedCents / 100
+
+    console.log('📊 Prorata calculation:', {
+      currentQuantity,
+      newQuantity: quantity,
+      quantityDiff,
+      pricePerUnit: pricePerUnit / 100 + '€',
+      totalPeriodDays,
+      remainingDays,
+      prorataBeforeRounding: (prorataAmountCents / 100).toFixed(2) + '€',
+      prorataRounded: prorataEuros + '€'
+    })
+
+    // Mettre à jour la quantity dans Stripe avec proratisation
     const updatedItem = await stripe.subscriptionItems.update(subscriptionItemId, {
       quantity: quantity,
       proration_behavior: 'always_invoice', // Créer une facture prorata immédiatement
@@ -32,6 +65,7 @@ serve(async (req) => {
       subscriptionItemId,
       newQuantity: quantity,
       proration: 'always_invoice',
+      prorataAmount: prorataEuros + '€'
     })
 
     return new Response(
@@ -39,6 +73,12 @@ serve(async (req) => {
         success: true, 
         quantity: updatedItem.quantity,
         subscription: updatedItem.subscription,
+        prorata: {
+          amount: prorataEuros,
+          remainingDays,
+          totalPeriodDays,
+          isAdding: quantityDiff > 0
+        }
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

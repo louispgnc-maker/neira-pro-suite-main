@@ -197,13 +197,26 @@ export default function ManageMembersCount() {
 
       if (dbError) throw dbError;
 
+      // Message avec détails du prorata
+      const prorataInfo = stripeData?.prorata;
+      let description = `Votre abonnement comprend maintenant ${newMembersCount} membre${newMembersCount > 1 ? 's' : ''}.`;
+      
+      if (prorataInfo) {
+        if (prorataInfo.isAdding) {
+          description += ` Une facture prorata de ${prorataInfo.amount}€ a été générée pour les ${prorataInfo.remainingDays} jours restants jusqu'à votre prochaine facturation.`;
+        } else {
+          description += ` Un crédit prorata de ${prorataInfo.amount}€ sera appliqué.`;
+        }
+      }
+
       toast.success('Abonnement mis à jour !', {
-        description: `Votre abonnement comprend maintenant ${newMembersCount} membre${newMembersCount > 1 ? 's' : ''}. ${memberDiff > 0 ? 'Une facture prorata a été générée.' : 'Un crédit prorata sera appliqué.'}`
+        description,
+        duration: 6000
       });
 
       setTimeout(() => {
         navigate(`${prefix}/subscription`);
-      }, 1500);
+      }, 2000);
     } catch (error: any) {
       console.error('Error updating members:', error);
       toast.error('Erreur', {
@@ -361,6 +374,25 @@ export default function ManageMembersCount() {
                   }`}>
                     Différence : {priceDiff > 0 ? '+' : ''}{priceDiff.toFixed(2)}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
                   </p>
+                  
+                  {/* Explication du prorata */}
+                  {isAdding && (
+                    <div className={`mt-3 pt-3 border-t ${
+                      role === 'notaire' ? 'border-orange-200' : 'border-blue-200'
+                    }`}>
+                      <p className={`text-xs font-medium mb-1 ${
+                        role === 'notaire' ? 'text-orange-900' : 'text-blue-900'
+                      }`}>
+                        💡 Facturation au prorata
+                      </p>
+                      <p className={`text-xs ${
+                        role === 'notaire' ? 'text-orange-700' : 'text-blue-700'
+                      }`}>
+                        Vous serez facturé immédiatement au prorata du temps restant jusqu'à votre prochaine date de facturation (montant arrondi à l'euro supérieur). 
+                        À partir de votre prochaine facturation, vous paierez le montant complet pour {newMembersCount} membre{newMembersCount > 1 ? 's' : ''}.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
