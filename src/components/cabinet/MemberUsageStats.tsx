@@ -277,33 +277,22 @@ export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: 
               <p><strong>Note :</strong> Les statistiques sont calculées individuellement pour chaque membre du cabinet.</p>
             </div>
 
-            {/* Section d'achat de forfaits signatures pour plans essentiel et professionnel seulement */}
-            {/* Cabinet+ a 100 signatures/mois incluses par utilisateur */}
-            {(subscriptionPlan === 'essentiel' || subscriptionPlan === 'professionnel') && (
-              <div className="border-t pt-4">
-                <Button
-                  onClick={() => setBuyDialogOpen(true)}
-                  className={`w-full justify-between ${
-                    role === 'notaire' 
-                      ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <ShoppingCart className="h-4 w-4" />
-                    Acheter des signatures supplémentaires
-                  </span>
-                </Button>
-              </div>
-            )}
-            {subscriptionPlan === 'cabinet-plus' && (
-              <div className="border-t pt-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-800">
-                  <p className="font-semibold">✓ 100 signatures / mois incluses</p>
-                  <p className="text-xs mt-1">Votre plan Cabinet+ inclut 100 signatures par mois et par utilisateur.</p>
-                </div>
-              </div>
-            )}
+            {/* Tous les plans peuvent acheter des signatures supplémentaires */}
+            <div className="border-t pt-4">
+              <Button
+                onClick={() => setBuyDialogOpen(true)}
+                className={`w-full justify-between ${
+                  role === 'notaire' 
+                    ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <ShoppingCart className="h-4 w-4" />
+                  Acheter des signatures supplémentaires
+                </span>
+              </Button>
+            </div>
           </div>
         )}
       </DialogContent>

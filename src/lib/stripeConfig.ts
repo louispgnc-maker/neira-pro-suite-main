@@ -56,29 +56,42 @@ export const SUBSCRIPTION_PRICES = {
 // Packs de signatures électroniques
 export const SIGNATURE_PACKS = [
   {
-    quantity: 30,
-    price: 15,
-    pricePerSignature: 0.50,
+    quantity: 1,
+    price: 3,
+    pricePerSignature: 3.00,
+    description: 'Pack Urgence',
+    isEmergency: true
+  },
+  {
+    quantity: 10,
+    price: 20,
+    pricePerSignature: 2.00,
+    description: 'Pack Mini'
+  },
+  {
+    quantity: 20,
+    price: 30,
+    pricePerSignature: 1.50,
     description: 'Pack Starter'
   },
   {
-    quantity: 75,
-    price: 30,
-    pricePerSignature: 0.40,
+    quantity: 50,
+    price: 45,
+    pricePerSignature: 0.90,
     description: 'Pack Pro',
     popular: true
   },
   {
-    quantity: 150,
-    price: 50,
-    pricePerSignature: 0.33,
+    quantity: 100,
+    price: 70,
+    pricePerSignature: 0.70,
     description: 'Pack Business'
   },
   {
-    quantity: 300,
-    price: 90,
-    pricePerSignature: 0.30,
-    description: 'Pack Entreprise'
+    quantity: 250,
+    price: 140,
+    pricePerSignature: 0.56,
+    description: 'Pack Enterprise'
   }
 ] as const;
 

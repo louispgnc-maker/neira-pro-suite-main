@@ -137,12 +137,12 @@ export default function Solution() {
                               <p className="text-xs font-semibold text-blue-800 mb-1.5">📦 Suppléments facturables si besoin :</p>
                               <div className="space-y-1">
                                 <div className="flex justify-between items-center">
-                                  <span className="text-xs text-gray-600">+10 signatures</span>
-                                  <span className="text-xs font-semibold text-blue-700">+7€/mois</span>
+                                  <span className="text-xs text-gray-600">Mini - 10 signatures</span>
+                                  <span className="text-xs font-semibold text-blue-700">20€</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-xs text-gray-600">+25 signatures</span>
-                                  <span className="text-xs font-semibold text-blue-700">+15€/mois</span>
+                                  <span className="text-xs text-gray-600">Pro ⭐ - 50 signatures</span>
+                                  <span className="text-xs font-semibold text-blue-700">45€</span>
                                 </div>
                               </div>
                             </div>
@@ -230,12 +230,16 @@ export default function Solution() {
                               <p className="text-xs font-semibold text-purple-800 mb-1.5">📦 Suppléments facturables si besoin :</p>
                               <div className="space-y-1">
                                 <div className="flex justify-between items-center">
-                                  <span className="text-xs text-gray-600">+40 signatures</span>
-                                  <span className="text-xs font-semibold text-purple-700">+15€/mois/utilisateur</span>
+                                  <span className="text-xs text-gray-600">Mini - 10 signatures</span>
+                                  <span className="text-xs font-semibold text-purple-700">20€</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-xs text-gray-600">+100 signatures ⭐</span>
-                                  <span className="text-xs font-semibold text-purple-700">+29€/mois/utilisateur</span>
+                                  <span className="text-xs text-gray-600">Pro ⭐ - 50 signatures</span>
+                                  <span className="text-xs font-semibold text-purple-700">45€</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-gray-600">Business - 100 signatures</span>
+                                  <span className="text-xs font-semibold text-purple-700">70€</span>
                                 </div>
                               </div>
                             </div>

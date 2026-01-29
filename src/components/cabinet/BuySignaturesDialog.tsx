@@ -27,20 +27,32 @@ type BuySignaturesDialogProps = {
 
 const packagesConfig = {
   essentiel: [
-    { quantity: 10, price: 7, label: '+10 Signatures' },
-    { quantity: 25, price: 15, label: '+25 Signatures' }
+    { quantity: 10, price: 20, label: 'Mini - 10 Signatures' },
+    { quantity: 20, price: 30, label: 'Starter - 20 Signatures' },
+    { quantity: 50, price: 45, label: 'Pro ⭐ - 50 Signatures' },
+    { quantity: 100, price: 70, label: 'Business - 100 Signatures' },
+    { quantity: 250, price: 140, label: 'Enterprise - 250 Signatures' }
   ],
   professionnel: [
-    { quantity: 40, price: 15, label: '+40 Signatures' },
-    { quantity: 100, price: 29, label: '+100 Signatures ⭐' }
+    { quantity: 10, price: 20, label: 'Mini - 10 Signatures' },
+    { quantity: 20, price: 30, label: 'Starter - 20 Signatures' },
+    { quantity: 50, price: 45, label: 'Pro ⭐ - 50 Signatures' },
+    { quantity: 100, price: 70, label: 'Business - 100 Signatures' },
+    { quantity: 250, price: 140, label: 'Enterprise - 250 Signatures' }
   ],
-  'cabinet-plus': []
+  'cabinet-plus': [
+    { quantity: 10, price: 20, label: 'Mini - 10 Signatures' },
+    { quantity: 20, price: 30, label: 'Starter - 20 Signatures' },
+    { quantity: 50, price: 45, label: 'Pro ⭐ - 50 Signatures' },
+    { quantity: 100, price: 70, label: 'Business - 100 Signatures' },
+    { quantity: 250, price: 140, label: 'Enterprise - 250 Signatures' }
+  ]
 };
 
 const emergencyPackage: SignaturePackage = {
-  quantity: 10,
-  price: 9,
-  label: '🆘 Pack de secours',
+  quantity: 1,
+  price: 3,
+  label: '🆘 Urgence - 1 Signature',
   isEmergency: true
 };
 
@@ -218,24 +230,6 @@ export function BuySignaturesDialog({
       setLoading(false);
     }
   };
-
-  if (subscriptionPlan === 'cabinet-plus') {
-    return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>100 signatures / mois incluses</DialogTitle>
-            <DialogDescription>
-              Votre plan Cabinet+ inclut 100 signatures par mois et par utilisateur. Pour des besoins supplémentaires, contactez-nous.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-center py-8">
-            <div className="text-6xl">✨</div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
