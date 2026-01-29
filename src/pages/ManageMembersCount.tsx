@@ -280,53 +280,69 @@ export default function ManageMembersCount() {
               <Label className="text-base font-semibold mb-4 block">Modifier le nombre de membres</Label>
               
               <div className="flex items-center gap-4 mb-4">
-                <Button
-                  type="button"
-                  size="icon"
-                  className={`text-white disabled:opacity-50 disabled:cursor-not-allowed ${
-                    role === 'notaire'
-                      ? 'bg-orange-600 hover:bg-orange-700'
-                      : 'bg-blue-600 hover:bg-blue-700'
-                  }`}
-                  onClick={() => {
-                    const minAllowed = currentPlan === 'professionnel' ? 2 : 1;
-                    setNewMembersCount(Math.max(minAllowed, newMembersCount - 1));
-                  }}
-                  disabled={newMembersCount <= (currentPlan === 'professionnel' ? 2 : 1)}
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                
-                <div className="text-center">
-                  <div className="text-3xl font-bold">{newMembersCount}</div>
-                  <div className="text-sm text-gray-600">membre{newMembersCount > 1 ? 's' : ''}</div>
+                <div className="flex flex-col items-center">
+                  <Button
+                    type="button"
+                    size="icon"
+                    className={`text-white disabled:opacity-50 disabled:cursor-not-allowed ${
+                      role === 'notaire'
+                        ? 'bg-orange-600 hover:bg-orange-700'
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
+                    onClick={() => {
+                      const minAllowed = currentPlan === 'professionnel' ? 2 : 1;
+                      setNewMembersCount(Math.max(minAllowed, newMembersCount - 1));
+                    }}
+                    disabled={newMembersCount <= (currentPlan === 'professionnel' ? 2 : 1)}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  {memberDiff < 0 && (
+                    <span className="text-xs mt-1 font-medium text-red-600">{memberDiff}</span>
+                  )}
                 </div>
                 
-                <Button
-                  type="button"
-                  size="icon"
-                  className={`text-white disabled:opacity-50 disabled:cursor-not-allowed ${
-                    role === 'notaire'
-                      ? 'bg-orange-600 hover:bg-orange-700'
-                      : 'bg-blue-600 hover:bg-blue-700'
-                  }`}
-                  onClick={() => {
-                    if (currentPlan === 'professionnel' && newMembersCount >= 10) {
-                      toast.error('Le plan Professionnel est limité à 10 membres');
-                      return;
-                    }
-                    setNewMembersCount(newMembersCount + 1);
-                  }}
-                  disabled={currentPlan === 'professionnel' && newMembersCount >= 10}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
+                <div className="text-center flex-1">
+                  <div className="text-3xl font-bold">{newMembersCount}</div>
+                  <div className="text-sm text-gray-600">membre{newMembersCount > 1 ? 's' : ''}</div>
+                  <div className={`text-2xl font-bold mt-2 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
+                    {pricePerMember}€<span className="text-sm">/membre/mois</span>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Total : {newMonthlyPrice}€/mois
+                  </div>
+                </div>
+                
+                <div className="flex flex-col items-center">
+                  <Button
+                    type="button"
+                    size="icon"
+                    className={`text-white disabled:opacity-50 disabled:cursor-not-allowed ${
+                      role === 'notaire'
+                        ? 'bg-orange-600 hover:bg-orange-700'
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
+                    onClick={() => {
+                      if (currentPlan === 'professionnel' && newMembersCount >= 10) {
+                        toast.error('Le plan Professionnel est limité à 10 membres');
+                        return;
+                      }
+                      setNewMembersCount(newMembersCount + 1);
+                    }}
+                    disabled={currentPlan === 'professionnel' && newMembersCount >= 10}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                  {memberDiff > 0 && (
+                    <span className="text-xs mt-1 font-medium text-green-600">+{memberDiff}</span>
+                  )}
+                </div>
               </div>
 
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 text-center">
                 {currentPlan === 'professionnel' 
-                  ? `Le plan Professionnel accepte entre 2 et 10 membres (${pricePerMember}€/mois par membre)`
-                  : `Prix : ${pricePerMember}€/mois par membre`}
+                  ? `Le plan Professionnel accepte entre 2 et 10 membres`
+                  : `Prix par membre : ${pricePerMember}€/mois`}
               </p>
               
               {/* Avertissement si en dessous du nombre de membres actifs */}
