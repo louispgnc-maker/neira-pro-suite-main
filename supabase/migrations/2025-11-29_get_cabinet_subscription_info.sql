@@ -4,7 +4,8 @@ RETURNS TABLE (
   cabinet_id UUID,
   subscription_plan TEXT,
   max_members INT,
-  billing_period TEXT
+  billing_period TEXT,
+  subscription_started_at TIMESTAMPTZ
 ) 
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -16,7 +17,8 @@ BEGIN
     c.id as cabinet_id,
     c.subscription_plan,
     c.max_members,
-    c.billing_period
+    c.billing_period,
+    c.subscription_started_at
   FROM cabinets c
   INNER JOIN cabinet_members cm ON cm.cabinet_id = c.id
   WHERE cm.user_id = user_id_param
