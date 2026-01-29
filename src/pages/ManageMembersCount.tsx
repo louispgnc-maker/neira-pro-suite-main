@@ -455,12 +455,12 @@ export default function ManageMembersCount() {
                     <p className={`text-2xl font-bold ${
                       role === 'notaire' ? 'text-orange-900' : 'text-blue-900'
                     }`}>
-                      {newTTC}€ TTC/{billingPeriod === 'monthly' ? 'mois' : 'an'}
+                      {newPrice}€ HT/{billingPeriod === 'monthly' ? 'mois' : 'an'}
                     </p>
                     <p className={`text-xs mt-1 ${
                       role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
                     }`}>
-                      Différence : {priceDiff > 0 ? '+' : ''}{priceDiff.toFixed(2)}€/{billingPeriod === 'monthly' ? 'mois' : 'an'}
+                      Différence : {(newPrice - currentPrice) > 0 ? '+' : ''}{newPrice - currentPrice}€ HT/{billingPeriod === 'monthly' ? 'mois' : 'an'}
                     </p>
                   </div>
                 </div>
