@@ -15,7 +15,7 @@ export default function SelectProfession() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden px-6">
+    <div className="min-h-screen flex items-center justify-center bg-blue-50 relative overflow-hidden px-6">
       {/* Logo Neira en haut */}
       <div className="absolute top-8 left-8">
         <img 
@@ -23,12 +23,6 @@ export default function SelectProfession() {
           alt="Neira" 
           className="w-20 h-20 object-cover" 
         />
-      </div>
-
-      {/* Effets de fond décoratifs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
       </div>
       
       <div className="max-w-4xl w-full relative z-10">

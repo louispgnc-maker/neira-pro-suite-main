@@ -98,14 +98,7 @@ export default function OnboardingCreateCabinet() {
   const color = profession === 'avocat' ? 'blue' : 'orange';
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      {/* Animated background blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="blob absolute top-0 -left-4 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-        <div className="blob absolute top-0 -right-4 w-72 h-72 bg-gradient-to-br from-indigo-200 to-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="blob absolute -bottom-8 left-20 w-72 h-72 bg-gradient-to-br from-purple-200 to-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
-      </div>
-
+    <div className="min-h-screen relative overflow-hidden bg-gray-50">
       {/* Minimal logo in top-left */}
       <div className="absolute top-8 left-8 z-10">
         <img 
