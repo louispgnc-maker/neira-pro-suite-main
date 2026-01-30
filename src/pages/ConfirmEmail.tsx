@@ -48,8 +48,8 @@ export default function ConfirmEmail() {
   }, [user]);
 
   const handleReturnToLogin = () => {
-    // Rediriger vers la page test-subscription qui affiche le formulaire de connexion
-    navigate('/test-subscription');
+    // Rediriger vers la page principale de Neira
+    window.location.href = 'https://www.neira.fr';
   };
 
   if (loading) {
