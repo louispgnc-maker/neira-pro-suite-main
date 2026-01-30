@@ -68,13 +68,19 @@ export default function CreateAccountAfterPayment() {
         console.error('Erreur création user:', userError);
       }
 
+      // Stocker le session_id et les infos de plan dans localStorage pour le lier au cabinet
+      if (sessionId) {
+        localStorage.setItem('pending_cabinet_session', sessionId);
+        // Note: les infos de plan seront récupérées depuis le webhook Stripe
+      }
+
       toast.success("Compte créé avec succès !", {
         description: "Vous allez être redirigé pour créer votre cabinet"
       });
 
-      // Rediriger vers le choix de profession avec session_id pour traçabilité
+      // Rediriger vers le choix de profession
       setTimeout(() => {
-        navigate(`/select-profession?session_id=${sessionId}`);
+        navigate(`/select-profession`);
       }, 1500);
 
     } catch (error: any) {

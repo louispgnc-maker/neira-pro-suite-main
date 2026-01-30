@@ -38,10 +38,38 @@ serve(async (req) => {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
-        const cabinetId = session.metadata?.cabinet_id
+        
+        // Essayer de récupérer cabinet_id depuis metadata, sinon chercher par email
+        let cabinetId = session.metadata?.cabinet_id
+        const customerEmail = session.customer_details?.email || session.metadata?.customer_email
+
+        // Si pas de cabinet_id mais on a un email, chercher le cabinet du user
+        if (!cabinetId && customerEmail) {
+          console.log('🔍 Searching cabinet for email:', customerEmail)
+          
+          // Chercher l'utilisateur par email
+          const { data: userData } = await supabaseAdmin.auth.admin.listUsers()
+          const user = userData.users.find(u => u.email === customerEmail)
+          
+          if (user) {
+            // Chercher le cabinet dont cet utilisateur est owner
+            const { data: cabinetData } = await supabaseAdmin
+              .from('cabinets')
+              .select('id')
+              .eq('owner_id', user.id)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .single()
+            
+            if (cabinetData) {
+              cabinetId = cabinetData.id
+              console.log('✅ Found cabinet:', cabinetId)
+            }
+          }
+        }
 
         if (!cabinetId) {
-          console.error('❌ No cabinet_id in metadata')
+          console.error('❌ No cabinet found for this session')
           break
         }
 
@@ -73,10 +101,10 @@ serve(async (req) => {
               stripe_customer_id: subscription.customer as string,
               stripe_subscription_id: subscription.id,
               stripe_subscription_item_id: subscription.items.data[0]?.id,
-              subscription_tier: tier,
+              subscription_plan: tier,
               subscription_status: 'active',
               current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-              quantity_members: quantity,
+              max_members: quantity,
               payment_method_type: paymentMethodType,
               payment_method_last4: paymentMethodLast4,
               payment_method_brand: paymentMethodBrand,
@@ -93,7 +121,7 @@ serve(async (req) => {
             .from('cabinets')
             .select(`
               id,
-              name,
+              nom,
               cabinet_members!inner(
                 user_id,
                 role,
@@ -172,10 +200,10 @@ serve(async (req) => {
         await supabaseAdmin
           .from('cabinets')
           .update({
-            subscription_tier: tier,
+            subscription_plan: tier,
             subscription_status: subscription.status,
             current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-            quantity_members: subscription.items.data[0]?.quantity || 1,
+            max_members: subscription.items.data[0]?.quantity || 1,
           })
           .eq('id', cabinetId)
 

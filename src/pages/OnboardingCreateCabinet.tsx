@@ -41,21 +41,30 @@ export default function OnboardingCreateCabinet() {
         return;
       }
 
-      // Créer le cabinet
+      // Créer le cabinet (les données d'abonnement seront ajoutées par le webhook Stripe)
       const { data: cabinet, error: cabinetError } = await supabase
         .from('cabinets')
         .insert({
-          name: formData.name,
-          address: formData.address,
+          nom: formData.name,
+          adresse: formData.address,
           siret: formData.siret,
-          phone: formData.phone,
+          telephone: formData.phone,
           email: formData.email,
-          created_by: user.id
+          owner_id: user.id,
+          role: profession || 'avocat'
         })
         .select()
         .single();
 
       if (cabinetError) throw cabinetError;
+
+      // Stocker le cabinet_id pour le webhook
+      const sessionId = localStorage.getItem('pending_cabinet_session');
+      if (sessionId && cabinet.id) {
+        // Stocker temporairement le lien session -> cabinet
+        localStorage.setItem(`cabinet_for_session_${sessionId}`, cabinet.id);
+        localStorage.removeItem('pending_cabinet_session');
+      }
 
       // Mettre à jour le profil utilisateur avec le rôle et le cabinet
       const { error: profileError } = await supabase
@@ -80,10 +89,15 @@ export default function OnboardingCreateCabinet() {
 
       if (memberError) throw memberError;
 
-      toast.success('Cabinet créé avec succès !');
+      toast.success('Cabinet créé avec succès !', {
+        description: 'Vous allez être redirigé vers votre espace'
+      });
       
       // Rediriger vers le dashboard approprié
-      navigate(`/${profession}s/dashboard`);
+      setTimeout(() => {
+        navigate(`/${profession}s/dashboard`);
+        window.location.reload(); // Force refresh pour charger le nouveau contexte
+      }, 1500);
       
     } catch (error: any) {
       console.error('Erreur création cabinet:', error);
