@@ -18,11 +18,12 @@ export default function SelectProfession() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden px-6">
       {/* Logo Neira en haut */}
       <div className="absolute top-8 left-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-            <span className="text-white font-bold text-xl">N</span>
-          </div>
-          <span className="text-2xl font-bold text-gray-900">Neira</span>
+        <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg">
+          <img 
+            src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Nouveau%20logo%20Neira.png" 
+            alt="Neira" 
+            className="w-full h-full object-cover" 
+          />
         </div>
       </div>
 
