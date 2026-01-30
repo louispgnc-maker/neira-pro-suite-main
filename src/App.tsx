@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ClientThemeProvider } from "@/contexts/ClientThemeContext";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { preloadStripeResources } from "@/lib/stripeOptimization";
 import Auth from "./pages/Auth";
 import AvocatAuth from "./pages/AvocatAuth";
 import NotaireAuth from "./pages/NotaireAuth";
@@ -81,6 +82,9 @@ import RoleProtectedRoute from "./components/RoleProtectedRoute";
 import FullscreenButton from "./components/FullscreenButton";
 
 const queryClient = new QueryClient();
+
+// Précharger les ressources Stripe pour améliorer les performances
+preloadStripeResources();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

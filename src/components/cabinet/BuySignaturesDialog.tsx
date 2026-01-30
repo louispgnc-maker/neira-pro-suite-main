@@ -137,6 +137,7 @@ export function BuySignaturesDialog({
     : 0;
 
   const handlePurchase = async () => {
+    // Validations immédiates
     if (!selectedPackage) {
       toast.error('Veuillez sélectionner un forfait');
       return;
@@ -148,26 +149,32 @@ export function BuySignaturesDialog({
     }
 
     setLoading(true);
+    toast.info('Préparation de votre commande...');
     
     try {
-      const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+      // Récupérer les données du cabinet et les détails en parallèle pour gagner du temps
+      const [cabinetsResult] = await Promise.all([
+        supabase.rpc('get_user_cabinets')
+      ]);
       
-      if (!cabinetsData || !Array.isArray(cabinetsData)) {
+      if (!cabinetsResult.data || !Array.isArray(cabinetsResult.data)) {
         throw new Error('Cabinet introuvable');
       }
 
-      const cabinet = cabinetsData.find((c: any) => String(c.role) === role);
+      const cabinet = cabinetsResult.data.find((c: any) => String(c.role) === role);
       
       if (!cabinet) {
         throw new Error(`Aucun cabinet ${role} trouvé`);
       }
 
+      // Récupérer les détails du cabinet seulement si nécessaire
       const { data: cabinetDetails } = await supabase
         .from('cabinets')
         .select('subscription_started_at')
         .eq('id', cabinet.id)
         .single();
 
+      // Calculer la date d'expiration
       let expiresAt = new Date();
       if (cabinetDetails?.subscription_started_at) {
         const startDate = new Date(cabinetDetails.subscription_started_at);
@@ -185,17 +192,8 @@ export function BuySignaturesDialog({
         expiresAt.setMonth(expiresAt.getMonth() + 1);
       }
 
-      // Appeler l'Edge Function pour créer une session Stripe
-      console.log('📦 Envoi de la requête à create-signature-checkout avec:', {
-        quantity: selectedPackage.quantity,
-        price: selectedPackage.price,
-        prorataAmount,
-        cabinetId: cabinet.id,
-        targetUserId: targetUserId || user.id,
-        expiresAt: expiresAt.toISOString(),
-        role,
-      });
-
+      // Créer la session Stripe
+      toast.info('Connexion à Stripe...');
       const { data: sessionData, error: sessionError } = await supabase.functions.invoke(
         'create-signature-checkout',
         {
@@ -211,16 +209,12 @@ export function BuySignaturesDialog({
         }
       );
 
-      console.log('📬 Réponse reçue:', { sessionData, sessionError });
-
       if (sessionError || !sessionData?.url) {
-        console.error('❌ Erreur détectée:', sessionError);
         throw new Error(sessionError?.message || 'Erreur lors de la création de la session de paiement');
       }
 
-      console.log('✅ URL de redirection Stripe:', sessionData.url);
-
-      // Rediriger vers Stripe Checkout
+      // Redirection immédiate
+      toast.success('Redirection vers le paiement...');
       window.location.href = sessionData.url;
     } catch (error: any) {
       console.error('Erreur lors de l\'achat:', error);

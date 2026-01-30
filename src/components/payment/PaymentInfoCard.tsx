@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +44,7 @@ export function PaymentInfoCard({
   activeMembersCount
 }: PaymentInfoCardProps) {
   const navigate = useNavigate();
+  const [portalLoading, setPortalLoading] = useState(false);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -101,16 +103,23 @@ export function PaymentInfoCard({
       return;
     }
 
+    if (portalLoading) return; // Éviter les double-clics
+
+    setPortalLoading(true);
     try {
-      toast.info('Redirection vers la gestion des paiements...');
+      toast.info('Ouverture du portail Stripe...');
       const { url } = await createPortalSession(
         stripeCustomerId,
         window.location.href
       );
+      toast.success('Redirection...');
       window.location.href = url;
     } catch (error) {
       console.error('Erreur ouverture portal:', error);
-      toast.error('Erreur lors de l\'ouverture du portail de paiement');
+      toast.error('Erreur lors de l\'ouverture du portail de paiement', {
+        description: 'Veuillez réessayer dans quelques instants'
+      });
+      setPortalLoading(false);
     }
   };
 
@@ -213,6 +222,7 @@ export function PaymentInfoCard({
             <Button
               variant="outline"
               onClick={handleOpenBillingPortal}
+              disabled={portalLoading}
               className={`w-full ${
                 role === 'notaire' 
                   ? 'border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white' 
@@ -220,7 +230,7 @@ export function PaymentInfoCard({
               }`}
             >
               <CreditCard className="w-4 h-4 mr-2" />
-              Gérer le paiement
+              {portalLoading ? 'Ouverture...' : 'Gérer le paiement'}
             </Button>
 
             <Button
@@ -267,9 +277,10 @@ export function PaymentInfoCard({
             variant="ghost"
             size="sm"
             onClick={handleOpenBillingPortal}
+            disabled={portalLoading}
             className="text-xs text-gray-500 hover:text-gray-700"
           >
-            Géré par Stripe
+            {portalLoading ? 'Ouverture...' : 'Géré par Stripe'}
             <ExternalLink className="w-3 h-3 ml-1" />
           </Button>
         </div>

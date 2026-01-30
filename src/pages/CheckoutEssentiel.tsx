@@ -72,6 +72,7 @@ export default function CheckoutEssentiel() {
       }
 
       // Créer la session de paiement Stripe
+      toast.info("Connexion à Stripe...");
       const checkoutUrl = await createStripeCheckoutSession({
         priceId,
         quantity: 1, // Plan Essentiel = 1 utilisateur
@@ -80,7 +81,8 @@ export default function CheckoutEssentiel() {
         cancelUrl: `${window.location.origin}/checkout/essentiel`
       });
 
-      // Rediriger vers Stripe
+      // Rediriger immédiatement
+      toast.success("Redirection vers Stripe...");
       window.location.href = checkoutUrl;
       
     } catch (error) {
@@ -94,47 +96,66 @@ export default function CheckoutEssentiel() {
 
   return (
     <TooltipProvider delayDuration={0}>
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100" style={{ 
-      backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Mix%20deux%20couleurs.png)', 
-      backgroundSize: 'cover', 
-      backgroundPosition: 'center', 
-      backgroundAttachment: 'fixed' 
-    }}>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 relative overflow-hidden">
+      {/* Effets de fond décoratifs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+      
       <PublicHeader />
       
-      <div className="container mx-auto px-4 py-24">
+      <div className="container mx-auto px-4 py-24 relative z-10">
         <button 
           onClick={() => navigate(-1)} 
-          className={`flex items-center gap-2 mb-6 ${
+          className={`flex items-center gap-2 mb-8 font-medium transition-all hover:gap-3 ${
             role === 'notaire' 
-              ? 'text-orange-600 hover:text-orange-700' 
-              : 'text-blue-600 hover:text-blue-700'
+              ? 'text-orange-700 hover:text-orange-800' 
+              : 'text-blue-700 hover:text-blue-800'
           }`}
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-5 h-5" />
           Retour
         </button>
 
         <div className="max-w-7xl mx-auto">
-          {/* En-tête de l'offre */}
-          <div className="grid lg:grid-cols-3 gap-6 mb-8">
-            {/* Nom de la formule */}
-            <Card className="bg-white/90 backdrop-blur">
-              <CardContent className="p-6">
-                <h1 className={`text-2xl font-bold mb-2 ${
-                  role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                }`}>Neira Essentiel</h1>
-                <p className="text-sm text-gray-600">Idéal pour avocats et notaires indépendants</p>
-              </CardContent>
-            </Card>
-
-            {/* Limites et specs */}
-            <Card className="lg:col-span-2 bg-white/90 backdrop-blur">
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-3">Caractéristiques</h3>
-                <p className="text-sm text-gray-700">Idéal pour avocats et notaires indépendants • 20 Go • 100 dossiers • 30 clients • 15 signatures/mois</p>
-              </CardContent>
-            </Card>
+          {/* En-tête de l'offre moderne */}
+          <div className="mb-10">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border overflow-hidden"  style={{ borderColor: role === 'notaire' ? '#fb923c' : '#3b82f6' }}>
+              <div className={`p-8 text-white ${role === 'notaire' ? 'bg-gradient-to-r from-orange-500 to-amber-500' : 'bg-gradient-to-r from-blue-500 to-indigo-500'}`}>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider">
+                    Indépendant
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-semibold">
+                    1 utilisateur
+                  </div>
+                </div>
+                <h1 className="text-4xl font-bold mb-2">Neira Essentiel</h1>
+                <p className={`text-lg ${role === 'notaire' ? 'text-orange-50' : 'text-blue-50'}`}>L'essentiel pour démarrer votre activité</p>
+              </div>
+              <div className="p-8 bg-white/60 backdrop-blur-sm">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className={`text-2xl font-bold ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>20 Go</div>
+                    <div className="text-xs text-gray-600 mt-1">Stockage</div>
+                  </div>
+                  <div className="text-center">
+                    <div className={`text-2xl font-bold ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>100</div>
+                    <div className="text-xs text-gray-600 mt-1">Dossiers</div>
+                  </div>
+                  <div className="text-center">
+                    <div className={`text-2xl font-bold ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>30</div>
+                    <div className="text-xs text-gray-600 mt-1">Clients</div>
+                  </div>
+                  <div className="text-center">
+                    <div className={`text-2xl font-bold ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>15</div>
+                    <div className="text-xs text-gray-600 mt-1">Signatures/mois</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Layout 2 colonnes : Fonctionnalités à gauche, Paiement à droite */}

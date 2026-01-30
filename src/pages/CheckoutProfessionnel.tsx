@@ -146,7 +146,8 @@ export default function CheckoutProfessionnel() {
         cancelUrl: `${window.location.origin}/checkout/professionnel`
       });
 
-      // Rediriger vers Stripe
+      // Rediriger immédiatement
+      toast.success("Redirection vers Stripe...");
       window.location.href = checkoutUrl;
       
     } catch (error) {
@@ -160,44 +161,62 @@ export default function CheckoutProfessionnel() {
 
   return (
     <TooltipProvider delayDuration={0}>
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100" style={{
-      backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Mix%20deux%20couleurs.png)', 
-      backgroundSize: 'cover', 
-      backgroundPosition: 'center', 
-      backgroundAttachment: 'fixed' 
-    }}>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-violet-50 to-purple-100 relative overflow-hidden">
+      {/* Effets de fond décoratifs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-fuchsia-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+      
       <PublicHeader />
       
-      <div className="container mx-auto px-4 py-24">
+      <div className="container mx-auto px-4 py-24 relative z-10">
         <button 
           onClick={() => navigate(-1)} 
-          className="flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-6"
+          className="flex items-center gap-2 text-purple-700 hover:text-purple-800 mb-8 font-medium transition-all hover:gap-3"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-5 h-5" />
           Retour
         </button>
 
         <div className="max-w-7xl mx-auto">
-          {/* En-tête de l'offre */}
-          <div className="grid lg:grid-cols-3 gap-6 mb-8">
-            {/* Nom de la formule */}
-            <Card className="bg-white/90 backdrop-blur">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <h1 className="text-2xl font-bold text-purple-600">Neira Professionnel</h1>
-                  <span className="bg-purple-500 text-white px-2 py-1 rounded text-xs font-semibold">RECOMMANDÉ</span>
+          {/* En-tête de l'offre moderne */}
+          <div className="mb-10">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-100 overflow-hidden">
+              <div className="bg-gradient-to-r from-purple-500 to-violet-500 p-8 text-white">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider">
+                    Recommandé
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-semibold">
+                    2-10 utilisateurs
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600">Idéal pour petits cabinets 2–10 personnes</p>
-              </CardContent>
-            </Card>
-
-            {/* Limites et specs */}
-            <Card className="lg:col-span-2 bg-white/90 backdrop-blur">
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-3">Caractéristiques</h3>
-                <p className="text-sm text-gray-700">100 Go • 600 dossiers • 200 clients • 40 signatures/mois/utilisateur</p>
-              </CardContent>
-            </Card>
+                <h1 className="text-4xl font-bold mb-2">Neira Professionnel</h1>
+                <p className="text-purple-50 text-lg">La solution idéale pour les petits cabinets</p>
+              </div>
+              <div className="p-8 bg-white/60 backdrop-blur-sm">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">100 Go</div>
+                    <div className="text-xs text-gray-600 mt-1">Stockage</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">600</div>
+                    <div className="text-xs text-gray-600 mt-1">Dossiers</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">200</div>
+                    <div className="text-xs text-gray-600 mt-1">Clients</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">40</div>
+                    <div className="text-xs text-gray-600 mt-1">Signatures/mois</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Layout 2 colonnes : Fonctionnalités à gauche, Paiement à droite */}
