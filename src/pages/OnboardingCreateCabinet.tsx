@@ -113,15 +113,6 @@ export default function OnboardingCreateCabinet() {
 
   return (
     <div className="min-h-screen relative bg-gray-50">
-      {/* Minimal logo in top-left */}
-      <div className="absolute top-8 left-8 z-10">
-        <img 
-          src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Nouveau%20logo%20Neira.png" 
-          alt="Neira" 
-          className="w-24 h-auto" 
-        />
-      </div>
-      
       <div className="relative flex-1 flex items-center justify-center px-6 py-24">
         <Card className="w-full max-w-2xl">
           <CardHeader className="text-center">

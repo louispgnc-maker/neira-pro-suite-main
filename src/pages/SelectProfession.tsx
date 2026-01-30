@@ -15,16 +15,7 @@ export default function SelectProfession() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden px-6">
-      {/* Logo Neira en haut */}
-      <div className="absolute top-8 left-8">
-        <img 
-          src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Nouveau%20logo%20Neira.png" 
-          alt="Neira" 
-          className="w-24 h-auto" 
-        />
-      </div>
-      
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
       <div className="max-w-4xl w-full relative z-10">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
