@@ -41,28 +41,26 @@ export default function OnboardingCreateCabinet() {
         return;
       }
 
-      // Créer le cabinet (les données d'abonnement seront ajoutées par le webhook Stripe)
-      const { data: cabinet, error: cabinetError } = await supabase
-        .from('cabinets')
-        .insert({
-          nom: formData.name,
-          adresse: formData.address,
-          siret: formData.siret,
-          telephone: formData.phone,
-          email: formData.email,
-          owner_id: user.id,
-          role: profession || 'avocat'
-        })
-        .select()
-        .single();
+      // Créer le cabinet via la fonction RPC (crée automatiquement le cabinet et ajoute le fondateur)
+      const { data: cabinetId, error: cabinetError } = await supabase.rpc('create_cabinet', {
+        nom_param: formData.name,
+        raison_sociale_param: formData.name, // Utiliser le nom comme raison sociale par défaut
+        siret_param: formData.siret,
+        adresse_param: formData.address,
+        code_postal_param: '', // Sera complété plus tard si nécessaire
+        ville_param: '', // Sera complété plus tard si nécessaire
+        telephone_param: formData.phone,
+        email_param: formData.email,
+        role_param: profession || 'avocat'
+      });
 
       if (cabinetError) throw cabinetError;
 
       // Stocker le cabinet_id pour le webhook
       const sessionId = localStorage.getItem('pending_cabinet_session');
-      if (sessionId && cabinet.id) {
+      if (sessionId && cabinetId) {
         // Stocker temporairement le lien session -> cabinet
-        localStorage.setItem(`cabinet_for_session_${sessionId}`, cabinet.id);
+        localStorage.setItem(`cabinet_for_session_${sessionId}`, cabinetId);
         localStorage.removeItem('pending_cabinet_session');
       }
 
@@ -71,25 +69,11 @@ export default function OnboardingCreateCabinet() {
         .from('profiles')
         .update({
           role: profession,
-          cabinet_id: cabinet.id
+          cabinet_id: cabinetId
         })
         .eq('id', user.id);
 
       if (profileError) throw profileError;
-
-      // Ajouter l'utilisateur comme membre du cabinet avec le rôle Fondateur
-      const { error: memberError } = await supabase
-        .from('cabinet_members')
-        .insert({
-          cabinet_id: cabinet.id,
-          user_id: user.id,
-          email: user.email || '',
-          role_cabinet: 'Fondateur',
-          status: 'active',
-          joined_at: new Date().toISOString()
-        });
-
-      if (memberError) throw memberError;
 
       toast.success('Cabinet créé avec succès !', {
         description: 'Redirection vers votre espace professionnel...'
