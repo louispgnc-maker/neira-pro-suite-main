@@ -90,13 +90,13 @@ export default function OnboardingCreateCabinet() {
       if (memberError) throw memberError;
 
       toast.success('Cabinet créé avec succès !', {
-        description: 'Vous allez être redirigé vers votre espace'
+        description: 'Redirection vers votre espace professionnel...'
       });
       
-      // Rediriger vers le dashboard approprié
+      // Rediriger vers le dashboard approprié sans recharger la page
+      // Le système de routing chargera automatiquement le nouveau contexte
       setTimeout(() => {
-        navigate(`/${profession}s/dashboard`);
-        window.location.reload(); // Force refresh pour charger le nouveau contexte
+        navigate(`/${profession}s/dashboard`, { replace: true });
       }, 1500);
       
     } catch (error: any) {
