@@ -21,14 +21,8 @@ export default function SelectProfession() {
         <img 
           src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Nouveau%20logo%20Neira.png" 
           alt="Neira" 
-          className="w-48 h-auto" 
+          className="w-24 h-auto" 
         />
-      </div>
-
-      {/* Effets de fond décoratifs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
       </div>
       
       <div className="max-w-4xl w-full relative z-10">
