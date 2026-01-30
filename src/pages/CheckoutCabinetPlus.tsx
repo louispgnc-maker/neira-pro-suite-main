@@ -100,50 +100,53 @@ export default function CheckoutCabinetPlus() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validation immédiate avant de définir loading
-    if (!user) {
-      toast.error("Erreur", {
-        description: "Vous devez être connecté pour souscrire"
-      });
-      return;
-    }
-
     setLoading(true);
-    toast.info("Préparation du paiement...");
     
     try {
-      // Obtenir le price ID Stripe (validation rapide)
-      const priceId = STRIPE_PRICE_IDS['cabinet-plus'][billingPeriod];
-      if (!priceId) {
-        throw new Error("Configuration du plan invalide");
+      // Vérifier que l'utilisateur est connecté
+      if (!user) {
+        toast.error("Erreur", {
+          description: "Vous devez être connecté pour souscrire"
+        });
+        setLoading(false);
+        return;
       }
 
-      // Récupérer le cabinet en parallèle
-      const [memberResult] = await Promise.all([
-        supabase
-          .from('cabinet_members')
-          .select('cabinet_id')
-          .eq('user_id', user.id)
-          .single()
-      ]);
+      // Récupérer le cabinet de l'utilisateur
+      const { data: memberData, error: memberError } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id')
+        .eq('user_id', user.id)
+        .single();
 
-      if (memberResult.error || !memberResult.data?.cabinet_id) {
-        throw new Error("Cabinet non trouvé. Veuillez contacter le support.");
+      if (memberError || !memberData?.cabinet_id) {
+        toast.error("Erreur", {
+          description: "Cabinet non trouvé. Veuillez contacter le support."
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Obtenir le price ID Stripe pour le plan Cabinet+ selon la période
+      const priceId = STRIPE_PRICE_IDS['cabinet-plus'][billingPeriod];
+      if (!priceId) {
+        toast.error("Erreur de configuration", {
+          description: "Plan non trouvé"
+        });
+        setLoading(false);
+        return;
       }
 
       // Créer la session de paiement Stripe
-      toast.info("Connexion à Stripe...");
       const checkoutUrl = await createStripeCheckoutSession({
         priceId,
-        quantity: userCount,
-        cabinetId: memberResult.data.cabinet_id,
+        quantity: userCount, // Nombre d'utilisateurs sélectionnés (1 à 50)
+        cabinetId: memberData.cabinet_id,
         successUrl: `${window.location.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${window.location.origin}/checkout/cabinet-plus`
       });
 
-      // Rediriger immédiatement
-      toast.success("Redirection vers Stripe...");
+      // Rediriger vers Stripe
       window.location.href = checkoutUrl;
       
     } catch (error) {
@@ -157,120 +160,86 @@ export default function CheckoutCabinetPlus() {
 
   return (
     <TooltipProvider delayDuration={0}>
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100 relative overflow-hidden">
-      {/* Effets de fond décoratifs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-      </div>
-      
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100" style={{
+      backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Mix%20deux%20couleurs.png)', 
+      backgroundSize: 'cover', 
+      backgroundPosition: 'center', 
+      backgroundAttachment: 'fixed' 
+    }}>
       <PublicHeader />
       
-      <div className="container mx-auto px-4 py-24 relative z-10">
+      <div className="container mx-auto px-4 py-24">
         <button 
           onClick={() => navigate(-1)} 
-          className="flex items-center gap-2 text-orange-700 hover:text-orange-800 mb-8 font-medium transition-all hover:gap-3"
+          className="flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-6"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4" />
           Retour
         </button>
 
         <div className="max-w-7xl mx-auto">
-          {/* En-tête de l'offre moderne */}
-          <div className="mb-10">
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-orange-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-8 text-white">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider">
-                    Premium
-                  </div>
-                  <div className="bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-semibold">
-                    10-50+ utilisateurs
-                  </div>
-                </div>
-                <h1 className="text-4xl font-bold mb-2">Neira Cabinet+</h1>
-                <p className="text-orange-50 text-lg">La solution complète pour les cabinets structurés</p>
-              </div>
-              <div className="p-8 bg-white/60 backdrop-blur-sm">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">∞</div>
-                    <div className="text-xs text-gray-600 mt-1">Stockage</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">∞</div>
-                    <div className="text-xs text-gray-600 mt-1">Dossiers</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">∞</div>
-                    <div className="text-xs text-gray-600 mt-1">Clients</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">100</div>
-                    <div className="text-xs text-gray-600 mt-1">Signatures/mois</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* En-tête de l'offre */}
+          <div className="grid lg:grid-cols-3 gap-6 mb-8">
+            {/* Nom de la formule */}
+            <Card className="bg-white/90 backdrop-blur">
+              <CardContent className="p-6">
+                <h1 className="text-2xl font-bold text-orange-600 mb-2">Neira Cabinet+</h1>
+                <p className="text-sm text-gray-600">Idéal pour cabinets structurés 10 à 50+ personnes</p>
+              </CardContent>
+            </Card>
+
+            {/* Limites et specs */}
+            <Card className="lg:col-span-2 bg-white/90 backdrop-blur">
+              <CardContent className="p-6">
+                <h3 className="font-semibold text-gray-900 mb-3">Caractéristiques</h3>
+                <p className="text-sm text-gray-700">Idéal pour cabinets de 10 à 50+ utilisateurs • Stockage illimité • Dossiers illimités • Clients illimités • 100 signatures/mois/utilisateur</p>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Layout 2 colonnes : Fonctionnalités à gauche, Paiement à droite */}
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Colonne gauche : Atouts */}
             <div className="space-y-6">
-              <Card className="bg-white/80 backdrop-blur-xl shadow-xl border-orange-100 rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
-                <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 border-b border-orange-100">
-                  <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                    <CheckCircle2 className="w-6 h-6 text-orange-600" />
-                    Tout inclus
-                  </CardTitle>
+              <Card className="bg-white/90 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-xl">Ce qui est inclus</CardTitle>
                 </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-4 p-3 rounded-xl hover:bg-orange-50 transition-colors">
-                      <div className="bg-orange-100 p-2 rounded-lg">
-                        <CheckCircle2 className="w-5 h-5 text-orange-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">Espace collaboratif illimité</h4>
-                        <p className="text-sm text-gray-600 mt-1">Aucune limite de membres</p>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-gray-900 text-sm">Espace collaboratif illimité</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">Aucune limite de membres</p>
                       </div>
                     </div>
-                    <div className="flex items-start gap-4 p-3 rounded-xl hover:bg-orange-50 transition-colors">
-                      <div className="bg-orange-100 p-2 rounded-lg">
-                        <CheckCircle2 className="w-5 h-5 text-orange-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">100 signatures / mois / utilisateur</h4>
-                        <p className="text-sm text-gray-600 mt-1">Volume professionnel généreux</p>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-gray-900 text-sm">100 signatures / mois / utilisateur</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">Aucune limite mensuelle</p>
                       </div>
                     </div>
-                    <div className="flex items-start gap-4 p-3 rounded-xl hover:bg-orange-50 transition-colors">
-                      <div className="bg-orange-100 p-2 rounded-lg">
-                        <CheckCircle2 className="w-5 h-5 text-orange-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">Workflows illimités</h4>
-                        <p className="text-sm text-gray-600 mt-1">Priorité CPU + files dédiées</p>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-gray-900 text-sm">Workflows illimités</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">Priorité CPU + files dédiées</p>
                       </div>
                     </div>
-                    <div className="flex items-start gap-4 p-3 rounded-xl hover:bg-orange-50 transition-colors">
-                      <div className="bg-orange-100 p-2 rounded-lg">
-                        <CheckCircle2 className="w-5 h-5 text-orange-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">API + intégrations externes</h4>
-                        <p className="text-sm text-gray-600 mt-1">ERP, CRM, GED, Septeo, Microsoft 365, Google</p>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-gray-900 text-sm">API + intégrations externes</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">ERP, CRM, GED, Septeo, Microsoft 365, Google</p>
                       </div>
                     </div>
-                    <div className="flex items-start gap-4 p-3 rounded-xl hover:bg-orange-50 transition-colors">
-                      <div className="bg-orange-100 p-2 rounded-lg">
-                        <CheckCircle2 className="w-5 h-5 text-orange-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">Support prioritaire + Account Manager</h4>
-                        <p className="text-sm text-gray-600 mt-1">Réponse garantie sous 2h</p>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-gray-900 text-sm">Support prioritaire + Account Manager dédié</h4>
+                        <p className="text-xs text-gray-600 mt-0.5">Réponse sous 2h</p>
                       </div>
                     </div>
                   </div>
@@ -278,12 +247,10 @@ export default function CheckoutCabinetPlus() {
               </Card>
 
               {/* Garanties et sécurité */}
-              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 backdrop-blur-xl shadow-xl border-green-200 rounded-2xl overflow-hidden">
+              <Card className="bg-white/90 backdrop-blur border border-green-200">
                 <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-green-100 p-3 rounded-xl">
-                      <Lock className="w-6 h-6 text-green-600" />
-                    </div>
+                  <div className="flex items-start gap-3">
+                    <Lock className="w-6 h-6 text-green-600 flex-shrink-0" />
                     <div>
                       <h4 className="font-semibold text-gray-900 mb-2 text-sm">Paiement 100% sécurisé</h4>
                       <ul className="text-xs text-gray-600 space-y-1">
@@ -300,21 +267,20 @@ export default function CheckoutCabinetPlus() {
 
             {/* Colonne droite : Formulaire de paiement */}
             <div className="space-y-6">
-              <div className="sticky top-24">
-                <Card className="bg-white/90 backdrop-blur-xl shadow-2xl border-2 border-orange-200 rounded-2xl overflow-hidden">
-                  <CardHeader className="bg-gradient-to-r from-orange-500 to-amber-500 text-white">
-                    <CardTitle className="text-2xl flex items-center gap-3">
-                      <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg">
-                        <CreditCard className="w-6 h-6" />
-                      </div>
-                      Finalisez votre abonnement
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <form onSubmit={handleSubmit} className="space-y-6">
+              <Card className="bg-white/90 backdrop-blur border-2 border-primary">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <CreditCard className="w-5 h-5" />
+                    Espace de paiement
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Sélecteur nombre d'utilisateurs */}
                     <div className="space-y-3">
-                        <Label className="text-gray-900 font-semibold text-base">Nombre d'utilisateurs</Label>
+                      <Label className="text-gray-900">Nombre d'utilisateurs</Label>
+                      
+                      {!showCustomInput ? (
                         <>
                           <Select 
                             value={userCount <= 50 ? userCount.toString() : '51+'} 
@@ -462,41 +428,33 @@ export default function CheckoutCabinetPlus() {
                     </div>
 
                     {/* Informations de paiement */}
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-5 shadow-inner">
-                        <div className="flex items-start gap-4">
-                          <div className="bg-blue-100 p-2.5 rounded-lg">
-                            <Lock className="w-5 h-5 text-blue-600" />
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-blue-900 mb-1.5">Paiement 100% sécurisé</h4>
-                            <p className="text-sm text-blue-800">
-                              Vous serez redirigé vers notre processus de paiement sécurisé Stripe pour finaliser votre abonnement.
+                    <div className="space-y-4">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                          <Lock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <h4 className="font-semibold text-blue-900 text-sm mb-1">Paiement sécurisé par Stripe</h4>
+                            <p className="text-xs text-blue-700">
+                              Vous serez redirigé vers notre page de paiement sécurisée Stripe pour finaliser votre abonnement.
                             </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
                     {/* Récapitulatif */}
-                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border-2 border-gray-200">
-                        <div className="space-y-3">
-                          <div className="flex justify-between text-gray-700">
-                            <span className="font-medium">Prix unitaire</span>
-                            <span className="font-semibold">{basePrice}€ / membre</span>
-                          </div>
-                          <div className="flex justify-between text-gray-700">
-                            <span className="font-medium">Nombre de membres</span>
-                            <span className="font-semibold">{userCount}</span>
-                          </div>
-                          <div className="border-t-2 border-dashed border-gray-300 pt-3 mt-3">
-                            <div className="flex justify-between items-center">
-                              <span className="text-xl font-bold text-gray-900">Total</span>
-                              <div className="text-right">
-                                <div className="text-3xl font-bold text-orange-600">{total}€</div>
-                                <div className="text-xs text-gray-600 mt-1">
-                                  Facturation {billingPeriod === 'monthly' ? 'mensuelle' : 'annuelle'}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                    <div className="border-t pt-4 space-y-2">
+                      <div className="flex justify-between text-sm text-gray-900">
+                        <span>Prix unitaire</span>
+                        <span>{basePrice}€ / membre</span>
+                      </div>
+                      <div className="flex justify-between font-bold text-base border-t pt-2 text-gray-900">
+                        <span>Total ({userCount} membre{userCount > 1 ? 's' : ''})</span>
+                        <span>{total}€</span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Facturation {billingPeriod === 'monthly' ? 'mensuelle' : 'annuelle'}
+                      </div>
                     </div>
 
                     <Button 
