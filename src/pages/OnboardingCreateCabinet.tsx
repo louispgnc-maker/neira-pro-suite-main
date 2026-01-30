@@ -77,14 +77,16 @@ export default function OnboardingCreateCabinet() {
 
       if (profileError) throw profileError;
 
-      // Ajouter l'utilisateur comme membre du cabinet avec le rôle owner
+      // Ajouter l'utilisateur comme membre du cabinet avec le rôle Fondateur
       const { error: memberError } = await supabase
         .from('cabinet_members')
         .insert({
           cabinet_id: cabinet.id,
           user_id: user.id,
-          role: 'owner',
-          permissions: ['all']
+          email: user.email || '',
+          role_cabinet: 'Fondateur',
+          status: 'active',
+          joined_at: new Date().toISOString()
         });
 
       if (memberError) throw memberError;
