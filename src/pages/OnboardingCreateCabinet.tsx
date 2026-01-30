@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabaseClient';
-import { PublicHeader } from '@/components/layout/PublicHeader';
 import { Building2, Loader2 } from 'lucide-react';
 
 export default function OnboardingCreateCabinet() {
@@ -99,10 +98,27 @@ export default function OnboardingCreateCabinet() {
   const color = profession === 'avocat' ? 'blue' : 'orange';
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <PublicHeader />
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      {/* Animated background blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="blob absolute top-0 -left-4 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+        <div className="blob absolute top-0 -right-4 w-72 h-72 bg-gradient-to-br from-indigo-200 to-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="blob absolute -bottom-8 left-20 w-72 h-72 bg-gradient-to-br from-purple-200 to-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
+      </div>
+
+      {/* Minimal logo in top-left */}
+      <div className="absolute top-8 left-8 z-10">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-lg">N</span>
+          </div>
+          <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Neira
+          </span>
+        </div>
+      </div>
       
-      <div className="flex-1 flex items-center justify-center px-6 py-24">
+      <div className="relative flex-1 flex items-center justify-center px-6 py-24">
         <Card className="w-full max-w-2xl">
           <CardHeader className="text-center">
             <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-${color}-600 to-${color}-700 flex items-center justify-center shadow-lg`}>
