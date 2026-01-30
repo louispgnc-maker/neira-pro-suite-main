@@ -112,7 +112,7 @@ export default function OnboardingCreateCabinet() {
   const color = profession === 'avocat' ? 'blue' : 'orange';
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <div className="min-h-screen relative bg-gray-50">
       {/* Minimal logo in top-left */}
       <div className="absolute top-8 left-8 z-10">
         <img 
