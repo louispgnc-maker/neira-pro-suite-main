@@ -74,8 +74,45 @@ export default function CreateAccountAfterPayment() {
       }
 
       // Le profil est créé automatiquement par le trigger handle_new_user()
-      // Attendre un peu pour que le trigger s'exécute
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Vérifier que le profil existe et le créer manuellement si nécessaire
+      let retries = 0;
+      let profileExists = false;
+      
+      while (retries < 5 && !profileExists) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', authData.user.id)
+          .single();
+        
+        if (profile) {
+          profileExists = true;
+          console.log('✅ Profil créé automatiquement par trigger');
+        } else {
+          retries++;
+          await new Promise(resolve => setTimeout(resolve, 300));
+        }
+      }
+      
+      // Si après 5 tentatives le profil n'existe toujours pas, le créer manuellement
+      if (!profileExists) {
+        console.log('⚠️ Trigger n\'a pas créé le profil, création manuelle...');
+        const { error: manualProfileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: authData.user.id,
+            email: formData.email,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            role: 'avocat'
+          });
+        
+        if (manualProfileError) {
+          console.error('❌ Erreur création manuelle profil:', manualProfileError);
+        } else {
+          console.log('✅ Profil créé manuellement');
+        }
+      }
 
       // Stocker le session_id et les infos de plan dans localStorage pour le lier au cabinet
       if (sessionId) {

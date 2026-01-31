@@ -33,14 +33,24 @@ export default function OnboardingCreateCabinet() {
     const loadUserProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: profile } = await supabase
+        console.log('👤 User ID:', user.id);
+        console.log('📧 User email:', user.email);
+        
+        const { data: profile, error } = await supabase
           .from('profiles')
-          .select('first_name')
+          .select('*')
           .eq('id', user.id)
           .single();
         
+        console.log('📋 Profil récupéré:', profile);
+        if (error) console.error('❌ Erreur récupération profil:', error);
+        
         if (profile) {
-          setFirstName(profile.first_name || 'Utilisateur');
+          const name = profile.first_name || 'Utilisateur';
+          console.log('✅ Prénom trouvé:', name);
+          setFirstName(name);
+        } else {
+          console.warn('⚠️ Aucun profil trouvé pour cet utilisateur');
         }
         
         // Pré-remplir l'email du cabinet avec l'email de l'utilisateur
