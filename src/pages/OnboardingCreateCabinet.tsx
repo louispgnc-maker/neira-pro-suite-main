@@ -54,26 +54,19 @@ export default function OnboardingCreateCabinet() {
         role_param: profession || 'avocat'
       });
 
-      if (cabinetError) throw cabinetError;
+      if (cabinetError) {
+        console.error('Erreur RPC create_cabinet:', cabinetError);
+        throw cabinetError;
+      }
 
-      // Stocker le cabinet_id pour le webhook
+      console.log('✅ Cabinet créé avec ID:', cabinetId);
+
+      // Stocker le cabinet_id pour le webhook Stripe
       const sessionId = localStorage.getItem('pending_cabinet_session');
       if (sessionId && cabinetId) {
-        // Stocker temporairement le lien session -> cabinet
         localStorage.setItem(`cabinet_for_session_${sessionId}`, cabinetId);
         localStorage.removeItem('pending_cabinet_session');
       }
-
-      // Mettre à jour le profil utilisateur avec le rôle et le cabinet
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          role: profession,
-          cabinet_id: cabinetId
-        })
-        .eq('id', user.id);
-
-      if (profileError) throw profileError;
 
       toast.success('Cabinet créé avec succès !', {
         description: 'Redirection vers votre espace professionnel...'
