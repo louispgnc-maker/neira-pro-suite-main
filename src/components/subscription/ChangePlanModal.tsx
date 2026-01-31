@@ -238,7 +238,7 @@ export function ChangePlanModal({
           <div className="flex gap-3">
             <Button
               variant="outline"
-              className="flex-1"
+              className={`flex-1 ${colors.border} ${colors.text} hover:${colors.bg}`}
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
