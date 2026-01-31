@@ -55,6 +55,20 @@ serve(async (req) => {
       role
     })
 
+    // Validation des données
+    if (!quantity || !price || !prorataAmount || !cabinetId || !targetUserId || !expiresAt || !role) {
+      console.error('❌ Données manquantes:', {
+        hasQuantity: !!quantity,
+        hasPrice: !!price,
+        hasProrataAmount: !!prorataAmount,
+        hasCabinetId: !!cabinetId,
+        hasTargetUserId: !!targetUserId,
+        hasExpiresAt: !!expiresAt,
+        hasRole: !!role
+      })
+      throw new Error('Données requises manquantes')
+    }
+
     // Créer une Checkout Session Stripe
     console.log('💳 Création de la session Stripe...')
     const session = await stripe.checkout.sessions.create({

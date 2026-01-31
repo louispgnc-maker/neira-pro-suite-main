@@ -171,19 +171,22 @@ export function BuySignaturesDialog({
 
       // Créer la session Stripe
       toast.info('Connexion à Stripe...');
+      
+      const requestBody = {
+        quantity: selectedPackage.quantity,
+        price: selectedPackage.price,
+        prorataAmount,
+        cabinetId: cabinet.id,
+        targetUserId: targetUserId || user.id,
+        expiresAt: expiresAt.toISOString(),
+        role,
+      };
+      
+      console.log('📦 Envoi à create-signature-checkout:', requestBody);
+      
       const { data: sessionData, error: sessionError } = await supabase.functions.invoke(
         'create-signature-checkout',
-        {
-          body: {
-            quantity: selectedPackage.quantity,
-            price: selectedPackage.price,
-            prorataAmount,
-            cabinetId: cabinet.id,
-            targetUserId: targetUserId || user.id,
-            expiresAt: expiresAt.toISOString(),
-            role,
-          },
-        }
+        { body: requestBody }
       );
 
       if (sessionError || !sessionData?.url) {
