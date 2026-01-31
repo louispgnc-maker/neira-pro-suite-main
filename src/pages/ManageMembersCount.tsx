@@ -231,7 +231,8 @@ export default function ManageMembersCount() {
         body: {
           cabinetId,
           newMembersCount,
-          prorataAmount: prorataAmountCents
+          prorataAmount: prorataAmountCents,
+          role
         }
       });
 

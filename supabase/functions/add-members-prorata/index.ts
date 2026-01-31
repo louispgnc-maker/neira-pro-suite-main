@@ -17,12 +17,13 @@ serve(async (req) => {
   }
 
   try {
-    const { cabinetId, newMembersCount, prorataAmount } = await req.json()
+    const { cabinetId, newMembersCount, prorataAmount, role } = await req.json()
 
     console.log('=== ADD MEMBERS PRORATA REQUEST ===');
     console.log('Cabinet ID:', cabinetId);
     console.log('New members count:', newMembersCount);
     console.log('Prorata amount (cents):', prorataAmount);
+    console.log('Role:', role);
 
     if (!cabinetId || !newMembersCount || !prorataAmount) {
       throw new Error('Cabinet ID, new members count, and prorata amount are required')
@@ -36,7 +37,7 @@ serve(async (req) => {
     // Récupérer les infos du cabinet
     const { data: cabinet, error: cabinetError } = await supabase
       .from('cabinets')
-      .select('stripe_customer_id, nom, subscription_plan')
+      .select('stripe_customer_id, nom, subscription_plan, role')
       .eq('id', cabinetId)
       .single()
 
@@ -45,7 +46,11 @@ serve(async (req) => {
     }
 
     console.log('Cabinet:', cabinet.nom);
+    console.log('Cabinet role:', cabinet.role);
     console.log('Existing customer ID:', cabinet.stripe_customer_id);
+    
+    // Déterminer le préfixe basé sur le rôle
+    const prefix = (role || cabinet.role) === 'notaire' ? 'notaires' : 'avocats';
 
     // Si pas de customer Stripe, en créer un
     let customerId = cabinet.stripe_customer_id
@@ -85,8 +90,8 @@ serve(async (req) => {
           quantity: 1,
         },
       ],
-      success_url: `${req.headers.get('origin')}/avocats/subscription?payment=success&members_updated=true`,
-      cancel_url: `${req.headers.get('origin')}/avocats/manage-members`,
+      success_url: `${req.headers.get('origin')}/${prefix}/subscription?payment=success&members_updated=true`,
+      cancel_url: `${req.headers.get('origin')}/${prefix}/manage-members`,
       locale: 'fr',
       metadata: {
         cabinet_id: cabinetId,
