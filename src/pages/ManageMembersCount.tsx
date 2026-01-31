@@ -48,17 +48,29 @@ export default function ManageMembersCount() {
   if (memberDiff !== 0 && isAdding) {
     const now = new Date();
     
-    // Si on a la date de billing, on l'utilise, sinon on estime 15 jours restants
+    // Calculer les jours restants et totaux de la période de facturation
+    let totalDays;
     if (nextBillingDate) {
       const diffTime = nextBillingDate.getTime() - now.getTime();
       remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      // Calculer le nombre de jours total de la période de facturation actuelle
+      // en remontant d'un cycle en arrière depuis nextBillingDate
+      const periodStart = new Date(nextBillingDate);
+      if (billingPeriod === 'monthly') {
+        periodStart.setMonth(periodStart.getMonth() - 1);
+      } else {
+        periodStart.setFullYear(periodStart.getFullYear() - 1);
+      }
+      
+      // Nombre de jours entre le début et la fin de la période
+      const periodDiffTime = nextBillingDate.getTime() - periodStart.getTime();
+      totalDays = Math.ceil(periodDiffTime / (1000 * 60 * 60 * 24));
     } else {
-      // Estimation : milieu du mois (15 jours restants en moyenne)
+      // Estimation : 15 jours restants sur 30 jours par défaut
       remainingDays = 15;
+      totalDays = 30;
     }
-    
-    // Calculer les jours totaux du cycle (environ 30 jours pour mensuel)
-    const totalDays = billingPeriod === 'monthly' ? 30 : 365;
     
     // Prorata = différence de prix × (jours restants / jours totaux)
     const memberPriceDiff = Math.abs(memberDiff) * pricePerMember;
