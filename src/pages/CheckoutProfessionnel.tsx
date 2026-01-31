@@ -142,7 +142,7 @@ export default function CheckoutProfessionnel() {
         priceId,
         quantity: userCount, // Nombre d'utilisateurs sélectionnés (2 à 10)
         cabinetId: memberData.cabinet_id,
-        successUrl: `${window.location.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+        successUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`,
         cancelUrl: `${window.location.origin}/checkout/professionnel`
       });
 
