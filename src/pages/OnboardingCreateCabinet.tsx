@@ -35,12 +35,12 @@ export default function OnboardingCreateCabinet() {
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('first_name, prenom')
+          .select('first_name')
           .eq('id', user.id)
           .single();
         
         if (profile) {
-          setFirstName(profile.first_name || profile.prenom || 'Utilisateur');
+          setFirstName(profile.first_name || 'Utilisateur');
         }
         
         // Pré-remplir l'email du cabinet avec l'email de l'utilisateur

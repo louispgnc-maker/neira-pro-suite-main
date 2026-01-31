@@ -73,20 +73,9 @@ export default function CreateAccountAfterPayment() {
         console.error('Erreur création user:', userError);
       }
 
-      // Créer ou mettre à jour le profil avec prénom et nom
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: authData.user.id,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          prenom: formData.firstName,
-          nom: formData.lastName,
-        });
-
-      if (profileError) {
-        console.error('Erreur création profil:', profileError);
-      }
+      // Le profil est créé automatiquement par le trigger handle_new_user()
+      // Attendre un peu pour que le trigger s'exécute
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Stocker le session_id et les infos de plan dans localStorage pour le lier au cabinet
       if (sessionId) {
