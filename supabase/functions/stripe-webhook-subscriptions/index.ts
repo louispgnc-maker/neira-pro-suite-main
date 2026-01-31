@@ -187,15 +187,45 @@ serve(async (req) => {
 
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription
-        const cabinetId = subscription.metadata?.cabinet_id
+        let cabinetId = subscription.metadata?.cabinet_id
+
+        // Si pas de cabinet_id dans metadata, chercher par customer_id
+        if (!cabinetId) {
+          const customerId = subscription.customer as string
+          const { data: cabinetData } = await supabaseAdmin
+            .from('cabinets')
+            .select('id')
+            .eq('stripe_customer_id', customerId)
+            .single()
+          
+          if (cabinetData) {
+            cabinetId = cabinetData.id
+            console.log('✅ Found cabinet by customer_id:', cabinetId)
+          }
+        }
 
         if (!cabinetId) {
-          console.error('❌ No cabinet_id in metadata')
+          console.error('❌ No cabinet found for this subscription update')
           break
         }
 
         const priceId = subscription.items.data[0]?.price.id
         const tier = PRICE_TO_TIER[priceId] || 'essentiel'
+        const quantity = subscription.items.data[0]?.quantity || 1
+
+        // Récupérer le payment method mis à jour
+        let paymentMethodType = 'unknown'
+        let paymentMethodLast4 = null
+        let paymentMethodBrand = null
+
+        if (subscription.default_payment_method) {
+          const pm = await stripe.paymentMethods.retrieve(subscription.default_payment_method as string)
+          paymentMethodType = pm.type
+          if (pm.type === 'card') {
+            paymentMethodLast4 = pm.card?.last4
+            paymentMethodBrand = pm.card?.brand
+          }
+        }
 
         await supabaseAdmin
           .from('cabinets')
@@ -203,11 +233,15 @@ serve(async (req) => {
             subscription_plan: tier,
             subscription_status: subscription.status,
             current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-            max_members: subscription.items.data[0]?.quantity || 1,
+            max_members: quantity,
+            payment_method_type: paymentMethodType,
+            payment_method_last4: paymentMethodLast4,
+            payment_method_brand: paymentMethodBrand,
+            stripe_subscription_item_id: subscription.items.data[0]?.id,
           })
           .eq('id', cabinetId)
 
-        console.log('✅ Subscription updated:', { cabinetId, tier, status: subscription.status })
+        console.log('✅ Subscription updated:', { cabinetId, tier, quantity, status: subscription.status })
         break
       }
 
