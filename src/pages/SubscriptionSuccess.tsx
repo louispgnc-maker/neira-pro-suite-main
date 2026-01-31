@@ -39,10 +39,7 @@ export default function SubscriptionSuccess() {
           description: 'Créez maintenant votre compte pour accéder à votre espace.'
         });
 
-        // Redirection automatique après 3 secondes
-        setTimeout(() => {
-          navigate(`/create-account?session_id=${sessionIdParam}`);
-        }, 3000);
+        // Pas de redirection automatique - l'utilisateur cliquera sur le bouton
       } catch (error) {
         console.error('Erreur lors de la vérification:', error);
         setLoading(false);
