@@ -153,28 +153,19 @@ export function BuySignaturesDialog({
         throw new Error(`Aucun cabinet ${role} trouvé`);
       }
 
-      // Récupérer les détails du cabinet seulement si nécessaire
+      // Récupérer la date de fin de période actuelle (prochaine facturation)
       const { data: cabinetDetails } = await supabase
         .from('cabinets')
-        .select('subscription_started_at')
+        .select('current_period_end')
         .eq('id', cabinet.id)
         .single();
 
-      // Calculer la date d'expiration
+      // Utiliser la date de fin de période actuelle pour l'expiration
       let expiresAt = new Date();
-      if (cabinetDetails?.subscription_started_at) {
-        const startDate = new Date(cabinetDetails.subscription_started_at);
-        const now = new Date();
-        
-        let monthsDiff = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
-        
-        if (now.getDate() < startDate.getDate()) {
-          monthsDiff--;
-        }
-        
-        expiresAt = new Date(startDate);
-        expiresAt.setMonth(expiresAt.getMonth() + monthsDiff + 1);
+      if (cabinetDetails?.current_period_end) {
+        expiresAt = new Date(cabinetDetails.current_period_end);
       } else {
+        // Fallback : 1 mois à partir d'aujourd'hui si pas de période définie
         expiresAt.setMonth(expiresAt.getMonth() + 1);
       }
 
