@@ -39,6 +39,36 @@ serve(async (req) => {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         
+        // Vérifier si c'est un paiement de prorata pour ajout de membres
+        const paymentType = session.metadata?.payment_type
+        
+        if (paymentType === 'members_prorata') {
+          console.log('💳 Processing members prorata payment')
+          const cabinetId = session.metadata?.cabinet_id
+          const newMembersCount = parseInt(session.metadata?.new_members_count || '0')
+          
+          if (cabinetId && newMembersCount > 0) {
+            // Mettre à jour le nombre de membres dans le cabinet
+            const { error: updateError } = await supabaseAdmin
+              .from('cabinets')
+              .update({
+                max_members: newMembersCount,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', cabinetId)
+            
+            if (updateError) {
+              console.error('❌ Error updating max_members:', updateError)
+            } else {
+              console.log('✅ max_members updated to:', newMembersCount)
+            }
+          }
+          
+          // Pas besoin de continuer, c'est juste un paiement unique
+          break
+        }
+        
+        // Traitement normal pour un nouvel abonnement
         // Essayer de récupérer cabinet_id depuis metadata, sinon chercher par email
         let cabinetId = session.metadata?.cabinet_id
         const customerEmail = session.customer_details?.email || session.metadata?.customer_email

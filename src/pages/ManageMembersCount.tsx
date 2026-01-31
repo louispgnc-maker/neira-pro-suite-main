@@ -223,30 +223,28 @@ export default function ManageMembersCount() {
       const cabinetId = memberData[0].cabinet_id;
       const cabinet = memberData[0].cabinets as any;
 
-      // Obtenir le Price ID Stripe basé sur le plan et la période de facturation
-      const planKey = (cabinet.subscription_plan || currentPlan) as keyof typeof STRIPE_PRICE_IDS;
-      const periodKey = (cabinet.billing_period || billingPeriod) as 'monthly' | 'yearly';
-      const priceId = STRIPE_PRICE_IDS[planKey]?.[periodKey];
+      // Calculer le montant du prorata en centimes pour Stripe
+      const prorataAmountCents = prorataAmount * 100;
 
-      if (!priceId) {
-        toast.error('Erreur de configuration', {
-          description: 'Plan ou période de facturation invalide.'
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Créer une session de checkout Stripe pour payer la modification
-      const checkoutUrl = await createStripeCheckoutSession({
-        priceId,
-        quantity: newMembersCount,
-        successUrl: `${window.location.origin}${prefix}/subscription?payment=success`,
-        cancelUrl: window.location.href,
-        cabinetId: cabinetId
+      // Créer une session de checkout pour payer uniquement le prorata
+      const { data, error } = await supabase.functions.invoke('add-members-prorata', {
+        body: {
+          cabinetId,
+          newMembersCount,
+          prorataAmount: prorataAmountCents
+        }
       });
 
+      if (error || data?.error) {
+        throw new Error(error?.message || data?.error || 'Erreur lors de la création du paiement');
+      }
+
+      if (!data?.url) {
+        throw new Error('Aucune URL de paiement retournée');
+      }
+
       // Rediriger vers Stripe Checkout
-      window.location.href = checkoutUrl;
+      window.location.href = data.url;
     } catch (error: any) {
       console.error('Error updating members:', error);
       toast.error('Erreur', {
