@@ -64,7 +64,7 @@ export const useAutoCreateCabinet = (user: any, role: 'avocat' | 'notaire') => {
         const limits = subscriptionLimits[plan as keyof typeof subscriptionLimits];
 
         // Créer le cabinet
-        const { error } = await supabase
+        const { error, data: cabinetData } = await supabase
           .from('cabinets')
           .insert({
             role: role,
@@ -77,9 +77,28 @@ export const useAutoCreateCabinet = (user: any, role: 'avocat' | 'notaire') => {
             billing_period: billingPeriod,
             subscription_status: 'active',
             subscription_started_at: new Date().toISOString()
-          });
+          })
+          .select()
+          .single();
 
         if (error) throw error;
+
+        // Envoyer l'email de confirmation
+        try {
+          await supabase.functions.invoke('send-payment-confirmation', {
+            body: {
+              customerEmail: user.email,
+              customerName: user.user_metadata?.full_name || user.email?.split('@')[0],
+              subscriptionTier: plan,
+              quantity: limits.max_members || 1,
+              billingPeriod: billingPeriod
+            }
+          });
+          console.log('✅ Email de confirmation envoyé à:', user.email);
+        } catch (emailError) {
+          console.error('❌ Erreur envoi email:', emailError);
+          // On ne bloque pas la création du cabinet si l'email échoue
+        }
 
         // Nettoyer le sessionStorage
         sessionStorage.removeItem('pendingSubscription');

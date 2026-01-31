@@ -103,10 +103,6 @@ export default function SubscriptionSuccess() {
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span>Un email de confirmation a été envoyé</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
                     <span>Votre facture est disponible dans votre espace</span>
                   </li>
                 </ul>
