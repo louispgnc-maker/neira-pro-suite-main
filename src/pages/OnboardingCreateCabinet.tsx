@@ -41,38 +41,26 @@ export default function OnboardingCreateCabinet() {
         return;
       }
 
-      // Vérifier si l'utilisateur a déjà un cabinet pour ce rôle
-      const { data: existingCabinets } = await supabase
-        .from('cabinets')
-        .select('id')
-        .eq('owner_id', user.id)
-        .eq('role', profession || 'avocat');
+      console.log('🔐 Utilisateur connecté:', user.id);
+      console.log('📋 Données du formulaire:', formData);
 
-      if (existingCabinets && existingCabinets.length > 0) {
-        toast.success('Vous avez déjà un cabinet !', {
-          description: 'Redirection vers votre espace...'
-        });
-        setTimeout(() => {
-          navigate(`/${profession}s/dashboard`, { replace: true });
-        }, 1000);
-        return;
-      }
-
-      // Créer le cabinet via la fonction RPC (crée automatiquement le cabinet et ajoute le fondateur)
+      // Créer le cabinet via la fonction RPC
+      // Cette fonction crée automatiquement le cabinet avec owner_id = user.id
+      // et ajoute l'utilisateur comme Fondateur dans cabinet_members
       const { data: cabinetId, error: cabinetError } = await supabase.rpc('create_cabinet', {
         nom_param: formData.name,
-        raison_sociale_param: formData.name, // Utiliser le nom comme raison sociale par défaut
+        raison_sociale_param: formData.name,
         siret_param: formData.siret,
         adresse_param: formData.address,
-        code_postal_param: '', // Sera complété plus tard si nécessaire
-        ville_param: '', // Sera complété plus tard si nécessaire
+        code_postal_param: '',
+        ville_param: '',
         telephone_param: formData.phone,
         email_param: formData.email,
         role_param: profession || 'avocat'
       });
 
       if (cabinetError) {
-        console.error('Erreur RPC create_cabinet:', cabinetError);
+        console.error('❌ Erreur création cabinet:', cabinetError);
         throw cabinetError;
       }
 
