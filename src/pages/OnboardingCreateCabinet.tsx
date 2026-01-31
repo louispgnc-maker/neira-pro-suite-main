@@ -63,23 +63,39 @@ export default function OnboardingCreateCabinet() {
       console.log('🔐 Utilisateur connecté:', user.id);
       console.log('📋 Données du formulaire:', formData);
 
-      // Nettoyer les anciennes données de test si elles existent
-      console.log('🧹 Nettoyage des anciennes données...');
+      // Nettoyer complètement les anciennes données de test
+      console.log('🧹 Nettoyage complet des anciennes données...');
       
-      // Supprimer les anciens cabinets de cet utilisateur pour ce rôle
-      const { error: deleteError } = await supabase
+      // 1. Récupérer tous les cabinets de cet utilisateur pour ce rôle
+      const { data: oldCabinets } = await supabase
         .from('cabinets')
-        .delete()
+        .select('id')
         .eq('owner_id', user.id)
         .eq('role', profession || 'avocat');
 
-      if (deleteError) {
-        console.warn('⚠️ Erreur nettoyage (ignorée):', deleteError);
+      if (oldCabinets && oldCabinets.length > 0) {
+        console.log('📦 Anciens cabinets trouvés:', oldCabinets.length);
+        
+        // 2. Supprimer d'abord les membres de ces cabinets (évite les contraintes)
+        for (const cabinet of oldCabinets) {
+          await supabase
+            .from('cabinet_members')
+            .delete()
+            .eq('cabinet_id', cabinet.id);
+        }
+        
+        // 3. Puis supprimer les cabinets
+        await supabase
+          .from('cabinets')
+          .delete()
+          .eq('owner_id', user.id)
+          .eq('role', profession || 'avocat');
+          
+        console.log('✅ Nettoyage terminé');
       }
 
-      // Créer le cabinet via la fonction RPC
-      // Cette fonction crée automatiquement le cabinet avec owner_id = user.id
-      // et ajoute l'utilisateur comme Fondateur dans cabinet_members
+      // 4. Créer le nouveau cabinet via la fonction RPC
+      console.log('🏢 Création du nouveau cabinet...');
       const { data: cabinetId, error: cabinetError } = await supabase.rpc('create_cabinet', {
         nom_param: formData.name,
         raison_sociale_param: formData.name,
