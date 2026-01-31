@@ -118,6 +118,11 @@ export default function Subscription() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [activeMembersCount, setActiveMembersCount] = useState<number>(0);
   const [cabinetId, setCabinetId] = useState<string | null>(null);
+  const [changePlanModalOpen, setChangePlanModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{
+    id: 'essentiel' | 'professionnel' | 'cabinet-plus';
+    name: string;
+  } | null>(null);
 
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
