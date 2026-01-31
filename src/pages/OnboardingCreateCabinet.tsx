@@ -42,6 +42,11 @@ export default function OnboardingCreateCabinet() {
         if (profile) {
           setFirstName(profile.first_name || profile.prenom || 'Utilisateur');
         }
+        
+        // Pré-remplir l'email du cabinet avec l'email de l'utilisateur
+        if (user.email && !formData.email) {
+          setFormData(prev => ({ ...prev, email: user.email || '' }));
+        }
       }
     };
     loadUserProfile();
