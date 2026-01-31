@@ -41,6 +41,23 @@ export default function OnboardingCreateCabinet() {
         return;
       }
 
+      // Vérifier si l'utilisateur a déjà un cabinet pour ce rôle
+      const { data: existingCabinets } = await supabase
+        .from('cabinets')
+        .select('id')
+        .eq('owner_id', user.id)
+        .eq('role', profession || 'avocat');
+
+      if (existingCabinets && existingCabinets.length > 0) {
+        toast.success('Vous avez déjà un cabinet !', {
+          description: 'Redirection vers votre espace...'
+        });
+        setTimeout(() => {
+          navigate(`/${profession}s/dashboard`, { replace: true });
+        }, 1000);
+        return;
+      }
+
       // Créer le cabinet via la fonction RPC (crée automatiquement le cabinet et ajoute le fondateur)
       const { data: cabinetId, error: cabinetError } = await supabase.rpc('create_cabinet', {
         nom_param: formData.name,
