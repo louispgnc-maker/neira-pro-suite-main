@@ -26,9 +26,61 @@ export function DashboardNotaire() {
   useEffect(() => {
     const paymentStatus = searchParams.get('signature_payment');
     if (paymentStatus === 'success') {
-      toast.success('Paiement réussi !', {
-        description: 'Vos crédits de signatures ont été ajoutés à votre compte.'
-      });
+      // Appliquer l'achat de signatures depuis sessionStorage
+      const applySignaturePurchase = async () => {
+        const pendingPurchase = sessionStorage.getItem('pending_signature_purchase');
+        if (!pendingPurchase) {
+          toast.success('Paiement réussi !', {
+            description: 'Vos crédits de signatures ont été ajoutés.'
+          });
+          searchParams.delete('signature_payment');
+          setSearchParams(searchParams);
+          setTimeout(() => window.location.reload(), 1500);
+          return;
+        }
+
+        try {
+          const { cabinetId, targetUserId, quantity, price, expiresAt, timestamp } = JSON.parse(pendingPurchase);
+          
+          // Vérifier que l'achat n'a pas plus de 1 heure
+          if (Date.now() - timestamp > 3600000) {
+            console.warn('Achat expiré');
+            sessionStorage.removeItem('pending_signature_purchase');
+            return;
+          }
+
+          console.log('Application achat signatures:', { targetUserId, quantity });
+
+          // Créditer les signatures directement
+          const { error: updateError } = await supabase
+            .from('cabinet_members')
+            .update({
+              signature_addon_quantity: quantity,
+              signature_addon_price: price,
+              signature_addon_purchased_at: new Date().toISOString(),
+              signature_addon_expires_at: expiresAt
+            })
+            .eq('cabinet_id', cabinetId)
+            .eq('user_id', targetUserId);
+
+          if (updateError) {
+            console.error('Erreur crédit signatures:', updateError);
+            toast.error('Erreur lors du crédit des signatures');
+          } else {
+            console.log('✅ Signatures créditées:', quantity);
+            toast.success('Paiement réussi !', {
+              description: `${quantity} crédits de signatures ajoutés.`
+            });
+          }
+
+          sessionStorage.removeItem('pending_signature_purchase');
+        } catch (error) {
+          console.error('Erreur application achat:', error);
+          sessionStorage.removeItem('pending_signature_purchase');
+        }
+      };
+
+      applySignaturePurchase();
       // Nettoyer l'URL
       searchParams.delete('signature_payment');
       setSearchParams(searchParams);
