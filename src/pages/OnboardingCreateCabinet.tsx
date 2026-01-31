@@ -33,25 +33,31 @@ export default function OnboardingCreateCabinet() {
     const loadUserProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        console.log('👤 User ID:', user.id);
-        console.log('📧 User email:', user.email);
+        console.log('👤 User:', user);
+        console.log('📝 User metadata:', user.user_metadata);
         
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
+        // D'abord essayer de récupérer depuis les métadonnées (disponible immédiatement)
+        let firstName = user.user_metadata?.first_name || '';
+        console.log('📋 Prénom depuis metadata:', firstName);
         
-        console.log('📋 Profil récupéré:', profile);
-        if (error) console.error('❌ Erreur récupération profil:', error);
-        
-        if (profile) {
-          const name = profile.first_name || 'Utilisateur';
-          console.log('✅ Prénom trouvé:', name);
-          setFirstName(name);
-        } else {
-          console.warn('⚠️ Aucun profil trouvé pour cet utilisateur');
+        // Si pas dans metadata, chercher dans la table profiles
+        if (!firstName) {
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('first_name')
+            .eq('id', user.id)
+            .single();
+          
+          console.log('📋 Profil récupéré:', profile);
+          if (error) console.error('❌ Erreur:', error);
+          
+          if (profile?.first_name) {
+            firstName = profile.first_name;
+            console.log('✅ Prénom trouvé dans profiles:', firstName);
+          }
         }
+        
+        setFirstName(firstName || 'Utilisateur');
         
         // Pré-remplir l'email du cabinet avec l'email de l'utilisateur
         if (user.email && !formData.email) {
