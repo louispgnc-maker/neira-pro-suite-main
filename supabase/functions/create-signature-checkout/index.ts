@@ -74,20 +74,28 @@ serve(async (req) => {
       throw new Error('Données requises manquantes ou invalides')
     }
 
-    // Créer une Checkout Session Stripe
-    console.log('💳 Création de la session Stripe...')
+    // Mapping des quantités vers les price IDs Stripe
+    const priceIdMap: Record<number, string> = {
+      1: 'price_1SvlbL7ECruIACYyCLSpS0r2',
+      10: 'price_1SvlZu7ECruIACYyJMb1q5kK',
+      20: 'price_1SvlaL7ECruIACYy3ktNjFhY',
+      50: 'price_1Svlac7ECruIACYyttwqZ7fQ',
+      100: 'price_1Svlb17ECruIACYy1Gyn7ioO',
+      250: 'price_1Svlbb7ECruIACYyxQV2lV49'
+    };
+
+    const priceId = priceIdMap[quantity];
+    if (!priceId) {
+      throw new Error(`Aucun price ID trouvé pour la quantité ${quantity}`);
+    }
+
+    // Créer une Checkout Session Stripe avec le price ID
+    console.log('💳 Création de la session Stripe avec price ID:', priceId)
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {
-          price_data: {
-            currency: 'eur',
-            product_data: {
-              name: `Pack ${quantity} signatures électroniques`,
-              description: `Crédits de signatures pour votre cabinet ${role === 'notaire' ? 'notarial' : "d'avocat"}`,
-            },
-            unit_amount: Math.round(prorataAmount * 100), // Stripe utilise les centimes
-          },
+          price: priceId,
           quantity: 1,
         },
       ],
