@@ -73,8 +73,9 @@ export default function ManageMembersCount() {
     }
     
     // Prorata = différence de prix × (jours restants / jours totaux)
+    // Mais ne doit jamais dépasser le prix mensuel complet
     const memberPriceDiff = Math.abs(memberDiff) * pricePerMember;
-    const prorataCalc = memberPriceDiff * (remainingDays / totalDays);
+    const prorataCalc = memberPriceDiff * Math.min(1, remainingDays / totalDays);
     
     // Arrondir à l'euro supérieur
     prorataAmount = Math.ceil(prorataCalc);
