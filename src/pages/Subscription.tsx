@@ -139,6 +139,60 @@ export default function Subscription() {
     }
   }, [location.search, location.pathname, navigate]);
 
+  // Mettre à jour max_members si on revient du paiement d'ajout de membres
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('members_updated') === 'true') {
+      const updateMembers = async () => {
+        const pendingUpdate = sessionStorage.getItem('pending_members_update');
+        if (!pendingUpdate) return;
+
+        try {
+          const { cabinetId, newMembersCount, timestamp } = JSON.parse(pendingUpdate);
+          
+          // Vérifier que la mise à jour n'a pas plus de 1 heure (sécurité)
+          if (Date.now() - timestamp > 3600000) {
+            console.warn('Mise à jour expirée');
+            sessionStorage.removeItem('pending_members_update');
+            return;
+          }
+
+          console.log('Mise à jour automatique de max_members:', newMembersCount);
+          
+          // Mettre à jour max_members directement
+          const { error: updateError } = await supabase
+            .from('cabinets')
+            .update({
+              max_members: newMembersCount,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', cabinetId);
+
+          if (updateError) {
+            console.error('Erreur mise à jour max_members:', updateError);
+          } else {
+            console.log('✅ max_members mis à jour à', newMembersCount);
+            toast.success('Membres ajoutés !', {
+              description: `Votre abonnement comprend maintenant ${newMembersCount} membres.`
+            });
+            // Forcer le rechargement des données
+            setRefreshTrigger(prev => prev + 1);
+          }
+
+          // Nettoyer le sessionStorage
+          sessionStorage.removeItem('pending_members_update');
+        } catch (error) {
+          console.error('Erreur lors de la mise à jour des membres:', error);
+          sessionStorage.removeItem('pending_members_update');
+        }
+      };
+
+      updateMembers();
+      // Nettoyer l'URL
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.search, location.pathname, navigate]);
+
   // Listen for subscription changes
   useEffect(() => {
     const handleRefresh = () => setRefreshTrigger(prev => prev + 1);

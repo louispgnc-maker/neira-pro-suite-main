@@ -270,6 +270,14 @@ export default function ManageMembersCount() {
         throw new Error('Aucune URL de paiement retournée');
       }
 
+      // Stocker les informations de mise à jour dans sessionStorage
+      // pour les appliquer au retour du paiement
+      sessionStorage.setItem('pending_members_update', JSON.stringify({
+        cabinetId,
+        newMembersCount,
+        timestamp: Date.now()
+      }));
+
       // Rediriger vers Stripe Checkout
       window.location.href = data.url;
     } catch (error: any) {
