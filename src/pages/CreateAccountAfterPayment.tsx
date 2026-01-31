@@ -53,6 +53,7 @@ export default function CreateAccountAfterPayment() {
             last_name: formData.lastName,
             role: role, // Ajouter le rôle dans les métadonnées
           },
+          emailRedirectTo: undefined, // Pas de redirection email
         },
       });
 
