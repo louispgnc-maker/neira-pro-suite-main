@@ -118,8 +118,7 @@ export default function SubscriptionSuccess() {
                   Notre équipe support est à votre disposition pour vous accompagner dans la prise en main de Neira.
                 </p>
                 <p className="text-sm text-orange-800">
-                  📧 Email : <a href="mailto:support@neira.fr" className="underline">support@neira.fr</a><br />
-                  ⏱️ Réponse sous 2h (jours ouvrés)
+                  📧 Email : <a href="mailto:contact@neira.fr" className="underline">contact@neira.fr</a>
                 </p>
               </div>
 
@@ -128,13 +127,12 @@ export default function SubscriptionSuccess() {
                   onClick={handleContinue}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  Accéder à mon espace
+                  Poursuivre
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
                 <Button 
-                  variant="outline"
-                  onClick={() => window.open('mailto:support@neira.fr', '_blank')}
-                  className="w-full"
+                  onClick={() => window.open('mailto:contact@neira.fr', '_blank')}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   Contacter le support
                 </Button>
