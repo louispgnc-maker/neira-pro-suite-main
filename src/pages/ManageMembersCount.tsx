@@ -9,6 +9,7 @@ import { ArrowLeft, Users, Plus, Minus } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { toast } from 'sonner';
 import { createStripeCheckoutSession } from '@/lib/stripeCheckout';
+import { STRIPE_PRICE_IDS } from '@/lib/stripeConfig';
 
 export default function ManageMembersCount() {
   const navigate = useNavigate();
@@ -222,11 +223,23 @@ export default function ManageMembersCount() {
       const cabinetId = memberData[0].cabinet_id;
       const cabinet = memberData[0].cabinets as any;
 
+      // Obtenir le Price ID Stripe basé sur le plan et la période de facturation
+      const planKey = (cabinet.subscription_plan || currentPlan) as keyof typeof STRIPE_PRICE_IDS;
+      const periodKey = (cabinet.billing_period || billingPeriod) as 'monthly' | 'yearly';
+      const priceId = STRIPE_PRICE_IDS[planKey]?.[periodKey];
+
+      if (!priceId) {
+        toast.error('Erreur de configuration', {
+          description: 'Plan ou période de facturation invalide.'
+        });
+        setLoading(false);
+        return;
+      }
+
       // Créer une session de checkout Stripe pour payer la modification
       const checkoutUrl = await createStripeCheckoutSession({
-        plan: cabinet.subscription_plan || currentPlan,
-        billingPeriod: cabinet.billing_period || billingPeriod,
-        memberCount: newMembersCount,
+        priceId,
+        quantity: newMembersCount,
         successUrl: `${window.location.origin}${prefix}/subscription?payment=success`,
         cancelUrl: window.location.href,
         cabinetId: cabinetId
