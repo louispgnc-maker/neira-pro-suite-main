@@ -72,7 +72,7 @@ export function ChangePlanModal({
         priceId,
         quantity: numberOfMembers,
         cabinetId,
-        successUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+        successUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`,
         cancelUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`
       });
 

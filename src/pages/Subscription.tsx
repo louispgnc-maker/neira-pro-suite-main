@@ -122,6 +122,18 @@ export default function Subscription() {
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
   const prefix = role === 'notaire' ? '/notaires' : '/avocats';
 
+  // Afficher un toast de succès si le paiement vient de réussir
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('payment') === 'success') {
+      toast.success('Changement d\'abonnement réussi !', {
+        description: 'Votre nouvel abonnement est maintenant actif.'
+      });
+      // Nettoyer l'URL
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.search, location.pathname, navigate]);
+
   // Listen for subscription changes
   useEffect(() => {
     const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
