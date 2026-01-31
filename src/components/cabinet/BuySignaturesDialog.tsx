@@ -118,10 +118,6 @@ export function BuySignaturesDialog({
     ? [emergencyPackage, ...packages]
     : packages;
 
-  // PAS DE PRORATA pour les crédits de signatures : ce sont des achats one-time
-  // L'utilisateur achète X signatures au prix affiché, point final
-  const prorataAmount = selectedPackage ? selectedPackage.price : 0;
-
   const handlePurchase = async () => {
     // Validations immédiates
     if (!selectedPackage) {
@@ -133,6 +129,10 @@ export function BuySignaturesDialog({
       toast.error('Vous devez être connecté');
       return;
     }
+
+    // PAS DE PRORATA pour les crédits de signatures : ce sont des achats one-time
+    // L'utilisateur achète X signatures au prix affiché, point final
+    const prorataAmount = selectedPackage.price;
 
     setLoading(true);
     toast.info('Préparation de votre commande...');

@@ -55,18 +55,23 @@ serve(async (req) => {
       role
     })
 
-    // Validation des données
-    if (!quantity || !price || !prorataAmount || !cabinetId || !targetUserId || !expiresAt || !role) {
-      console.error('❌ Données manquantes:', {
-        hasQuantity: !!quantity,
-        hasPrice: !!price,
-        hasProrataAmount: !!prorataAmount,
-        hasCabinetId: !!cabinetId,
-        hasTargetUserId: !!targetUserId,
-        hasExpiresAt: !!expiresAt,
-        hasRole: !!role
+    // Validation des données (accepte 0 comme valeur valide)
+    if (
+      quantity === undefined || quantity === null ||
+      price === undefined || price === null ||
+      prorataAmount === undefined || prorataAmount === null ||
+      !cabinetId || !targetUserId || !expiresAt || !role
+    ) {
+      console.error('❌ Données manquantes ou invalides:', {
+        quantity: quantity,
+        price: price,
+        prorataAmount: prorataAmount,
+        cabinetId: cabinetId,
+        targetUserId: targetUserId,
+        expiresAt: expiresAt,
+        role: role
       })
-      throw new Error('Données requises manquantes')
+      throw new Error('Données requises manquantes ou invalides')
     }
 
     // Créer une Checkout Session Stripe
