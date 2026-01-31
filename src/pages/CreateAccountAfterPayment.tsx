@@ -17,7 +17,8 @@ export default function CreateAccountAfterPayment() {
     email: '',
     password: '',
     confirmPassword: '',
-    fullName: ''
+    firstName: '',
+    lastName: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -38,13 +39,17 @@ export default function CreateAccountAfterPayment() {
     setLoading(true);
 
     try {
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      
       // Créer le compte avec Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           data: {
-            full_name: formData.fullName,
+            full_name: fullName,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
           },
         },
       });
@@ -61,11 +66,26 @@ export default function CreateAccountAfterPayment() {
         .insert({
           id: authData.user.id,
           email: formData.email,
-          full_name: formData.fullName,
+          full_name: fullName,
         });
 
       if (userError) {
         console.error('Erreur création user:', userError);
+      }
+
+      // Créer ou mettre à jour le profil avec prénom et nom
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: authData.user.id,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          prenom: formData.firstName,
+          nom: formData.lastName,
+        });
+
+      if (profileError) {
+        console.error('Erreur création profil:', profileError);
       }
 
       // Stocker le session_id et les infos de plan dans localStorage pour le lier au cabinet
@@ -119,21 +139,41 @@ export default function CreateAccountAfterPayment() {
 
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="fullName" className="text-gray-700">
-                Nom complet
-              </Label>
-              <div className="relative mt-1">
-                <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  id="fullName"
-                  type="text"
-                  required
-                  placeholder="Jean Dupont"
-                  className="pl-10"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName" className="text-gray-700">
+                  Prénom
+                </Label>
+                <div className="relative mt-1">
+                  <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    id="firstName"
+                    type="text"
+                    required
+                    placeholder="Jean"
+                    className="pl-10"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="lastName" className="text-gray-700">
+                  Nom
+                </Label>
+                <div className="relative mt-1">
+                  <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    id="lastName"
+                    type="text"
+                    required
+                    placeholder="Dupont"
+                    className="pl-10"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
 
