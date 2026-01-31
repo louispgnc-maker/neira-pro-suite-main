@@ -52,18 +52,31 @@ serve(async (req) => {
           const user = userData.users.find(u => u.email === customerEmail)
           
           if (user) {
-            // Chercher le cabinet dont cet utilisateur est owner
-            const { data: cabinetData } = await supabaseAdmin
-              .from('cabinets')
-              .select('id')
-              .eq('owner_id', user.id)
-              .order('created_at', { ascending: false })
+            // Chercher le cabinet via cabinet_members (plus fiable que owner_id)
+            const { data: memberData } = await supabaseAdmin
+              .from('cabinet_members')
+              .select('cabinet_id')
+              .eq('user_id', user.id)
               .limit(1)
               .single()
             
-            if (cabinetData) {
-              cabinetId = cabinetData.id
-              console.log('✅ Found cabinet:', cabinetId)
+            if (memberData) {
+              cabinetId = memberData.cabinet_id
+              console.log('✅ Found cabinet via cabinet_members:', cabinetId)
+            } else {
+              // Fallback: chercher par owner_id si pas trouvé via membres
+              const { data: cabinetData } = await supabaseAdmin
+                .from('cabinets')
+                .select('id')
+                .eq('owner_id', user.id)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single()
+              
+              if (cabinetData) {
+                cabinetId = cabinetData.id
+                console.log('✅ Found cabinet via owner_id:', cabinetId)
+              }
             }
           }
         }
