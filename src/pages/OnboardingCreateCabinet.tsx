@@ -14,6 +14,7 @@ export default function OnboardingCreateCabinet() {
   const profession = searchParams.get('profession') as 'avocat' | 'notaire' | null;
   
   const [loading, setLoading] = useState(false);
+  const [firstName, setFirstName] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -27,6 +28,24 @@ export default function OnboardingCreateCabinet() {
       navigate('/select-profession');
     }
   }, [profession, navigate]);
+
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('first_name, prenom')
+          .eq('id', user.id)
+          .single();
+        
+        if (profile) {
+          setFirstName(profile.first_name || profile.prenom || 'Utilisateur');
+        }
+      }
+    };
+    loadUserProfile();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,6 +136,16 @@ export default function OnboardingCreateCabinet() {
             <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-${color}-600 to-${color}-700 flex items-center justify-center shadow-lg`}>
               <Building2 className="w-8 h-8 text-white" />
             </div>
+            {firstName && (
+              <div className="mb-4">
+                <p className="text-xl font-semibold text-gray-800">
+                  Bienvenue {firstName} 👋
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Veuillez maintenant créer votre cabinet
+                </p>
+              </div>
+            )}
             <CardTitle className="text-3xl">Créez votre cabinet</CardTitle>
             <CardDescription>
               Dernière étape pour accéder à votre espace professionnel
