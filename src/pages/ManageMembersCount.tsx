@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { ArrowLeft, Users, Plus, Minus } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { toast } from 'sonner';
+import { createStripeCheckoutSession } from '@/lib/stripeCheckout';
 
 export default function ManageMembersCount() {
   const navigate = useNavigate();
@@ -205,10 +206,10 @@ export default function ManageMembersCount() {
         return;
       }
 
-      // Récupérer le cabinet_id et le stripe_subscription_item_id pour le rôle actuel
+      // Récupérer le cabinet_id pour le rôle actuel
       const { data: memberData } = await supabase
         .from('cabinet_members')
-        .select('cabinet_id, cabinets!inner(role, stripe_subscription_item_id)')
+        .select('cabinet_id, cabinets!inner(role, subscription_plan, billing_period)')
         .eq('user_id', user?.id)
         .eq('cabinets.role', role);
 
@@ -219,62 +220,20 @@ export default function ManageMembersCount() {
       }
 
       const cabinetId = memberData[0].cabinet_id;
-      const stripeSubscriptionItemId = (memberData[0].cabinets as any).stripe_subscription_item_id;
+      const cabinet = memberData[0].cabinets as any;
 
-      if (!stripeSubscriptionItemId) {
-        toast.error('Erreur de configuration', {
-          description: 'Abonnement Stripe non trouvé. Veuillez contacter le support.'
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Mettre à jour la quantité via Stripe (avec proratisation automatique)
-      const { data: stripeData, error: stripeError } = await supabase.functions.invoke(
-        'update-subscription-quantity',
-        {
-          body: {
-            subscriptionItemId: stripeSubscriptionItemId,
-            quantity: newMembersCount
-          }
-        }
-      );
-
-      if (stripeError) {
-        throw new Error(stripeError.message || 'Erreur lors de la mise à jour de l\'abonnement Stripe');
-      }
-
-      // Mettre à jour le nombre de membres dans la base de données
-      const { error: dbError } = await supabase
-        .from('cabinets')
-        .update({
-          max_members: newMembersCount,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', cabinetId);
-
-      if (dbError) throw dbError;
-
-      // Message avec détails du prorata
-      const prorataInfo = stripeData?.prorata;
-      let description = `Votre abonnement comprend maintenant ${newMembersCount} membre${newMembersCount > 1 ? 's' : ''}.`;
-      
-      if (prorataInfo) {
-        if (prorataInfo.isAdding) {
-          description += ` Une facture prorata de ${prorataInfo.amount}€ a été générée pour les ${prorataInfo.remainingDays} jours restants jusqu'à votre prochaine facturation.`;
-        } else {
-          description += ` Un crédit prorata de ${prorataInfo.amount}€ sera appliqué.`;
-        }
-      }
-
-      toast.success('Abonnement mis à jour !', {
-        description,
-        duration: 6000
+      // Créer une session de checkout Stripe pour payer la modification
+      const checkoutUrl = await createStripeCheckoutSession({
+        plan: cabinet.subscription_plan || currentPlan,
+        billingPeriod: cabinet.billing_period || billingPeriod,
+        memberCount: newMembersCount,
+        successUrl: `${window.location.origin}${prefix}/subscription?payment=success`,
+        cancelUrl: window.location.href,
+        cabinetId: cabinetId
       });
 
-      setTimeout(() => {
-        navigate(`${prefix}/subscription`);
-      }, 2000);
+      // Rediriger vers Stripe Checkout
+      window.location.href = checkoutUrl;
     } catch (error: any) {
       console.error('Error updating members:', error);
       toast.error('Erreur', {
