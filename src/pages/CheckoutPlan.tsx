@@ -340,48 +340,16 @@ export default function CheckoutPlan() {
                     </RadioGroup>
                   </div>
 
-                  {/* Informations de carte */}
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="cardNumber" className="text-black text-sm">Numéro de carte</Label>
-                      <Input 
-                        id="cardNumber"
-                        placeholder="1234 5678 9012 3456"
-                        required
-                        className="bg-background"
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="expiry" className="text-black text-sm">Date d'expiration</Label>
-                        <Input 
-                          id="expiry"
-                          placeholder="MM/AA"
-                          required
-                          className="bg-background"
-                        />
+                  {/* Message paiement sécurisé */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <Lock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-semibold text-blue-900 text-sm mb-1">Paiement sécurisé par Stripe</h4>
+                        <p className="text-xs text-blue-700">
+                          Vous serez redirigé vers notre page de paiement sécurisée Stripe pour finaliser votre abonnement.
+                        </p>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="cvc" className="text-black text-sm">CVC</Label>
-                        <Input 
-                          id="cvc"
-                          placeholder="123"
-                          required
-                          className="bg-background"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="text-black text-sm">Nom sur la carte</Label>
-                      <Input 
-                        id="name"
-                        placeholder={`${profile?.first_name || ''} ${profile?.last_name || ''}`}
-                        defaultValue={`${profile?.first_name || ''} ${profile?.last_name || ''}`}
-                        required
-                        className="bg-background"
-                      />
                     </div>
                   </div>
 
@@ -406,7 +374,7 @@ export default function CheckoutPlan() {
                     }`}
                     disabled={loading}
                   >
-                    {loading ? "Traitement en cours..." : `Confirmer - ${total}€`}
+                    {loading ? "Redirection vers Stripe..." : `Procéder au paiement - ${total}€`}
                   </Button>
 
                   <p className="text-xs text-black/60 text-center">
