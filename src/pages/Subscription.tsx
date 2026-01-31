@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/tooltip';
 import { createStripeCheckoutSession } from '@/lib/stripeCheckout';
 import { STRIPE_PRICE_IDS } from '@/lib/stripeConfig';
+import { ChangePlanModal } from '@/components/subscription/ChangePlanModal';
 
 type SubscriptionData = {
   tier: string;
@@ -271,7 +272,7 @@ export default function Subscription() {
     loadSubscription();
   }, [user, refreshTrigger]);
 
-  const handleUpgrade = async (planId: string) => {
+  const handleUpgrade = async (planId: 'essentiel' | 'professionnel' | 'cabinet-plus') => {
     // Vérifier si le plan choisi peut accueillir le nombre actuel de membres
     const planLimits: { [key: string]: number } = {
       'essentiel': 1,
@@ -292,8 +293,13 @@ export default function Subscription() {
       return;
     }
     
-    // Redirect to checkout page with prefix
-    navigate(`${prefix}/checkout/${planId}`);
+    // Trouver le nom du plan
+    const plan = plans.find(p => p.id === planId);
+    if (!plan) return;
+    
+    // Ouvrir le modal de changement de plan
+    setSelectedPlan({ id: planId, name: plan.name });
+    setChangePlanModalOpen(true);
   };
 
   if (loading) {
@@ -691,6 +697,19 @@ export default function Subscription() {
           )}
         </div>
       </AppLayout>
+
+      {/* Modal de changement de plan */}
+      {selectedPlan && cabinetId && (
+        <ChangePlanModal
+          open={changePlanModalOpen}
+          onOpenChange={setChangePlanModalOpen}
+          planId={selectedPlan.id}
+          planName={selectedPlan.name}
+          role={role}
+          cabinetId={cabinetId}
+          currentMembersCount={activeMembersCount}
+        />
+      )}
     </TooltipProvider>
   );
 }
