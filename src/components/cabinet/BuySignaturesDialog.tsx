@@ -313,7 +313,7 @@ export function BuySignaturesDialog({
                         ? 'text-orange-600' 
                         : 'text-blue-600'
                   }>
-                    {prorataAmount}€
+                    {selectedPackage.price}€
                   </span>
                 </div>
               </div>
