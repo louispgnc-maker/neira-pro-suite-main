@@ -54,8 +54,8 @@ export default function SubscriptionSuccess() {
   }, [searchParams]);
 
   const handleContinue = () => {
-    // Rediriger vers la création de compte avec session_id
-    navigate(`/create-account?session_id=${sessionId}`);
+    // Rediriger vers le choix de profession AVANT la création de compte
+    navigate(`/select-profession?session_id=${sessionId}`);
   };
 
   if (loading) {

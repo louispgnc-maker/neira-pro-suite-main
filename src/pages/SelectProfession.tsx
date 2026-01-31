@@ -1,17 +1,19 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Scale, Landmark } from 'lucide-react';
 
 export default function SelectProfession() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('session_id');
 
   const handleSelect = (profession: 'avocat' | 'notaire') => {
     // Stocker le choix de profession
     localStorage.setItem('selectedProfession', profession);
     
-    // Rediriger vers la création de cabinet
-    navigate(`/onboarding/create-cabinet?profession=${profession}`);
+    // Rediriger vers la création de compte avec le rôle et session_id
+    navigate(`/create-account?role=${profession}&session_id=${sessionId}`);
   };
 
   return (

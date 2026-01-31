@@ -12,6 +12,7 @@ export default function CreateAccountAfterPayment() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
+  const role = searchParams.get('role') as 'avocat' | 'notaire' || 'avocat';
   
   const [formData, setFormData] = useState({
     email: '',
@@ -41,7 +42,7 @@ export default function CreateAccountAfterPayment() {
     try {
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
       
-      // Créer le compte avec Supabase Auth
+      // Créer le compte avec Supabase Auth avec le rôle
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -50,6 +51,7 @@ export default function CreateAccountAfterPayment() {
             full_name: fullName,
             first_name: formData.firstName,
             last_name: formData.lastName,
+            role: role, // Ajouter le rôle dans les métadonnées
           },
         },
       });
@@ -104,7 +106,7 @@ export default function CreateAccountAfterPayment() {
             email: formData.email,
             first_name: formData.firstName,
             last_name: formData.lastName,
-            role: 'avocat'
+            role: role
           });
         
         if (manualProfileError) {
@@ -124,9 +126,9 @@ export default function CreateAccountAfterPayment() {
         description: "Vous allez être redirigé pour créer votre cabinet"
       });
 
-      // Rediriger vers le choix de profession
+      // Rediriger vers la création du cabinet avec le rôle
       setTimeout(() => {
-        navigate(`/select-profession`);
+        navigate(`/onboarding/create-cabinet?profession=${role}`);
       }, 1500);
 
     } catch (error: any) {
