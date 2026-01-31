@@ -223,6 +223,32 @@ export default function ManageMembersCount() {
       const cabinetId = memberData[0].cabinet_id;
       const cabinet = memberData[0].cabinets as any;
 
+      // Si on réduit le nombre de membres, pas besoin de payer
+      if (isRemoving) {
+        // Mettre à jour directement la base de données
+        const { error: updateError } = await supabase
+          .from('cabinets')
+          .update({
+            max_members: newMembersCount,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', cabinetId);
+
+        if (updateError) throw updateError;
+
+        toast.success('Abonnement mis à jour !', {
+          description: `Votre abonnement comprend maintenant ${newMembersCount} membre${newMembersCount > 1 ? 's' : ''}.`,
+          duration: 6000
+        });
+
+        setTimeout(() => {
+          navigate(`${prefix}/subscription`);
+        }, 2000);
+        
+        return;
+      }
+
+      // Pour l'ajout de membres : créer une session de paiement pour le prorata
       // Calculer le montant du prorata en centimes pour Stripe
       const prorataAmountCents = prorataAmount * 100;
 
