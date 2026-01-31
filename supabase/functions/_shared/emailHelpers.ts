@@ -158,8 +158,7 @@ export async function sendPaymentConfirmationEmail(data: PaymentConfirmationData
               <p style="font-size: 14px; color: #6b7280;">
                 <strong>Besoin d'aide ?</strong><br>
                 Notre équipe support est à votre disposition :<br>
-                📧 <a href="mailto:support@neira.fr">support@neira.fr</a><br>
-                Réponse sous 2h (jours ouvrés)
+                📧 <a href="mailto:contact@neira.fr">contact@neira.fr</a>
               </p>
             </div>
             
