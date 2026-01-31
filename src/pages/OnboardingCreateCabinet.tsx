@@ -44,6 +44,20 @@ export default function OnboardingCreateCabinet() {
       console.log('🔐 Utilisateur connecté:', user.id);
       console.log('📋 Données du formulaire:', formData);
 
+      // Nettoyer les anciennes données de test si elles existent
+      console.log('🧹 Nettoyage des anciennes données...');
+      
+      // Supprimer les anciens cabinets de cet utilisateur pour ce rôle
+      const { error: deleteError } = await supabase
+        .from('cabinets')
+        .delete()
+        .eq('owner_id', user.id)
+        .eq('role', profession || 'avocat');
+
+      if (deleteError) {
+        console.warn('⚠️ Erreur nettoyage (ignorée):', deleteError);
+      }
+
       // Créer le cabinet via la fonction RPC
       // Cette fonction crée automatiquement le cabinet avec owner_id = user.id
       // et ajoute l'utilisateur comme Fondateur dans cabinet_members
