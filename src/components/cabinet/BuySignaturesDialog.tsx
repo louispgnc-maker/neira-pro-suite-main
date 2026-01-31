@@ -121,20 +121,9 @@ export function BuySignaturesDialog({
     ? [emergencyPackage, ...packages]
     : packages;
 
-  const prorataAmount = selectedPackage && expirationDate 
-    ? (() => {
-        const now = new Date();
-        const totalDaysInCycle = Math.ceil((expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        
-        const cycleStart = new Date(expirationDate);
-        cycleStart.setMonth(cycleStart.getMonth() - 1);
-        
-        const totalCycleDays = Math.ceil((expirationDate.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24));
-        const daysRemaining = Math.max(1, totalDaysInCycle);
-        
-        return Math.round((selectedPackage.price * daysRemaining / totalCycleDays) * 100) / 100;
-      })()
-    : 0;
+  // PAS DE PRORATA pour les crédits de signatures : ce sont des achats one-time
+  // L'utilisateur achète X signatures au prix affiché, point final
+  const prorataAmount = selectedPackage ? selectedPackage.price : 0;
 
   const handlePurchase = async () => {
     // Validations immédiates
@@ -314,12 +303,6 @@ export function BuySignaturesDialog({
                   <span className="text-gray-600">Prix du forfait</span>
                   <span className="font-medium">{selectedPackage.price}€</span>
                 </div>
-                {prorataAmount < selectedPackage.price && (
-                  <div className="flex justify-between text-sm text-green-600">
-                    <span>Réduction (prorata)</span>
-                    <span className="font-medium">-{(selectedPackage.price - prorataAmount).toFixed(2)}€</span>
-                  </div>
-                )}
                 <div className="flex justify-between text-base font-bold border-t pt-2">
                   <span>À payer aujourd'hui</span>
                   <span className={
