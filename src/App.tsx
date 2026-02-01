@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ClientThemeProvider } from "@/contexts/ClientThemeContext";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { preloadStripeResources } from "@/lib/stripeOptimization";
+import { MobileBlocker } from "@/components/MobileBlocker";
 import Auth from "./pages/Auth";
 import AvocatAuth from "./pages/AvocatAuth";
 import NotaireAuth from "./pages/NotaireAuth";
@@ -92,12 +93,13 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <EmailConfirmHandler />
-          <ScrollToTop />
-          <FullscreenButton />
-          <Routes>
-            <Route path="/" element={<Index />} />
+        <MobileBlocker>
+          <BrowserRouter>
+            <EmailConfirmHandler />
+            <ScrollToTop />
+            <FullscreenButton />
+            <Routes>
+              <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/about" element={<About />} />
             <Route path="/solution" element={<Solution />} />
@@ -216,6 +218,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </MobileBlocker>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
