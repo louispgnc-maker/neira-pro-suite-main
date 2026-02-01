@@ -26,7 +26,7 @@ export function DashboardNotaire() {
   const [clientsToFollow, setClientsToFollow] = useState(0);
   const [dossierCount, setDossierCount] = useState(0);
   const [todayTasks, setTodayTasks] = useState(0);
-  const [subscriptionTier, setSubscriptionTier] = useState<string>('essentiel');
+  const [subscriptionTier, setSubscriptionTier] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -147,13 +147,15 @@ export function DashboardNotaire() {
               className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 px-5 py-2 rounded-md text-sm font-semibold shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-shadow cursor-pointer"
             >
               <Crown className="h-4 w-4" />
-              <span>
-                {subscriptionTier === 'cabinet-plus' 
-                  ? 'Neira Cabinet+' 
-                  : subscriptionTier === 'professionnel' 
-                  ? 'Neira Professionnel' 
-                  : 'Neira Essentiel'}
-              </span>
+              {subscriptionTier && (
+                <span>
+                  {subscriptionTier === 'cabinet-plus' 
+                    ? 'Neira Cabinet+' 
+                    : subscriptionTier === 'professionnel' 
+                    ? 'Neira Professionnel' 
+                    : 'Neira Essentiel'}
+                </span>
+              )}
             </button>
           </div>
 
