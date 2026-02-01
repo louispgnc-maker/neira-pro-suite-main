@@ -80,6 +80,17 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
       for (const member of members) {
         if (!member.user_id) continue; // Skip invitations pending
 
+        // Récupérer le prénom et nom du profil utilisateur
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', member.user_id)
+          .single();
+
+        const displayName = profileData?.first_name && profileData?.last_name
+          ? `${profileData.first_name} ${profileData.last_name}`
+          : member.email;
+
         // Compter les dossiers
         const { count: dossiersCount } = await supabase
           .from('dossiers')
@@ -136,7 +147,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
         memberStats.push({
           user_id: member.user_id,
           email: member.email,
-          nom: member.nom,
+          nom: displayName,
           dossiers: dossiersCount || 0,
           clients: clientsCount || 0,
           signatures: memberData?.signatures_used || 0,
