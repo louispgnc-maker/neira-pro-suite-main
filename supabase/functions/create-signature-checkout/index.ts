@@ -90,8 +90,8 @@ serve(async (req) => {
         },
       ],
       mode: 'payment',
-      success_url: `${req.headers.get('origin') || 'https://neira.fr'}/${role === 'notaire' ? 'notaires' : 'avocats'}/dashboard?signature_payment=success`,
-      cancel_url: `${req.headers.get('origin') || 'https://neira.fr'}/${role === 'notaire' ? 'notaires' : 'avocats'}/dashboard?signature_payment=cancelled`,
+      success_url: `${req.headers.get('origin') || 'https://neira.fr'}/${role === 'notaire' ? 'notaires' : 'avocats'}/dashboard`,
+      cancel_url: `${req.headers.get('origin') || 'https://neira.fr'}/${role === 'notaire' ? 'notaires' : 'avocats'}/dashboard`,
       metadata: {
         user_id: userId,
         target_user_id: targetUserId || userId,

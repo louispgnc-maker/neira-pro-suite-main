@@ -216,17 +216,7 @@ export function BuySignaturesDialog({
         throw new Error(checkoutError?.message || 'Erreur lors de la création de la session de paiement');
       }
 
-      // Stocker les informations pour les appliquer au retour du paiement
-      sessionStorage.setItem('pending_signature_purchase', JSON.stringify({
-        cabinetId: cabinet.id,
-        targetUserId: targetUserId || user.id,
-        quantity: selectedPackage.quantity,
-        price: selectedPackage.price,
-        expiresAt: expiresAt.toISOString(),
-        timestamp: Date.now()
-      }));
-
-      // Redirection immédiate
+      // Redirection vers Stripe (le webhook gérera l'application des crédits)
       toast.success('Redirection vers le paiement...');
       window.location.href = checkoutData.url;
     } catch (error: any) {
