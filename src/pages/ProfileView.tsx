@@ -619,61 +619,6 @@ export default function ProfileView() {
                 </CardContent>
               </Card>
 
-              {/* Moyen de paiement */}
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm font-medium text-gray-600 mb-2">Moyen de paiement</div>
-                      {paymentMethod ? (
-                        <div className="flex items-center gap-2">
-                          <CreditCard className="w-5 h-5 text-gray-600" />
-                          <span className="text-base font-medium">
-                            {paymentMethod.brand} se terminant par •••• {paymentMethod.last4}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <CreditCard className="w-5 h-5 text-gray-600" />
-                          <span className="text-base text-gray-600">
-                            Aucun moyen de paiement enregistré
-                          </span>
-                        </div>
-                      )}
-                      <div className="text-xs text-gray-600 mt-1">
-                        Prélèvement automatique SEPA
-                      </div>
-                    </div>
-                    <Button 
-                      variant="outline"
-                      className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'}
-                      onClick={async () => {
-                        if (!stripeCustomerId) {
-                          toast.error('Aucun moyen de paiement configuré', {
-                            description: 'Veuillez d\'abord souscrire à un abonnement'
-                          });
-                          return;
-                        }
-
-                        try {
-                          toast.info('Redirection vers la gestion des paiements...');
-                          const { url } = await createPortalSession(
-                            stripeCustomerId,
-                            window.location.href
-                          );
-                          window.location.href = url;
-                        } catch (error) {
-                          console.error('Erreur ouverture portal:', error);
-                          toast.error('Erreur lors de l\'ouverture du portail de paiement');
-                        }
-                      }}
-                    >
-                      Modifier
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
               {/* Boutons d'action avec hiérarchie */}
               <div className="flex gap-3">
                 <Button 
