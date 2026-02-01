@@ -1,31 +1,31 @@
 // Configuration complète Stripe
 
-// Configuration des Price IDs Stripe pour les abonnements (MODE TEST)
+// Configuration des Price IDs Stripe pour les abonnements (MODE LIVE - PRODUCTION)
 export const STRIPE_PRICE_IDS = {
   essentiel: {
-    monthly: 'price_1Sv3Vl7epLIfQ2kHxrIagkmU',
-    yearly: 'price_1Sv3WB7epLIfQ2kH82SeKT89'
+    monthly: 'price_1Sw3kI7epLIfQ2kHKNMxZmWk',
+    yearly: 'price_1Sw3kI7epLIfQ2kHerSaOUnH'
   },
   professionnel: {
-    monthly: 'price_1Sv3Xr7epLIfQ2kHOjEwtgTE',
-    yearly: 'price_1Sv3YJ7epLIfQ2kHKUBQGH6N'
+    monthly: 'price_1Sw3kJ7epLIfQ2kHouItA7j4',
+    yearly: 'price_1Sw3kK7epLIfQ2kHQ85fUBwh'
   },
   'cabinet-plus': {
-    monthly: 'price_1Sv3ZB7epLIfQ2kHEtN8tlHO',
-    yearly: 'price_1Sv3ZX7epLIfQ2kHGNU91j2Z'
+    monthly: 'price_1Sw3kL7epLIfQ2kHLI9QWT7H',
+    yearly: 'price_1Sw3kL7epLIfQ2kHkyG6nqV4'
   }
 } as const;
 
 export type SubscriptionTier = keyof typeof STRIPE_PRICE_IDS;
 
-// Price IDs Stripe pour les packs de signatures (paiements uniques) - MODE TEST
+// Price IDs Stripe pour les packs de signatures (paiements uniques) - MODE LIVE - PRODUCTION
 export const SIGNATURE_PACK_PRICE_IDS = {
-  urgence: 'price_1Sv3bP7epLIfQ2kHe74ExCUj',      // 1 signature - 3€
-  mini: 'price_1Sv3cm7epLIfQ2kHkqedn9f3',         // 10 signatures - 20€
-  starter: 'price_1Sv3eR7epLIfQ2kH5h8YisRV',      // 25 signatures - 30€
-  pro: 'price_1Sv3ey7epLIfQ2kHyjGisQxl',          // 50 signatures - 45€
-  business: 'price_1Sv3fj7epLIfQ2kHaH9zaWsS',     // 100 signatures - 70€
-  enterprise: 'price_1Sv3gl7epLIfQ2kHqpfexTSr'    // 250 signatures - 140€
+  urgence: 'price_1Sw3kM7epLIfQ2kHt1zfE9qT',      // 1 signature - 3€
+  mini: 'price_1Sw3kN7epLIfQ2kHeeQ9pRHx',         // 10 signatures - 20€
+  starter: 'price_1Sw3kN7epLIfQ2kHARbz9fsy',      // 25 signatures - 30€
+  pro: 'price_1Sw3kO7epLIfQ2kHv8V9wQHT',          // 50 signatures - 45€
+  business: 'price_1Sw3kP7epLIfQ2kHnaY2dWHL',     // 100 signatures - 70€
+  enterprise: 'price_1Sw3kQ7epLIfQ2kHs1GvAevQ'    // 250 signatures - 140€
 } as const;
 
 // Prix des formules (en euros)
