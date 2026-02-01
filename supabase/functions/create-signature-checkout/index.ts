@@ -35,6 +35,10 @@ serve(async (req) => {
       throw new Error('Non authentifié')
     }
 
+    const requestBody = await req.json()
+    
+    console.log('📦 Body brut reçu:', JSON.stringify(requestBody, null, 2))
+    
     const { 
       quantity,
       price,
@@ -43,12 +47,12 @@ serve(async (req) => {
       targetUserId,
       expiresAt,
       role
-    } = await req.json()
+    } = requestBody
 
-    console.log('📦 Données reçues:', {
-      quantity,
-      price,
-      prorataAmount,
+    console.log('📦 Données extraites:', {
+      quantity: `${quantity} (type: ${typeof quantity})`,
+      price: `${price} (type: ${typeof price})`,
+      prorataAmount: `${prorataAmount} (type: ${typeof prorataAmount})`,
       cabinetId,
       targetUserId,
       expiresAt,

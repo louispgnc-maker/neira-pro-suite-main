@@ -184,9 +184,20 @@ export function BuySignaturesDialog({
       
       console.log('📦 Envoi à create-signature-checkout:', requestBody);
       
+      // Récupérer le token d'authentification pour l'envoyer à l'edge function
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Session expirée, veuillez vous reconnecter');
+      }
+      
       const { data: sessionData, error: sessionError } = await supabase.functions.invoke(
         'create-signature-checkout',
-        { body: requestBody }
+        { 
+          body: requestBody,
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        }
       );
 
       if (sessionError || !sessionData?.url) {
