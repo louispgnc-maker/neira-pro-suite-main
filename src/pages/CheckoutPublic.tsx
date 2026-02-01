@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { PublicHeader } from "@/components/layout/PublicHeader";
 import { toast } from "sonner";
 import { createStripeCheckoutSession } from "@/lib/stripeCheckout";
 import { STRIPE_PRICE_IDS } from "@/lib/stripeConfig";
+import { useCleanStripeHistory } from "@/hooks/useCleanStripeHistory";
 
 const planConfigs = {
   'essentiel': {
@@ -75,6 +76,7 @@ const planConfigs = {
 };
 
 export default function CheckoutPublic() {
+  useCleanStripeHistory(); // Nettoyer l'historique si on vient de Stripe
   const navigate = useNavigate();
   const { planId } = useParams<{ planId: string }>();
   const [loading, setLoading] = useState(false);

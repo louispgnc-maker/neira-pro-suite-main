@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { createStripeCheckoutSession } from "@/lib/stripeCheckout";
 import { STRIPE_PRICE_IDS } from "@/lib/stripeConfig";
+import { useCleanStripeHistory } from "@/hooks/useCleanStripeHistory";
 import {
   Tooltip,
   TooltipContent,
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/tooltip";
 
 export default function CheckoutProfessionnel() {
+  useCleanStripeHistory(); // Nettoyer l'historique si on vient de Stripe
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();

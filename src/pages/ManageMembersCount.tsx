@@ -10,8 +10,10 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { toast } from 'sonner';
 import { createStripeCheckoutSession } from '@/lib/stripeCheckout';
 import { STRIPE_PRICE_IDS } from '@/lib/stripeConfig';
+import { useCleanStripeHistory } from '@/hooks/useCleanStripeHistory';
 
 export default function ManageMembersCount() {
+  useCleanStripeHistory(); // Nettoyer l'historique si on vient de Stripe
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();

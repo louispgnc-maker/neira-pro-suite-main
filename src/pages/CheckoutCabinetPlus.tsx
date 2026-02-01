@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { createStripeCheckoutSession } from "@/lib/stripeCheckout";
 import { STRIPE_PRICE_IDS } from "@/lib/stripeConfig";
+import { useCleanStripeHistory } from "@/hooks/useCleanStripeHistory";
 import {
   Tooltip,
   TooltipContent,
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/tooltip";
 
 export default function CheckoutCabinetPlus() {
+  useCleanStripeHistory(); // Nettoyer l'historique si on vient de Stripe
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
