@@ -37,7 +37,7 @@ serve(async (req) => {
     // Si cabinetId fourni, vérifier si un customer existe déjà pour ce cabinet
     if (cabinetId) {
       const supabase = createClient(
-        Deno.env.get('SUPABASE_URL') ?? '',
+        'https://elysrdqujzlbvnjfilvh.supabase.co',
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
       )
 
