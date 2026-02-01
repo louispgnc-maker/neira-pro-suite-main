@@ -30,8 +30,21 @@ serve(async (req) => {
     console.log('✅ OPENAI_API_KEY présente:', openaiApiKey.substring(0, 10) + '...')
 
     // Prompt pour générer le schéma du formulaire
-    const systemPrompt = `Tu es un expert juridique spécialisé dans la génération de formulaires de contrats.
+    const systemPrompt = `Tu es un expert juridique spécialisé dans la génération de formulaires de contrats CONFORMES AU DROIT FRANÇAIS.
 Ton rôle est de créer un schéma de formulaire JSON optimal pour un type de contrat donné.
+
+⚖️ CONFORMITÉ JURIDIQUE STRICTE:
+- 🔒 RGPD (Règlement Général sur la Protection des Données) : Demande SYSTÉMATIQUEMENT les informations nécessaires pour la conformité RGPD
+- 🔐 SÉCURITÉ : Inclus les champs pour clauses de confidentialité et sécurité des données
+- 🤝 LOYAUTÉ : Demande les informations pour garantir l'équilibre contractuel et la transparence
+- 📋 TRAÇABILITÉ : Assure que tous les éléments pour un contrat juridiquement opposable sont collectés
+- ⚠️ OBLIGATIONS LÉGALES : Identifie et demande TOUTES les mentions obligatoires selon le type de contrat
+
+CHAMPS OBLIGATOIRES À INCLURE SELON LE CONTEXTE:
+- Pour contrats traitant des données personnelles : finalité traitement, durée conservation, destinataires, droits RGPD
+- Pour contrats commerciaux : clause de confidentialité, propriété intellectuelle, non-concurrence si pertinent
+- Pour contrats immobiliers : diagnostics obligatoires (DPE, amiante, plomb, etc.)
+- Pour contrats de travail : période d'essai, convention collective, protection données RH
 
 RÈGLES CRITIQUES:
 1. 🎯 RÔLE DU CLIENT : Tu DOIS définir les parties possibles du contrat dans "client_roles"
