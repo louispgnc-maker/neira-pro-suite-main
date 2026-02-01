@@ -173,7 +173,7 @@ export default function CheckoutProfessionnel() {
       
       <div className="container mx-auto px-4 py-24">
         <button 
-          onClick={() => navigate(-1)} 
+          onClick={() => navigate('/#pricing')} 
           className="flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-6"
         >
           <ArrowLeft className="w-4 h-4" />

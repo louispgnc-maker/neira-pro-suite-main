@@ -173,7 +173,7 @@ export default function CheckoutPlan() {
       <div className="container mx-auto p-8 max-w-7xl">
         <div className="mb-6">
           <Button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(`${prefix}/subscription`)}
             className={`text-white ${
               role === 'notaire'
                 ? 'bg-orange-500 hover:bg-orange-600'

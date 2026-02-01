@@ -107,7 +107,7 @@ export default function CheckoutEssentiel() {
       
       <div className="container mx-auto px-4 py-24">
         <button 
-          onClick={() => navigate(-1)} 
+          onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)} 
           className={`flex items-center gap-2 mb-6 ${
             role === 'notaire' 
               ? 'text-orange-600 hover:text-orange-700' 

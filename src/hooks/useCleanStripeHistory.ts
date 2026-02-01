@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
@@ -31,4 +31,30 @@ export function useCleanStripeHistory() {
       }
     }
   }, [location]);
+}
+
+/**
+ * Hook pour une navigation sécurisée qui évite de retourner sur Stripe
+ * Utiliser au lieu de navigate(-1) pour éviter de revenir sur des pages de paiement
+ */
+export function useSafeNavigateBack() {
+  const navigate = useNavigate();
+  
+  return useCallback((fallbackPath?: string) => {
+    // Vérifier si la page précédente dans l'historique était Stripe
+    const previousPage = document.referrer;
+    const wasStripe = previousPage.includes('stripe.com') || 
+                     previousPage.includes('checkout.stripe.com');
+    
+    if (wasStripe && fallbackPath) {
+      // Si on vient de Stripe, aller vers le fallback au lieu de -1
+      navigate(fallbackPath);
+    } else if (fallbackPath) {
+      // Sinon utiliser le fallback de toute façon pour être sûr
+      navigate(fallbackPath);
+    } else {
+      // En dernier recours, utiliser navigate(-1) mais c'est risqué
+      navigate(-1);
+    }
+  }, [navigate]);
 }
