@@ -105,6 +105,17 @@ serve(async (req) => {
           quantity: 1,
         },
       ],
+      invoice_creation: {
+        enabled: true,
+        invoice_data: {
+          description: `Ajout de ${newMembersCount} membre${newMembersCount > 1 ? 's' : ''} - Prorata`,
+          metadata: {
+            cabinet_id: cabinetId,
+            new_members_count: newMembersCount.toString(),
+            payment_type: 'members_prorata',
+          },
+        },
+      },
       success_url: `${req.headers.get('origin')}/${prefix}/subscription?payment=success&members_updated=true`,
       cancel_url: `${req.headers.get('origin')}/${prefix}/subscription/manage-members`,
       locale: 'fr',

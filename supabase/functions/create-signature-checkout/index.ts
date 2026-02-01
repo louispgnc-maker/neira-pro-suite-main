@@ -89,6 +89,16 @@ serve(async (req) => {
         },
       ],
       mode: 'payment',
+      invoice_creation: {
+        enabled: true,
+        invoice_data: {
+          description: `Achat de ${quantity} crédits signature${quantity > 1 ? 's' : ''}`,
+          metadata: {
+            cabinet_id: cabinetId,
+            signature_quantity: quantity.toString(),
+          },
+        },
+      },
       success_url: `${req.headers.get('origin') || 'https://neira.fr'}/${role === 'notaire' ? 'notaires' : 'avocats'}/cabinet?id=${cabinetId}&payment=success`,
       cancel_url: `${req.headers.get('origin') || 'https://neira.fr'}/${role === 'notaire' ? 'notaires' : 'avocats'}/cabinet?id=${cabinetId}&payment=cancelled`,
       metadata: {
