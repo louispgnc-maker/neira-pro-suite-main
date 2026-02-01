@@ -171,33 +171,33 @@ export default function Index() {
               <p className="text-gray-600">Calendrier intelligent, notifications automatiques et gestion des délais critiques</p>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group border border-purple-100">
-              <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Shield className="h-7 w-7 text-purple-600" />
+            <div className="bg-white p-4 sm:p-8 rounded-lg sm:rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group border border-purple-100">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 bg-purple-100 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-6 group-hover:scale-110 transition-transform">
+                <Shield className="h-5 w-5 sm:h-7 sm:w-7 text-purple-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Sécurité & Conformité</h3>
-              <p className="text-gray-600">Chiffrement des données, conformité RGPD et hébergement sécurisé en France</p>
+              <h3 className="text-base sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">Sécurité & Conformité</h3>
+              <p className="text-xs sm:text-base text-gray-600">Chiffrement des données, conformité RGPD et hébergement sécurisé en France</p>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group border border-blue-100">
-              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <BarChart3 className="h-7 w-7 text-blue-600" />
+            <div className="bg-white p-4 sm:p-8 rounded-lg sm:rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 group border border-blue-100">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 bg-blue-100 rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-6 group-hover:scale-110 transition-transform">
+                <BarChart3 className="h-5 w-5 sm:h-7 sm:w-7 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Pilotage & Statistiques</h3>
-              <p className="text-gray-600">Tableaux de bord personnalisés, indicateurs clés et rapports d'activité détaillés</p>
+              <h3 className="text-base sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">Pilotage & Statistiques</h3>
+              <p className="text-xs sm:text-base text-gray-600">Tableaux de bord personnalisés, indicateurs clés et rapports d'activité détaillés</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* 4. VALEUR APPORTÉE */}
-      <section className="py-12 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-slate-50 via-purple-100 to-blue-100">
+      <section className="py-6 sm:py-20 px-3 sm:px-6 bg-gradient-to-br from-slate-50 via-purple-100 to-blue-100">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10 sm:mb-16">
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
+          <div className="text-center mb-6 sm:mb-16">
+            <h2 className="text-xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2 sm:mb-4">
               Des résultats concrets pour votre cabinet
             </h2>
-            <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
+            <p className="text-sm sm:text-xl text-gray-600 max-w-3xl mx-auto px-2">
               Neira vous fait gagner du temps et améliore votre efficacité au quotidien
             </p>
           </div>
