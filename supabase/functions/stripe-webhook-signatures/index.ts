@@ -43,11 +43,33 @@ serve(async (req) => {
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
       )
 
+      // Récupérer les crédits actuels
+      const { data: currentMember, error: fetchError } = await supabaseAdmin
+        .from('cabinet_members')
+        .select('signature_addon_quantity')
+        .eq('cabinet_id', cabinet_id)
+        .eq('user_id', target_user_id)
+        .single()
+
+      if (fetchError) {
+        console.error('Erreur récupération member:', fetchError)
+        throw new Error('Erreur lors de la récupération des crédits actuels')
+      }
+
+      const currentQuantity = currentMember?.signature_addon_quantity || 0
+      const newQuantity = currentQuantity + parseInt(signature_quantity)
+
+      console.log('📊 Calcul crédits:', {
+        currentQuantity,
+        addedQuantity: parseInt(signature_quantity),
+        newTotal: newQuantity
+      })
+
       // Créditer les signatures maintenant que le paiement est confirmé
       const { error: updateError } = await supabaseAdmin
         .from('cabinet_members')
         .update({
-          signature_addon_quantity: parseInt(signature_quantity),
+          signature_addon_quantity: newQuantity,
           signature_addon_price: parseFloat(signature_price),
           signature_addon_purchased_at: new Date().toISOString(),
           signature_addon_expires_at: expires_at,
