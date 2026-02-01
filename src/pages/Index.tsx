@@ -11,23 +11,23 @@ export default function Index() {
       <PublicHeader />
 
       {/* 1. HERO SECTION */}
-      <section className="relative pt-20 pb-16 px-4 sm:pt-32 sm:pb-24 sm:px-6 bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100 overflow-hidden">
+      <section className="relative pt-16 pb-8 px-3 sm:pt-32 sm:pb-24 sm:px-6 bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100 overflow-hidden">
         {/* Decorative shapes removed as requested */}
         
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight">
+            <h1 className="text-2xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-3 sm:mb-6 leading-tight">
               <span className="text-gray-900">
                 Pilotez votre cabinet juridique
               </span>
               <br />
               <span className="text-gray-900">en toute simplicité</span>
             </h1>
-            <p className="text-base sm:text-xl md:text-2xl text-gray-600 mb-8 sm:mb-10 max-w-3xl mx-auto leading-relaxed px-2">
+            <p className="text-sm sm:text-xl md:text-2xl text-gray-600 mb-4 sm:mb-10 max-w-3xl mx-auto leading-snug sm:leading-relaxed px-1">
               La plateforme tout-en-un qui automatise vos tâches, sécurise vos documents et optimise votre collaboration client
             </p>
             
-            <div className="flex flex-col items-stretch sm:flex-row sm:items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8 px-4 sm:px-0">
+            <div className="flex flex-col items-stretch sm:flex-row sm:items-center justify-center gap-2 sm:gap-4 mb-3 sm:mb-8 px-3 sm:px-0">
               <Button 
                 size="lg" 
                 className="text-base sm:text-lg px-6 py-4 sm:px-8 sm:py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 group w-full sm:w-auto"
@@ -66,15 +66,15 @@ export default function Index() {
       </section>
 
       {/* 2. PROBLÈME → SOLUTION */}
-      <section className="py-12 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-slate-50 via-blue-100 to-purple-100">
+      <section className="py-6 sm:py-20 px-3 sm:px-6 bg-gradient-to-br from-slate-50 via-blue-100 to-purple-100">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8 sm:gap-12">
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-12">
             <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-8">
                 Les défis quotidiens de votre cabinet
               </h2>
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 bg-red-50 rounded-xl border border-red-100 hover:shadow-md transition-shadow">
+              <div className="space-y-2 sm:space-y-4">
+                <div className="flex items-start gap-2 sm:gap-4 p-3 sm:p-5 bg-red-50 rounded-lg sm:rounded-xl border border-red-100 hover:shadow-md transition-shadow">
                   <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                   <p className="text-sm sm:text-base text-gray-700"><strong>Tâches répétitives</strong> qui vous font perdre un temps précieux</p>
                 </div>
@@ -87,34 +87,34 @@ export default function Index() {
                   <p className="text-sm sm:text-base text-gray-700"><strong>Communication client</strong> fragmentée entre emails, appels et messages</p>
                 </div>
                 <div className="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 bg-red-50 rounded-xl border border-red-100 hover:shadow-md transition-shadow">
-                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-sm sm:text-base text-gray-700"><strong>Manque de visibilité</strong> sur l'avancement de vos dossiers</p>
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></div>
+                  <p className="text-xs sm:text-base text-gray-700"><strong>Manque de visibilité</strong> sur l'avancement de vos dossiers</p>
                 </div>
               </div>
             </div>
 
             <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-8">
                 <span className="text-gray-900">
                   Neira transforme votre quotidien
                 </span>
               </h2>
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
-                  <CheckCircle2 className="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-gray-700"><strong>Automatisation intelligente</strong> de vos workflows juridiques</p>
+              <div className="space-y-2 sm:space-y-4">
+                <div className="flex items-start gap-2 sm:gap-4 p-3 sm:p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg sm:rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
+                  <CheckCircle2 className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs sm:text-base text-gray-700"><strong>Automatisation intelligente</strong> de vos workflows juridiques</p>
                 </div>
-                <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
-                  <CheckCircle2 className="h-6 w-6 text-purple-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-gray-700"><strong>Gestion centralisée</strong> de tous vos documents en toute sécurité</p>
+                <div className="flex items-start gap-2 sm:gap-4 p-3 sm:p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg sm:rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
+                  <CheckCircle2 className="h-4 w-4 sm:h-6 sm:w-6 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs sm:text-base text-gray-700"><strong>Gestion centralisée</strong> de tous vos documents en toute sécurité</p>
                 </div>
-                <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
-                  <CheckCircle2 className="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-gray-700"><strong>Espace collaboratif</strong> unique pour échanger avec votre équipe</p>
+                <div className="flex items-start gap-2 sm:gap-4 p-3 sm:p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg sm:rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
+                  <CheckCircle2 className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs sm:text-base text-gray-700"><strong>Espace collaboratif</strong> unique pour échanger avec votre équipe</p>
                 </div>
-                <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
-                  <CheckCircle2 className="h-6 w-6 text-purple-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-gray-700"><strong>Tableau de bord complet</strong> pour piloter votre activité</p>
+                <div className="flex items-start gap-2 sm:gap-4 p-3 sm:p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg sm:rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
+                  <CheckCircle2 className="h-4 w-4 sm:h-6 sm:w-6 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs sm:text-base text-gray-700"><strong>Tableau de bord complet</strong> pour piloter votre activité</p>
                 </div>
               </div>
             </div>

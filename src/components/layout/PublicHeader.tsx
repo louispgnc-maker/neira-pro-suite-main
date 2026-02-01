@@ -39,24 +39,24 @@ export function PublicHeader() {
   }, [connOpen]);
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 bg-white/70 backdrop-blur border-b border-border transition-all duration-300 ${scrolled ? 'py-2' : 'py-0'}`}>
-      <div className={`max-w-[95%] mx-auto flex items-center justify-between gap-8 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4'}`}>
+    <header className={`fixed inset-x-0 top-0 z-50 bg-white/90 backdrop-blur border-b border-border transition-all duration-300 ${scrolled ? 'py-1' : 'py-0'}`}>
+      <div className={`max-w-[95%] mx-auto flex items-center justify-between gap-2 sm:gap-8 transition-all duration-300 ${scrolled ? 'py-1 sm:py-2' : 'py-2 sm:py-4'}`}>
         {/* Gauche : Logo + Nom */}
-        <div className="flex items-center gap-4 flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
           <button 
             onClick={() => navigate('/')} 
-            className={`rounded-full overflow-hidden transition-all duration-300 hover:scale-110 active:scale-90 cursor-pointer ${scrolled ? 'w-12 h-12' : 'w-16 h-16'}`}
+            className={`rounded-full overflow-hidden transition-all duration-300 hover:scale-110 active:scale-90 cursor-pointer ${scrolled ? 'w-8 h-8 sm:w-12 sm:h-12' : 'w-10 h-10 sm:w-16 sm:h-16'}`}
           >
             <img src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Nouveau%20logo%20Neira.png" alt="Neira" className="w-full h-full object-cover" />
           </button>
-          <div className="leading-tight">
+          <div className="leading-tight hidden sm:block">
             <div className={`font-bold text-gray-900 transition-all duration-300 ${scrolled ? 'text-xl' : 'text-2xl'}`}>Neira</div>
             <div className={`text-gray-600 transition-all duration-300 ${scrolled ? 'text-sm' : 'text-base'}`}>Espace Professionnel Automatisé</div>
           </div>
         </div>
 
-        {/* Centre : Navigation */}
-        <div className="flex items-center gap-6 flex-1 justify-center">
+        {/* Centre : Navigation - Caché sur mobile */}
+        <div className="hidden lg:flex items-center gap-6 flex-1 justify-center">
           <button
             onClick={() => navigate('/solution')}
             className={`px-6 font-medium hover:text-gray-900 transition-all duration-300 ${scrolled ? 'py-2 text-xs' : 'py-2.5 text-sm'}`}
@@ -99,23 +99,24 @@ export function PublicHeader() {
         </div>
 
         {/* Droite : Réseaux sociaux + Connexion */}
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <a href="https://www.instagram.com/neira.doc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-10 h-10 rounded-full flex items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform duration-200 shadow-md hover:shadow-lg" style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}>
+        <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+          <a href="https://www.instagram.com/neira.doc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hidden sm:flex w-10 h-10 rounded-full items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform duration-200 shadow-md hover:shadow-lg" style={{ background: 'linear-gradient(135deg,#f58529 0%,#dd2a7b 50%,#8134af 100%)' }}>
             <Instagram className="w-5 h-5" />
           </a>
-          <a href="https://www.linkedin.com/company/neira-doc" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-10 h-10 rounded-full flex items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform duration-200 shadow-md hover:shadow-lg" style={{ background: '#0A66C2' }}>
+          <a href="https://www.linkedin.com/company/neira-doc" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="hidden sm:flex w-10 h-10 rounded-full items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform duration-200 shadow-md hover:shadow-lg" style={{ background: '#0A66C2' }}>
             <Linkedin className="w-5 h-5" />
           </a>
 
-          <div className="w-px h-8 bg-gray-300 mx-2"></div>
+          <div className="w-px h-6 sm:h-8 bg-gray-300 mx-1 sm:mx-2 hidden sm:block"></div>
 
           <div ref={connRef} className="relative">
             <button
               onClick={() => setConnOpen(!connOpen)}
-              className="px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 flex items-center gap-1.5 hover:scale-105 active:scale-95 hover:shadow-md"
+              className="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium hover:bg-gray-100 rounded-full transition-all duration-200 border border-gray-300 flex items-center gap-1 sm:gap-1.5 hover:scale-105 active:scale-95 hover:shadow-md"
             >
-              Espace professionnel
-              <ChevronDown className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Espace professionnel</span>
+              <span className="sm:hidden">Pro</span>
+              <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </button>
             {connOpen && (
               <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden z-50">
@@ -137,9 +138,10 @@ export function PublicHeader() {
 
           <button
             onClick={() => navigate('/client-login')}
-            className="px-5 py-2 text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-full transition-all duration-200 border border-blue-600 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+            className="px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 rounded-full transition-all duration-200 border border-blue-600 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
           >
-            Espace client
+            <span className="hidden sm:inline">Espace client</span>
+            <span className="sm:hidden">Client</span>
           </button>
         </div>
       </div>
