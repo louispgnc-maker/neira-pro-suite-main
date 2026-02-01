@@ -13,32 +13,9 @@ serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get('Authorization')
-    console.log('🔑 Authorization header reçu:', authHeader ? 'Présent (' + authHeader.substring(0, 20) + '...)' : 'ABSENT')
-    
-    if (!authHeader) {
-      throw new Error('Non authentifié - header manquant')
-    }
-    
-    const jwt = authHeader.replace('Bearer ', '')
-    
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     })
-
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
-
-    // Passer directement le JWT à getUser
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(jwt)
-    
-    console.log('🔐 Utilisateur authentifié:', user?.id, 'Erreur:', userError?.message)
-    
-    if (!user || userError) {
-      throw new Error('Non authentifié - token invalide')
-    }
 
     const requestBody = await req.json()
     
@@ -51,7 +28,8 @@ serve(async (req) => {
       cabinetId,
       targetUserId,
       expiresAt,
-      role
+      role,
+      userId
     } = requestBody
 
     console.log('📦 Données extraites:', {
@@ -61,7 +39,8 @@ serve(async (req) => {
       cabinetId,
       targetUserId,
       expiresAt,
-      role
+      role,
+      userId
     })
 
     // Validation des données (accepte 0 comme valeur valide)
@@ -69,7 +48,7 @@ serve(async (req) => {
       quantity === undefined || quantity === null ||
       price === undefined || price === null ||
       prorataAmount === undefined || prorataAmount === null ||
-      !cabinetId || !targetUserId || !expiresAt || !role
+      !cabinetId || !targetUserId || !expiresAt || !role || !userId
     ) {
       console.error('❌ Données manquantes ou invalides:', {
         quantity: quantity,
@@ -78,7 +57,8 @@ serve(async (req) => {
         cabinetId: cabinetId,
         targetUserId: targetUserId,
         expiresAt: expiresAt,
-        role: role
+        role: role,
+        userId: userId
       })
       throw new Error('Données requises manquantes ou invalides')
     }
@@ -112,8 +92,8 @@ serve(async (req) => {
       success_url: `${req.headers.get('origin') || 'https://neira.fr'}/${role === 'notaire' ? 'notaires' : 'avocats'}/dashboard?signature_payment=success`,
       cancel_url: `${req.headers.get('origin') || 'https://neira.fr'}/${role === 'notaire' ? 'notaires' : 'avocats'}/dashboard?signature_payment=cancelled`,
       metadata: {
-        user_id: user.id,
-        target_user_id: targetUserId || user.id,
+        user_id: userId,
+        target_user_id: targetUserId || userId,
         cabinet_id: cabinetId,
         signature_quantity: quantity.toString(),
         signature_price: price.toString(),

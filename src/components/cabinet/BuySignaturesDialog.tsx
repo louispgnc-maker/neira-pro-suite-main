@@ -180,6 +180,7 @@ export function BuySignaturesDialog({
         targetUserId: targetUserId || user.id,
         expiresAt: expiresAt.toISOString(),
         role,
+        userId: user.id
       };
       
       console.log('📦 Envoi à create-signature-checkout:', requestBody);
@@ -201,10 +202,7 @@ export function BuySignaturesDialog({
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
         'create-signature-checkout',
         { 
-          body: requestBody,
-          headers: {
-            Authorization: `Bearer ${session.access_token}`
-          }
+          body: requestBody
         }
       );
 
