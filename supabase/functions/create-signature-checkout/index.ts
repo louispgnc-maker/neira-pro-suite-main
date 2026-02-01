@@ -16,26 +16,28 @@ serve(async (req) => {
     const authHeader = req.headers.get('Authorization')
     console.log('🔑 Authorization header reçu:', authHeader ? 'Présent (' + authHeader.substring(0, 20) + '...)' : 'ABSENT')
     
+    if (!authHeader) {
+      throw new Error('Non authentifié - header manquant')
+    }
+    
+    const jwt = authHeader.replace('Bearer ', '')
+    
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     })
 
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: authHeader! },
-        },
-      }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { data: { user } } = await supabaseClient.auth.getUser()
+    // Passer directement le JWT à getUser
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(jwt)
     
-    console.log('🔐 Utilisateur authentifié:', user?.id)
+    console.log('🔐 Utilisateur authentifié:', user?.id, 'Erreur:', userError?.message)
     
-    if (!user) {
-      throw new Error('Non authentifié')
+    if (!user || userError) {
+      throw new Error('Non authentifié - token invalide')
     }
 
     const requestBody = await req.json()
