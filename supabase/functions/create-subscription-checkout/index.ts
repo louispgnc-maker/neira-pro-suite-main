@@ -32,27 +32,8 @@ serve(async (req) => {
       throw new Error('Price ID and quantity are required')
     }
 
-    let customerId = null
-
-    // Si cabinetId fourni, vérifier si un customer existe déjà pour ce cabinet
-    if (cabinetId) {
-      const supabase = createClient(
-        'https://elysrdqujzlbvnjfilvh.supabase.co',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-      )
-
-      const { data: cabinet } = await supabase
-        .from('cabinets')
-        .select('stripe_customer_id')
-        .eq('id', cabinetId)
-        .single()
-
-      customerId = cabinet?.stripe_customer_id
-
-      console.log('Existing customer ID:', customerId)
-    } else {
-      console.log('No cabinetId provided - creating session for new user')
-    }
+    console.log('Cabinet ID:', cabinetId || 'NEW USER')
+    console.log('Creating checkout session without existing customer lookup')
 
     // Configuration de la session Checkout pour paiements internationaux
     const sessionParams: any = {
@@ -86,19 +67,10 @@ serve(async (req) => {
       },
     }
 
-    // Si customer existant, on l'utilise
-    if (customerId) {
-      sessionParams.customer = customerId
-      // Pour un customer existant, on permet la mise à jour des infos
-      sessionParams.customer_update = {
-        address: 'auto',
-        name: 'auto',
-      }
-    } else if (customerEmail) {
-      // Création d'un nouveau customer avec email pré-rempli
+    // Utiliser l'email du customer si fourni
+    if (customerEmail) {
       sessionParams.customer_email = customerEmail
     }
-    // Sinon, Stripe collectera l'email pendant le checkout
 
     console.log('Creating Stripe session with params:', JSON.stringify(sessionParams, null, 2))
 
