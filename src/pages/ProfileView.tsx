@@ -153,7 +153,7 @@ export default function ProfileView() {
     try {
       const { data, error } = await supabase
         .from('cabinets')
-        .select('subscription_tier, subscription_status, subscription_started_at, payment_method_last4, payment_method_brand, stripe_customer_id')
+        .select('subscription_tier, subscription_status, subscription_started_at, current_period_end, payment_method_last4, payment_method_brand, stripe_customer_id')
         .eq('id', cabinetId)
         .single();
       
@@ -314,6 +314,11 @@ export default function ProfileView() {
   };
 
   const getNextPaymentDate = () => {
+    // Utiliser la vraie date de fin de période Stripe au lieu d'un calcul manuel
+    if (subscriptionInfo?.current_period_end) {
+      return new Date(subscriptionInfo.current_period_end);
+    }
+    // Fallback si current_period_end n'est pas disponible
     if (!subscriptionInfo?.subscription_started_at) return new Date();
     const startDate = new Date(subscriptionInfo.subscription_started_at);
     const nextDate = new Date(startDate);
