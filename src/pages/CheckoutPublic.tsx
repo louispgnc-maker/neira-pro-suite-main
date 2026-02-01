@@ -122,16 +122,24 @@ export default function CheckoutPublic() {
         billingPeriod
       }));
 
+      // Map plan ID to correct checkout route
+      const checkoutRouteMap: Record<string, string> = {
+        'essentiel': 'checkout-essentiel',
+        'professionnel': 'checkout-professionnel',
+        'cabinet-plus': 'checkout-cabinet-plus'
+      };
+      const cancelRoute = checkoutRouteMap[planId] || `checkout/${planId}`;
+
       // Create Stripe checkout session without cabinetId (for new users)
       const checkoutUrl = await createStripeCheckoutSession({
         priceId,
         quantity: numberOfUsers,
         successUrl: `${window.location.origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${window.location.origin}/checkout/${planId}`
+        cancelUrl: `${window.location.origin}/${cancelRoute}`
       });
 
-      // Redirect to Stripe
-      window.location.href = checkoutUrl;
+      // Utiliser replace() pour ne pas ajouter Stripe dans l'historique
+      window.location.replace(checkoutUrl);
       
     } catch (error: any) {
       console.error('Error creating checkout session:', error);

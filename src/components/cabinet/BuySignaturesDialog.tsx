@@ -28,21 +28,21 @@ type BuySignaturesDialogProps = {
 const packagesConfig = {
   essentiel: [
     { quantity: 10, price: 20, label: 'Mini - 10 Signatures' },
-    { quantity: 20, price: 30, label: 'Starter - 20 Signatures' },
+    { quantity: 25, price: 30, label: 'Starter - 25 Signatures' },
     { quantity: 50, price: 45, label: 'Pro ⭐ - 50 Signatures' },
     { quantity: 100, price: 70, label: 'Business - 100 Signatures' },
     { quantity: 250, price: 140, label: 'Enterprise - 250 Signatures' }
   ],
   professionnel: [
     { quantity: 10, price: 20, label: 'Mini - 10 Signatures' },
-    { quantity: 20, price: 30, label: 'Starter - 20 Signatures' },
+    { quantity: 25, price: 30, label: 'Starter - 25 Signatures' },
     { quantity: 50, price: 45, label: 'Pro ⭐ - 50 Signatures' },
     { quantity: 100, price: 70, label: 'Business - 100 Signatures' },
     { quantity: 250, price: 140, label: 'Enterprise - 250 Signatures' }
   ],
   'cabinet-plus': [
     { quantity: 10, price: 20, label: 'Mini - 10 Signatures' },
-    { quantity: 20, price: 30, label: 'Starter - 20 Signatures' },
+    { quantity: 25, price: 30, label: 'Starter - 25 Signatures' },
     { quantity: 50, price: 45, label: 'Pro ⭐ - 50 Signatures' },
     { quantity: 100, price: 70, label: 'Business - 100 Signatures' },
     { quantity: 250, price: 140, label: 'Enterprise - 250 Signatures' }
@@ -216,9 +216,9 @@ export function BuySignaturesDialog({
         throw new Error(checkoutError?.message || 'Erreur lors de la création de la session de paiement');
       }
 
-      // Redirection vers Stripe (le webhook gérera l'application des crédits)
+      // Utiliser replace() pour ne pas ajouter Stripe dans l'historique
       toast.success('Redirection vers le paiement...');
-      window.location.href = checkoutData.url;
+      window.location.replace(checkoutData.url);
     } catch (error: any) {
       console.error('Erreur lors de l\'achat:', error);
       toast.error('Erreur lors de l\'achat', {

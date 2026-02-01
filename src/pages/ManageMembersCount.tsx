@@ -278,8 +278,8 @@ export default function ManageMembersCount() {
         timestamp: Date.now()
       }));
 
-      // Rediriger vers Stripe Checkout
-      window.location.href = data.url;
+      // Utiliser replace() pour ne pas ajouter Stripe dans l'historique
+      window.location.replace(data.url);
     } catch (error: any) {
       console.error('Error updating members:', error);
       toast.error('Erreur', {

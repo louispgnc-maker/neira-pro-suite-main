@@ -156,7 +156,8 @@ export default function CheckoutPlan() {
       });
 
       // Redirect to Stripe
-      window.location.href = checkoutUrl;
+      // Utiliser replace() pour ne pas ajouter Stripe dans l'historique
+      window.location.replace(checkoutUrl);
       
     } catch (error: any) {
       console.error('Error creating checkout session:', error);

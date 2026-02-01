@@ -143,11 +143,12 @@ export default function CheckoutProfessionnel() {
         quantity: userCount, // Nombre d'utilisateurs sélectionnés (2 à 10)
         cabinetId: memberData.cabinet_id,
         successUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`,
-        cancelUrl: `${window.location.origin}/checkout/professionnel`
+        cancelUrl: `${window.location.origin}/checkout-professionnel`
       });
 
       // Rediriger vers Stripe
-      window.location.href = checkoutUrl;
+      // Utiliser replace() pour ne pas ajouter Stripe dans l'historique
+      window.location.replace(checkoutUrl);
       
     } catch (error) {
       console.error('Erreur lors de la création de la session Stripe:', error);

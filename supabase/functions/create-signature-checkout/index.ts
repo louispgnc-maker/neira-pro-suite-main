@@ -1,5 +1,4 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
 import Stripe from 'https://esm.sh/stripe@14.10.0?target=deno'
 
 const corsHeaders = {
@@ -63,14 +62,14 @@ serve(async (req) => {
       throw new Error('Données requises manquantes ou invalides')
     }
 
-    // Mapping des quantités vers les price IDs Stripe
+    // Mapping des quantités vers les price IDs Stripe LIVE (correspond aux vrais produits créés)
     const priceIdMap: Record<number, string> = {
-      1: 'price_1SvlbL7ECruIACYyCLSpS0r2',
-      10: 'price_1SvlZu7ECruIACYyJMb1q5kK',
-      20: 'price_1SvlaL7ECruIACYy3ktNjFhY',
-      50: 'price_1Svlac7ECruIACYyttwqZ7fQ',
-      100: 'price_1Svlb17ECruIACYy1Gyn7ioO',
-      250: 'price_1Svlbb7ECruIACYyxQV2lV49'
+      1: 'price_1Sw3kM7epLIfQ2kHt1zfE9qT',      // Urgence - 1 signature - 3€
+      10: 'price_1Sw3kN7epLIfQ2kHeeQ9pRHx',     // Mini - 10 signatures - 20€
+      25: 'price_1Sw3kN7epLIfQ2kHARbz9fsy',     // Starter - 25 signatures - 30€
+      50: 'price_1Sw3kO7epLIfQ2kHv8V9wQHT',     // Pro - 50 signatures - 45€
+      100: 'price_1Sw3kP7epLIfQ2kHnaY2dWHL',    // Business - 100 signatures - 70€
+      250: 'price_1Sw3kQ7epLIfQ2kHs1GvAevQ'     // Enterprise - 250 signatures - 140€
     };
 
     const priceId = priceIdMap[quantity];

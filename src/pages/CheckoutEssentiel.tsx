@@ -77,11 +77,12 @@ export default function CheckoutEssentiel() {
         quantity: 1, // Plan Essentiel = 1 utilisateur
         cabinetId: memberData.cabinet_id,
         successUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`,
-        cancelUrl: `${window.location.origin}/checkout/essentiel`
+        cancelUrl: `${window.location.origin}/checkout-essentiel`
       });
 
       // Rediriger vers Stripe
-      window.location.href = checkoutUrl;
+      // Utiliser replace() pour ne pas ajouter Stripe dans l'historique
+      window.location.replace(checkoutUrl);
       
     } catch (error) {
       console.error('Erreur lors de la création de la session Stripe:', error);

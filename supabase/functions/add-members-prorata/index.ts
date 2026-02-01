@@ -52,11 +52,26 @@ serve(async (req) => {
     // Déterminer le préfixe basé sur le rôle
     const prefix = (role || cabinet.role) === 'notaire' ? 'notaires' : 'avocats';
 
-    // Si pas de customer Stripe, en créer un
+    // Vérifier si le customer existe en LIVE ou créer un nouveau
     let customerId = cabinet.stripe_customer_id
     
+    if (customerId) {
+      // Vérifier si le customer existe en LIVE mode
+      try {
+        await stripe.customers.retrieve(customerId);
+        console.log('✅ Customer exists in LIVE mode:', customerId);
+      } catch (error: any) {
+        if (error.code === 'resource_missing') {
+          console.log('⚠️ Customer exists in TEST mode, creating new LIVE customer...');
+          customerId = null; // Force création d'un nouveau customer LIVE
+        } else {
+          throw error;
+        }
+      }
+    }
+    
     if (!customerId) {
-      console.log('Creating new Stripe customer...');
+      console.log('Creating new LIVE Stripe customer...');
       const customer = await stripe.customers.create({
         metadata: {
           cabinet_id: cabinetId,
@@ -64,13 +79,13 @@ serve(async (req) => {
       })
       customerId = customer.id
 
-      // Mettre à jour le cabinet avec le customer ID
+      // Mettre à jour le cabinet avec le nouveau customer ID LIVE
       await supabase
         .from('cabinets')
         .update({ stripe_customer_id: customerId })
         .eq('id', cabinetId)
       
-      console.log('Customer created:', customerId);
+      console.log('✅ New LIVE customer created:', customerId);
     }
 
     // Créer une session de checkout pour un paiement unique (prorata)
@@ -91,7 +106,7 @@ serve(async (req) => {
         },
       ],
       success_url: `${req.headers.get('origin')}/${prefix}/subscription?payment=success&members_updated=true`,
-      cancel_url: `${req.headers.get('origin')}/${prefix}/manage-members`,
+      cancel_url: `${req.headers.get('origin')}/${prefix}/subscription/manage-members`,
       locale: 'fr',
       metadata: {
         cabinet_id: cabinetId,

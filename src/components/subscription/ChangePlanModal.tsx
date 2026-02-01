@@ -77,7 +77,8 @@ export function ChangePlanModal({
       });
 
       // Rediriger vers Stripe
-      window.location.href = checkoutUrl;
+      // Utiliser replace() pour ne pas ajouter Stripe dans l'historique
+      window.location.replace(checkoutUrl);
     } catch (error) {
       console.error('Erreur création session Stripe:', error);
       toast.error('Erreur', {
