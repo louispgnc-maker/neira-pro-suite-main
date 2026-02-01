@@ -185,12 +185,20 @@ export function BuySignaturesDialog({
       console.log('📦 Envoi à create-signature-checkout:', requestBody);
       
       // Récupérer le token d'authentification pour l'envoyer à l'edge function
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log('🔑 Session récupérée:', {
+        hasSession: !!session,
+        hasAccessToken: !!session?.access_token,
+        tokenLength: session?.access_token?.length,
+        userId: session?.user?.id,
+        sessionError: sessionError
+      });
+      
+      if (!session?.access_token) {
         throw new Error('Session expirée, veuillez vous reconnecter');
       }
       
-      const { data: sessionData, error: sessionError } = await supabase.functions.invoke(
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
         'create-signature-checkout',
         { 
           body: requestBody,
@@ -200,8 +208,14 @@ export function BuySignaturesDialog({
         }
       );
 
-      if (sessionError || !sessionData?.url) {
-        throw new Error(sessionError?.message || 'Erreur lors de la création de la session de paiement');
+      console.log('📡 Réponse de create-signature-checkout:', {
+        hasData: !!checkoutData,
+        hasUrl: !!checkoutData?.url,
+        error: checkoutError
+      });
+
+      if (checkoutError || !checkoutData?.url) {
+        throw new Error(checkoutError?.message || 'Erreur lors de la création de la session de paiement');
       }
 
       // Stocker les informations pour les appliquer au retour du paiement
@@ -216,7 +230,7 @@ export function BuySignaturesDialog({
 
       // Redirection immédiate
       toast.success('Redirection vers le paiement...');
-      window.location.href = sessionData.url;
+      window.location.href = checkoutData.url;
     } catch (error: any) {
       console.error('Erreur lors de l\'achat:', error);
       toast.error('Erreur lors de l\'achat', {
