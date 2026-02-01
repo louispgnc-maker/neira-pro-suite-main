@@ -75,6 +75,7 @@ serve(async (req) => {
 
     const priceId = priceIdMap[quantity];
     if (!priceId) {
+      console.error('❌ Quantité invalide:', quantity, 'Quantités valides:', Object.keys(priceIdMap));
       throw new Error(`Aucun price ID trouvé pour la quantité ${quantity}`);
     }
 
