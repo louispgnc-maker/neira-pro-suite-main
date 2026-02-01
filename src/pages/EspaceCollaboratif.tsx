@@ -1470,12 +1470,14 @@ export default function EspaceCollaboratif() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Espace Collaboratif</h1>
-          <div className="flex items-center gap-2">
-            <Badge className={colorClass}>{cabinet.nom}</Badge>
-            <span className="text-sm text-gray-900">
-              {members.length} membre{members.length > 1 ? 's' : ''}
-            </span>
-          </div>
+          {cabinet && (
+            <div className="flex items-center gap-2">
+              <Badge className={colorClass}>{cabinet.nom}</Badge>
+              <span className="text-sm text-gray-900">
+                {members.length} membre{members.length > 1 ? 's' : ''}
+              </span>
+            </div>
+          )}
         </div>
         
         <div className="flex items-center gap-3">
@@ -1490,12 +1492,11 @@ export default function EspaceCollaboratif() {
             </Badge>
           )}
           
-          {/* Management button - always visible during load */}
+          {/* Management button - always visible */}
           <Button
-            onClick={() => navigate(`/${cabinetRole}s/cabinet?id=${cabinet?.id}`)}
+            onClick={() => cabinet?.id && navigate(`/${cabinetRole}s/cabinet?id=${cabinet.id}`)}
             className={colorClass}
-            disabled={loading || !(isCabinetOwner || currentUserRole === 'Associé')}
-            style={{ opacity: (isCabinetOwner || currentUserRole === 'Associé') ? 1 : 0.5 }}
+            disabled={!cabinet || loading || !(isCabinetOwner || currentUserRole === 'Associé')}
           >
             <Settings className="h-4 w-4 mr-2" />
             Gérer le cabinet
