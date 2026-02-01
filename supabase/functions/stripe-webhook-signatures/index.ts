@@ -37,6 +37,15 @@ serve(async (req) => {
         expires_at,
       } = metadata
 
+      console.log('🎯 Métadonnées webhook:', {
+        user_id,
+        target_user_id,
+        cabinet_id,
+        signature_quantity,
+        signature_price,
+        expires_at
+      })
+
       // Initialiser Supabase avec la clé service (pour bypass RLS)
       const supabaseAdmin = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',
@@ -83,9 +92,11 @@ serve(async (req) => {
       }
 
       console.log('✅ Signatures créditées avec succès:', {
-        user_id: target_user_id,
+        target_user_id: target_user_id,
         cabinet_id,
-        quantity: signature_quantity,
+        previous_quantity: currentQuantity,
+        added_quantity: parseInt(signature_quantity),
+        new_total: newQuantity,
         amount_paid: prorata_amount,
       })
 
