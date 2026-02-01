@@ -632,6 +632,26 @@ export default function ProfileView() {
                   variant="outline" 
                   size="lg"
                   className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'}
+                  onClick={async () => {
+                    if (!stripeCustomerId) {
+                      toast.error('Aucun abonnement actif', {
+                        description: 'Veuillez d\'abord souscrire à un abonnement'
+                      });
+                      return;
+                    }
+
+                    try {
+                      toast.info('Redirection vers vos factures...');
+                      const { url } = await createPortalSession(
+                        stripeCustomerId,
+                        window.location.href
+                      );
+                      window.location.replace(url);
+                    } catch (error) {
+                      console.error('Erreur ouverture portal:', error);
+                      toast.error('Erreur lors de l\'ouverture du portail de facturation');
+                    }
+                  }}
                 >
                   Voir les factures
                 </Button>
