@@ -122,7 +122,8 @@ export function ContractCreationDialog({ open, onOpenChange, role = 'avocat', pr
           <div className="mt-4">
             <ContractPipelineFlow
               contractType={contractType}
-              initialRequest={description || `Créer un ${contractType}`}
+              description={description || `Créer un ${contractType}`}
+              role={detectedRole}
               onComplete={handlePipelineComplete}
               onError={handlePipelineError}
               onCancel={handlePipelineCancel}

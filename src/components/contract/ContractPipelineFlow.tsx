@@ -3,7 +3,6 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -37,21 +36,21 @@ interface Client {
 }
 
 interface ContractPipelineFlowProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   contractType: string;
   description: string;
   role: 'avocat' | 'notaire';
   onComplete: (schema: any, brief: any) => void;
+  onError?: (error: Error) => void;
+  onCancel?: () => void;
 }
 
 export function ContractPipelineFlow({
-  open,
-  onOpenChange,
   contractType,
   description,
   role,
-  onComplete
+  onComplete,
+  onError,
+  onCancel
 }: ContractPipelineFlowProps) {
   const { user } = useAuth();
   const [pipeline, setPipeline] = useState<ContractPipelineManager | null>(null);
@@ -64,10 +63,10 @@ export function ContractPipelineFlow({
 
   // Charger les clients du cabinet au montage
   useEffect(() => {
-    if (open && user) {
+    if (user) {
       loadClients();
     }
-  }, [open, user, role]);
+  }, [user, role]);
 
   const loadClients = async () => {
     try {
@@ -145,9 +144,10 @@ export function ContractPipelineFlow({
     }
   };
 
-  // Initialiser le pipeline quand le dialog s'ouvre
+  // Initialiser le pipeline quand le composant se monte
   useEffect(() => {
-    if (open && contractType && description) {
+    if (contractType && description && user) {
+      console.log('🎬 Initialisation pipeline:', { contractType, description, role, user: user.id });
       const manager = new ContractPipelineManager(
         contractType,
         description,
@@ -268,46 +268,35 @@ export function ContractPipelineFlow({
   if (!state) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileText className="w-5 h-5" />
-            Création du contrat - {contractType}
-          </DialogTitle>
-          <DialogDescription>
-            Pipeline de création avec contrôle qualité automatique
-          </DialogDescription>
-        </DialogHeader>
-
-        {/* Barre de progression */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>Progression</span>
-            <span>{currentProgress}%</span>
-          </div>
-          <Progress value={currentProgress} className="h-2" />
-          
-          {/* Indicateurs d'étapes */}
-          <div className="flex justify-between mt-4 text-xs">
-            {['Analyse', 'Questions', 'Formulaire', 'Audit', 'Prêt'].map((label, idx) => (
-              <div key={idx} className="flex flex-col items-center gap-1">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  currentProgress >= (idx + 1) * 20 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-gray-200 text-gray-600'
-                }`}>
-                  {currentProgress >= (idx + 1) * 20 ? (
-                    <CheckCircle2 className="w-4 h-4" />
-                  ) : (
-                    <span>{idx + 1}</span>
-                  )}
-                </div>
-                <span className="text-center">{label}</span>
-              </div>
-            ))}
-          </div>
+    <div className="space-y-6">
+      {/* Barre de progression */}
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span>Progression</span>
+          <span>{currentProgress}%</span>
         </div>
+        <Progress value={currentProgress} className="h-2" />
+        
+        {/* Indicateurs d'étapes */}
+        <div className="flex justify-between mt-4 text-xs">
+          {['Analyse', 'Questions', 'Formulaire', 'Audit', 'Prêt'].map((label, idx) => (
+            <div key={idx} className="flex flex-col items-center gap-1">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                currentProgress >= (idx + 1) * 20 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-gray-200 text-gray-600'
+              }`}>
+                {currentProgress >= (idx + 1) * 20 ? (
+                  <CheckCircle2 className="w-4 h-4" />
+                ) : (
+                  <span>{idx + 1}</span>
+                )}
+              </div>
+              <span className="text-center">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
         {/* Contenu selon l'étape */}
         <div className="mt-6">
@@ -485,8 +474,8 @@ export function ContractPipelineFlow({
             </div>
           </details>
         )}
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }
 
