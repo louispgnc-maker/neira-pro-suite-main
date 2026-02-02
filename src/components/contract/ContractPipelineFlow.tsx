@@ -94,51 +94,49 @@ export function ContractPipelineFlow({
       const cabinetId = cabinetMember.cabinet_id;
       console.log('✅ Cabinet ID:', cabinetId);
 
-      // Récupérer les clients directs
+      // Récupérer TOUS les clients directs du cabinet (sans filtre de rôle d'abord)
       const { data: directClients, error: directError } = await supabase
         .from('clients')
-        .select('id, name, prenom, nom, email, telephone, adresse')
+        .select('*')
         .eq('owner_id', cabinetId)
-        .eq('role', role)
         .order('created_at', { ascending: false });
 
-      console.log('📝 Clients directs:', directClients?.length || 0, 'error:', directError);
+      console.log('📝 Clients directs (TOUS):', directClients?.length || 0, directClients);
+      console.log('📝 Erreur directe:', directError);
 
       // Récupérer les clients partagés
       const { data: sharedClients, error: sharedError } = await supabase
         .from('cabinet_clients')
         .select(`
           client_id,
-          clients (id, name, prenom, nom, email, telephone, adresse)
+          clients (*)
         `)
         .eq('cabinet_id', cabinetId);
 
-      console.log('🔗 Clients partagés:', sharedClients?.length || 0, 'error:', sharedError);
+      console.log('🔗 Clients partagés:', sharedClients?.length || 0, sharedClients);
+      console.log('🔗 Erreur partagés:', sharedError);
 
-      if (directError) {
-        console.error('Erreur clients directs:', directError);
-      }
-      if (sharedError) {
-        console.error('Erreur clients partagés:', sharedError);
-      }
-
-      const allClients = [
-        ...(directClients || []),
-        ...(sharedClients?.map((sc: any) => sc.clients).filter(Boolean) || [])
-      ];
+      // Combiner et filtrer par rôle
+      const allClients = [...(directClients || [])];
       
-      console.log('📊 Total clients trouvés:', allClients.length);
-      
-      // Dédupliquer par ID
-      const uniqueClients = allClients.reduce((acc: Client[], client) => {
-        if (!acc.find(c => c.id === client.id)) {
-          acc.push(client);
+      // Ajouter les clients partagés (en évitant les doublons)
+      if (sharedClients) {
+        for (const shared of sharedClients) {
+          const client = (shared as any).clients;
+          if (client && !allClients.some(c => c.id === client.id)) {
+            allClients.push(client);
+          }
         }
-        return acc;
-      }, []);
+      }
       
-      console.log('✨ Clients uniques:', uniqueClients.length, uniqueClients);
-      setClients(uniqueClients);
+      // Filtrer par rôle
+      const roleClients = allClients.filter(c => c.role === role);
+      
+      console.log('📊 Total clients (tous rôles):', allClients.length);
+      console.log('📊 Clients filtrés par rôle', role, ':', roleClients.length);
+      console.log('✨ Clients finaux:', roleClients);
+      
+      setClients(roleClients);
     } catch (error) {
       console.error('💥 Erreur chargement clients:', error);
       toast.error('Impossible de charger les clients');
