@@ -72,20 +72,27 @@ export function ContractPipelineFlow({
   const loadClients = async () => {
     try {
       setLoadingClients(true);
+      console.log('🔍 Chargement clients - user:', user?.id, 'role:', role);
       
-      // Récupérer les cabinets de l'utilisateur
-      const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
-      const cabinets = Array.isArray(cabinetsData) ? cabinetsData : [];
-      
-      if (cabinets.length === 0) {
+      // Récupérer le cabinet de l'utilisateur via cabinet_members
+      const { data: cabinetMember, error: memberError } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id, cabinets(id, role)')
+        .eq('user_id', user?.id)
+        .eq('status', 'active')
+        .single();
+
+      console.log('📋 Cabinet member:', cabinetMember, 'error:', memberError);
+
+      if (memberError || !cabinetMember) {
+        console.error('❌ Aucun cabinet trouvé pour cet utilisateur');
         setClients([]);
         setLoadingClients(false);
         return;
       }
 
-      // Prendre le cabinet correspondant au rôle
-      const matchingCabinet = cabinets.find((c: any) => c.role === role) || cabinets[0];
-      const cabinetId = matchingCabinet.id;
+      const cabinetId = cabinetMember.cabinet_id;
+      console.log('✅ Cabinet ID:', cabinetId);
 
       // Récupérer les clients directs
       const { data: directClients, error: directError } = await supabase
@@ -94,6 +101,8 @@ export function ContractPipelineFlow({
         .eq('owner_id', cabinetId)
         .eq('role', role)
         .order('created_at', { ascending: false });
+
+      console.log('📝 Clients directs:', directClients?.length || 0, 'error:', directError);
 
       // Récupérer les clients partagés
       const { data: sharedClients, error: sharedError } = await supabase
@@ -104,24 +113,34 @@ export function ContractPipelineFlow({
         `)
         .eq('cabinet_id', cabinetId);
 
-      if (!directError && !sharedError) {
-        const allClients = [
-          ...(directClients || []),
-          ...(sharedClients?.map((sc: any) => sc.clients).filter(Boolean) || [])
-        ];
-        
-        // Dédupliquer par ID
-        const uniqueClients = allClients.reduce((acc: Client[], client) => {
-          if (!acc.find(c => c.id === client.id)) {
-            acc.push(client);
-          }
-          return acc;
-        }, []);
-        
-        setClients(uniqueClients);
+      console.log('🔗 Clients partagés:', sharedClients?.length || 0, 'error:', sharedError);
+
+      if (directError) {
+        console.error('Erreur clients directs:', directError);
       }
+      if (sharedError) {
+        console.error('Erreur clients partagés:', sharedError);
+      }
+
+      const allClients = [
+        ...(directClients || []),
+        ...(sharedClients?.map((sc: any) => sc.clients).filter(Boolean) || [])
+      ];
+      
+      console.log('📊 Total clients trouvés:', allClients.length);
+      
+      // Dédupliquer par ID
+      const uniqueClients = allClients.reduce((acc: Client[], client) => {
+        if (!acc.find(c => c.id === client.id)) {
+          acc.push(client);
+        }
+        return acc;
+      }, []);
+      
+      console.log('✨ Clients uniques:', uniqueClients.length, uniqueClients);
+      setClients(uniqueClients);
     } catch (error) {
-      console.error('Erreur chargement clients:', error);
+      console.error('💥 Erreur chargement clients:', error);
       toast.error('Impossible de charger les clients');
     } finally {
       setLoadingClients(false);
