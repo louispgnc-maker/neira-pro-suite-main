@@ -178,12 +178,12 @@ export default function EmailIntegration() {
         });
         
         // Generate Outlook OAuth URL
-        const clientId = '5c2e5ad7-f18e-4b4c-ba53-1d96a5b8d1af'; // You'll need to register your app
+        const clientId = '74658136-14ec-4630-ad9b-26e160ff0fc6'; // User's app (needs to be fixed in Azure Portal)
         const redirectUri = encodeURIComponent('https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/outlook-oauth-callback');
         const state = btoa(JSON.stringify({ user_id: user.id, session_token: session.access_token }));
         const scope = encodeURIComponent('https://graph.microsoft.com/Mail.ReadWrite https://graph.microsoft.com/Mail.Send https://graph.microsoft.com/User.Read offline_access');
         
-        authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}&state=${state}&response_mode=query`;
+        authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}&state=${state}&response_mode=query&prompt=select_account`;
       }
 
       if (authUrl) {

@@ -80,6 +80,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import EmailConfirmHandler from "./components/EmailConfirmHandler";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
 import FullscreenButton from "./components/FullscreenButton";
+import { MobileBlocker } from "./components/MobileBlocker";
 
 const queryClient = new QueryClient();
 
@@ -92,11 +93,12 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <EmailConfirmHandler />
-          <ScrollToTop />
-          <FullscreenButton />
-          <Routes>
+        <MobileBlocker>
+          <BrowserRouter>
+            <EmailConfirmHandler />
+            <ScrollToTop />
+            <FullscreenButton />
+            <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/about" element={<About />} />
@@ -216,6 +218,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+      </MobileBlocker>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

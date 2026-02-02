@@ -2,8 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const OAUTH_CONFIG = {
-  clientId: Deno.env.get('OUTLOOK_CLIENT_ID')!,
-  clientSecret: Deno.env.get('OUTLOOK_CLIENT_SECRET')!,
+  clientId: Deno.env.get('OUTLOOK_CLIENT_ID') || '74658136-14ec-4630-ad9b-26e160ff0fc6',
+  clientSecret: Deno.env.get('OUTLOOK_CLIENT_SECRET') || '',
   redirectUri: `${Deno.env.get('SUPABASE_URL')}/functions/v1/outlook-oauth-callback`,
   tokenUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
   profileUrl: 'https://graph.microsoft.com/v1.0/me',
