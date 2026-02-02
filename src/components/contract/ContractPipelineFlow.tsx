@@ -23,6 +23,18 @@ import type {
   AuditIssue 
 } from '@/types/contractPipeline';
 import { ContractPipelineManager } from '@/lib/contractPipelineManager';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface Client {
+  id: string;
+  name: string;
+  prenom?: string;
+  nom?: string;
+  email?: string;
+  telephone?: string;
+  adresse?: string;
+}
 
 interface ContractPipelineFlowProps {
   open: boolean;
@@ -41,11 +53,80 @@ export function ContractPipelineFlow({
   role,
   onComplete
 }: ContractPipelineFlowProps) {
+  const { user } = useAuth();
   const [pipeline, setPipeline] = useState<ContractPipelineManager | null>(null);
   const [state, setState] = useState<ContractPipelineState | null>(null);
   const [loading, setLoading] = useState(false);
   const [clientAnswers, setClientAnswers] = useState<ClientAnswers>({});
   const [currentProgress, setCurrentProgress] = useState(0);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loadingClients, setLoadingClients] = useState(true);
+
+  // Charger les clients du cabinet au montage
+  useEffect(() => {
+    if (open && user) {
+      loadClients();
+    }
+  }, [open, user, role]);
+
+  const loadClients = async () => {
+    try {
+      setLoadingClients(true);
+      
+      // Récupérer les cabinets de l'utilisateur
+      const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+      const cabinets = Array.isArray(cabinetsData) ? cabinetsData : [];
+      
+      if (cabinets.length === 0) {
+        setClients([]);
+        setLoadingClients(false);
+        return;
+      }
+
+      // Prendre le cabinet correspondant au rôle
+      const matchingCabinet = cabinets.find((c: any) => c.role === role) || cabinets[0];
+      const cabinetId = matchingCabinet.id;
+
+      // Récupérer les clients directs
+      const { data: directClients, error: directError } = await supabase
+        .from('clients')
+        .select('id, name, prenom, nom, email, telephone, adresse')
+        .eq('owner_id', cabinetId)
+        .eq('role', role)
+        .order('created_at', { ascending: false });
+
+      // Récupérer les clients partagés
+      const { data: sharedClients, error: sharedError } = await supabase
+        .from('cabinet_clients')
+        .select(`
+          client_id,
+          clients (id, name, prenom, nom, email, telephone, adresse)
+        `)
+        .eq('cabinet_id', cabinetId);
+
+      if (!directError && !sharedError) {
+        const allClients = [
+          ...(directClients || []),
+          ...(sharedClients?.map((sc: any) => sc.clients).filter(Boolean) || [])
+        ];
+        
+        // Dédupliquer par ID
+        const uniqueClients = allClients.reduce((acc: Client[], client) => {
+          if (!acc.find(c => c.id === client.id)) {
+            acc.push(client);
+          }
+          return acc;
+        }, []);
+        
+        setClients(uniqueClients);
+      }
+    } catch (error) {
+      console.error('Erreur chargement clients:', error);
+      toast.error('Impossible de charger les clients');
+    } finally {
+      setLoadingClients(false);
+    }
+  };
 
   // Initialiser le pipeline quand le dialog s'ouvre
   useEffect(() => {
@@ -287,6 +368,8 @@ export function ContractPipelineFlow({
                     question={question}
                     value={clientAnswers[question.fieldName] || ''}
                     onChange={(value) => handleAnswerChange(question.fieldName, value)}
+                    clients={clients}
+                    loadingClients={loadingClients}
                   />
                 ))}
 
@@ -396,12 +479,21 @@ export function ContractPipelineFlow({
 function QuestionField({ 
   question, 
   value, 
-  onChange 
+  onChange,
+  clients = [],
+  loadingClients = false
 }: { 
   question: MissingInfoQuestion; 
   value: any; 
   onChange: (value: any) => void;
+  clients?: Client[];
+  loadingClients?: boolean;
 }) {
+  // Détecter si la question concerne un client
+  const isClientField = question.fieldName.toLowerCase().includes('client') || 
+                       question.questionText.toLowerCase().includes('client') ||
+                       question.fieldName.toLowerCase().includes('partie');
+
   return (
     <div className="space-y-2">
       <Label htmlFor={question.id} className="flex items-center gap-2">
@@ -419,6 +511,57 @@ function QuestionField({
         <p className="text-xs text-gray-500">{question.hint}</p>
       )}
 
+      {/* Sélecteur de client si disponible et pertinent */}
+      {isClientField && clients.length > 0 && (
+        <div className="mb-3">
+          <Label className="text-sm font-medium mb-2 block">Sélectionner un client existant (optionnel)</Label>
+          <Select 
+            value={value?.clientId || ''} 
+            onValueChange={(clientId) => {
+              const selectedClient = clients.find(c => c.id === clientId);
+              if (selectedClient) {
+                // Pré-remplir avec les données du client
+                onChange({
+                  clientId: selectedClient.id,
+                  nom: selectedClient.nom || selectedClient.name,
+                  prenom: selectedClient.prenom,
+                  email: selectedClient.email,
+                  telephone: selectedClient.telephone,
+                  adresse: selectedClient.adresse
+                });
+              }
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Choisir un client..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Saisie manuelle</SelectItem>
+              {clients.map(client => (
+                <SelectItem key={client.id} value={client.id}>
+                  {client.name || `${client.prenom} ${client.nom}`}
+                  {client.email && ` (${client.email})`}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {value?.clientId && (
+            <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm">
+              ✓ Client sélectionné: <strong>{value.nom || value.prenom}</strong>
+            </div>
+          )}
+        </div>
+      )}
+
+      {isClientField && clients.length === 0 && !loadingClients && (
+        <Alert className="mb-3">
+          <AlertDescription>
+            ⚠️ Aucun client disponible. <a href="/clients" className="underline font-medium">Créez un client</a> ou utilisez la saisie manuelle ci-dessous.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Champ de saisie principal */}
       {question.inputType === 'textarea' ? (
         <Textarea
           id={question.id}
