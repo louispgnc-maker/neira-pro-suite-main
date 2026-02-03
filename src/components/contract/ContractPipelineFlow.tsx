@@ -80,23 +80,37 @@ export function ContractPipelineFlow({
         return;
       }
       
-      console.log('🔍 Chargement clients pour:', { userId: user.id });
+      // EXACTEMENT comme Clients.tsx - récupérer le cabinetId
+      const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
+      const cabinets = Array.isArray(cabinetsData) ? cabinetsData : [];
       
-      // Charger TOUS les clients du compte
+      if (cabinets.length === 0) {
+        console.log('⚠️ Utilisateur sans cabinet');
+        setClients([]);
+        setLoadingClients(false);
+        return;
+      }
+      
+      const matchingCabinet = cabinets.find((c: any) => c.role === role) || cabinets[0];
+      const cabinetId = matchingCabinet.id;
+      
+      console.log('🔍 Chargement clients pour:', { cabinetId, role });
+      
       const { data, error } = await supabase
         .from('clients')
         .select('id, nom, prenom, name, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession')
-        .eq('owner_id', user.id)
+        .eq('owner_id', cabinetId)
+        .eq('role', role)
         .order('nom', { ascending: true });
       
       if (error) {
         console.error('❌ Erreur chargement clients:', error);
         setClients([]);
       } else if (data) {
-        console.log(`✅ ${data.length} client(s) chargé(s) pour le rôle ${role}:`, data);
+        console.log(`✅ ${data.length} client(s) chargé(s):`, data);
         setClients(data);
         if (data.length === 0) {
-          console.warn(`⚠️ Aucun client trouvé pour le rôle ${role}. Allez dans "Mes Clients" pour en ajouter.`);
+          console.warn(`⚠️ Aucun client trouvé. Allez dans "Mes Clients" pour en ajouter.`);
         }
       }
     } catch (error) {
