@@ -67,12 +67,11 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
     }
     
     const fetchClients = async () => {
-      console.log('🔍 Chargement des clients pour userId:', userId, 'role:', role);
+      console.log('🔍 Chargement des clients pour userId:', userId);
       const { data, error } = await supabase
         .from('clients')
         .select('id, name, nom, prenom, id_doc_path, email, telephone, adresse, date_naissance, lieu_naissance, nationalite, profession, type_identite, numero_identite')
         .eq('owner_id', userId)
-        .eq('role', role)
         .order('name', { ascending: true });
       
       if (error) {

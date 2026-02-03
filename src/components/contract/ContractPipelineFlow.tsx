@@ -80,14 +80,13 @@ export function ContractPipelineFlow({
         return;
       }
       
-      console.log('🔍 Chargement clients pour:', { userId: user.id, role });
+      console.log('🔍 Chargement clients pour:', { userId: user.id });
       
-      // EXACTEMENT comme l'ancien système qui fonctionnait
+      // Charger TOUS les clients du compte
       const { data, error } = await supabase
         .from('clients')
         .select('id, nom, prenom, name, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession')
         .eq('owner_id', user.id)
-        .eq('role', role)
         .order('nom', { ascending: true });
       
       if (error) {
