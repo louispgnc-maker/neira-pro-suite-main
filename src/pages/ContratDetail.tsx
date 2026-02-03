@@ -43,6 +43,7 @@ export default function ContratDetail() {
   const [regenerating, setRegenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false); // État pour le chargement lors de la sauvegarde
   const [savingProgress, setSavingProgress] = useState(0); // Pourcentage de progression (0-100)
+  const [displayedProgress, setDisplayedProgress] = useState(0); // Pourcentage affiché avec animation
   const [clients, setClients] = useState<any[]>([]);
   
   // États pour l'édition des informations
@@ -60,6 +61,26 @@ export default function ContratDetail() {
   
   // Détecter les parties du contrat depuis le contenu
   const [contractParties, setContractParties] = useState<string[]>([]);
+
+  // Animation de la barre de progression
+  useEffect(() => {
+    if (savingProgress > displayedProgress) {
+      const timer = setInterval(() => {
+        setDisplayedProgress(prev => {
+          if (prev >= savingProgress) {
+            clearInterval(timer);
+            return savingProgress;
+          }
+          return prev + 1;
+        });
+      }, 15); // Animation rapide : 1% toutes les 15ms = 1.5s pour 0→100
+      
+      return () => clearInterval(timer);
+    } else if (savingProgress < displayedProgress) {
+      // Reset instantané si on redémarre
+      setDisplayedProgress(savingProgress);
+    }
+  }, [savingProgress, displayedProgress]);
 
   // Fonction pour régénérer le contrat avec l'IA
   const handleRegenerate = async () => {
@@ -371,6 +392,7 @@ export default function ContratDetail() {
         const parties = detectContractParties(updatedContent);
         setContractParties(parties);
       }
+        setDisplayedProgress(0);
       
       // Étape 7 : Finalisation (100%)
       setSavingProgress(100);
@@ -905,22 +927,22 @@ export default function ContratDetail() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900">Synchronisation en cours</h3>
               <p className="text-gray-600">
-                {savingProgress < 30 && "Validation des données..."}
-                {savingProgress >= 30 && savingProgress < 50 && "Préparation des informations..."}
-                {savingProgress >= 50 && savingProgress < 70 && "Complétion intelligente du contrat..."}
-                {savingProgress >= 70 && savingProgress < 85 && "Traitement final..."}
-                {savingProgress >= 85 && "Sauvegarde en cours..."}
+                {displayedProgress < 30 && "Validation des données..."}
+                {displayedProgress >= 30 && displayedProgress < 40 && "Préparation des informations..."}
+                {displayedProgress >= 40 && displayedProgress < 70 && "Complétion intelligente du contrat..."}
+                {displayedProgress >= 70 && displayedProgress < 85 && "Traitement final..."}
+                {displayedProgress >= 85 && "Sauvegarde en cours..."}
               </p>
               
               {/* Barre de progression réelle */}
               <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
                 <div 
-                  className="h-full bg-blue-600 rounded-full transition-all duration-500 ease-out" 
-                  style={{ width: `${savingProgress}%` }}
+                  className="h-full bg-blue-600 rounded-full transition-all duration-150 ease-linear" 
+                  style={{ width: `${displayedProgress}%` }}
                 />
               </div>
               
-              <p className="text-sm font-medium text-blue-600">{savingProgress}%</p>
+              <p className="text-sm font-medium text-blue-600">{displayedProgress}%</p>
             </div>
           </div>
         </div>
