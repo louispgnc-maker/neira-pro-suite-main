@@ -41,6 +41,7 @@ export default function ContratDetail() {
   const [isOwner, setIsOwner] = useState(true); // Par défaut, on suppose que c'est le propriétaire
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false); // État pour le chargement lors de la sauvegarde
   const [clients, setClients] = useState<any[]>([]);
   
   // États pour l'édition des informations
@@ -240,6 +241,8 @@ export default function ContratDetail() {
   const saveInfo = async () => {
     if (!contrat || !user) return;
     
+    setIsSaving(true); // Démarrer le chargement
+    
     // Validation : vérifier qu'un même client n'est pas assigné à plusieurs parties
     if (Object.keys(editedPartiesClients).length > 1) {
       const assignedClients = Object.values(editedPartiesClients).filter(id => id && id !== 'none');
@@ -247,6 +250,7 @@ export default function ContratDetail() {
       
       if (assignedClients.length !== uniqueClients.size) {
         toast.error("Un même client ne peut pas être assigné à plusieurs parties");
+        setIsSaving(false);
         return;
       }
     }
@@ -343,6 +347,8 @@ export default function ContratDetail() {
     } catch (error) {
       console.error('Erreur sauvegarde:', error);
       toast.error("Erreur lors de la sauvegarde");
+    } finally {
+      setIsSaving(false); // Arrêter le chargement
     }
   };
 
@@ -845,6 +851,28 @@ export default function ContratDetail() {
           </div>
         )}
       </div>
+      
+      {/* Overlay de chargement pour la sauvegarde */}
+      {isSaving && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 shadow-2xl max-w-md w-full mx-4">
+            <div className="text-center space-y-4">
+              <div className="flex justify-center">
+                <RefreshCw className="h-12 w-12 text-blue-600 animate-spin" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900">Synchronisation en cours</h3>
+              <p className="text-gray-600">Enregistrement des modifications...</p>
+              
+              {/* Barre de progression indéterminée */}
+              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div className="h-full bg-blue-600 rounded-full animate-pulse" style={{ width: '70%', animation: 'pulse 1.5s ease-in-out infinite' }} />
+              </div>
+              
+              <p className="text-sm text-gray-500">Veuillez patienter...</p>
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
   );
 }
