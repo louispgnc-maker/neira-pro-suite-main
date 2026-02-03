@@ -64,12 +64,12 @@ serve(async (req) => {
 
     // Mapping des quantités vers les price IDs Stripe LIVE (correspond aux vrais produits créés)
     const priceIdMap: Record<number, string> = {
-      1: 'price_1Sw3kM7epLIfQ2kHt1zfE9qT',      // Urgence - 1 signature - 3€
-      10: 'price_1Sw3kN7epLIfQ2kHeeQ9pRHx',     // Mini - 10 signatures - 20€
-      25: 'price_1Sw3kN7epLIfQ2kHARbz9fsy',     // Starter - 25 signatures - 30€
-      50: 'price_1Sw3kO7epLIfQ2kHv8V9wQHT',     // Pro - 50 signatures - 45€
-      100: 'price_1Sw3kP7epLIfQ2kHnaY2dWHL',    // Business - 100 signatures - 70€
-      250: 'price_1Sw3kQ7epLIfQ2kHs1GvAevQ'     // Enterprise - 250 signatures - 140€
+      1: 'price_1Swrvt7epLIfQ2kHBOcAc1J3',      // Unité - 1 signature - 1€
+      10: 'price_1SwrxA7epLIfQ2kHh8KZFaub',     // Mini - 10 signatures - 9€
+      20: 'price_1Swrxn7epLIfQ2kH4AXifZ05',     // Starter - 20 signatures - 17€
+      50: 'price_1Swryc7epLIfQ2kHeyuKLdwI',     // Pro - 50 signatures - 40€
+      100: 'price_1SwrzA7epLIfQ2kHccNp5mYp',    // Business - 100 signatures - 75€
+      250: 'price_1Swrzo7epLIfQ2kHUQkGFuLT'     // Enterprise - 250 signatures - 175€
     };
 
     const priceId = priceIdMap[quantity];
