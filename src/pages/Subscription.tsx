@@ -66,12 +66,12 @@ const plans = [
       '100 Go de stockage',
       '600 dossiers actifs',
       '200 clients actifs',
-      '40 signatures / mois',
+      '35 signatures / mois',
       'Espace collaboratif complet',
       'Gestion documentaire avancée',
       'Tableaux de bord'
     ],
-    limits: '100 Go • 600 dossiers • 200 clients • 40 signatures/mois',
+    limits: '100 Go • 600 dossiers • 200 clients • 35 signatures/mois',
     notIncluded: [],
     icon: Crown,
     color: 'text-purple-600',
@@ -91,7 +91,7 @@ const plans = [
       'Stockage illimité',
       'Dossiers illimités',
       'Clients illimités',
-      '100 signatures / mois / utilisateur',
+      '70 signatures / mois / utilisateur',
       'Collaboration sans limite',
       'Tableaux de bord avancés',
       'Onboarding & formation de l\'équipe',
@@ -630,7 +630,7 @@ export default function Subscription() {
                                                 isEssentiel ? 'border-blue-200' : 'border-purple-200'
                                               }`}>
                                                 <p className="text-xs font-semibold text-green-700 mb-1.5">
-                                                  ✅ Limite de {isEssentiel ? '15' : '40'} signatures/mois prise en charge
+                                                  ✅ Limite de {isEssentiel ? '15' : '35'} signatures/mois prise en charge
                                                 </p>
                                                 <p className={`text-xs font-semibold mb-1.5 ${
                                                   isEssentiel ? 'text-blue-800' : 'text-purple-800'

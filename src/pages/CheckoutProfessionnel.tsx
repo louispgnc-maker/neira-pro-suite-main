@@ -198,7 +198,7 @@ export default function CheckoutProfessionnel() {
             <Card className="lg:col-span-2 bg-white/90 backdrop-blur">
               <CardContent className="p-6">
                 <h3 className="font-semibold text-gray-900 mb-3">Caractéristiques</h3>
-                <p className="text-sm text-gray-700">100 Go • 600 dossiers • 200 clients • 40 signatures/mois/utilisateur</p>
+                <p className="text-sm text-gray-700">100 Go • 600 dossiers • 200 clients • 35 signatures/mois/utilisateur</p>
               </CardContent>
             </Card>
           </div>
@@ -237,7 +237,7 @@ export default function CheckoutProfessionnel() {
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-medium text-gray-900 text-sm">40 signatures / mois / utilisateur</h4>
+                        <h4 className="font-medium text-gray-900 text-sm">35 signatures / mois / utilisateur</h4>
                         <p className="text-xs text-gray-600 mt-0.5">Packs optionnels disponibles</p>
                       </div>
                     </div>

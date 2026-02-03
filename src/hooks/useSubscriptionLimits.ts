@@ -24,14 +24,14 @@ const PLAN_LIMITS: Record<string, Omit<SubscriptionLimits, 'loading'>> = {
     max_storage_bytes: 100 * 1024 * 1024 * 1024, // 100 Go
     max_dossiers: 600,
     max_clients: 200,
-    max_signatures_per_month: 40,
+    max_signatures_per_month: 35,
   },
   'cabinet-plus': {
     subscription_plan: 'cabinet-plus',
     max_storage_bytes: null, // illimité
     max_dossiers: null,
     max_clients: null,
-    max_signatures_per_month: 100,
+    max_signatures_per_month: 70,
   },
 };
 

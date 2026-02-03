@@ -432,7 +432,7 @@ export default function Index() {
                 </div>
               </div>
               <ul className="space-y-4 mb-8">
-                {["100 Go de stockage", "600 dossiers actifs", "200 clients actifs", "40 signatures/mois/utilisateur", "Espace collaboratif complet", "Gestion documentaire avancée", "Tableaux de bord"].map((feature, i) => (
+                {["100 Go de stockage", "600 dossiers actifs", "200 clients actifs", "35 signatures/mois/utilisateur", "Espace collaboratif complet", "Gestion documentaire avancée", "Tableaux de bord"].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <span className="text-gray-700">{feature}</span>

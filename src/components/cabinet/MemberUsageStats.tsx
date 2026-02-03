@@ -31,8 +31,8 @@ interface UsageData {
 
 const PLAN_LIMITS: Record<string, { dossiers: number; clients: number; signatures: number; storage: number }> = {
   'essentiel': { dossiers: 100, clients: 30, signatures: 15, storage: 20 },
-  'professionnel': { dossiers: 600, clients: 200, signatures: 40, storage: 100 },
-  'cabinet-plus': { dossiers: 999999, clients: 999999, signatures: 100, storage: 999999 },
+  'professionnel': { dossiers: 600, clients: 200, signatures: 35, storage: 100 },
+  'cabinet-plus': { dossiers: 999999, clients: 999999, signatures: 70, storage: 999999 },
 };
 
 export function MemberUsageStats({ userId, cabinetId, subscriptionPlan, role }: MemberUsageStatsProps) {
