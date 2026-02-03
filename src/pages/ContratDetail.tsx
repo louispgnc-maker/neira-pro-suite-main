@@ -408,8 +408,17 @@ export default function ContratDetail() {
         .maybeSingle();
 
       if (!error && cData && mounted) {
-        setContrat(cData as Contrat);
+        const loadedContrat = cData as Contrat;
+        setContrat(loadedContrat);
         setIsOwner(true); // C'est bien le propriétaire
+        
+        // Détecter les parties dès le chargement
+        if (loadedContrat.contenu_json?.client_roles && Array.isArray(loadedContrat.contenu_json.client_roles)) {
+          setContractParties(loadedContrat.contenu_json.client_roles.slice(0, 5));
+        } else if (loadedContrat.content) {
+          const parties = detectContractParties(loadedContrat.content);
+          setContractParties(parties);
+        }
       } else {
         // Fallback: maybe this contract was shared to the cabinet. Try cabinet_contrats (visible to active members)
         try {
@@ -429,7 +438,16 @@ export default function ContratDetail() {
                 .maybeSingle();
 
               if (!origErr && originalContrat && mounted) {
-                setContrat(originalContrat as Contrat);
+                const loadedContrat = originalContrat as Contrat;
+                setContrat(loadedContrat);
+                
+                // Détecter les parties dès le chargement (contrat partagé)
+                if (loadedContrat.contenu_json?.client_roles && Array.isArray(loadedContrat.contenu_json.client_roles)) {
+                  setContractParties(loadedContrat.contenu_json.client_roles.slice(0, 5));
+                } else if (loadedContrat.content) {
+                  const parties = detectContractParties(loadedContrat.content);
+                  setContractParties(parties);
+                }
               } else {
                 // Fallback si le contrat original n'existe plus
                 setContrat({
@@ -561,17 +579,42 @@ export default function ContratDetail() {
                         {contrat.category || '—'}
                       </Badge>
                     </div>
-                    <div>
-                      <div className="text-sm text-gray-600">Client assigné</div>
-                      <div className="font-medium">
-                        {contrat.client_id ? (
-                          (() => {
-                            const client = clients.find(c => c.id === contrat.client_id);
-                            return client ? `${client.nom}${client.prenom ? ' ' + client.prenom : ''}` : '—';
-                          })()
-                        ) : '—'}
+                    
+                    {/* Affichage clients assignés par partie */}
+                    {contractParties.length > 0 ? (
+                      <div className="md:col-span-2">
+                        <div className="text-sm text-gray-600 mb-2">Clients assignés</div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {contractParties.map((party, index) => {
+                            const assignedClientId = contrat.parties_clients?.[party];
+                            const client = assignedClientId ? clients.find(c => c.id === assignedClientId) : null;
+                            return (
+                              <div key={index} className="p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200">
+                                <div className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1">
+                                  👤 {party}
+                                </div>
+                                <div className="font-medium">
+                                  {client ? `${client.prenom || ''} ${client.nom || ''} ${client.email ? `(${client.email})` : ''}`.trim() : '— Non assigné —'}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div>
+                        <div className="text-sm text-gray-600">Client assigné</div>
+                        <div className="font-medium">
+                          {contrat.client_id ? (
+                            (() => {
+                              const client = clients.find(c => c.id === contrat.client_id);
+                              return client ? `${client.nom}${client.prenom ? ' ' + client.prenom : ''}` : '—';
+                            })()
+                          ) : '—'}
+                        </div>
+                      </div>
+                    )}
+                    
                     <div className="md:col-span-2">
                       <div className="text-sm text-gray-600">Type</div>
                       <div className="font-medium">{contrat.type || '—'}</div>
