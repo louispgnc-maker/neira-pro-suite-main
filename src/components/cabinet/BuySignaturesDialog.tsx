@@ -27,31 +27,31 @@ type BuySignaturesDialogProps = {
 
 const packagesConfig = {
   essentiel: [
-    { quantity: 10, price: 20, label: 'Mini - 10 Signatures' },
-    { quantity: 25, price: 30, label: 'Starter - 25 Signatures' },
-    { quantity: 50, price: 45, label: 'Pro ⭐ - 50 Signatures' },
-    { quantity: 100, price: 70, label: 'Business - 100 Signatures' },
-    { quantity: 250, price: 140, label: 'Enterprise - 250 Signatures' }
+    { quantity: 10, price: 9, label: 'Mini - 10 Signatures' },
+    { quantity: 20, price: 17, label: 'Starter - 20 Signatures' },
+    { quantity: 50, price: 40, label: 'Pro ⭐ - 50 Signatures' },
+    { quantity: 100, price: 75, label: 'Business - 100 Signatures' },
+    { quantity: 250, price: 175, label: 'Enterprise - 250 Signatures' }
   ],
   professionnel: [
-    { quantity: 10, price: 20, label: 'Mini - 10 Signatures' },
-    { quantity: 25, price: 30, label: 'Starter - 25 Signatures' },
-    { quantity: 50, price: 45, label: 'Pro ⭐ - 50 Signatures' },
-    { quantity: 100, price: 70, label: 'Business - 100 Signatures' },
-    { quantity: 250, price: 140, label: 'Enterprise - 250 Signatures' }
+    { quantity: 10, price: 9, label: 'Mini - 10 Signatures' },
+    { quantity: 20, price: 17, label: 'Starter - 20 Signatures' },
+    { quantity: 50, price: 40, label: 'Pro ⭐ - 50 Signatures' },
+    { quantity: 100, price: 75, label: 'Business - 100 Signatures' },
+    { quantity: 250, price: 175, label: 'Enterprise - 250 Signatures' }
   ],
   'cabinet-plus': [
-    { quantity: 10, price: 20, label: 'Mini - 10 Signatures' },
-    { quantity: 25, price: 30, label: 'Starter - 25 Signatures' },
-    { quantity: 50, price: 45, label: 'Pro ⭐ - 50 Signatures' },
-    { quantity: 100, price: 70, label: 'Business - 100 Signatures' },
-    { quantity: 250, price: 140, label: 'Enterprise - 250 Signatures' }
+    { quantity: 10, price: 9, label: 'Mini - 10 Signatures' },
+    { quantity: 20, price: 17, label: 'Starter - 20 Signatures' },
+    { quantity: 50, price: 40, label: 'Pro ⭐ - 50 Signatures' },
+    { quantity: 100, price: 75, label: 'Business - 100 Signatures' },
+    { quantity: 250, price: 175, label: 'Enterprise - 250 Signatures' }
   ]
 };
 
 const emergencyPackage: SignaturePackage = {
   quantity: 1,
-  price: 3,
+  price: 1,
   label: '🆘 Urgence - 1 Signature',
   isEmergency: true
 };
