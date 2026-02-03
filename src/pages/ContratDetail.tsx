@@ -44,6 +44,7 @@ export default function ContratDetail() {
   const [isSaving, setIsSaving] = useState(false); // État pour le chargement lors de la sauvegarde
   const [savingProgress, setSavingProgress] = useState(0); // Pourcentage de progression (0-100)
   const [displayedProgress, setDisplayedProgress] = useState(0); // Pourcentage affiché avec animation
+  const [waitingProgress, setWaitingProgress] = useState<number | null>(null); // Progression cible pendant l'attente AI
   const [clients, setClients] = useState<any[]>([]);
   
   // États pour l'édition des informations
@@ -64,23 +65,26 @@ export default function ContratDetail() {
 
   // Animation de la barre de progression
   useEffect(() => {
-    if (savingProgress > displayedProgress) {
+    // Déterminer la cible : soit waitingProgress (en attente AI), soit savingProgress (normal)
+    const targetProgress = waitingProgress !== null ? waitingProgress : savingProgress;
+    
+    if (targetProgress > displayedProgress) {
       const timer = setInterval(() => {
         setDisplayedProgress(prev => {
-          if (prev >= savingProgress) {
+          if (prev >= targetProgress) {
             clearInterval(timer);
-            return savingProgress;
+            return targetProgress;
           }
           return prev + 1;
         });
-      }, 15); // Animation rapide : 1% toutes les 15ms = 1.5s pour 0→100
+      }, 15); // Animation rapide : 1% toutes les 15ms
       
       return () => clearInterval(timer);
-    } else if (savingProgress < displayedProgress) {
-      // Reset instantané si on redémarre
-      setDisplayedProgress(savingProgress);
+    } else if (targetProgress < displayedProgress && savingProgress === 0) {
+      // Reset uniquement si savingProgress est à 0 (nouveau démarrage)
+      setDisplayedProgress(0);
     }
-  }, [savingProgress, displayedProgress]);
+  }, [savingProgress, displayedProgress, waitingProgress]);
 
   // Fonction pour régénérer le contrat avec l'IA
   const handleRegenerate = async () => {
@@ -265,6 +269,10 @@ export default function ContratDetail() {
     
     setIsSaving(true); // Démarrer le chargement
     setSavingProgress(0); // Réinitialiser la progression
+    setWaitingProgress(null); // Reset waiting
+    
+    // Générer un nombre aléatoire entre 70 et 90 pour l'attente
+    const randomWaitingTarget = Math.floor(Math.random() * 21) + 70; // 70-90
     
     // Étape 1 : Validation (10%)
     setSavingProgress(10);
@@ -310,8 +318,9 @@ export default function ContratDetail() {
             }
           }
           
-          // Étape 4 : Appel IA (40%)
+          // Étape 4 : Appel IA - Définir la cible d'attente
           setSavingProgress(40);
+          setWaitingProgress(randomWaitingTarget); // La barre s'arrêtera ici
           
           // Appeler l'Edge Function pour compléter avec l'IA
           try {
@@ -334,22 +343,26 @@ export default function ContratDetail() {
               console.log('✅ Contrat complété par l\'IA');
             }
             
-            // Étape 5 : IA terminée (70%)
-            setSavingProgress(70);
+            // Étape 5 : IA terminée - Retirer le waitingProgress et continuer jusqu'à 100
+            setWaitingProgress(null);
+            setSavingProgress(randomWaitingTarget); // Partir de là où on s'est arrêté
             
           } catch (aiError: any) {
             console.error('❌ Erreur appel IA:', aiError);
             toast.error("Impossible de compléter automatiquement le contrat");
             // Continuer quand même pour sauvegarder
-            setSavingProgress(70);
+            setWaitingProgress(null);
+            setSavingProgress(randomWaitingTarget);
           }
         } else {
-          // Pas de [À COMPLÉTER] ou pas de clients assignés, passer directement à 70%
-          setSavingProgress(70);
+          // Pas de [À COMPLÉTER] ou pas de clients assignés, passer directement
+          setWaitingProgress(null);
+          setSavingProgress(randomWaitingTarget);
         }
       } else {
-        // Pas de système multi-parties, passer directement à 70%
-        setSavingProgress(70);
+        // Pas de système multi-parties, passer directement
+        setWaitingProgress(null);
+        setSavingProgress(randomWaitingTarget);
       }
       
       // Étape 6 : Sauvegarde en base (85%)
@@ -392,13 +405,7 @@ export default function ContratDetail() {
         const parties = detectContractParties(updatedContent);
         setContractParties(parties);
       }
-        setDisplayedProgress(0);
       
-      // Étape 7 : Finalisation (100%)
-      setSavingProgress(100);
-      
-      setEditingInfo(false);
-      toast.success("Informations mises à jour");
       // Étape 7 : Finalisation (100%)
       setSavingProgress(100);
       
@@ -413,6 +420,8 @@ export default function ContratDetail() {
       setTimeout(() => {
         setIsSaving(false);
         setSavingProgress(0);
+        setDisplayedProgress(0);
+        setWaitingProgress(null);
       }, 500);
     }
   };
