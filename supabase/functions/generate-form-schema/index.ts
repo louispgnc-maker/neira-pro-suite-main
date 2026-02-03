@@ -282,6 +282,72 @@ PRESTATION DE SERVICES:
     { "id": "objet_prestation", "label": "Objet de la prestation", "type": "textarea", "required": true },
     { "id": "prix", "label": "Prix de la prestation (€)", "type": "number", "required": true }
   ]
+}
+
+DONATION (Notaire):
+{
+  "client_roles": ["Le donateur", "Le donataire"],  // ⚠️ OBLIGATOIRE
+  "fields": [
+    { "id": "nature_bien", "label": "Nature du bien donné", "type": "textarea", "required": true },
+    { "id": "valeur_bien", "label": "Valeur estimée (€)", "type": "number", "required": true },
+    { "id": "charge_usufruit", "label": "Réserve d'usufruit", "type": "select", "options": ["Oui", "Non"], "required": true }
+  ]
+}
+
+CONTRAT DE MARIAGE (Notaire):
+{
+  "client_roles": ["Époux 1", "Époux 2"],  // ⚠️ OBLIGATOIRE
+  "fields": [
+    { "id": "regime", "label": "Régime matrimonial", "type": "select", "options": ["Séparation de biens", "Communauté universelle", "Participation aux acquêts"], "required": true },
+    { "id": "date_mariage", "label": "Date du mariage", "type": "date", "required": true }
+  ]
+}
+
+PACS (Notaire):
+{
+  "client_roles": ["Partenaire 1", "Partenaire 2"],  // ⚠️ OBLIGATOIRE
+  "fields": [
+    { "id": "regime_biens", "label": "Régime des biens", "type": "select", "options": ["Séparation de biens", "Indivision"], "required": true },
+    { "id": "residence_commune", "label": "Adresse de la résidence commune", "type": "textarea", "required": true }
+  ]
+}
+
+SUCCESSION (Notaire):
+{
+  "client_roles": ["Le défunt", "Les héritiers"],  // ⚠️ OBLIGATOIRE
+  "fields": [
+    { "id": "date_deces", "label": "Date du décès", "type": "date", "required": true },
+    { "id": "actif_succession", "label": "Description de l'actif successoral", "type": "textarea", "required": true }
+  ]
+}
+
+CRÉATION SOCIÉTÉ (Avocat):
+{
+  "client_roles": ["Les associés fondateurs"],  // ⚠️ OBLIGATOIRE (peut être 1+ personnes)
+  "fields": [
+    { "id": "forme_juridique", "label": "Forme juridique", "type": "select", "options": ["SAS", "SARL", "SCI", "EURL", "SASU"], "required": true },
+    { "id": "capital_social", "label": "Montant du capital social (€)", "type": "number", "required": true },
+    { "id": "objet_social", "label": "Objet social", "type": "textarea", "required": true }
+  ]
+}
+
+CESSION PARTS SOCIALES (Avocat):
+{
+  "client_roles": ["Le cédant", "Le cessionnaire"],  // ⚠️ OBLIGATOIRE
+  "fields": [
+    { "id": "societe", "label": "Dénomination de la société", "type": "text", "required": true },
+    { "id": "nb_parts", "label": "Nombre de parts cédées", "type": "number", "required": true },
+    { "id": "prix_cession", "label": "Prix de cession (€)", "type": "number", "required": true }
+  ]
+}
+
+DIVORCE/SÉPARATION (Avocat):
+{
+  "client_roles": ["Époux 1", "Époux 2"],  // ⚠️ OBLIGATOIRE
+  "fields": [
+    { "id": "type_divorce", "label": "Type de divorce", "type": "select", "options": ["Consentement mutuel", "Faute", "Altération du lien"], "required": true },
+    { "id": "enfants", "label": "Nombre d'enfants mineurs", "type": "number", "required": false }
+  ]
 }`
 
     const userPrompt = `Type de contrat: ${contractType}
@@ -292,9 +358,16 @@ Description/Besoin spécifique: ${description || 'Formulaire standard'}
 Exemples de client_roles selon le type:
 - Franchise → ["Le franchiseur", "Le franchisé"]
 - Travail → ["L'employeur", "Le salarié"]
-- Vente → ["Le vendeur", "L'acquéreur"]
+- Vente/Compromis → ["Le vendeur", "L'acquéreur"]
 - Bail → ["Le bailleur", "Le locataire"]
 - Prestation → ["Le prestataire", "Le client"]
+- Donation → ["Le donateur", "Le donataire"]
+- Mariage → ["Époux 1", "Époux 2"]
+- PACS → ["Partenaire 1", "Partenaire 2"]
+- Succession → ["Le défunt", "Les héritiers"]
+- Société → ["Les associés fondateurs"]
+- Cession parts → ["Le cédant", "Le cessionnaire"]
+- Divorce → ["Époux 1", "Époux 2"]
 
 Génère le schéma JSON du formulaire optimal pour ce contrat.
 Retourne UNIQUEMENT le JSON, sans texte avant ou après.`
