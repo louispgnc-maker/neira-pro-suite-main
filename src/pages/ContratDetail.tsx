@@ -240,6 +240,17 @@ export default function ContratDetail() {
   const saveInfo = async () => {
     if (!contrat || !user) return;
     
+    // Validation : vérifier qu'un même client n'est pas assigné à plusieurs parties
+    if (Object.keys(editedPartiesClients).length > 1) {
+      const assignedClients = Object.values(editedPartiesClients).filter(id => id && id !== 'none');
+      const uniqueClients = new Set(assignedClients);
+      
+      if (assignedClients.length !== uniqueClients.size) {
+        toast.error("Un même client ne peut pas être assigné à plusieurs parties");
+        return;
+      }
+    }
+    
     try {
       let updatedContent = contrat.content || '';
       
@@ -677,34 +688,46 @@ export default function ContratDetail() {
                       <div className="md:col-span-2 space-y-3">
                         <label className="text-sm font-semibold text-gray-700">Clients assignés par partie</label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                          {contractParties.map((party, index) => (
-                            <div key={index}>
-                              <label className="text-sm text-gray-600 mb-1 block">
-                                👤 {party}
-                              </label>
-                              <Select 
-                                value={editedPartiesClients[party] || "none"} 
-                                onValueChange={(value) => {
-                                  setEditedPartiesClients(prev => ({
-                                    ...prev,
-                                    [party]: value === 'none' ? '' : value
-                                  }));
-                                }}
-                              >
-                                <SelectTrigger className="bg-white dark:bg-gray-900">
-                                  <SelectValue placeholder="Sélectionner un client" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="none">— Aucun client —</SelectItem>
-                                  {clients.map(client => (
-                                    <SelectItem key={client.id} value={client.id}>
-                                      {client.prenom || ''} {client.nom || ''} {client.email && `(${client.email})`}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          ))}
+                          {contractParties.map((party, index) => {
+                            // Filtrer les clients déjà assignés à d'autres parties
+                            const assignedClientIds = Object.entries(editedPartiesClients)
+                              .filter(([p, _]) => p !== party)
+                              .map(([_, clientId]) => clientId)
+                              .filter(Boolean);
+                            
+                            const availableClients = clients.filter(
+                              client => !assignedClientIds.includes(client.id)
+                            );
+                            
+                            return (
+                              <div key={index}>
+                                <label className="text-sm text-gray-600 mb-1 block">
+                                  👤 {party}
+                                </label>
+                                <Select 
+                                  value={editedPartiesClients[party] || "none"} 
+                                  onValueChange={(value) => {
+                                    setEditedPartiesClients(prev => ({
+                                      ...prev,
+                                      [party]: value === 'none' ? '' : value
+                                    }));
+                                  }}
+                                >
+                                  <SelectTrigger className="bg-white dark:bg-gray-900">
+                                    <SelectValue placeholder="Sélectionner un client" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="none">— Aucun client —</SelectItem>
+                                    {availableClients.map(client => (
+                                      <SelectItem key={client.id} value={client.id}>
+                                        {client.prenom || ''} {client.nom || ''} {client.email && `(${client.email})`}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     ) : (
