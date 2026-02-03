@@ -254,261 +254,52 @@ export default function ContratDetail() {
     try {
       let updatedContent = contrat.content || '';
       
-      // Si on utilise le système multi-parties
+      // Si on utilise le système multi-parties ET qu'il y a des clients assignés
       if (Object.keys(editedPartiesClients).length > 0) {
-        // ÉTAPE 1 : Remplacer les anciennes infos clients par les nouvelles (si le client a changé)
-        const oldPartiesClients = contrat.parties_clients || {};
+        const hasAssignedClients = Object.values(editedPartiesClients).some(id => id && id !== 'none');
         
-        for (const [partyName, newClientId] of Object.entries(editedPartiesClients)) {
-          const oldClientId = oldPartiesClients[partyName];
+        if (hasAssignedClients && updatedContent.includes('[À COMPLÉTER]')) {
+          console.log('🤖 Appel de l\'IA pour compléter le contrat avec les clients assignés...');
           
-          // Si le client a changé et qu'il y avait un ancien client
-          if (oldClientId && oldClientId !== newClientId && newClientId) {
-            const oldClientInfo = getClientInfo(oldClientId, clients);
-            const newClientInfo = getClientInfo(newClientId, clients);
-            
-            if (oldClientInfo && newClientInfo) {
-              // Remplacer les anciennes valeurs par les nouvelles
-              if (oldClientInfo.nom && newClientInfo.nom) {
-                const oldFullName = `${oldClientInfo.prenom || ''} ${oldClientInfo.nom}`.trim();
-                const newFullName = `${newClientInfo.prenom || ''} ${newClientInfo.nom}`.trim();
-                updatedContent = updatedContent.replace(new RegExp(oldFullName, 'g'), newFullName);
-              }
-              
-              if (oldClientInfo.adresse && newClientInfo.adresse) {
-                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.adresse, 'g'), newClientInfo.adresse);
-              }
-              
-              if (oldClientInfo.date_naissance && newClientInfo.date_naissance) {
-                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.date_naissance, 'g'), newClientInfo.date_naissance);
-              }
-              
-              if (oldClientInfo.nationalite && newClientInfo.nationalite) {
-                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.nationalite, 'g'), newClientInfo.nationalite);
-              }
-              
-              if (oldClientInfo.telephone && newClientInfo.telephone) {
-                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.telephone, 'g'), newClientInfo.telephone);
-              }
-              
-              if (oldClientInfo.email && newClientInfo.email) {
-                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.email, 'g'), newClientInfo.email);
-              }
-              
-              if (oldClientInfo.profession && newClientInfo.profession) {
-                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.profession, 'g'), newClientInfo.profession);
-              }
-            }
-          }
-        }
-        
-        // ÉTAPE 2 : Remplacer les [À COMPLÉTER] restants
-        updatedContent = updatedContent.replace(/\[À COMPLÉTER\]/g, (match, offset) => {
-          // Chercher dans les 1500 caractères avant le placeholder (contexte élargi)
-          const contextBefore = updatedContent.substring(Math.max(0, offset - 1500), offset);
-          
-          // Trouver quelle partie est mentionnée en dernier (la plus proche)
-          let selectedClientId: string | null = null;
-          let selectedPartyName: string | null = null;
-          let lastMentionPosition = -1;
+          // Préparer les infos clients pour chaque partie
+          const partiesClientsInfo: Record<string, any> = {};
           
           for (const [partyName, clientId] of Object.entries(editedPartiesClients)) {
-            if (!clientId) continue; // Skip les parties sans client assigné
-            
-            const contextLower = contextBefore.toLowerCase();
-            
-            // Chercher plusieurs variantes du nom de partie
-            const partyVariants = [
-              partyName.toLowerCase(), // "le franchiseur"
-              partyName.toLowerCase().replace(/^(le|la|l'|les)\s+/i, ''), // "franchiseur"
-              partyName.toLowerCase().replace(/\s+/g, ''), // "lefranchiseur"
-            ];
-            
-            let bestPosition = -1;
-            for (const variant of partyVariants) {
-              const position = contextLower.lastIndexOf(variant);
-              if (position > bestPosition) {
-                bestPosition = position;
+            if (clientId && clientId !== 'none') {
+              const clientInfo = getClientInfo(clientId, clients);
+              if (clientInfo) {
+                partiesClientsInfo[partyName] = clientInfo;
               }
             }
+          }
+          
+          // Appeler l'Edge Function pour compléter avec l'IA
+          try {
+            const { data: functionData, error: functionError } = await supabase.functions.invoke(
+              'complete-contract-with-clients',
+              {
+                body: {
+                  contractContent: updatedContent,
+                  partiesClients: partiesClientsInfo,
+                }
+              }
+            );
             
-            if (bestPosition > lastMentionPosition) {
-              lastMentionPosition = bestPosition;
-              selectedClientId = clientId;
-              selectedPartyName = partyName;
+            if (functionError) {
+              console.error('❌ Erreur Edge Function:', functionError);
+              toast.error("Erreur lors de la complétion automatique du contrat");
+            } else if (functionData?.completedContract) {
+              updatedContent = functionData.completedContract;
+              console.log('✅ Contrat complété par l\'IA');
             }
+          } catch (aiError: any) {
+            console.error('❌ Erreur appel IA:', aiError);
+            toast.error("Impossible de compléter automatiquement le contrat");
           }
-          
-          // Si aucune partie trouvée dans le contexte, on garde [À COMPLÉTER]
-          if (!selectedClientId) {
-            console.log('⚠️ Aucune partie détectée pour ce [À COMPLÉTER] - conservation du placeholder');
-            return '[À COMPLÉTER]';
-          }
-          
-          const clientInfo = getClientInfo(selectedClientId, clients);
-          if (!clientInfo) {
-            console.log(`⚠️ Client non trouvé pour ${selectedPartyName} - conservation du placeholder`);
-            return '[À COMPLÉTER]';
-          }
-          
-          console.log(`✅ Remplacement pour ${selectedPartyName} avec client ${clientInfo.prenom} ${clientInfo.nom}`);
-          
-          // Analyser les 200 caractères juste avant pour savoir quel champ mettre
-          const immediateContext = updatedContent.substring(Math.max(0, offset - 200), offset);
-          
-          // PATTERNS TRÈS SPÉCIFIQUES - ordre important!
-          
-          // 1. Date de naissance (doit être AVANT les autres patterns "né")
-          if (immediateContext.match(/né\s*\(?\s*e?\s*\)?\s*le\s*$/i)) {
-            return clientInfo.date_naissance || '[À COMPLÉTER]';
-          }
-          
-          // 2. Lieu de naissance (après "à" qui suit "né")
-          if (immediateContext.match(/né.*à\s*$/i)) {
-            return clientInfo.lieu_naissance || '[À COMPLÉTER]';
-          }
-          
-          // 3. Nationalité
-          if (immediateContext.match(/(?:de\s+)?nationalité\s*$/i)) {
-            return clientInfo.nationalite || '[À COMPLÉTER]';
-          }
-          
-          // 4. Adresse / domicile
-          if (immediateContext.match(/(?:demeurant|domicilié|sise?)\s+(?:à|au)?\s*$/i)) {
-            return clientInfo.adresse || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/(?:^|[^a-zà-ÿ])adresse\s*:?\s*$/i)) {
-            return clientInfo.adresse || '[À COMPLÉTER]';
-          }
-          
-          // 5. Code postal / Ville / Pays
-          if (immediateContext.match(/code\s*postal\s*:?\s*$/i)) {
-            return clientInfo.code_postal || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/\bville\s*:?\s*$/i)) {
-            return clientInfo.ville || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/\bpays\s*:?\s*$/i)) {
-            return clientInfo.pays || '[À COMPLÉTER]';
-          }
-          
-          // 6. Contact
-          if (immediateContext.match(/(?:téléphone|tél\.?|portable|mobile)\s*:?\s*$/i)) {
-            return clientInfo.telephone || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/(?:e-?mail|courriel)\s*:?\s*$/i)) {
-            return clientInfo.email || '[À COMPLÉTER]';
-          }
-          
-          // 7. Sexe / Genre
-          if (immediateContext.match(/(?:sexe|genre)\s*:?\s*$/i)) {
-            return clientInfo.sexe || '[À COMPLÉTER]';
-          }
-          
-          // 8. État civil / Situation matrimoniale
-          if (immediateContext.match(/(?:état|etat)\s+civil\s*:?\s*$/i)) {
-            return clientInfo.etat_civil || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/(?:régime|regime)\s+matrimonial\s*:?\s*$/i)) {
-            return clientInfo.situation_matrimoniale || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/situation\s+matrimoniale\s*:?\s*$/i)) {
-            return clientInfo.situation_matrimoniale || '[À COMPLÉTER]';
-          }
-          
-          // 9. Pièce d'identité
-          if (immediateContext.match(/type\s+(?:de\s+)?(?:pièce|piece)\s+(?:d')?identité\s*:?\s*$/i)) {
-            return clientInfo.type_identite || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/numéro\s+(?:de\s+)?(?:pièce|piece)\s*:?\s*$/i)) {
-            return clientInfo.numero_identite || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/(?:délivr|delivr|expir).*le\s*$/i)) {
-            return clientInfo.date_expiration_identite || '[À COMPLÉTER]';
-          }
-          
-          // 10. Profession/qualité
-          if (immediateContext.match(/(?:profession|qualité|activité|fonction)\s+(?:de\s+)?$/i)) {
-            return clientInfo.profession || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/employeur\s*:?\s*$/i)) {
-            return clientInfo.employeur || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/adresse\s+professionnelle\s*:?\s*$/i)) {
-            return clientInfo.adresse_professionnelle || '[À COMPLÉTER]';
-          }
-          
-          // 11. Nom de naissance
-          if (immediateContext.match(/nom\s+de\s+naissance\s*:?\s*$/i)) {
-            return clientInfo.nom_naissance || '[À COMPLÉTER]';
-          }
-          
-          // 12. Prénom seul
-          if (immediateContext.match(/prénom\s*:?\s*$/i)) {
-            return clientInfo.prenom || '[À COMPLÉTER]';
-          }
-          
-          // 13. Nom seul (mais PAS dans "dénommé" ni "nom de naissance")
-          if (immediateContext.match(/\bnom\s*:?\s*$/i) && !immediateContext.match(/dénomm|naissance/i)) {
-            return clientInfo.nom || '[À COMPLÉTER]';
-          }
-          
-          // 14. Nom complet (représenté par, dénommé, etc.)
-          if (immediateContext.match(/(?:représent|dénomm|désign|soussign|ci-après)\w*\s*$/i)) {
-            const fullName = `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim();
-            return fullName || '[À COMPLÉTER]';
-          }
-          
-          // 15. Société
-          if (immediateContext.match(/(?:société|entreprise|raison\s+sociale)\s*$/i)) {
-            return clientInfo.nom_entreprise || clientInfo.nom || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/siret\s*:?\s*$/i)) {
-            return clientInfo.siret || '[À COMPLÉTER]';
-          }
-          if (immediateContext.match(/(?:immatricul|rcs)\s*$/i)) {
-            return clientInfo.ville_rcs || '[À COMPLÉTER]';
-          }
-          
-          // Fallback : si on ne sait pas quel champ, mettre le nom complet ou garder [À COMPLÉTER]
-          const fullName = `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim();
-          return fullName || '[À COMPLÉTER]';
-        });
-      }
-      // Ancien système avec client_id unique (rétro-compatibilité)
-      else if (editedClientId && editedClientId !== 'none') {
-        const clientInfo = getClientInfo(editedClientId, clients);
-        if (clientInfo) {
-          updatedContent = updatedContent.replace(/\[À COMPLÉTER\]/g, (match, offset, string) => {
-            const before = string.substring(Math.max(0, offset - 50), offset).toLowerCase();
-            
-            if (before.includes('nom')) {
-              return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
-            }
-            if (before.includes('adresse') || before.includes('domicilié')) {
-              return clientInfo.adresse || match;
-            }
-            if (before.includes('né le') || before.includes('naissance')) {
-              return clientInfo.date_naissance || match;
-            }
-            if (before.includes('nationalité')) {
-              return clientInfo.nationalite || match;
-            }
-            if (before.includes('téléphone')) {
-              return clientInfo.telephone || match;
-            }
-            if (before.includes('email')) {
-              return clientInfo.email || match;
-            }
-            if (before.includes('profession')) {
-              return clientInfo.profession || match;
-            }
-            
-            return match;
-          });
         }
       }
       
+      // Sauvegarder dans la base de données
       const { error } = await supabase
         .from('contrats')
         .update({
