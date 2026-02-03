@@ -368,10 +368,13 @@ export default function CheckoutCabinetPlus() {
                                 <Info className="w-4 h-4 text-orange-600 cursor-help" />
                               </TooltipTrigger>
                               <TooltipContent className="max-w-xs">
-                                <p className="text-xs"><strong>1 signature = 1 signataire</strong></p>
-                                <p className="text-xs mt-1">70 signatures simples incluses/mois par utilisateur</p>
-                                <p className="text-xs mt-2 text-orange-700 font-semibold">🔒 Signatures avancées et qualifiées facturables en supplément</p>
-                                <p className="text-xs mt-1 text-orange-600">📦 Besoin de plus ? Suppléments disponibles</p>
+                                <p className="text-xs font-bold text-orange-900">1 signature = 1 signataire</p>
+                                <p className="text-xs text-gray-700 mt-1">Signatures simples incluses</p>
+                                <p className="text-xs text-gray-700 mt-1">Quota personnel non mutualisé</p>
+                                <div className="pt-2 border-t border-orange-200 mt-2">
+                                  <p className="text-xs font-semibold text-orange-700 mb-1.5">🔒 Signatures avancées et qualifiées facturables en supplément</p>
+                                  <p className="text-xs font-semibold text-orange-800 mb-1.5">📦 Besoin de plus ? Suppléments disponibles</p>
+                                </div>
                               </TooltipContent>
                             </Tooltip>
                           </div>

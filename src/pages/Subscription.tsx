@@ -622,64 +622,20 @@ export default function Subscription() {
                                           }`}>
                                             1 signature = 1 signataire
                                           </p>
-                                          <p className="text-xs text-gray-700">
-                                            {isEssentiel ? '15' : isProfessionnel ? '35' : '70'} signatures simples incluses/mois
-                                          </p>
-                                          {!isCabinetPlus && (
-                                            <>
-                                              <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
-                                              <div className={`pt-2 border-t mt-2 ${
-                                                isEssentiel ? 'border-blue-200' : 'border-purple-200'
-                                              }`}>
-                                                <p className="text-xs font-semibold text-orange-700 mb-1.5">
-                                                  🔒 Signatures avancées et qualifiées facturables en supplément
-                                                </p>
-                                                <p className={`text-xs font-semibold mb-1.5 ${
-                                                  isEssentiel ? 'text-blue-800' : 'text-purple-800'
-                                                }`}>
-                                                  📦 Besoin de plus ? Suppléments disponibles :
-                                                </p>
-                                                <div className="space-y-1">
-                                                  {isEssentiel ? (
-                                                    <>
-                                                      <div className="flex justify-between items-center">
-                                                        <span className="text-xs text-gray-600">Mini - 10 signatures</span>
-                                                        <span className="text-xs font-semibold text-blue-700">20€</span>
-                                                      </div>
-                                                      <div className="flex justify-between items-center">
-                                                        <span className="text-xs text-gray-600">Pro ⭐ - 50 signatures</span>
-                                                        <span className="text-xs font-semibold text-blue-700">45€</span>
-                                                      </div>
-                                                    </>
-                                                  ) : (
-                                                    <>
-                                                      <div className="flex justify-between items-center">
-                                                        <span className="text-xs text-gray-600">Mini - 10 signatures</span>
-                                                        <span className="text-xs font-semibold text-purple-700">20€</span>
-                                                      </div>
-                                                      <div className="flex justify-between items-center">
-                                                        <span className="text-xs text-gray-600">Pro ⭐ - 50 signatures</span>
-                                                        <span className="text-xs font-semibold text-purple-700">45€</span>
-                                                      </div>
-                                                      <div className="flex justify-between items-center">
-                                                        <span className="text-xs text-gray-600">Business - 100 signatures</span>
-                                                        <span className="text-xs font-semibold text-purple-700">70€</span>
-                                                      </div>
-                                                    </>
-                                                  )}
-                                                </div>
-                                              </div>
-                                            </>
-                                          )}
-                                          {isCabinetPlus && (
-                                            <>
-                                              <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
-                                              <div className="pt-2 border-t border-orange-200 mt-2">
-                                                <p className="text-xs font-semibold text-green-700 mb-1.5">✅ Limite de 100 signatures/mois prise en charge</p>
-                                                <p className="text-xs font-semibold text-orange-800">📦 Suppléments facturables si besoin</p>
-                                              </div>
-                                            </>
-                                          )}
+                                          <p className="text-xs text-gray-700">Signatures simples incluses</p>
+                                          <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
+                                          <div className={`pt-2 border-t mt-2 ${
+                                            isEssentiel ? 'border-blue-200' : isProfessionnel ? 'border-purple-200' : 'border-orange-200'
+                                          }`}>
+                                            <p className="text-xs font-semibold text-orange-700 mb-1.5">
+                                              🔒 Signatures avancées et qualifiées facturables en supplément
+                                            </p>
+                                            <p className={`text-xs font-semibold mb-1.5 ${
+                                              isEssentiel ? 'text-blue-800' : isProfessionnel ? 'text-purple-800' : 'text-orange-800'
+                                            }`}>
+                                              📦 Besoin de plus ? Suppléments disponibles
+                                            </p>
+                                          </div>
                                         </div>
                                       </TooltipContent>
                                     </Tooltip>
