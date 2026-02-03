@@ -72,74 +72,36 @@ export function ContractPipelineFlow({
   const loadClients = async () => {
     try {
       setLoadingClients(true);
-      console.log('🔍 Chargement clients - user:', user?.id, 'role:', role);
       
-      // Récupérer le cabinet de l'utilisateur via cabinet_members
-      const { data: cabinetMember, error: memberError } = await supabase
-        .from('cabinet_members')
-        .select('cabinet_id, cabinets(id, role)')
-        .eq('user_id', user?.id)
-        .eq('status', 'active')
-        .single();
-
-      console.log('📋 Cabinet member:', cabinetMember, 'error:', memberError);
-
-      if (memberError || !cabinetMember) {
-        console.error('❌ Aucun cabinet trouvé pour cet utilisateur');
+      if (!user) {
+        console.log('⚠️ Pas d\'utilisateur connecté - chargement clients impossible');
         setClients([]);
         setLoadingClients(false);
         return;
       }
-
-      const cabinetId = cabinetMember.cabinet_id;
-      console.log('✅ Cabinet ID:', cabinetId);
-
-      // Récupérer TOUS les clients directs du cabinet (sans filtre de rôle d'abord)
-      const { data: directClients, error: directError } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('owner_id', cabinetId)
-        .order('created_at', { ascending: false });
-
-      console.log('📝 Clients directs (TOUS):', directClients?.length || 0, directClients);
-      console.log('📝 Erreur directe:', directError);
-
-      // Récupérer les clients partagés
-      const { data: sharedClients, error: sharedError } = await supabase
-        .from('cabinet_clients')
-        .select(`
-          client_id,
-          clients (*)
-        `)
-        .eq('cabinet_id', cabinetId);
-
-      console.log('🔗 Clients partagés:', sharedClients?.length || 0, sharedClients);
-      console.log('🔗 Erreur partagés:', sharedError);
-
-      // Combiner et filtrer par rôle
-      const allClients = [...(directClients || [])];
       
-      // Ajouter les clients partagés (en évitant les doublons)
-      if (sharedClients) {
-        for (const shared of sharedClients) {
-          const client = (shared as any).clients;
-          if (client && !allClients.some(c => c.id === client.id)) {
-            allClients.push(client);
-          }
+      console.log('🔍 Chargement clients pour:', { userId: user.id, role });
+      
+      // EXACTEMENT comme l'ancien système qui fonctionnait
+      const { data, error } = await supabase
+        .from('clients')
+        .select('id, nom, prenom, name, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession')
+        .eq('owner_id', user.id)
+        .eq('role', role)
+        .order('nom', { ascending: true });
+      
+      if (error) {
+        console.error('❌ Erreur chargement clients:', error);
+        setClients([]);
+      } else if (data) {
+        console.log(`✅ ${data.length} client(s) chargé(s) pour le rôle ${role}:`, data);
+        setClients(data);
+        if (data.length === 0) {
+          console.warn(`⚠️ Aucun client trouvé pour le rôle ${role}. Allez dans "Mes Clients" pour en ajouter.`);
         }
       }
-      
-      // Filtrer par rôle
-      const roleClients = allClients.filter(c => c.role === role);
-      
-      console.log('📊 Total clients (tous rôles):', allClients.length);
-      console.log('📊 Clients filtrés par rôle', role, ':', roleClients.length);
-      console.log('✨ Clients finaux:', roleClients);
-      
-      setClients(roleClients);
     } catch (error) {
       console.error('💥 Erreur chargement clients:', error);
-      toast.error('Impossible de charger les clients');
     } finally {
       setLoadingClients(false);
     }
