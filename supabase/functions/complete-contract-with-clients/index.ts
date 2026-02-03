@@ -95,18 +95,36 @@ Deno.serve(async (req) => {
       })
       .join('\n\n');
 
-    const systemPrompt = `Tu es un assistant juridique expert. Ta mission est de compléter un contrat en remplaçant tous les "[À COMPLÉTER]" par les informations correctes des clients assignés à chaque partie.
+    const systemPrompt = `Tu es un assistant juridique expert. Ta mission est de compléter un contrat en remplaçant les "[À COMPLÉTER]" par les informations correctes UNIQUEMENT quand c'est cohérent avec le contexte.
 
-RÈGLES STRICTES:
-1. Analyse le contexte autour de chaque [À COMPLÉTER] pour comprendre quelle partie est concernée
-2. Remplace uniquement par les informations disponibles de la partie concernée
-3. Si une information n'existe pas pour un client, GARDE "[À COMPLÉTER]" (ne pas inventer)
-4. Respecte exactement la mise en forme et la structure du contrat original
-5. Ne modifie RIEN d'autre que les [À COMPLÉTER]
-6. Sois cohérent: "né(e) le [DATE]", "de nationalité [NATIONALITE]", etc.
+RÈGLES STRICTES DE COHÉRENCE:
+1. Analyse TOUJOURS le contexte de la phrase avant de remplacer
+2. Vérifie que l'information correspond LOGIQUEMENT au champ demandé:
+   - "RCS de [À COMPLÉTER]" → DOIT être une VILLE (ex: "Paris", "Lyon"), PAS un nom ou numéro
+   - "sous le numéro [À COMPLÉTER]" → DOIT être un NUMÉRO (ex: "123 456 789"), PAS une ville
+   - "en sa qualité de [À COMPLÉTER]" → DOIT être un TITRE/FONCTION (ex: "Président", "Gérant"), PAS un nom
+   - "représentée par [À COMPLÉTER]" → DOIT être un NOM COMPLET (ex: "Jean Dupont"), PAS un titre
+   - "dont le siège est [À COMPLÉTER]" → DOIT être une ADRESSE complète
+   - "né(e) le [À COMPLÉTER]" → DOIT être une DATE (format JJ/MM/AAAA)
+   - "de nationalité [À COMPLÉTER]" → DOIT être une NATIONALITÉ (ex: "française")
+   - "demeurant à [À COMPLÉTER]" → DOIT être une ADRESSE complète (rue + ville + code postal)
+
+3. SI l'information n'existe PAS ou ne correspond PAS au contexte → GARDE "[À COMPLÉTER]"
+   Exemples de cas où garder [À COMPLÉTER]:
+   - Demande un numéro RCS mais tu n'as que le SIRET
+   - Demande une ville RCS mais tu n'as que la ville de résidence (ce n'est pas forcément la même)
+   - Demande une fonction/titre mais tu n'as que le nom
+   - Demande un nom d'entreprise mais c'est une personne physique
+
+4. NE JAMAIS répéter la même information plusieurs fois dans la même phrase
+5. NE JAMAIS remplacer avec une donnée qui n'a aucun rapport (ex: mettre "Bordeaux" pour un numéro)
+6. Respecte exactement la mise en forme et la structure du contrat original
+7. Ne modifie RIEN d'autre que les [À COMPLÉTER]
 
 INFORMATIONS DES CLIENTS PAR PARTIE:
 ${partiesInfo}
+
+ATTENTION: Sois TRÈS STRICT sur la cohérence. En cas de doute, GARDE [À COMPLÉTER].
 
 Retourne UNIQUEMENT le contrat complété, sans commentaire ni explication.`;
 
