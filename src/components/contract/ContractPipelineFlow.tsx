@@ -96,20 +96,44 @@ export function ContractPipelineFlow({
       
       console.log('🔍 Chargement clients pour:', { cabinetId, role });
       
-      const { data, error } = await supabase
+      // 1. Clients directs du cabinet
+      const { data: directClients, error: directError } = await supabase
         .from('clients')
         .select('id, nom, prenom, name, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession')
         .eq('owner_id', cabinetId)
         .eq('role', role)
         .order('nom', { ascending: true });
       
-      if (error) {
-        console.error('❌ Erreur chargement clients:', error);
+      // 2. Clients partagés via cabinet_clients
+      const { data: sharedClients, error: sharedError } = await supabase
+        .from('cabinet_clients')
+        .select(`
+          client_id,
+          clients (id, nom, prenom, name, adresse, telephone, email, date_naissance, lieu_naissance, nationalite, profession, role)
+        `)
+        .eq('cabinet_id', cabinetId);
+      
+      if (directError || sharedError) {
+        console.error('❌ Erreur chargement clients:', directError || sharedError);
         setClients([]);
-      } else if (data) {
-        console.log(`✅ ${data.length} client(s) chargé(s):`, data);
-        setClients(data);
-        if (data.length === 0) {
+      } else {
+        // Combiner les deux listes
+        const allClients = [...(directClients || [])];
+        
+        // Ajouter les clients partagés (filtrer par role + éviter doublons)
+        if (sharedClients) {
+          for (const shared of sharedClients) {
+            const client = (shared as any).clients;
+            if (client && client.role === role && !allClients.some(c => c.id === client.id)) {
+              allClients.push(client);
+            }
+          }
+        }
+        
+        console.log(`✅ ${allClients.length} client(s) chargé(s) (${directClients?.length || 0} directs + ${sharedClients?.filter((s: any) => s.clients?.role === role).length || 0} partagés):`, allClients);
+        setClients(allClients);
+        
+        if (allClients.length === 0) {
           console.warn(`⚠️ Aucun client trouvé. Allez dans "Mes Clients" pour en ajouter.`);
         }
       }
