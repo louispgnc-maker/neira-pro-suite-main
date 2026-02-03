@@ -27,6 +27,7 @@ type BuySignaturesDialogProps = {
 
 const packagesConfig = {
   essentiel: [
+    { quantity: 1, price: 1, label: 'Unité - 1 Signature' },
     { quantity: 10, price: 9, label: 'Mini - 10 Signatures' },
     { quantity: 20, price: 17, label: 'Starter - 20 Signatures' },
     { quantity: 50, price: 40, label: 'Pro ⭐ - 50 Signatures' },
@@ -34,6 +35,7 @@ const packagesConfig = {
     { quantity: 250, price: 175, label: 'Enterprise - 250 Signatures' }
   ],
   professionnel: [
+    { quantity: 1, price: 1, label: 'Unité - 1 Signature' },
     { quantity: 10, price: 9, label: 'Mini - 10 Signatures' },
     { quantity: 20, price: 17, label: 'Starter - 20 Signatures' },
     { quantity: 50, price: 40, label: 'Pro ⭐ - 50 Signatures' },
@@ -41,6 +43,7 @@ const packagesConfig = {
     { quantity: 250, price: 175, label: 'Enterprise - 250 Signatures' }
   ],
   'cabinet-plus': [
+    { quantity: 1, price: 1, label: 'Unité - 1 Signature' },
     { quantity: 10, price: 9, label: 'Mini - 10 Signatures' },
     { quantity: 20, price: 17, label: 'Starter - 20 Signatures' },
     { quantity: 50, price: 40, label: 'Pro ⭐ - 50 Signatures' },
@@ -292,16 +295,21 @@ export function BuySignaturesDialog({
                       )}
                     </div>
                   </div>
-                  <div className={`text-2xl font-bold ${
-                    pkg.isEmergency
-                      ? 'text-red-600'
-                      : selectedPackage?.quantity === pkg.quantity && selectedPackage?.price === pkg.price
-                        ? role === 'notaire'
-                          ? 'text-orange-600'
-                          : 'text-blue-600'
-                        : 'text-gray-900'
-                  }`}>
-                    {pkg.price}€
+                  <div className="flex flex-col items-end">
+                    <div className={`text-2xl font-bold ${
+                      pkg.isEmergency
+                        ? 'text-red-600'
+                        : selectedPackage?.quantity === pkg.quantity && selectedPackage?.price === pkg.price
+                          ? role === 'notaire'
+                            ? 'text-orange-600'
+                            : 'text-blue-600'
+                          : 'text-gray-900'
+                    }`}>
+                      {pkg.price}€
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {(pkg.price / pkg.quantity).toFixed(2)}€/signature
+                    </div>
                   </div>
                 </div>
               </Card>
