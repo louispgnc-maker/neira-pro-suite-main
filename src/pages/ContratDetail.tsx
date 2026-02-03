@@ -256,85 +256,86 @@ export default function ContratDetail() {
       
       // Si on utilise le système multi-parties
       if (Object.keys(editedPartiesClients).length > 0) {
-        // Stratégie améliorée : remplacer [À COMPLÉTER] en détectant le contexte
-        updatedContent = updatedContent.replace(/\[À COMPLÉTER\]/g, (match, offset, fullText) => {
-          // Analyser le contexte autour du placeholder (500 caractères avant)
-          const contextBefore = fullText.substring(Math.max(0, offset - 500), offset).toLowerCase();
+        // Stratégie : découper le contrat en sections par partie
+        const parties = Object.keys(editedPartiesClients);
+        
+        // Pour chaque partie, créer un mapping de patterns à son client
+        const partyPatterns: { pattern: RegExp; clientId: string; partyName: string }[] = [];
+        
+        for (const [partyName, clientId] of Object.entries(editedPartiesClients)) {
+          if (!clientId) continue;
           
-          // Détecter quelle partie est concernée
-          let relevantClientId = null;
-          let maxScore = 0;
+          // Créer un pattern qui capture la section de cette partie
+          // Pattern : depuis "D'une part" ou "Et d'autre part" mentionnant cette partie
+          // jusqu'au prochain "D'une part"/"Et d'autre part" ou "Article" ou fin
+          const escapedParty = partyName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
           
-          for (const [partyName, clientId] of Object.entries(editedPartiesClients)) {
-            if (!clientId) continue;
+          partyPatterns.push({
+            pattern: new RegExp(
+              `((?:D'une\\s+part|Et\\s+d'autre\\s+part)[\\s\\S]*?${escapedParty}[\\s\\S]*?)(?=(?:D'une\\s+part|Et\\s+d'autre\\s+part|Article\\s+\\d|$))`,
+              'gi'
+            ),
+            clientId,
+            partyName
+          });
+        }
+        
+        // Remplacer section par section
+        for (const { pattern, clientId, partyName } of partyPatterns) {
+          updatedContent = updatedContent.replace(pattern, (section) => {
+            const clientInfo = getClientInfo(clientId, clients);
+            if (!clientInfo) return section;
             
-            // Score basé sur la proximité de la mention de la partie
-            const partyLower = partyName.toLowerCase();
-            const lastIndex = contextBefore.lastIndexOf(partyLower);
-            
-            if (lastIndex !== -1) {
-              // Plus la mention est proche, plus le score est élevé
-              const score = lastIndex;
-              if (score > maxScore) {
-                maxScore = score;
-                relevantClientId = clientId;
+            // Remplacer tous les [À COMPLÉTER] dans cette section uniquement
+            return section.replace(/\[À COMPLÉTER\]/g, (match, offset) => {
+              // Analyser le contexte local dans cette section
+              const contextBefore = section.substring(Math.max(0, offset - 100), offset).toLowerCase();
+              
+              if (contextBefore.includes('nom') && !contextBefore.includes('prénom') && !contextBefore.includes('dénomm')) {
+                return clientInfo.nom || match;
               }
-            }
-          }
-          
-          // Si aucune partie détectée, prendre le premier client disponible
-          if (!relevantClientId) {
-            relevantClientId = Object.values(editedPartiesClients).find(id => id) || null;
-          }
-          
-          if (!relevantClientId) return match;
-          
-          const clientInfo = getClientInfo(relevantClientId, clients);
-          if (!clientInfo) return match;
-          
-          // Déterminer quel champ remplacer selon le contexte
-          const contextWords = contextBefore.substring(Math.max(0, contextBefore.length - 100));
-          
-          if (contextWords.includes('nom') && !contextWords.includes('prénom')) {
-            return clientInfo.nom || match;
-          }
-          if (contextWords.includes('prénom')) {
-            return clientInfo.prenom || match;
-          }
-          if (contextWords.includes('nom') || contextWords.includes('dénomm') || contextWords.includes('représent')) {
-            return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
-          }
-          if (contextWords.includes('adresse') || contextWords.includes('domicilié') || contextWords.includes('demeurant') || contextWords.includes('sise')) {
-            return clientInfo.adresse || match;
-          }
-          if (contextWords.includes('né') || contextWords.includes('naissance')) {
-            return clientInfo.date_naissance || match;
-          }
-          if (contextWords.includes('nationalité')) {
-            return clientInfo.nationalite || match;
-          }
-          if (contextWords.includes('téléphone') || contextWords.includes('tél') || contextWords.includes('portable')) {
-            return clientInfo.telephone || match;
-          }
-          if (contextWords.includes('email') || contextWords.includes('courriel') || contextWords.includes('mail')) {
-            return clientInfo.email || match;
-          }
-          if (contextWords.includes('profession') || contextWords.includes('activité')) {
-            return clientInfo.profession || match;
-          }
-          if (contextWords.includes('siret') || contextWords.includes('siren')) {
-            return clientInfo.siret || match;
-          }
-          if (contextWords.includes('capital')) {
-            return clientInfo.capital_social || match;
-          }
-          if (contextWords.includes('rcs') || contextWords.includes('immatricul')) {
-            return clientInfo.ville_rcs || match;
-          }
-          
-          // Fallback : nom complet
-          return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
-        });
+              if (contextBefore.includes('prénom')) {
+                return clientInfo.prenom || match;
+              }
+              if (contextBefore.includes('dénomm') || contextBefore.includes('représent') || contextBefore.match(/nom\s*:/)) {
+                return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
+              }
+              if (contextBefore.includes('adresse') || contextBefore.includes('domicilié') || contextBefore.includes('demeurant') || contextBefore.includes('sise au')) {
+                return clientInfo.adresse || match;
+              }
+              if (contextBefore.includes('né') || contextBefore.includes('naissance')) {
+                return clientInfo.date_naissance || match;
+              }
+              if (contextBefore.includes('nationalité')) {
+                return clientInfo.nationalite || match;
+              }
+              if (contextBefore.includes('téléphone') || contextBefore.includes('tél') || contextBefore.includes('portable')) {
+                return clientInfo.telephone || match;
+              }
+              if (contextBefore.includes('email') || contextBefore.includes('courriel') || contextBefore.includes('mail')) {
+                return clientInfo.email || match;
+              }
+              if (contextBefore.includes('profession') || contextBefore.includes('activité')) {
+                return clientInfo.profession || match;
+              }
+              if (contextBefore.includes('siret') || contextBefore.includes('siren')) {
+                return clientInfo.siret || match;
+              }
+              if (contextBefore.includes('capital')) {
+                return clientInfo.capital_social || match;
+              }
+              if (contextBefore.includes('rcs') || contextBefore.includes('immatricul')) {
+                return clientInfo.ville_rcs || match;
+              }
+              if (contextBefore.includes('société') || contextBefore.includes('entreprise') || contextBefore.includes('raison sociale')) {
+                return clientInfo.nom_entreprise || match;
+              }
+              
+              // Fallback : nom complet
+              return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
+            });
+          });
+        }
       }
       // Ancien système avec client_id unique (rétro-compatibilité)
       else if (editedClientId && editedClientId !== 'none') {
