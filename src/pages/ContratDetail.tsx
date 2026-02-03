@@ -304,11 +304,12 @@ export default function ContratDetail() {
         
         // ÉTAPE 2 : Remplacer les [À COMPLÉTER] restants
         updatedContent = updatedContent.replace(/\[À COMPLÉTER\]/g, (match, offset) => {
-          // Chercher dans les 1000 caractères avant le placeholder
-          const contextBefore = updatedContent.substring(Math.max(0, offset - 1000), offset);
+          // Chercher dans les 1500 caractères avant le placeholder (contexte élargi)
+          const contextBefore = updatedContent.substring(Math.max(0, offset - 1500), offset);
           
           // Trouver quelle partie est mentionnée en dernier (la plus proche)
           let selectedClientId: string | null = null;
+          let selectedPartyName: string | null = null;
           let lastMentionPosition = -1;
           
           for (const [partyName, clientId] of Object.entries(editedPartiesClients)) {
@@ -321,18 +322,23 @@ export default function ContratDetail() {
             if (position > lastMentionPosition) {
               lastMentionPosition = position;
               selectedClientId = clientId;
+              selectedPartyName = partyName;
             }
           }
           
-          // Si aucune partie trouvée, prendre le premier client
+          // Si aucune partie trouvée dans le contexte, on garde [À COMPLÉTER]
           if (!selectedClientId) {
-            selectedClientId = Object.values(editedPartiesClients).find(id => id) || null;
+            console.log('⚠️ Aucune partie détectée pour ce [À COMPLÉTER] - conservation du placeholder');
+            return '[À COMPLÉTER]';
           }
           
-          if (!selectedClientId) return match;
-          
           const clientInfo = getClientInfo(selectedClientId, clients);
-          if (!clientInfo) return match;
+          if (!clientInfo) {
+            console.log(`⚠️ Client non trouvé pour ${selectedPartyName} - conservation du placeholder`);
+            return '[À COMPLÉTER]';
+          }
+          
+          console.log(`✅ Remplacement pour ${selectedPartyName} avec client ${clientInfo.prenom} ${clientInfo.nom}`);
           
           // Analyser les 200 caractères juste avant pour savoir quel champ mettre
           const immediateContext = updatedContent.substring(Math.max(0, offset - 200), offset);
@@ -341,117 +347,119 @@ export default function ContratDetail() {
           
           // 1. Date de naissance (doit être AVANT les autres patterns "né")
           if (immediateContext.match(/né\s*\(?\s*e?\s*\)?\s*le\s*$/i)) {
-            return clientInfo.date_naissance || match;
+            return clientInfo.date_naissance || '[À COMPLÉTER]';
           }
           
           // 2. Lieu de naissance (après "à" qui suit "né")
           if (immediateContext.match(/né.*à\s*$/i)) {
-            return clientInfo.lieu_naissance || match;
+            return clientInfo.lieu_naissance || '[À COMPLÉTER]';
           }
           
           // 3. Nationalité
           if (immediateContext.match(/(?:de\s+)?nationalité\s*$/i)) {
-            return clientInfo.nationalite || match;
+            return clientInfo.nationalite || '[À COMPLÉTER]';
           }
           
           // 4. Adresse / domicile
           if (immediateContext.match(/(?:demeurant|domicilié|sise?)\s+(?:à|au)?\s*$/i)) {
-            return clientInfo.adresse || match;
+            return clientInfo.adresse || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/(?:^|[^a-zà-ÿ])adresse\s*:?\s*$/i)) {
-            return clientInfo.adresse || match;
+            return clientInfo.adresse || '[À COMPLÉTER]';
           }
           
           // 5. Code postal / Ville / Pays
           if (immediateContext.match(/code\s*postal\s*:?\s*$/i)) {
-            return clientInfo.code_postal || match;
+            return clientInfo.code_postal || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/\bville\s*:?\s*$/i)) {
-            return clientInfo.ville || match;
+            return clientInfo.ville || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/\bpays\s*:?\s*$/i)) {
-            return clientInfo.pays || match;
+            return clientInfo.pays || '[À COMPLÉTER]';
           }
           
           // 6. Contact
           if (immediateContext.match(/(?:téléphone|tél\.?|portable|mobile)\s*:?\s*$/i)) {
-            return clientInfo.telephone || match;
+            return clientInfo.telephone || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/(?:e-?mail|courriel)\s*:?\s*$/i)) {
-            return clientInfo.email || match;
+            return clientInfo.email || '[À COMPLÉTER]';
           }
           
           // 7. Sexe / Genre
           if (immediateContext.match(/(?:sexe|genre)\s*:?\s*$/i)) {
-            return clientInfo.sexe || match;
+            return clientInfo.sexe || '[À COMPLÉTER]';
           }
           
           // 8. État civil / Situation matrimoniale
           if (immediateContext.match(/(?:état|etat)\s+civil\s*:?\s*$/i)) {
-            return clientInfo.etat_civil || match;
+            return clientInfo.etat_civil || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/(?:régime|regime)\s+matrimonial\s*:?\s*$/i)) {
-            return clientInfo.situation_matrimoniale || match;
+            return clientInfo.situation_matrimoniale || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/situation\s+matrimoniale\s*:?\s*$/i)) {
-            return clientInfo.situation_matrimoniale || match;
+            return clientInfo.situation_matrimoniale || '[À COMPLÉTER]';
           }
           
           // 9. Pièce d'identité
           if (immediateContext.match(/type\s+(?:de\s+)?(?:pièce|piece)\s+(?:d')?identité\s*:?\s*$/i)) {
-            return clientInfo.type_identite || match;
+            return clientInfo.type_identite || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/numéro\s+(?:de\s+)?(?:pièce|piece)\s*:?\s*$/i)) {
-            return clientInfo.numero_identite || match;
+            return clientInfo.numero_identite || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/(?:délivr|delivr|expir).*le\s*$/i)) {
-            return clientInfo.date_expiration_identite || match;
+            return clientInfo.date_expiration_identite || '[À COMPLÉTER]';
           }
           
           // 10. Profession/qualité
           if (immediateContext.match(/(?:profession|qualité|activité|fonction)\s+(?:de\s+)?$/i)) {
-            return clientInfo.profession || match;
+            return clientInfo.profession || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/employeur\s*:?\s*$/i)) {
-            return clientInfo.employeur || match;
+            return clientInfo.employeur || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/adresse\s+professionnelle\s*:?\s*$/i)) {
-            return clientInfo.adresse_professionnelle || match;
+            return clientInfo.adresse_professionnelle || '[À COMPLÉTER]';
           }
           
           // 11. Nom de naissance
           if (immediateContext.match(/nom\s+de\s+naissance\s*:?\s*$/i)) {
-            return clientInfo.nom_naissance || match;
+            return clientInfo.nom_naissance || '[À COMPLÉTER]';
           }
           
           // 12. Prénom seul
           if (immediateContext.match(/prénom\s*:?\s*$/i)) {
-            return clientInfo.prenom || match;
+            return clientInfo.prenom || '[À COMPLÉTER]';
           }
           
           // 13. Nom seul (mais PAS dans "dénommé" ni "nom de naissance")
           if (immediateContext.match(/\bnom\s*:?\s*$/i) && !immediateContext.match(/dénomm|naissance/i)) {
-            return clientInfo.nom || match;
+            return clientInfo.nom || '[À COMPLÉTER]';
           }
           
           // 14. Nom complet (représenté par, dénommé, etc.)
           if (immediateContext.match(/(?:représent|dénomm|désign|soussign|ci-après)\w*\s*$/i)) {
-            return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
+            const fullName = `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim();
+            return fullName || '[À COMPLÉTER]';
           }
           
           // 15. Société
           if (immediateContext.match(/(?:société|entreprise|raison\s+sociale)\s*$/i)) {
-            return clientInfo.nom_entreprise || clientInfo.nom || match;
+            return clientInfo.nom_entreprise || clientInfo.nom || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/siret\s*:?\s*$/i)) {
-            return clientInfo.siret || match;
+            return clientInfo.siret || '[À COMPLÉTER]';
           }
           if (immediateContext.match(/(?:immatricul|rcs)\s*$/i)) {
-            return clientInfo.ville_rcs || match;
+            return clientInfo.ville_rcs || '[À COMPLÉTER]';
           }
           
-          // Fallback : si on ne sait pas, mettre le nom complet
-          return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
+          // Fallback : si on ne sait pas quel champ, mettre le nom complet ou garder [À COMPLÉTER]
+          const fullName = `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim();
+          return fullName || '[À COMPLÉTER]';
         });
       }
       // Ancien système avec client_id unique (rétro-compatibilité)
