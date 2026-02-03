@@ -256,7 +256,53 @@ export default function ContratDetail() {
       
       // Si on utilise le système multi-parties
       if (Object.keys(editedPartiesClients).length > 0) {
-        // Stratégie simplifiée : pour chaque [À COMPLÉTER], trouver quelle partie est la plus proche AVANT
+        // ÉTAPE 1 : Remplacer les anciennes infos clients par les nouvelles (si le client a changé)
+        const oldPartiesClients = contrat.parties_clients || {};
+        
+        for (const [partyName, newClientId] of Object.entries(editedPartiesClients)) {
+          const oldClientId = oldPartiesClients[partyName];
+          
+          // Si le client a changé et qu'il y avait un ancien client
+          if (oldClientId && oldClientId !== newClientId && newClientId) {
+            const oldClientInfo = getClientInfo(oldClientId, clients);
+            const newClientInfo = getClientInfo(newClientId, clients);
+            
+            if (oldClientInfo && newClientInfo) {
+              // Remplacer les anciennes valeurs par les nouvelles
+              if (oldClientInfo.nom && newClientInfo.nom) {
+                const oldFullName = `${oldClientInfo.prenom || ''} ${oldClientInfo.nom}`.trim();
+                const newFullName = `${newClientInfo.prenom || ''} ${newClientInfo.nom}`.trim();
+                updatedContent = updatedContent.replace(new RegExp(oldFullName, 'g'), newFullName);
+              }
+              
+              if (oldClientInfo.adresse && newClientInfo.adresse) {
+                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.adresse, 'g'), newClientInfo.adresse);
+              }
+              
+              if (oldClientInfo.date_naissance && newClientInfo.date_naissance) {
+                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.date_naissance, 'g'), newClientInfo.date_naissance);
+              }
+              
+              if (oldClientInfo.nationalite && newClientInfo.nationalite) {
+                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.nationalite, 'g'), newClientInfo.nationalite);
+              }
+              
+              if (oldClientInfo.telephone && newClientInfo.telephone) {
+                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.telephone, 'g'), newClientInfo.telephone);
+              }
+              
+              if (oldClientInfo.email && newClientInfo.email) {
+                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.email, 'g'), newClientInfo.email);
+              }
+              
+              if (oldClientInfo.profession && newClientInfo.profession) {
+                updatedContent = updatedContent.replace(new RegExp(oldClientInfo.profession, 'g'), newClientInfo.profession);
+              }
+            }
+          }
+        }
+        
+        // ÉTAPE 2 : Remplacer les [À COMPLÉTER] restants
         updatedContent = updatedContent.replace(/\[À COMPLÉTER\]/g, (match, offset) => {
           // Chercher dans les 1000 caractères avant le placeholder
           const contextBefore = updatedContent.substring(Math.max(0, offset - 1000), offset);
