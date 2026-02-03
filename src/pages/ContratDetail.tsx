@@ -150,10 +150,18 @@ export default function ContratDetail() {
     setEditedDescription(contrat.description || "");
     setEditedPartiesClients(contrat.parties_clients || {});
     
-    // Détecter les parties depuis le contenu
-    if (contrat.content) {
+    // Priorité 1 : client_roles du JSON (plus fiable)
+    if (contrat.contenu_json?.client_roles && Array.isArray(contrat.contenu_json.client_roles)) {
+      setContractParties(contrat.contenu_json.client_roles.slice(0, 5));
+    }
+    // Priorité 2 : Détecter depuis le contenu si disponible
+    else if (contrat.content) {
       const parties = detectContractParties(contrat.content);
       setContractParties(parties);
+    }
+    // Priorité 3 : Vide (ancien système avec client_id unique)
+    else {
+      setContractParties([]);
     }
     
     setEditingInfo(true);
