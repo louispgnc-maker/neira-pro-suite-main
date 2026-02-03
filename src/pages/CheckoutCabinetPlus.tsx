@@ -368,14 +368,14 @@ export default function CheckoutCabinetPlus() {
                                 <Info className="w-4 h-4 text-orange-600 cursor-help" />
                               </TooltipTrigger>
                               <TooltipContent className="max-w-xs">
-                                <p className="text-xs"><strong>1 signature = 1 enveloppe</strong></p>
-                                <p className="text-xs mt-1">Nombre de signataires illimité par enveloppe</p>
-                                <p className="text-xs mt-2 text-green-700 font-semibold">✅ Limite de 70 signatures/mois prise en charge</p>
-                                <p className="text-xs mt-1 text-orange-600">📦 Suppléments facturables si besoin</p>
+                                <p className="text-xs"><strong>1 signature = 1 signataire</strong></p>
+                                <p className="text-xs mt-1">70 signatures simples incluses/mois par utilisateur</p>
+                                <p className="text-xs mt-2 text-orange-700 font-semibold">🔒 Signatures avancées et qualifiées facturables en supplément</p>
+                                <p className="text-xs mt-1 text-orange-600">📦 Besoin de plus ? Suppléments disponibles</p>
                               </TooltipContent>
                             </Tooltip>
                           </div>
-                          <p className="text-xs text-orange-700">1 signature = 1 enveloppe (signataires illimités) • 70 signatures/mois incluses • Suppléments disponibles si besoin</p>
+                          <p className="text-xs text-orange-700">70 signatures simples incluses/mois • Signatures avancées/qualifiées facturables • Suppléments disponibles</p>
                         </div>
                       </div>
                     </div>

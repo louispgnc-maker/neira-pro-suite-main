@@ -620,22 +620,24 @@ export default function Subscription() {
                                           <p className={`text-xs font-bold ${
                                             isEssentiel ? 'text-blue-900' : isProfessionnel ? 'text-purple-900' : 'text-orange-900'
                                           }`}>
-                                            1 signature = 1 enveloppe
+                                            1 signature = 1 signataire
                                           </p>
-                                          <p className="text-xs text-gray-700">Nombre de signataires illimité par enveloppe</p>
+                                          <p className="text-xs text-gray-700">
+                                            {isEssentiel ? '15' : isProfessionnel ? '35' : '70'} signatures simples incluses/mois
+                                          </p>
                                           {!isCabinetPlus && (
                                             <>
                                               <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
                                               <div className={`pt-2 border-t mt-2 ${
                                                 isEssentiel ? 'border-blue-200' : 'border-purple-200'
                                               }`}>
-                                                <p className="text-xs font-semibold text-green-700 mb-1.5">
-                                                  ✅ Limite de {isEssentiel ? '15' : '35'} signatures/mois prise en charge
+                                                <p className="text-xs font-semibold text-orange-700 mb-1.5">
+                                                  🔒 Signatures avancées et qualifiées facturables en supplément
                                                 </p>
                                                 <p className={`text-xs font-semibold mb-1.5 ${
                                                   isEssentiel ? 'text-blue-800' : 'text-purple-800'
                                                 }`}>
-                                                  📦 Suppléments facturables si besoin :
+                                                  📦 Besoin de plus ? Suppléments disponibles :
                                                 </p>
                                                 <div className="space-y-1">
                                                   {isEssentiel ? (

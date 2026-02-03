@@ -129,12 +129,12 @@ export default function Solution() {
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs bg-gradient-to-br from-blue-50 to-white border-blue-200">
                           <div className="space-y-2">
-                            <p className="text-xs font-bold text-blue-900">1 signature = 1 enveloppe</p>
-                            <p className="text-xs text-gray-700">Nombre de signataires illimité par enveloppe</p>
+                            <p className="text-xs font-bold text-blue-900">1 signature = 1 signataire</p>
+                            <p className="text-xs text-gray-700">15 signatures simples incluses/mois</p>
                             <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
                             <div className="pt-2 border-t border-blue-200 mt-2">
-                              <p className="text-xs font-semibold text-green-700 mb-1.5">✅ Limite de 15 signatures/mois prise en charge</p>
-                              <p className="text-xs font-semibold text-blue-800 mb-1.5">📦 Suppléments facturables si besoin :</p>
+                              <p className="text-xs font-semibold text-orange-700 mb-1.5">🔒 Signatures avancées et qualifiées facturables en supplément</p>
+                              <p className="text-xs font-semibold text-blue-800 mb-1.5">📦 Besoin de plus ? Suppléments disponibles :</p>
                               <div className="space-y-1">
                                 <div className="flex justify-between items-center">
                                   <span className="text-xs text-gray-600">Mini - 10 signatures</span>
@@ -222,11 +222,11 @@ export default function Solution() {
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs bg-gradient-to-br from-purple-50 to-white border-purple-200">
                           <div className="space-y-2">
-                            <p className="text-xs font-bold text-purple-900">1 signature = 1 enveloppe</p>
-                            <p className="text-xs text-gray-700">Nombre de signataires illimité par enveloppe</p>
+                            <p className="text-xs font-bold text-purple-900">1 signature = 1 signataire</p>
+                            <p className="text-xs text-gray-700">35 signatures simples incluses/mois</p>
                             <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
                             <div className="pt-2 border-t border-purple-200 mt-2">
-                              <p className="text-xs font-semibold text-green-700 mb-1.5">✅ Limite de 35 signatures/mois prise en charge</p>
+                              <p className="text-xs font-semibold text-orange-700 mb-1.5">🔒 Signatures avancées et qualifiées facturables en supplément</p>
                               <p className="text-xs font-semibold text-purple-800 mb-1.5">📦 Suppléments facturables si besoin :</p>
                               <div className="space-y-1">
                                 <div className="flex justify-between items-center">
@@ -309,12 +309,12 @@ export default function Solution() {
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs bg-gradient-to-br from-orange-50 to-white border-orange-200">
                           <div className="space-y-2">
-                            <p className="text-xs font-bold text-orange-900">1 signature = 1 enveloppe</p>
-                            <p className="text-xs text-gray-700">Nombre de signataires illimité par enveloppe</p>
+                            <p className="text-xs font-bold text-orange-900">1 signature = 1 signataire</p>
+                            <p className="text-xs text-gray-700">70 signatures simples incluses/mois</p>
                             <p className="text-xs text-gray-700">Quota personnel non mutualisé</p>
                             <div className="pt-2 border-t border-orange-200 mt-2">
-                              <p className="text-xs font-semibold text-green-700 mb-1.5">✅ Limite de 70 signatures/mois prise en charge</p>
-                              <p className="text-xs font-semibold text-orange-800 mb-1.5">📦 Suppléments facturables si besoin</p>
+                              <p className="text-xs font-semibold text-orange-700 mb-1.5">🔒 Signatures avancées et qualifiées facturables en supplément</p>
+                              <p className="text-xs font-semibold text-orange-800 mb-1.5">📦 Besoin de plus ? Suppléments disponibles</p>
                             </div>
                           </div>
                         </TooltipContent>
