@@ -122,17 +122,24 @@ export function getClientInfo(clientId: string, clients: any[]): any {
     // Identité
     nom: client.nom,
     prenom: client.prenom,
+    nom_naissance: client.nom_naissance,
     date_naissance: client.date_naissance,
     lieu_naissance: client.lieu_naissance,
     nationalite: client.nationalite,
+    sexe: client.sexe,
     
     // Contact
     adresse: client.adresse,
+    code_postal: client.code_postal,
+    ville: client.ville,
+    pays: client.pays,
     telephone: client.telephone,
     email: client.email,
     
     // Situation
     profession: client.profession,
+    employeur: client.employeur,
+    adresse_professionnelle: client.adresse_professionnelle,
     etat_civil: client.etat_civil,
     situation_matrimoniale: client.situation_matrimoniale,
     situation_familiale: situationFamiliale,
@@ -141,6 +148,11 @@ export function getClientInfo(clientId: string, clients: any[]): any {
     type_identite: client.type_identite,
     numero_identite: client.numero_identite,
     date_expiration_identite: client.date_expiration_identite,
+    
+    // Entreprise (si société)
+    siret: client.siret,
+    nom_entreprise: client.nom_entreprise,
+    ville_rcs: client.ville_rcs,
   };
 }
 

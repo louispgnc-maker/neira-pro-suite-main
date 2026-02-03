@@ -358,11 +358,22 @@ export default function ContratDetail() {
           if (immediateContext.match(/(?:demeurant|domicilié|sise?)\s+(?:à|au)?\s*$/i)) {
             return clientInfo.adresse || match;
           }
-          if (immediateContext.match(/adresse\s*:?\s*$/i)) {
+          if (immediateContext.match(/(?:^|[^a-zà-ÿ])adresse\s*:?\s*$/i)) {
             return clientInfo.adresse || match;
           }
           
-          // 5. Contact
+          // 5. Code postal / Ville / Pays
+          if (immediateContext.match(/code\s*postal\s*:?\s*$/i)) {
+            return clientInfo.code_postal || match;
+          }
+          if (immediateContext.match(/\bville\s*:?\s*$/i)) {
+            return clientInfo.ville || match;
+          }
+          if (immediateContext.match(/\bpays\s*:?\s*$/i)) {
+            return clientInfo.pays || match;
+          }
+          
+          // 6. Contact
           if (immediateContext.match(/(?:téléphone|tél\.?|portable|mobile)\s*:?\s*$/i)) {
             return clientInfo.telephone || match;
           }
@@ -370,27 +381,65 @@ export default function ContratDetail() {
             return clientInfo.email || match;
           }
           
-          // 6. Profession/qualité
+          // 7. Sexe / Genre
+          if (immediateContext.match(/(?:sexe|genre)\s*:?\s*$/i)) {
+            return clientInfo.sexe || match;
+          }
+          
+          // 8. État civil / Situation matrimoniale
+          if (immediateContext.match(/(?:état|etat)\s+civil\s*:?\s*$/i)) {
+            return clientInfo.etat_civil || match;
+          }
+          if (immediateContext.match(/(?:régime|regime)\s+matrimonial\s*:?\s*$/i)) {
+            return clientInfo.situation_matrimoniale || match;
+          }
+          if (immediateContext.match(/situation\s+matrimoniale\s*:?\s*$/i)) {
+            return clientInfo.situation_matrimoniale || match;
+          }
+          
+          // 9. Pièce d'identité
+          if (immediateContext.match(/type\s+(?:de\s+)?(?:pièce|piece)\s+(?:d')?identité\s*:?\s*$/i)) {
+            return clientInfo.type_identite || match;
+          }
+          if (immediateContext.match(/numéro\s+(?:de\s+)?(?:pièce|piece)\s*:?\s*$/i)) {
+            return clientInfo.numero_identite || match;
+          }
+          if (immediateContext.match(/(?:délivr|delivr|expir).*le\s*$/i)) {
+            return clientInfo.date_expiration_identite || match;
+          }
+          
+          // 10. Profession/qualité
           if (immediateContext.match(/(?:profession|qualité|activité|fonction)\s+(?:de\s+)?$/i)) {
             return clientInfo.profession || match;
           }
+          if (immediateContext.match(/employeur\s*:?\s*$/i)) {
+            return clientInfo.employeur || match;
+          }
+          if (immediateContext.match(/adresse\s+professionnelle\s*:?\s*$/i)) {
+            return clientInfo.adresse_professionnelle || match;
+          }
           
-          // 7. Prénom seul
+          // 11. Nom de naissance
+          if (immediateContext.match(/nom\s+de\s+naissance\s*:?\s*$/i)) {
+            return clientInfo.nom_naissance || match;
+          }
+          
+          // 12. Prénom seul
           if (immediateContext.match(/prénom\s*:?\s*$/i)) {
             return clientInfo.prenom || match;
           }
           
-          // 8. Nom seul (mais PAS dans "dénommé")
-          if (immediateContext.match(/\bnom\s*:?\s*$/i) && !immediateContext.match(/dénomm/i)) {
+          // 13. Nom seul (mais PAS dans "dénommé" ni "nom de naissance")
+          if (immediateContext.match(/\bnom\s*:?\s*$/i) && !immediateContext.match(/dénomm|naissance/i)) {
             return clientInfo.nom || match;
           }
           
-          // 9. Nom complet (représenté par, dénommé, etc.)
+          // 14. Nom complet (représenté par, dénommé, etc.)
           if (immediateContext.match(/(?:représent|dénomm|désign|soussign|ci-après)\w*\s*$/i)) {
             return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
           }
           
-          // 10. Société
+          // 15. Société
           if (immediateContext.match(/(?:société|entreprise|raison\s+sociale)\s*$/i)) {
             return clientInfo.nom_entreprise || clientInfo.nom || match;
           }
