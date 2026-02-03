@@ -281,10 +281,17 @@ export default function ContratDetail() {
     try {
       let updatedContent = contrat.content || '';
       
-      // Vérifier si on doit appeler l'IA (clients assignés + [À COMPLÉTER] présents)
+      // Vérifier si les parties_clients ont changé
+      const originalPartiesClients = contrat.parties_clients || {};
+      const partiesClientsChanged = JSON.stringify(originalPartiesClients) !== JSON.stringify(editedPartiesClients);
+      
+      // Vérifier si on doit appeler l'IA : 
+      // - Les clients des parties ont CHANGÉ
+      // - ET il y a des clients assignés
+      // - ET il y a des [À COMPLÉTER] à remplir
       const hasAssignedClients = Object.keys(editedPartiesClients).length > 0 && 
                                  Object.values(editedPartiesClients).some(id => id && id !== 'none');
-      const needsAICompletion = hasAssignedClients && updatedContent.includes('[À COMPLÉTER]');
+      const needsAICompletion = partiesClientsChanged && hasAssignedClients && updatedContent.includes('[À COMPLÉTER]');
       
       // Afficher l'overlay de chargement UNIQUEMENT si l'IA doit intervenir
       if (needsAICompletion) {
