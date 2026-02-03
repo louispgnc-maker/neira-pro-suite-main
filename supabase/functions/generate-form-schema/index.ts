@@ -231,42 +231,70 @@ IMPORTANT:
 - 🇫🇷 Adapte-toi au contexte français et à la législation française
 - ⚠️ Les signatures seront ajoutées APRÈS, ne t'en préoccupe PAS dans le formulaire
 
-EXEMPLES CONCRETS de ce qu'il faut générer:
+🎯 OBLIGATION ABSOLUE: Chaque schéma DOIT commencer par "client_roles" avec les parties adaptées au type de contrat.
 
-COMPROMIS DE VENTE:
+EXEMPLES OBLIGATOIRES par type de contrat:
+
+CONTRAT DE FRANCHISE:
 {
-  "client_roles": ["Le vendeur", "L'acquéreur"],
+  "client_roles": ["Le franchiseur", "Le franchisé"],  // ⚠️ OBLIGATOIRE
+  "fields": [
+    { "id": "enseigne", "label": "Enseigne et marque", "type": "text", "required": true },
+    { "id": "territoire", "label": "Territoire d'exclusivité", "type": "textarea", "required": true },
+    { "id": "droit_entree", "label": "Droit d'entrée (€)", "type": "number", "required": true }
+  ]
+}
+
+CONTRAT DE TRAVAIL (CDI/CDD):
+{
+  "client_roles": ["L'employeur", "Le salarié"],  // ⚠️ OBLIGATOIRE
+  "fields": [
+    { "id": "type_contrat", "label": "Type de contrat", "type": "select", "options": ["CDI", "CDD", "Alternance"], "required": true },
+    { "id": "poste", "label": "Intitulé du poste", "type": "text", "required": true },
+    { "id": "salaire_brut", "label": "Salaire brut mensuel (€)", "type": "number", "required": true }
+  ]
+}
+
+COMPROMIS/VENTE IMMOBILIÈRE:
+{
+  "client_roles": ["Le vendeur", "L'acquéreur"],  // ⚠️ OBLIGATOIRE
   "fields": [
     { "id": "adresse_bien", "label": "Adresse du bien", "type": "textarea", "required": true },
     { "id": "prix_vente", "label": "Prix de vente (€)", "type": "number", "required": true },
-    { "id": "clause_suspensive", "label": "Clause suspensive d'obtention de prêt", "type": "select", "options": ["Oui", "Non"], "required": true },
-    { "id": "details_pret", "label": "Détails du prêt", "type": "textarea", "conditional_on": { "field": "clause_suspensive", "value": "Oui" } }
+    { "id": "clause_suspensive", "label": "Clause suspensive d'obtention de prêt", "type": "select", "options": ["Oui", "Non"], "required": true }
   ]
 }
 
 BAIL D'HABITATION:
 {
-  "client_roles": ["Le bailleur (propriétaire)", "Le locataire"],
+  "client_roles": ["Le bailleur", "Le locataire"],  // ⚠️ OBLIGATOIRE
   "fields": [
     { "id": "adresse_logement", "label": "Adresse du logement", "type": "textarea", "required": true },
     { "id": "loyer_mensuel", "label": "Loyer mensuel (€)", "type": "number", "required": true },
-    { "id": "meuble", "label": "Logement meublé", "type": "select", "options": ["Oui", "Non"], "required": true },
-    { "id": "inventaire_meubles", "label": "Inventaire des meubles", "type": "textarea", "conditional_on": { "field": "meuble", "value": "Oui" } }
+    { "id": "meuble", "label": "Logement meublé", "type": "select", "options": ["Oui", "Non"], "required": true }
   ]
 }
 
-CONTRAT DE TRAVAIL:
+PRESTATION DE SERVICES:
 {
-  "client_roles": ["L'employeur", "Le salarié"],
+  "client_roles": ["Le prestataire", "Le client"],  // ⚠️ OBLIGATOIRE
   "fields": [
-    { "id": "type_contrat", "label": "Type de contrat", "type": "select", "options": ["CDI", "CDD", "Alternance"], "required": true },
-    { "id": "duree_cdd", "label": "Durée du CDD", "type": "text", "conditional_on": { "field": "type_contrat", "value": "CDD" } }
+    { "id": "objet_prestation", "label": "Objet de la prestation", "type": "textarea", "required": true },
+    { "id": "prix", "label": "Prix de la prestation (€)", "type": "number", "required": true }
   ]
 }`
 
     const userPrompt = `Type de contrat: ${contractType}
 Rôle du professionnel: ${role === 'notaire' ? 'Notaire' : 'Avocat'}
 Description/Besoin spécifique: ${description || 'Formulaire standard'}
+
+⚠️ IMPÉRATIF: Tu DOIS générer le champ "client_roles" adapté au type de contrat ${contractType}.
+Exemples de client_roles selon le type:
+- Franchise → ["Le franchiseur", "Le franchisé"]
+- Travail → ["L'employeur", "Le salarié"]
+- Vente → ["Le vendeur", "L'acquéreur"]
+- Bail → ["Le bailleur", "Le locataire"]
+- Prestation → ["Le prestataire", "Le client"]
 
 Génère le schéma JSON du formulaire optimal pour ce contrat.
 Retourne UNIQUEMENT le JSON, sans texte avant ou après.`
