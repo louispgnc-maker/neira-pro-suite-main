@@ -1012,12 +1012,6 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
   if (schema.sections && schema.sections.length > 0) {
     return (
       <div className="space-y-8">
-        {/* Section fixe client en premier */}
-        {renderClientSection()}
-        
-        {/* Section autre partie */}
-        {renderOtherPartySection()}
-        
         {/* Sections dynamiques */}
         {schema.sections.map((section, idx) => (
           <div key={idx} className="space-y-4">
@@ -1040,12 +1034,6 @@ export function DynamicFormRenderer({ schema, formData, onFormDataChange, role =
   // Sinon, afficher tous les champs en grille
   return (
     <div className="space-y-8">
-      {/* Section fixe client en premier */}
-      {renderClientSection()}
-      
-      {/* Section autre partie */}
-      {renderOtherPartySection()}
-      
       {/* Champs dynamiques */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {schema.fields.filter(shouldShowField).map(renderField)}

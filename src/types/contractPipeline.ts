@@ -166,7 +166,8 @@ export type PipelineStep =
   | 'audit'                   // Audit qualité
   | 'form_filling'            // Collecte des réponses
   | 'final_validation'        // Validation finale
-  | 'contract_generation';    // Génération du contrat
+  | 'contract_generation'     // Génération du contrat
+  | 'assign_clients';         // Attribution des clients aux parties
 
 export interface ContractPipelineState {
   step: PipelineStep;
@@ -190,6 +191,12 @@ export interface ContractPipelineState {
   // Étape 5
   formData?: Record<string, any>;
   validationResult?: ValidationResult;
+  
+  // Étape 6 - Contrat généré
+  generatedContract?: string;
+  
+  // Étape 7 - Attribution clients
+  assignedClients?: Record<string, string>; // { "Partie 1": clientId, "Partie 2": clientId }
   
   // Métadonnées
   createdAt: string;
