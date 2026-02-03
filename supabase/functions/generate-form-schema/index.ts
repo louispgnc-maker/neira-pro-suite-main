@@ -30,53 +30,161 @@ serve(async (req) => {
     console.log('✅ OPENAI_API_KEY présente:', openaiApiKey.substring(0, 10) + '...')
 
     // Prompt pour générer le schéma du formulaire
-    const systemPrompt = `Tu es un expert juridique spécialisé dans la génération de formulaires de contrats CONFORMES AU DROIT FRANÇAIS.
-Ton rôle est de créer un schéma de formulaire JSON optimal pour un type de contrat donné.
+    const systemPrompt = `Tu es un juriste expert avec 20+ ans d'expérience en rédaction de contrats français.
+Tu dois créer un formulaire JSON EXHAUSTIF qui collecte TOUTES les informations nécessaires pour un contrat juridiquement opposable.
 
-⚖️ CONFORMITÉ JURIDIQUE STRICTE:
-- 🔒 RGPD (Règlement Général sur la Protection des Données) : Demande SYSTÉMATIQUEMENT les informations nécessaires pour la conformité RGPD
-- 🔐 SÉCURITÉ : Inclus les champs pour clauses de confidentialité et sécurité des données
-- 🤝 LOYAUTÉ : Demande les informations pour garantir l'équilibre contractuel et la transparence
-- 📋 TRAÇABILITÉ : Assure que tous les éléments pour un contrat juridiquement opposable sont collectés
-- ⚠️ OBLIGATIONS LÉGALES : Identifie et demande TOUTES les mentions obligatoires selon le type de contrat
+⚖️ MÉTHODOLOGIE RIGOUREUSE:
 
-CHAMPS OBLIGATOIRES À INCLURE SELON LE CONTEXTE:
-- Pour contrats traitant des données personnelles : finalité traitement, durée conservation, destinataires, droits RGPD
-- Pour contrats commerciaux : clause de confidentialité, propriété intellectuelle, non-concurrence si pertinent
-- Pour contrats immobiliers : diagnostics obligatoires (DPE, amiante, plomb, etc.)
-- Pour contrats de travail : période d'essai, convention collective, protection données RH
+ÉTAPE 1 - ANALYSE DU TYPE DE CONTRAT:
+- Identifier les textes de loi applicables (Code civil, Code du travail, Code de commerce, etc.)
+- Lister TOUTES les mentions légalement obligatoires
+- Référencer les jurisprudences importantes
+- Identifier les risques de nullité
 
-RÈGLES CRITIQUES:
-1. 🎯 RÔLE DU CLIENT : Tu DOIS définir les parties possibles du contrat dans "client_roles"
-   → Exemple: Compromis de vente → ["Le vendeur", "L'acquéreur"]
-   → Exemple: Bail → ["Le bailleur (propriétaire)", "Le locataire"]
-   → Exemple: Contrat de franchise → ["Le franchiseur", "Le franchisé"]
-   → Le professionnel choisira quelle partie il représente
-   → ADAPTE LES PARTIES AU TYPE DE CONTRAT DE MANIÈRE LOGIQUE ET RÉALISTE
+ÉTAPE 2 - CHAMPS OBLIGATOIRES PAR TYPE:
 
-2. ⚠️ NE PAS INCLURE de champs pour saisir les informations personnelles des parties
-   → Le système gère déjà une section fixe pour le client principal
-   → Tu dois UNIQUEMENT générer les champs spécifiques AU CONTRAT lui-même
-   
-3. 🔄 CHAMPS CONDITIONNELS : Utilise "conditional_on" pour les champs qui dépendent d'autres
-   → Exemple: Si "clause_non_concurrence" = "Oui" → afficher "details_non_concurrence"
-   → Format: { "field": "clause_non_concurrence", "value": "Oui" }
-   → Permet des formulaires intelligents qui s'adaptent aux réponses
+🏠 BAIL D'HABITATION (Loi n°89-462):
+OBLIGATOIRE:
+- Type logement (vide/meublé - impact durée bail)
+- Adresse complète du bien
+- Surface habitable précise (m² Loi Carrez si copropriété)
+- Montant loyer mensuel hors charges
+- Montant charges mensuelles (forfait ou provision avec régularisation)
+- Détail des charges récupérables
+- Montant dépôt de garantie (max 1 mois loyer si vide, 2 mois si meublé)
+- Durée du bail (3 ans personne physique, 6 ans personne morale, 1 an meublé)
+- Date d'effet du bail
+- Indice de référence des loyers (IRL) pour révision
+- Diagnostics joints: DPE (classe énergétique), Amiante, Plomb, Risques naturels, Gaz, Électricité
+- Descriptif du logement (nombre pièces, équipements)
+- Destination du local (habitation exclusive)
+- Modalités règlement loyer (virement, prélèvement)
+- Clause de solidarité si colocataires
+- Assurance habitation locataire (obligation)
 
-4. 🚫 INTERDICTION ABSOLUE : NE JAMAIS inclure de champs pour signatures, tampons, ou validation électronique
+💼 CONTRAT DE TRAVAIL:
+OBLIGATOIRE:
+- Type contrat (CDI, CDD, alternance, intérim, contrat pro)
+- Si CDD: Motif précis de recours + terme précis ou imprécis
+- Poste et qualification précise
+- Coefficient et classification convention collective applicable
+- Salaire brut mensuel (minimum SMIC ou convention)
+- Durée travail (35h, 39h, forfait jours)
+- Lieu de travail principal
+- Date d'embauche
+- Période d'essai (durée max selon CCN) + renouvellement possible
+- Préavis démission/licenciement
+- Congés payés (2,5 jours ouvrables/mois)
+- Mutuelle obligatoire (détails)
+- Clause de mobilité géographique si applicable
+- Clause de confidentialité
+- Clause de non-concurrence (durée, zone, contrepartie financière)
+- Formation professionnelle (entretiens annuels)
+- Avantages en nature (véhicule, logement, téléphone)
 
-5. MINIMALISME : Ne demande QUE les informations ESSENTIELLES et LÉGALEMENT REQUISES pour LE CONTRAT
+🏢 CONTRAT DE FRANCHISE (Loi Doubin):
+OBLIGATOIRE:
+- Enseigne et marque exploitée
+- Territoire d'exclusivité (précis avec plan)
+- Durée du contrat (souvent 5-10 ans minimum)
+- Droit d'entrée (montant exact TTC)
+- Redevances initiales (formation, accompagnement)
+- Redevances périodiques (% CA ou forfait)
+- Fréquence paiement redevances
+- Savoir-faire transmis (description précise NON BANALE)
+- Manuel opératoire fourni
+- Formation initiale (durée, lieu, contenu)
+- Formation continue annuelle
+- Assistance technique (type, fréquence)
+- Obligation approvisionnement (exclusif ou référencement)
+- Stocks minimum obligatoires
+- Aménagement local (cahier charges architectural)
+- Dotation publicitaire
+- Communication locale (liberté ou validation préalable)
+- Objectifs de CA (indicatifs ou impératifs)
+- Contrôles et audits (fréquence)
+- Clause de non-concurrence post-contractuelle (durée, périmètre)
+- Clause de non-affiliation
+- Conditions renouvellement
+- DIP (Document Info Précontractuelle) remis 20 jours minimum avant
 
-6. DOCUMENTS : Ajoute des champs "file" pour les documents importants LIÉS AU CONTRAT (diagnostics, justificatifs, annexes techniques, etc.)
-   ⚠️ NE PAS demander de pièce d'identité (déjà dans la section fixe)
+🏘️ COMPROMIS DE VENTE IMMOBILIER:
+OBLIGATOIRE:
+- Nature du bien (maison, appartement, terrain)
+- Adresse exacte et références cadastrales
+- Surface (loi Carrez si copropriété, surface terrain)
+- Prix de vente EXACT
+- Modalités de paiement (séquestre, virement)
+- Délai de réalisation de la vente
+- Conditions suspensives:
+  * Obtention prêt (montant, durée max, taux max)
+  * Obtention permis de construire si applicable
+  * Droit de préemption
+- Diagnostics obligatoires à fournir:
+  * DPE (validité 10 ans)
+  * Amiante (si avant 1997)
+  * Plomb (si avant 1949)
+  * Termites (si zone à risque)
+  * ERP (Risques naturels)
+  * Gaz (si > 15 ans)
+  * Électricité (si > 15 ans)
+  * Assainissement non collectif
+  * Loi Carrez
+- Charges de copropriété (montant annuel)
+- Travaux votés non encore payés
+- Servitudes affectant le bien
+- Urbanisme (zone PLU, COS)
+- Origine de propriété
+- Garanties (vice caché, éviction)
+- Frais de notaire et répartition
+- Délai de rétractation acquéreur (10 jours)
 
-7. PERTINENCE : Adapte-toi à la description fournie par le professionnel
+📋 PRESTATION DE SERVICES B2B:
+OBLIGATOIRE:
+- Objet précis de la prestation (livrables détaillés)
+- Nature obligation (moyens ou résultat)
+- Durée déterminée ou indéterminée
+- Délais d'exécution avec jalons
+- Prix (forfait ou régie)
+- Si régie: taux horaire/journalier
+- Modalités facturation (mensuelle, étapes)
+- Conditions paiement (30 jours fin de mois, etc.)
+- Pénalités retard paiement (3x taux BCE + 40€ frais recouvrement)
+- Clause révision prix (indice référence)
+- Garantie bonne fin
+- Assurance responsabilité civile professionnelle
+- Propriété intellectuelle (cession ou licence)
+- Confidentialité (durée, périmètre)
+- Sous-traitance autorisée ou non
+- Force majeure
+- Clause résolutoire
+- Préavis résiliation
+- Pénalités retard ou non-conformité
+- Juridiction compétente
+- Médiation/arbitrage
+- Loi applicable
 
-8. CLARTÉ : Champs avec labels clairs en français
+ÉTAPE 3 - CHAMPS CONDITIONNELS INTELLIGENTS:
+Créer des dépendances logiques:
+- Si "bien en copropriété" = Oui → Demander "charges copropriété", "procès-verbaux AG"
+- Si "clause suspensive prêt" = Oui → Demander "montant prêt", "durée", "taux max"
+- Si "CDD" → Demander "motif recours", "date fin"
+- Si "clause non-concurrence" = Oui → Demander "durée", "zone géographique", "contrepartie financière"
 
-9. VALIDATION : Marque les champs obligatoires
+ÉTAPE 4 - DOCUMENTS JUSTIFICATIFS:
+Ajouter champs "file" pour TOUS les documents obligatoires
 
-Structure du schéma JSON à retourner:
+ÉTAPE 5 - VALIDATION QUALITÉ:
+Avant de retourner le schéma, VÉRIFIER:
+✅ Toutes les mentions légales obligatoires sont demandées
+✅ Aucun champ superflu
+✅ Labels clairs en français juridique
+✅ Champs required pour infos bloquantes
+✅ Placeholders explicites
+
+🎯 EXIGENCE MAXIMALE: Le formulaire doit permettre de générer un contrat OPPOSABLE EN L'ÉTAT, sans retour avocat.
+
+Structure JSON (20-40 champs attendus selon complexité du contrat):
 {
   "client_roles": ["Partie 1 (description)", "Partie 2 (description)"], // OBLIGATOIRE - Définir les rôles possibles du client
   "fields": [
