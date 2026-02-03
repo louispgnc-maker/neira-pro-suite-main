@@ -171,41 +171,64 @@ export default function ContratDetail() {
   const detectContractParties = (content: string): string[] => {
     const parties: string[] = [];
     
-    // Liste de rôles contractuels connus
+    // Liste de rôles contractuels connus avec leurs variations
     const knownRoles = [
       'franchiseur', 'franchisé', 'vendeur', 'acquéreur', 'acheteur',
       'bailleur', 'locataire', 'employeur', 'salarié', 'employé',
       'prestataire', 'client', 'donateur', 'donataire', 'cédant', 'cessionnaire',
-      'prêteur', 'emprunteur', 'mandant', 'mandataire', 'propriétaire', 'locataire'
+      'prêteur', 'emprunteur', 'mandant', 'mandataire', 'propriétaire'
     ];
     
-    // Pattern 1 : "D'une part, [ROLE]"
-    const pattern1 = /D'une\s+part[,\s]+(?:\[À COMPLÉTER\]|(?:le|la)\s+([a-zéèêàâûù]+))/gi;
+    // Pattern 1 : "D'une part, [ROLE]" ou "D'une part [ROLE]"
+    const pattern1 = /D'une\s+part[,\s:]+(?:\[À COMPLÉTER\][,\s]*(?:ci-après\s+)?(?:dénommé|désigné)\s+"([^"]+)"|(?:le|la)\s+([a-zéèêàâûù]+))/gi;
     const matches1 = content.matchAll(pattern1);
     for (const match of matches1) {
-      if (match[1]) {
-        const role = match[1].trim().toLowerCase();
-        const capitalizedRole = `Le ${role.charAt(0).toUpperCase() + role.slice(1)}`;
-        if (knownRoles.includes(role) && !parties.includes(capitalizedRole)) {
+      const role = (match[1] || match[2])?.trim().toLowerCase();
+      if (role) {
+        // Capitaliser proprement
+        const capitalizedRole = role.includes(' ') 
+          ? role.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+          : `Le ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+        
+        if ((knownRoles.includes(role) || match[1]) && !parties.includes(capitalizedRole)) {
           parties.push(capitalizedRole);
         }
       }
     }
     
     // Pattern 2 : "Et d'autre part, [ROLE]"
-    const pattern2 = /Et\s+d'autre\s+part[,\s]+(?:\[À COMPLÉTER\]|(?:le|la)\s+([a-zéèêàâûù]+))/gi;
+    const pattern2 = /Et\s+d'autre\s+part[,\s:]+(?:\[À COMPLÉTER\][,\s]*(?:ci-après\s+)?(?:dénommé|désigné)\s+"([^"]+)"|(?:le|la)\s+([a-zéèêàâûù]+))/gi;
     const matches2 = content.matchAll(pattern2);
     for (const match of matches2) {
-      if (match[1]) {
-        const role = match[1].trim().toLowerCase();
-        const capitalizedRole = `Le ${role.charAt(0).toUpperCase() + role.slice(1)}`;
-        if (knownRoles.includes(role) && !parties.includes(capitalizedRole)) {
+      const role = (match[1] || match[2])?.trim().toLowerCase();
+      if (role) {
+        const capitalizedRole = role.includes(' ')
+          ? role.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+          : `Le ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+        
+        if ((knownRoles.includes(role) || match[1]) && !parties.includes(capitalizedRole)) {
           parties.push(capitalizedRole);
         }
       }
     }
     
-    // Fallback : chercher dans le contenu JSON si présent
+    // Pattern 3 : Détection directe dans le texte (fallback agressif)
+    if (parties.length === 0) {
+      const contentLower = content.toLowerCase();
+      if (contentLower.includes('franchiseur') && contentLower.includes('franchisé')) {
+        parties.push('Le Franchiseur', 'Le Franchisé');
+      } else if (contentLower.includes('bailleur') && contentLower.includes('locataire')) {
+        parties.push('Le Bailleur', 'Le Locataire');
+      } else if (contentLower.includes('employeur') && contentLower.includes('salarié')) {
+        parties.push('L\'Employeur', 'Le Salarié');
+      } else if (contentLower.includes('vendeur') && contentLower.includes('acquéreur')) {
+        parties.push('Le Vendeur', 'L\'Acquéreur');
+      } else if (contentLower.includes('prestataire') && contentLower.includes('client')) {
+        parties.push('Le Prestataire', 'Le Client');
+      }
+    }
+    
+    // Fallback JSON si toujours vide
     if (parties.length === 0 && contrat?.contenu_json?.client_roles) {
       return contrat.contenu_json.client_roles.slice(0, 5);
     }
