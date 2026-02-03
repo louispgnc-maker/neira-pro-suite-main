@@ -162,21 +162,45 @@ export default function ContratDetail() {
   // Fonction pour détecter les parties du contrat
   const detectContractParties = (content: string): string[] => {
     const parties: string[] = [];
-    const patterns = [
-      /Entre\s+les\s+soussignés\s*:\s*([^,\n]+)/gi,
-      /D'une\s+part,\s+([^,\n]+)/gi,
-      /Et\s+d'autre\s+part,\s+([^,\n]+)/gi,
-      /(?:Le|La)\s+(\w+(?:\s+\w+)*?)\s*,/g
+    
+    // Liste de rôles contractuels connus
+    const knownRoles = [
+      'franchiseur', 'franchisé', 'vendeur', 'acquéreur', 'acheteur',
+      'bailleur', 'locataire', 'employeur', 'salarié', 'employé',
+      'prestataire', 'client', 'donateur', 'donataire', 'cédant', 'cessionnaire',
+      'prêteur', 'emprunteur', 'mandant', 'mandataire', 'propriétaire', 'locataire'
     ];
     
-    patterns.forEach(pattern => {
-      const matches = content.matchAll(pattern);
-      for (const match of matches) {
-        if (match[1] && !parties.includes(match[1].trim())) {
-          parties.push(match[1].trim());
+    // Pattern 1 : "D'une part, [ROLE]"
+    const pattern1 = /D'une\s+part[,\s]+(?:\[À COMPLÉTER\]|(?:le|la)\s+([a-zéèêàâûù]+))/gi;
+    const matches1 = content.matchAll(pattern1);
+    for (const match of matches1) {
+      if (match[1]) {
+        const role = match[1].trim().toLowerCase();
+        const capitalizedRole = `Le ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+        if (knownRoles.includes(role) && !parties.includes(capitalizedRole)) {
+          parties.push(capitalizedRole);
         }
       }
-    });
+    }
+    
+    // Pattern 2 : "Et d'autre part, [ROLE]"
+    const pattern2 = /Et\s+d'autre\s+part[,\s]+(?:\[À COMPLÉTER\]|(?:le|la)\s+([a-zéèêàâûù]+))/gi;
+    const matches2 = content.matchAll(pattern2);
+    for (const match of matches2) {
+      if (match[1]) {
+        const role = match[1].trim().toLowerCase();
+        const capitalizedRole = `Le ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+        if (knownRoles.includes(role) && !parties.includes(capitalizedRole)) {
+          parties.push(capitalizedRole);
+        }
+      }
+    }
+    
+    // Fallback : chercher dans le contenu JSON si présent
+    if (parties.length === 0 && contrat?.contenu_json?.client_roles) {
+      return contrat.contenu_json.client_roles.slice(0, 5);
+    }
     
     return parties.slice(0, 5); // Max 5 parties
   };
