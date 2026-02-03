@@ -267,16 +267,6 @@ export default function ContratDetail() {
   const saveInfo = async () => {
     if (!contrat || !user) return;
     
-    setIsSaving(true); // Démarrer le chargement
-    setSavingProgress(0); // Réinitialiser la progression
-    setWaitingProgress(null); // Reset waiting
-    
-    // Générer un nombre aléatoire entre 70 et 90 pour l'attente
-    const randomWaitingTarget = Math.floor(Math.random() * 21) + 70; // 70-90
-    
-    // Étape 1 : Validation (10%)
-    setSavingProgress(10);
-    
     // Validation : vérifier qu'un même client n'est pas assigné à plusieurs parties
     if (Object.keys(editedPartiesClients).length > 1) {
       const assignedClients = Object.values(editedPartiesClients).filter(id => id && id !== 'none');
@@ -284,8 +274,6 @@ export default function ContratDetail() {
       
       if (assignedClients.length !== uniqueClients.size) {
         toast.error("Un même client ne peut pas être assigné à plusieurs parties");
-        setIsSaving(false);
-        setSavingProgress(0);
         return;
       }
     }
@@ -293,80 +281,83 @@ export default function ContratDetail() {
     try {
       let updatedContent = contrat.content || '';
       
-      // Étape 2 : Préparation (20%)
-      setSavingProgress(20);
+      // Vérifier si on doit appeler l'IA (clients assignés + [À COMPLÉTER] présents)
+      const hasAssignedClients = Object.keys(editedPartiesClients).length > 0 && 
+                                 Object.values(editedPartiesClients).some(id => id && id !== 'none');
+      const needsAICompletion = hasAssignedClients && updatedContent.includes('[À COMPLÉTER]');
       
-      // Si on utilise le système multi-parties ET qu'il y a des clients assignés
-      if (Object.keys(editedPartiesClients).length > 0) {
-        const hasAssignedClients = Object.values(editedPartiesClients).some(id => id && id !== 'none');
+      // Afficher l'overlay de chargement UNIQUEMENT si l'IA doit intervenir
+      if (needsAICompletion) {
+        setIsSaving(true);
+        setSavingProgress(0);
+        setWaitingProgress(null);
         
-        if (hasAssignedClients && updatedContent.includes('[À COMPLÉTER]')) {
-          console.log('🤖 Appel de l\'IA pour compléter le contrat avec les clients assignés...');
-          
-          // Étape 3 : Préparation infos clients (30%)
-          setSavingProgress(30);
-          
-          // Préparer les infos clients pour chaque partie
-          const partiesClientsInfo: Record<string, any> = {};
-          
-          for (const [partyName, clientId] of Object.entries(editedPartiesClients)) {
-            if (clientId && clientId !== 'none') {
-              const clientInfo = getClientInfo(clientId, clients);
-              if (clientInfo) {
-                partiesClientsInfo[partyName] = clientInfo;
-              }
+        // Générer un nombre aléatoire entre 70 et 90 pour l'attente
+        const randomWaitingTarget = Math.floor(Math.random() * 21) + 70; // 70-90
+        
+        // Étape 1 : Validation (10%)
+        setSavingProgress(10);
+        
+        // Étape 2 : Préparation (20%)
+        setSavingProgress(20);
+        
+        console.log('🤖 Appel de l\'IA pour compléter le contrat avec les clients assignés...');
+        
+        // Étape 3 : Préparation infos clients (30%)
+        setSavingProgress(30);
+        
+        // Préparer les infos clients pour chaque partie
+        const partiesClientsInfo: Record<string, any> = {};
+        
+        for (const [partyName, clientId] of Object.entries(editedPartiesClients)) {
+          if (clientId && clientId !== 'none') {
+            const clientInfo = getClientInfo(clientId, clients);
+            if (clientInfo) {
+              partiesClientsInfo[partyName] = clientInfo;
             }
           }
-          
-          // Étape 4 : Appel IA - Définir la cible d'attente
-          setSavingProgress(40);
-          setWaitingProgress(randomWaitingTarget); // La barre s'arrêtera ici
-          
-          // Appeler l'Edge Function pour compléter avec l'IA
-          try {
-            const { data: functionData, error: functionError } = await supabase.functions.invoke(
-              'complete-contract-with-clients',
-              {
-                body: {
-                  contractContent: updatedContent,
-                  partiesClients: partiesClientsInfo,
-                }
+        }
+        
+        // Étape 4 : Appel IA - Définir la cible d'attente
+        setSavingProgress(40);
+        setWaitingProgress(randomWaitingTarget); // La barre s'arrêtera ici
+        
+        // Appeler l'Edge Function pour compléter avec l'IA
+        try {
+          const { data: functionData, error: functionError } = await supabase.functions.invoke(
+            'complete-contract-with-clients',
+            {
+              body: {
+                contractContent: updatedContent,
+                partiesClients: partiesClientsInfo,
               }
-            );
-            
-            if (functionError) {
-              console.error('❌ Erreur Edge Function:', functionError);
-              toast.error("Erreur lors de la complétion automatique du contrat");
-              // Continuer quand même pour sauvegarder
-            } else if (functionData?.completedContract) {
-              updatedContent = functionData.completedContract;
-              console.log('✅ Contrat complété par l\'IA');
             }
-            
-            // Étape 5 : IA terminée - Retirer le waitingProgress et continuer jusqu'à 100
-            setWaitingProgress(null);
-            setSavingProgress(randomWaitingTarget); // Partir de là où on s'est arrêté
-            
-          } catch (aiError: any) {
-            console.error('❌ Erreur appel IA:', aiError);
-            toast.error("Impossible de compléter automatiquement le contrat");
+          );
+          
+          if (functionError) {
+            console.error('❌ Erreur Edge Function:', functionError);
+            toast.error("Erreur lors de la complétion automatique du contrat");
             // Continuer quand même pour sauvegarder
-            setWaitingProgress(null);
-            setSavingProgress(randomWaitingTarget);
+          } else if (functionData?.completedContract) {
+            updatedContent = functionData.completedContract;
+            console.log('✅ Contrat complété par l\'IA');
           }
-        } else {
-          // Pas de [À COMPLÉTER] ou pas de clients assignés, passer directement
+          
+          // Étape 5 : IA terminée - Retirer le waitingProgress et continuer jusqu'à 100
+          setWaitingProgress(null);
+          setSavingProgress(randomWaitingTarget); // Partir de là où on s'est arrêté
+          
+        } catch (aiError: any) {
+          console.error('❌ Erreur appel IA:', aiError);
+          toast.error("Impossible de compléter automatiquement le contrat");
+          // Continuer quand même pour sauvegarder
           setWaitingProgress(null);
           setSavingProgress(randomWaitingTarget);
         }
-      } else {
-        // Pas de système multi-parties, passer directement
-        setWaitingProgress(null);
-        setSavingProgress(randomWaitingTarget);
+        
+        // Étape 6 : Sauvegarde en base (85%)
+        setSavingProgress(85);
       }
-      
-      // Étape 6 : Sauvegarde en base (85%)
-      setSavingProgress(85);
       
       // Sauvegarder dans la base de données
       const { error } = await supabase
@@ -406,8 +397,11 @@ export default function ContratDetail() {
         setContractParties(parties);
       }
       
-      // Étape 7 : Finalisation (100%)
-      setSavingProgress(100);
+      // Si on a utilisé l'IA, finaliser la progression
+      if (needsAICompletion) {
+        // Étape 7 : Finalisation (100%)
+        setSavingProgress(100);
+      }
       
       setEditingInfo(false);
       toast.success("Informations mises à jour");
@@ -416,13 +410,15 @@ export default function ContratDetail() {
       console.error('Erreur sauvegarde:', error);
       toast.error("Erreur lors de la sauvegarde");
     } finally {
-      // Petite pause pour montrer 100% avant de fermer
-      setTimeout(() => {
-        setIsSaving(false);
-        setSavingProgress(0);
-        setDisplayedProgress(0);
-        setWaitingProgress(null);
-      }, 500);
+      // Reset uniquement si l'overlay était actif
+      if (isSaving) {
+        setTimeout(() => {
+          setIsSaving(false);
+          setSavingProgress(0);
+          setDisplayedProgress(0);
+          setWaitingProgress(null);
+        }, 500);
+      }
     }
   };
 
