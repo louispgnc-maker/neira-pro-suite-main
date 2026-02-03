@@ -256,48 +256,85 @@ export default function ContratDetail() {
       
       // Si on utilise le système multi-parties
       if (Object.keys(editedPartiesClients).length > 0) {
-        // Pour chaque partie assignée, remplacer les infos
-        for (const [partyName, clientId] of Object.entries(editedPartiesClients)) {
-          if (!clientId) continue;
+        // Stratégie améliorée : remplacer [À COMPLÉTER] en détectant le contexte
+        updatedContent = updatedContent.replace(/\[À COMPLÉTER\]/g, (match, offset, fullText) => {
+          // Analyser le contexte autour du placeholder (500 caractères avant)
+          const contextBefore = fullText.substring(Math.max(0, offset - 500), offset).toLowerCase();
           
-          const clientInfo = getClientInfo(clientId, clients);
-          if (!clientInfo) continue;
+          // Détecter quelle partie est concernée
+          let relevantClientId = null;
+          let maxScore = 0;
           
-          // Remplacer les placeholders spécifiques à cette partie
-          // Chercher les sections qui mentionnent cette partie
-          const partyPattern = new RegExp(`(${partyName}[^\\n]*?)[\\s\\S]*?(?=(?:Le |La |Et |Article|$))`, 'gi');
+          for (const [partyName, clientId] of Object.entries(editedPartiesClients)) {
+            if (!clientId) continue;
+            
+            // Score basé sur la proximité de la mention de la partie
+            const partyLower = partyName.toLowerCase();
+            const lastIndex = contextBefore.lastIndexOf(partyLower);
+            
+            if (lastIndex !== -1) {
+              // Plus la mention est proche, plus le score est élevé
+              const score = lastIndex;
+              if (score > maxScore) {
+                maxScore = score;
+                relevantClientId = clientId;
+              }
+            }
+          }
           
-          updatedContent = updatedContent.replace(partyPattern, (section) => {
-            return section
-              .replace(/\[À COMPLÉTER\]/g, (match, offset) => {
-                const before = section.substring(Math.max(0, offset - 50), offset).toLowerCase();
-                
-                if (before.includes('nom') || before.includes(partyName.toLowerCase())) {
-                  return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
-                }
-                if (before.includes('adresse') || before.includes('domicilié') || before.includes('demeurant')) {
-                  return clientInfo.adresse || match;
-                }
-                if (before.includes('né le') || before.includes('naissance')) {
-                  return clientInfo.date_naissance || match;
-                }
-                if (before.includes('nationalité')) {
-                  return clientInfo.nationalite || match;
-                }
-                if (before.includes('téléphone') || before.includes('tél')) {
-                  return clientInfo.telephone || match;
-                }
-                if (before.includes('email') || before.includes('courriel')) {
-                  return clientInfo.email || match;
-                }
-                if (before.includes('profession')) {
-                  return clientInfo.profession || match;
-                }
-                
-                return match;
-              });
-          });
-        }
+          // Si aucune partie détectée, prendre le premier client disponible
+          if (!relevantClientId) {
+            relevantClientId = Object.values(editedPartiesClients).find(id => id) || null;
+          }
+          
+          if (!relevantClientId) return match;
+          
+          const clientInfo = getClientInfo(relevantClientId, clients);
+          if (!clientInfo) return match;
+          
+          // Déterminer quel champ remplacer selon le contexte
+          const contextWords = contextBefore.substring(Math.max(0, contextBefore.length - 100));
+          
+          if (contextWords.includes('nom') && !contextWords.includes('prénom')) {
+            return clientInfo.nom || match;
+          }
+          if (contextWords.includes('prénom')) {
+            return clientInfo.prenom || match;
+          }
+          if (contextWords.includes('nom') || contextWords.includes('dénomm') || contextWords.includes('représent')) {
+            return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
+          }
+          if (contextWords.includes('adresse') || contextWords.includes('domicilié') || contextWords.includes('demeurant') || contextWords.includes('sise')) {
+            return clientInfo.adresse || match;
+          }
+          if (contextWords.includes('né') || contextWords.includes('naissance')) {
+            return clientInfo.date_naissance || match;
+          }
+          if (contextWords.includes('nationalité')) {
+            return clientInfo.nationalite || match;
+          }
+          if (contextWords.includes('téléphone') || contextWords.includes('tél') || contextWords.includes('portable')) {
+            return clientInfo.telephone || match;
+          }
+          if (contextWords.includes('email') || contextWords.includes('courriel') || contextWords.includes('mail')) {
+            return clientInfo.email || match;
+          }
+          if (contextWords.includes('profession') || contextWords.includes('activité')) {
+            return clientInfo.profession || match;
+          }
+          if (contextWords.includes('siret') || contextWords.includes('siren')) {
+            return clientInfo.siret || match;
+          }
+          if (contextWords.includes('capital')) {
+            return clientInfo.capital_social || match;
+          }
+          if (contextWords.includes('rcs') || contextWords.includes('immatricul')) {
+            return clientInfo.ville_rcs || match;
+          }
+          
+          // Fallback : nom complet
+          return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
+        });
       }
       // Ancien système avec client_id unique (rétro-compatibilité)
       else if (editedClientId && editedClientId !== 'none') {
