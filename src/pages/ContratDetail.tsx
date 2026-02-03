@@ -554,7 +554,7 @@ export default function ContratDetail() {
       // Try loading as owner first
       const { data: cData, error } = await supabase
         .from('contrats')
-        .select('id,name,category,type,created_at,description,content,contenu_json,client_id')
+        .select('id,name,category,type,created_at,description,content,contenu_json,client_id,parties_clients')
         .eq('owner_id', user.id)
         .eq('role', role)
         .eq('id', id)
@@ -586,7 +586,7 @@ export default function ContratDetail() {
             if (shared.contrat_id) {
               const { data: originalContrat, error: origErr } = await supabase
                 .from('contrats')
-                .select('id, name, category, type, description, content, created_at, contenu_json, client_id')
+                .select('id, name, category, type, description, content, created_at, contenu_json, client_id, parties_clients')
                 .eq('id', shared.contrat_id)
                 .maybeSingle();
 
