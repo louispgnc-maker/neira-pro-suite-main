@@ -313,14 +313,27 @@ export default function ContratDetail() {
           let lastMentionPosition = -1;
           
           for (const [partyName, clientId] of Object.entries(editedPartiesClients)) {
-            if (!clientId) continue;
+            if (!clientId) continue; // Skip les parties sans client assigné
             
-            const partyLower = partyName.toLowerCase();
             const contextLower = contextBefore.toLowerCase();
-            const position = contextLower.lastIndexOf(partyLower);
             
-            if (position > lastMentionPosition) {
-              lastMentionPosition = position;
+            // Chercher plusieurs variantes du nom de partie
+            const partyVariants = [
+              partyName.toLowerCase(), // "le franchiseur"
+              partyName.toLowerCase().replace(/^(le|la|l'|les)\s+/i, ''), // "franchiseur"
+              partyName.toLowerCase().replace(/\s+/g, ''), // "lefranchiseur"
+            ];
+            
+            let bestPosition = -1;
+            for (const variant of partyVariants) {
+              const position = contextLower.lastIndexOf(variant);
+              if (position > bestPosition) {
+                bestPosition = position;
+              }
+            }
+            
+            if (bestPosition > lastMentionPosition) {
+              lastMentionPosition = bestPosition;
               selectedClientId = clientId;
               selectedPartyName = partyName;
             }
