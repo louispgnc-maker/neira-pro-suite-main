@@ -23,6 +23,7 @@ interface Contrat {
   created_at?: string | null;
   contenu_json?: any;
   client_id?: string | null;
+  parties_clients?: Record<string, string> | null; // { "Le franchiseur": "uuid", "Le franchisé": "uuid" }
 }
 
 export default function ContratDetail() {
@@ -49,10 +50,14 @@ export default function ContratDetail() {
   const [editedType, setEditedType] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
   const [editedClientId, setEditedClientId] = useState("");
+  const [editedPartiesClients, setEditedPartiesClients] = useState<Record<string, string>>({});
   
   // États pour l'édition du contenu
   const [editingContent, setEditingContent] = useState(false);
   const [editedContent, setEditedContent] = useState("");
+  
+  // Détecter les parties du contrat depuis le contenu
+  const [contractParties, setContractParties] = useState<string[]>([]);
 
   // Fonction pour régénérer le contrat avec l'IA
   const handleRegenerate = async () => {
@@ -143,7 +148,37 @@ export default function ContratDetail() {
     setEditedClientId(contrat.client_id || "");
     setEditedType(contrat.type || "");
     setEditedDescription(contrat.description || "");
+    setEditedPartiesClients(contrat.parties_clients || {});
+    
+    // Détecter les parties depuis le contenu
+    if (contrat.content) {
+      const parties = detectContractParties(contrat.content);
+      setContractParties(parties);
+    }
+    
     setEditingInfo(true);
+  };
+  
+  // Fonction pour détecter les parties du contrat
+  const detectContractParties = (content: string): string[] => {
+    const parties: string[] = [];
+    const patterns = [
+      /Entre\s+les\s+soussignés\s*:\s*([^,\n]+)/gi,
+      /D'une\s+part,\s+([^,\n]+)/gi,
+      /Et\s+d'autre\s+part,\s+([^,\n]+)/gi,
+      /(?:Le|La)\s+(\w+(?:\s+\w+)*?)\s*,/g
+    ];
+    
+    patterns.forEach(pattern => {
+      const matches = content.matchAll(pattern);
+      for (const match of matches) {
+        if (match[1] && !parties.includes(match[1].trim())) {
+          parties.push(match[1].trim());
+        }
+      }
+    });
+    
+    return parties.slice(0, 5); // Max 5 parties
   };
 
   // Fonction pour sauvegarder les informations
@@ -151,51 +186,84 @@ export default function ContratDetail() {
     if (!contrat || !user) return;
     
     try {
-      // Récupérer les infos du client si changement de client_id
-      let updatedContent = contrat.content;
-      if (editedClientId && editedClientId !== 'none' && editedClientId !== contrat.client_id) {
-        const clientInfo = getClientInfo(editedClientId, clients);
-        if (clientInfo && contrat.content) {
-          // Remplacer les placeholders par les vraies données
-          updatedContent = contrat.content
-            .replace(/\[À COMPLÉTER\]/g, (match, offset, string) => {
-              // Détection contextuelle basée sur les mots avant le placeholder
-              const before = string.substring(Math.max(0, offset - 50), offset).toLowerCase();
-              
-              // Nom complet
-              if (before.includes('nom') || before.includes('franchisé') || before.includes('franchiseur')) {
-                return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || '[À COMPLÉTER]';
-              }
-              // Adresse
-              if (before.includes('adresse') || before.includes('domicilié') || before.includes('demeurant')) {
-                return clientInfo.adresse || '[À COMPLÉTER]';
-              }
-              // Date de naissance
-              if (before.includes('né le') || before.includes('naissance')) {
-                return clientInfo.date_naissance || '[À COMPLÉTER]';
-              }
-              // Nationalité
-              if (before.includes('nationalité')) {
-                return clientInfo.nationalite || '[À COMPLÉTER]';
-              }
-              // Téléphone
-              if (before.includes('téléphone') || before.includes('tél')) {
-                return clientInfo.telephone || '[À COMPLÉTER]';
-              }
-              // Email
-              if (before.includes('email') || before.includes('courriel')) {
-                return clientInfo.email || '[À COMPLÉTER]';
-              }
-              // Profession
-              if (before.includes('profession')) {
-                return clientInfo.profession || '[À COMPLÉTER]';
-              }
-              
-              // Par défaut, garder le placeholder
-              return match;
-            });
+      let updatedContent = contrat.content || '';
+      
+      // Si on utilise le système multi-parties
+      if (Object.keys(editedPartiesClients).length > 0) {
+        // Pour chaque partie assignée, remplacer les infos
+        for (const [partyName, clientId] of Object.entries(editedPartiesClients)) {
+          if (!clientId) continue;
           
-          console.log('✅ Contenu mis à jour avec les infos du client:', clientInfo);
+          const clientInfo = getClientInfo(clientId, clients);
+          if (!clientInfo) continue;
+          
+          // Remplacer les placeholders spécifiques à cette partie
+          // Chercher les sections qui mentionnent cette partie
+          const partyPattern = new RegExp(`(${partyName}[^\\n]*?)[\\s\\S]*?(?=(?:Le |La |Et |Article|$))`, 'gi');
+          
+          updatedContent = updatedContent.replace(partyPattern, (section) => {
+            return section
+              .replace(/\[À COMPLÉTER\]/g, (match, offset) => {
+                const before = section.substring(Math.max(0, offset - 50), offset).toLowerCase();
+                
+                if (before.includes('nom') || before.includes(partyName.toLowerCase())) {
+                  return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
+                }
+                if (before.includes('adresse') || before.includes('domicilié') || before.includes('demeurant')) {
+                  return clientInfo.adresse || match;
+                }
+                if (before.includes('né le') || before.includes('naissance')) {
+                  return clientInfo.date_naissance || match;
+                }
+                if (before.includes('nationalité')) {
+                  return clientInfo.nationalite || match;
+                }
+                if (before.includes('téléphone') || before.includes('tél')) {
+                  return clientInfo.telephone || match;
+                }
+                if (before.includes('email') || before.includes('courriel')) {
+                  return clientInfo.email || match;
+                }
+                if (before.includes('profession')) {
+                  return clientInfo.profession || match;
+                }
+                
+                return match;
+              });
+          });
+        }
+      }
+      // Ancien système avec client_id unique (rétro-compatibilité)
+      else if (editedClientId && editedClientId !== 'none') {
+        const clientInfo = getClientInfo(editedClientId, clients);
+        if (clientInfo) {
+          updatedContent = updatedContent.replace(/\[À COMPLÉTER\]/g, (match, offset, string) => {
+            const before = string.substring(Math.max(0, offset - 50), offset).toLowerCase();
+            
+            if (before.includes('nom')) {
+              return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || match;
+            }
+            if (before.includes('adresse') || before.includes('domicilié')) {
+              return clientInfo.adresse || match;
+            }
+            if (before.includes('né le') || before.includes('naissance')) {
+              return clientInfo.date_naissance || match;
+            }
+            if (before.includes('nationalité')) {
+              return clientInfo.nationalite || match;
+            }
+            if (before.includes('téléphone')) {
+              return clientInfo.telephone || match;
+            }
+            if (before.includes('email')) {
+              return clientInfo.email || match;
+            }
+            if (before.includes('profession')) {
+              return clientInfo.profession || match;
+            }
+            
+            return match;
+          });
         }
       }
       
@@ -207,6 +275,7 @@ export default function ContratDetail() {
           type: editedType || null,
           description: editedDescription || null,
           client_id: editedClientId === 'none' ? null : (editedClientId || null),
+          parties_clients: Object.keys(editedPartiesClients).length > 0 ? editedPartiesClients : null,
           content: updatedContent
         })
         .eq('id', contrat.id);
@@ -221,6 +290,7 @@ export default function ContratDetail() {
         type: editedType || null,
         description: editedDescription || null,
         client_id: editedClientId === 'none' ? null : (editedClientId || null),
+        parties_clients: Object.keys(editedPartiesClients).length > 0 ? editedPartiesClients : null,
         content: updatedContent
       });
       
@@ -503,22 +573,62 @@ export default function ContratDetail() {
                         className="mt-1"
                       />
                     </div>
-                    <div>
-                      <label className="text-sm text-gray-600">Client assigné</label>
-                      <Select value={editedClientId || "none"} onValueChange={setEditedClientId}>
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Sélectionner un client" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">— Aucun client —</SelectItem>
-                          {clients.map(client => (
-                            <SelectItem key={client.id} value={client.id}>
-                              {client.nom} {client.prenom || ''}
-                            </SelectItem>
+                    
+                    {/* Section clients par partie */}
+                    {contractParties.length > 0 ? (
+                      <div className="md:col-span-2 space-y-3">
+                        <label className="text-sm font-semibold text-gray-700">Clients assignés par partie</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                          {contractParties.map((party, index) => (
+                            <div key={index}>
+                              <label className="text-sm text-gray-600 mb-1 block">
+                                👤 {party}
+                              </label>
+                              <Select 
+                                value={editedPartiesClients[party] || "none"} 
+                                onValueChange={(value) => {
+                                  setEditedPartiesClients(prev => ({
+                                    ...prev,
+                                    [party]: value === 'none' ? '' : value
+                                  }));
+                                }}
+                              >
+                                <SelectTrigger className="bg-white dark:bg-gray-900">
+                                  <SelectValue placeholder="Sélectionner un client" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="none">— Aucun client —</SelectItem>
+                                  {clients.map(client => (
+                                    <SelectItem key={client.id} value={client.id}>
+                                      {client.prenom || ''} {client.nom || ''} {client.email && `(${client.email})`}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
                           ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        </div>
+                      </div>
+                    ) : (
+                      // Ancien système (rétro-compatibilité)
+                      <div>
+                        <label className="text-sm text-gray-600">Client assigné</label>
+                        <Select value={editedClientId || "none"} onValueChange={setEditedClientId}>
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Sélectionner un client" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">— Aucun client —</SelectItem>
+                            {clients.map(client => (
+                              <SelectItem key={client.id} value={client.id}>
+                                {client.nom} {client.prenom || ''}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    
                     <div>
                       <label className="text-sm text-gray-600">Type</label>
                       <Input 
