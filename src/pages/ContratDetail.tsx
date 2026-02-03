@@ -151,6 +151,54 @@ export default function ContratDetail() {
     if (!contrat || !user) return;
     
     try {
+      // Récupérer les infos du client si changement de client_id
+      let updatedContent = contrat.content;
+      if (editedClientId && editedClientId !== 'none' && editedClientId !== contrat.client_id) {
+        const clientInfo = getClientInfo(editedClientId, clients);
+        if (clientInfo && contrat.content) {
+          // Remplacer les placeholders par les vraies données
+          updatedContent = contrat.content
+            .replace(/\[À COMPLÉTER\]/g, (match, offset, string) => {
+              // Détection contextuelle basée sur les mots avant le placeholder
+              const before = string.substring(Math.max(0, offset - 50), offset).toLowerCase();
+              
+              // Nom complet
+              if (before.includes('nom') || before.includes('franchisé') || before.includes('franchiseur')) {
+                return `${clientInfo.prenom || ''} ${clientInfo.nom || ''}`.trim() || '[À COMPLÉTER]';
+              }
+              // Adresse
+              if (before.includes('adresse') || before.includes('domicilié') || before.includes('demeurant')) {
+                return clientInfo.adresse || '[À COMPLÉTER]';
+              }
+              // Date de naissance
+              if (before.includes('né le') || before.includes('naissance')) {
+                return clientInfo.date_naissance || '[À COMPLÉTER]';
+              }
+              // Nationalité
+              if (before.includes('nationalité')) {
+                return clientInfo.nationalite || '[À COMPLÉTER]';
+              }
+              // Téléphone
+              if (before.includes('téléphone') || before.includes('tél')) {
+                return clientInfo.telephone || '[À COMPLÉTER]';
+              }
+              // Email
+              if (before.includes('email') || before.includes('courriel')) {
+                return clientInfo.email || '[À COMPLÉTER]';
+              }
+              // Profession
+              if (before.includes('profession')) {
+                return clientInfo.profession || '[À COMPLÉTER]';
+              }
+              
+              // Par défaut, garder le placeholder
+              return match;
+            });
+          
+          console.log('✅ Contenu mis à jour avec les infos du client:', clientInfo);
+        }
+      }
+      
       const { error } = await supabase
         .from('contrats')
         .update({
@@ -158,7 +206,8 @@ export default function ContratDetail() {
           category: editedCategory || null,
           type: editedType || null,
           description: editedDescription || null,
-          client_id: editedClientId === 'none' ? null : (editedClientId || null)
+          client_id: editedClientId === 'none' ? null : (editedClientId || null),
+          content: updatedContent
         })
         .eq('id', contrat.id);
 
@@ -171,7 +220,8 @@ export default function ContratDetail() {
         category: editedCategory || null,
         type: editedType || null,
         description: editedDescription || null,
-        client_id: editedClientId === 'none' ? null : (editedClientId || null)
+        client_id: editedClientId === 'none' ? null : (editedClientId || null),
+        content: updatedContent
       });
       
       setEditingInfo(false);
