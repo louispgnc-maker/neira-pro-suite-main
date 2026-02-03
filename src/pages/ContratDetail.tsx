@@ -883,23 +883,7 @@ export default function ContratDetail() {
                             Annuler
                         </Button>
                       </>
-                    ) : (
-                      <>
-                        <Button 
-                          onClick={handleRegenerate} 
-                          disabled={regenerating}
-                          size="sm"
-                          className={`gap-2 text-white ${
-                            role === 'notaire' 
-                              ? 'bg-orange-600 hover:bg-orange-700' 
-                              : 'bg-blue-600 hover:bg-blue-700'
-                          }`}
-                        >
-                          <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
-                          {regenerating ? 'Régénération...' : 'Régénérer avec l\'IA'}
-                        </Button>
-                      </>
-                    )}
+                    ) : null}
                   </div>
                 )}
                 </CardHeader>
