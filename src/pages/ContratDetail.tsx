@@ -457,8 +457,8 @@ export default function ContratDetail() {
 
       if (error) throw error;
 
-      // Mettre à jour l'état local
-      setContrat({
+      // Mettre à jour l'état local avec les nouvelles valeurs
+      const updatedContrat = {
         ...contrat,
         name: editedName,
         category: editedCategory || null,
@@ -467,7 +467,17 @@ export default function ContratDetail() {
         client_id: editedClientId === 'none' ? null : (editedClientId || null),
         parties_clients: Object.keys(editedPartiesClients).length > 0 ? editedPartiesClients : null,
         content: updatedContent
-      });
+      };
+      
+      setContrat(updatedContrat);
+      
+      // Recalculer les parties pour l'affichage
+      if (updatedContrat.contenu_json?.client_roles && Array.isArray(updatedContrat.contenu_json.client_roles)) {
+        setContractParties(updatedContrat.contenu_json.client_roles.slice(0, 5));
+      } else if (updatedContent) {
+        const parties = detectContractParties(updatedContent);
+        setContractParties(parties);
+      }
       
       setEditingInfo(false);
       toast.success("Informations mises à jour");
