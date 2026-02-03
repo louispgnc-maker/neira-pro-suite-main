@@ -267,6 +267,9 @@ export default function ContratDetail() {
   const saveInfo = async () => {
     if (!contrat || !user) return;
     
+    // Variable pour tracker si on utilise l'IA
+    let usedAI = false;
+    
     // Validation : vérifier qu'un même client n'est pas assigné à plusieurs parties
     if (Object.keys(editedPartiesClients).length > 1) {
       const assignedClients = Object.values(editedPartiesClients).filter(id => id && id !== 'none');
@@ -295,6 +298,7 @@ export default function ContratDetail() {
       
       // Afficher l'overlay de chargement UNIQUEMENT si l'IA doit intervenir
       if (needsAICompletion) {
+        usedAI = true;
         setIsSaving(true);
         setSavingProgress(0);
         setWaitingProgress(null);
@@ -418,7 +422,7 @@ export default function ContratDetail() {
       toast.error("Erreur lors de la sauvegarde");
     } finally {
       // Reset uniquement si l'overlay était actif
-      if (isSaving) {
+      if (usedAI) {
         setTimeout(() => {
           setIsSaving(false);
           setSavingProgress(0);
