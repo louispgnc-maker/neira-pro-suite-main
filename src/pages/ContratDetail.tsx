@@ -886,24 +886,6 @@ export default function ContratDetail() {
                     ) : (
                       <>
                         <Button 
-                          onClick={() => navigate(role === 'notaire' ? '/notaires/contrats' : '/avocats/contrats', { 
-                            state: { 
-                              scrollToType: contrat.type,
-                              contratData: contrat.contenu_json,
-                              contratId: contrat.id
-                            } 
-                          })}
-                          size="sm"
-                          className={`gap-2 text-white ${
-                            role === 'notaire' 
-                              ? 'bg-orange-600 hover:bg-orange-700' 
-                              : 'bg-blue-600 hover:bg-blue-700'
-                          }`}
-                        >
-                          <FileEdit className="h-4 w-4" />
-                          Retour au formulaire
-                        </Button>
-                        <Button 
                           onClick={handleRegenerate} 
                           disabled={regenerating}
                           size="sm"
