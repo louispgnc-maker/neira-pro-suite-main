@@ -289,8 +289,8 @@ export default function ContratDetail() {
             }
           }
           
-          // Étape 4 : Appel IA (50%)
-          setSavingProgress(50);
+          // Étape 4 : Appel IA (40%)
+          setSavingProgress(40);
           
           // Appeler l'Edge Function pour compléter avec l'IA
           try {
@@ -304,21 +304,31 @@ export default function ContratDetail() {
               }
             );
             
-            // Étape 5 : IA terminée (70%)
-            setSavingProgress(70);
-            
             if (functionError) {
               console.error('❌ Erreur Edge Function:', functionError);
               toast.error("Erreur lors de la complétion automatique du contrat");
+              // Continuer quand même pour sauvegarder
             } else if (functionData?.completedContract) {
               updatedContent = functionData.completedContract;
               console.log('✅ Contrat complété par l\'IA');
             }
+            
+            // Étape 5 : IA terminée (70%)
+            setSavingProgress(70);
+            
           } catch (aiError: any) {
             console.error('❌ Erreur appel IA:', aiError);
             toast.error("Impossible de compléter automatiquement le contrat");
+            // Continuer quand même pour sauvegarder
+            setSavingProgress(70);
           }
+        } else {
+          // Pas de [À COMPLÉTER] ou pas de clients assignés, passer directement à 70%
+          setSavingProgress(70);
         }
+      } else {
+        // Pas de système multi-parties, passer directement à 70%
+        setSavingProgress(70);
       }
       
       // Étape 6 : Sauvegarde en base (85%)
