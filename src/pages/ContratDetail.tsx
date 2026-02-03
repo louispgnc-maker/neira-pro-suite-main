@@ -42,6 +42,7 @@ export default function ContratDetail() {
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false); // État pour le chargement lors de la sauvegarde
+  const [savingProgress, setSavingProgress] = useState(0); // Pourcentage de progression (0-100)
   const [clients, setClients] = useState<any[]>([]);
   
   // États pour l'édition des informations
@@ -242,6 +243,10 @@ export default function ContratDetail() {
     if (!contrat || !user) return;
     
     setIsSaving(true); // Démarrer le chargement
+    setSavingProgress(0); // Réinitialiser la progression
+    
+    // Étape 1 : Validation (10%)
+    setSavingProgress(10);
     
     // Validation : vérifier qu'un même client n'est pas assigné à plusieurs parties
     if (Object.keys(editedPartiesClients).length > 1) {
@@ -251,6 +256,7 @@ export default function ContratDetail() {
       if (assignedClients.length !== uniqueClients.size) {
         toast.error("Un même client ne peut pas être assigné à plusieurs parties");
         setIsSaving(false);
+        setSavingProgress(0);
         return;
       }
     }
@@ -258,12 +264,18 @@ export default function ContratDetail() {
     try {
       let updatedContent = contrat.content || '';
       
+      // Étape 2 : Préparation (20%)
+      setSavingProgress(20);
+      
       // Si on utilise le système multi-parties ET qu'il y a des clients assignés
       if (Object.keys(editedPartiesClients).length > 0) {
         const hasAssignedClients = Object.values(editedPartiesClients).some(id => id && id !== 'none');
         
         if (hasAssignedClients && updatedContent.includes('[À COMPLÉTER]')) {
           console.log('🤖 Appel de l\'IA pour compléter le contrat avec les clients assignés...');
+          
+          // Étape 3 : Préparation infos clients (30%)
+          setSavingProgress(30);
           
           // Préparer les infos clients pour chaque partie
           const partiesClientsInfo: Record<string, any> = {};
@@ -277,6 +289,9 @@ export default function ContratDetail() {
             }
           }
           
+          // Étape 4 : Appel IA (50%)
+          setSavingProgress(50);
+          
           // Appeler l'Edge Function pour compléter avec l'IA
           try {
             const { data: functionData, error: functionError } = await supabase.functions.invoke(
@@ -288,6 +303,9 @@ export default function ContratDetail() {
                 }
               }
             );
+            
+            // Étape 5 : IA terminée (70%)
+            setSavingProgress(70);
             
             if (functionError) {
               console.error('❌ Erreur Edge Function:', functionError);
@@ -302,6 +320,9 @@ export default function ContratDetail() {
           }
         }
       }
+      
+      // Étape 6 : Sauvegarde en base (85%)
+      setSavingProgress(85);
       
       // Sauvegarder dans la base de données
       const { error } = await supabase
@@ -341,6 +362,14 @@ export default function ContratDetail() {
         setContractParties(parties);
       }
       
+      // Étape 7 : Finalisation (100%)
+      setSavingProgress(100);
+      
+      setEditingInfo(false);
+      toast.success("Informations mises à jour");
+      // Étape 7 : Finalisation (100%)
+      setSavingProgress(100);
+      
       setEditingInfo(false);
       toast.success("Informations mises à jour");
       
@@ -348,7 +377,11 @@ export default function ContratDetail() {
       console.error('Erreur sauvegarde:', error);
       toast.error("Erreur lors de la sauvegarde");
     } finally {
-      setIsSaving(false); // Arrêter le chargement
+      // Petite pause pour montrer 100% avant de fermer
+      setTimeout(() => {
+        setIsSaving(false);
+        setSavingProgress(0);
+      }, 500);
     }
   };
 
@@ -861,14 +894,23 @@ export default function ContratDetail() {
                 <RefreshCw className="h-12 w-12 text-blue-600 animate-spin" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900">Synchronisation en cours</h3>
-              <p className="text-gray-600">Enregistrement des modifications...</p>
+              <p className="text-gray-600">
+                {savingProgress < 30 && "Validation des données..."}
+                {savingProgress >= 30 && savingProgress < 50 && "Préparation des informations..."}
+                {savingProgress >= 50 && savingProgress < 70 && "Complétion intelligente du contrat..."}
+                {savingProgress >= 70 && savingProgress < 85 && "Traitement final..."}
+                {savingProgress >= 85 && "Sauvegarde en cours..."}
+              </p>
               
-              {/* Barre de progression indéterminée */}
-              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                <div className="h-full bg-blue-600 rounded-full animate-pulse" style={{ width: '70%', animation: 'pulse 1.5s ease-in-out infinite' }} />
+              {/* Barre de progression réelle */}
+              <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                <div 
+                  className="h-full bg-blue-600 rounded-full transition-all duration-500 ease-out" 
+                  style={{ width: `${savingProgress}%` }}
+                />
               </div>
               
-              <p className="text-sm text-gray-500">Veuillez patienter...</p>
+              <p className="text-sm font-medium text-blue-600">{savingProgress}%</p>
             </div>
           </div>
         </div>
