@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, ArrowLeft, CreditCard, Lock, Info } from "lucide-react";
+import { CheckCircle2, ArrowLeft, CreditCard, Lock, Info, Calendar } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -365,6 +365,22 @@ export default function CheckoutProfessionnel() {
 
                     {/* Informations de paiement */}
                     <div className="space-y-4">
+                      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                          <Calendar className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <h4 className="font-semibold text-purple-900 text-sm mb-1">⚠️ Engagement de 12 mois</h4>
+                            <p className="text-xs text-purple-700">
+                              Tous les abonnements Neira impliquent un <strong>engagement ferme de 12 mois</strong>. 
+                              Le paiement mensuel est une facilité de paiement, mais l'engagement reste d'un an.
+                            </p>
+                            <p className="text-xs text-purple-700 mt-2">
+                              🔒 <strong>Downgrade impossible</strong> pendant 12 mois • ✅ <strong>Upgrade autorisé</strong> à tout moment
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div className="flex items-start gap-3">
                           <Lock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />

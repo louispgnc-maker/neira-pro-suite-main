@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, ArrowLeft, CreditCard, Lock, Info } from "lucide-react";
+import { CheckCircle2, ArrowLeft, CreditCard, Lock, Info, Calendar } from "lucide-react";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -283,6 +283,22 @@ export default function CheckoutEssentiel() {
 
                     {/* Informations de paiement */}
                     <div className="space-y-4">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                          <Calendar className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <h4 className="font-semibold text-blue-900 text-sm mb-1">⚠️ Engagement de 12 mois</h4>
+                            <p className="text-xs text-blue-700">
+                              Tous les abonnements Neira impliquent un <strong>engagement ferme de 12 mois</strong>. 
+                              Le paiement mensuel est une facilité de paiement, mais l'engagement reste d'un an.
+                            </p>
+                            <p className="text-xs text-blue-700 mt-2">
+                              🔒 <strong>Downgrade impossible</strong> pendant 12 mois • ✅ <strong>Upgrade autorisé</strong> à tout moment
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div className="flex items-start gap-3">
                           <Lock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
