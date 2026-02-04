@@ -171,7 +171,7 @@ export default function CheckoutCabinetPlus() {
           <Button 
             variant="outline"
             onClick={() => navigate(-1)} 
-            className="border-orange-300 text-orange-600 hover:bg-orange-50"
+            className="border-orange-300 text-orange-600 hover:bg-orange-50 hover:text-orange-600"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour

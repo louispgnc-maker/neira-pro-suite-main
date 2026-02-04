@@ -171,7 +171,7 @@ export default function CheckoutProfessionnel() {
           <Button 
             variant="outline"
             onClick={() => navigate(-1)} 
-            className="border-purple-300 text-purple-600 hover:bg-purple-50"
+            className="border-purple-300 text-purple-600 hover:bg-purple-50 hover:text-purple-600"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour

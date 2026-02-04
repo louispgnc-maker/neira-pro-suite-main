@@ -107,8 +107,8 @@ export default function CheckoutEssentiel() {
             onClick={() => navigate(-1)} 
             className={`${
               role === 'notaire' 
-                ? 'border-orange-300 text-orange-600 hover:bg-orange-50' 
-                : 'border-blue-300 text-blue-600 hover:bg-blue-50'
+                ? 'border-orange-300 text-orange-600 hover:bg-orange-50 hover:text-orange-600' 
+                : 'border-blue-300 text-blue-600 hover:bg-blue-50 hover:text-blue-600'
             }`}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
