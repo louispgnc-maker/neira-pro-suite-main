@@ -142,77 +142,70 @@ export default function CheckoutEssentiel() {
 
           {/* Layout 2 colonnes : Récap à gauche, Paiement à droite */}
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Colonne gauche : Récapitulatif */}
-            <div className="space-y-6">
+            {/* Colonne gauche : Fonctionnalités */}
+            <div>
               <Card className="bg-white/90 backdrop-blur">
                 <CardHeader>
-                  <CardTitle className="text-xl">Récapitulatif</CardTitle>
+                  <CardTitle className="text-xl">Comprend :</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Ce qui est inclus */}
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Ce qui est inclus</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                          role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                        }`} />
-                        <div>
-                          <h5 className="font-medium text-gray-900 text-sm">Gestion documentaire</h5>
-                          <p className="text-xs text-gray-600 mt-0.5">Organisez tous vos documents</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                          role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                        }`} />
-                        <div>
-                          <h5 className="font-medium text-gray-900 text-sm">Partage sécurisé client</h5>
-                          <p className="text-xs text-gray-600 mt-0.5">Échangez en toute sécurité</p>
-                        </div>
-                      </div>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                      }`} />
+                      <span className="text-sm text-gray-900">Idéal pour avocats et notaires indépendants</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                      }`} />
+                      <span className="text-sm text-gray-900">20 Go de stockage</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                      }`} />
+                      <span className="text-sm text-gray-900">100 dossiers actifs</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                      }`} />
+                      <span className="text-sm text-gray-900">30 clients actifs</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                      }`} />
+                      <span className="text-sm text-gray-900">15 signatures / mois / utilisateur</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                      }`} />
+                      <span className="text-sm text-gray-900">Gestion documentaire</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                      }`} />
+                      <span className="text-sm text-gray-900">Partage sécurisé client</span>
                     </div>
                   </div>
 
                   {/* Non inclus */}
                   <div className="pt-6 border-t">
-                    <h4 className="font-semibold text-gray-900 mb-3">Non inclus :</h4>
+                    <h4 className="font-semibold text-gray-900 mb-3">Ne comprend pas :</h4>
                     <div className="space-y-2">
                       <div className="flex items-start gap-2 text-sm text-gray-600">
-                        <span className="text-red-500">•</span>
+                        <span className="text-red-500">●</span>
                         <span>Espace collaboratif</span>
                       </div>
                       <div className="flex items-start gap-2 text-sm text-gray-600">
-                        <span className="text-red-500">•</span>
+                        <span className="text-red-500">●</span>
                         <span>Données analysées</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Prix */}
-                  <div className="pt-6 border-t">
-                    <div className="flex justify-between items-baseline mb-2">
-                      <span className="text-gray-700">Prix {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}</span>
-                      <span className={`text-3xl font-bold ${
-                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                      }`}>{price}€</span>
-                    </div>
-                    {billingPeriod === 'yearly' && (
-                      <p className="text-xs text-green-600 font-medium">Économisez 10% avec le paiement annuel</p>
-                    )}
-                  </div>
-
-                  {/* Garanties */}
-                  <div className="pt-6 border-t bg-green-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
-                    <div className="flex items-start gap-3">
-                      <Lock className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h5 className="font-semibold text-gray-900 text-sm mb-2">Garanties</h5>
-                        <ul className="text-xs text-gray-600 space-y-1">
-                          <li>• Cryptage SSL de bout en bout</li>
-                          <li>• Aucune donnée bancaire stockée</li>
-                          <li>• 30 jours satisfait ou remboursé</li>
-                        </ul>
                       </div>
                     </div>
                   </div>
@@ -352,6 +345,16 @@ export default function CheckoutEssentiel() {
                     >
                       {loading ? "Redirection vers Stripe..." : `Procéder au paiement - ${total}€`}
                     </Button>
+
+                    {/* Garanties */}
+                    <div className="flex items-center justify-center gap-4 text-xs text-gray-600">
+                      <span className="flex items-center gap-1">
+                        <Lock className="w-3 h-3" />
+                        Paiement sécurisé
+                      </span>
+                      <span>•</span>
+                      <span>30 jours satisfait ou remboursé</span>
+                    </div>
 
                     <p className="text-xs text-gray-600 text-center">
                       En confirmant, vous acceptez nos CGV. Résiliation possible à tout moment.

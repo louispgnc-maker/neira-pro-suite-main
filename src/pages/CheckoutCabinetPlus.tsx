@@ -202,89 +202,54 @@ export default function CheckoutCabinetPlus() {
 
           {/* Layout 2 colonnes : Récap à gauche, Paiement à droite */}
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Colonne gauche : Récapitulatif */}
-            <div className="space-y-6">
+            {/* Colonne gauche : Fonctionnalités */}
+            <div>
               <Card className="bg-white/90 backdrop-blur">
                 <CardHeader>
-                  <CardTitle className="text-xl">Récapitulatif</CardTitle>
+                  <CardTitle className="text-xl">Comprend :</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Ce qui est inclus */}
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Ce qui est inclus</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <h5 className="font-medium text-gray-900 text-sm">Espace collaboratif illimité</h5>
-                          <p className="text-xs text-gray-600 mt-0.5">Aucune limite de membres</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <h5 className="font-medium text-gray-900 text-sm">70 signatures / mois / utilisateur</h5>
-                          <p className="text-xs text-gray-600 mt-0.5">Aucune limite mensuelle</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <h5 className="font-medium text-gray-900 text-sm">Workflows illimités</h5>
-                          <p className="text-xs text-gray-600 mt-0.5">Priorité CPU + files dédiées</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <h5 className="font-medium text-gray-900 text-sm">API + intégrations externes</h5>
-                          <p className="text-xs text-gray-600 mt-0.5">ERP, CRM, GED, Septeo, Microsoft 365, Google</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <h5 className="font-medium text-gray-900 text-sm">Support prioritaire + Account Manager dédié</h5>
-                          <p className="text-xs text-gray-600 mt-0.5">Réponse sous 2h</p>
-                        </div>
-                      </div>
-                    </div>
+                <CardContent className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">Idéal pour cabinets de 10 à 50+ utilisateurs</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">Stockage illimité</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">Dossiers illimités</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">Clients illimités</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">70 signatures / mois / utilisateur</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">Collaboration sans limite</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">Tableaux de bord avancés</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">Onboarding & formation de l'équipe</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">Accès anticipé aux nouveautés</span>
                   </div>
 
-                  {/* Prix */}
-                  <div className="pt-6 border-t">
-                    <div className="space-y-2 mb-4">
-                      <div className="flex justify-between text-sm text-gray-700">
-                        <span>Prix unitaire</span>
-                        <span>{basePrice}€ / membre</span>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-700">
-                        <span>Nombre de membres</span>
-                        <span>{userCount}</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-baseline pt-3 border-t">
-                      <span className="text-gray-700 font-medium">Total {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}</span>
-                      <span className="text-3xl font-bold text-orange-600">{total}€</span>
-                    </div>
-                    {billingPeriod === 'yearly' && (
-                      <p className="text-xs text-green-600 font-medium mt-2">Économisez 10% avec le paiement annuel</p>
-                    )}
-                  </div>
-
-                  {/* Garanties */}
-                  <div className="pt-6 border-t bg-green-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
-                    <div className="flex items-start gap-3">
-                      <Lock className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h5 className="font-semibold text-gray-900 text-sm mb-2">Garanties</h5>
-                        <ul className="text-xs text-gray-600 space-y-1">
-                          <li>• Cryptage SSL de bout en bout</li>
-                          <li>• Aucune donnée bancaire stockée</li>
-                          <li>• 30 jours satisfait ou remboursé</li>
-                        </ul>
-                      </div>
-                    </div>
+                  <div className="pt-6 mt-6 border-t bg-orange-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
+                    <p className="text-sm text-orange-700 font-medium">
+                      🚀 Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -495,6 +460,16 @@ export default function CheckoutCabinetPlus() {
                     >
                       {loading ? "Redirection vers Stripe..." : `Procéder au paiement - ${total}€`}
                     </Button>
+
+                    {/* Garanties */}
+                    <div className="flex items-center justify-center gap-4 text-xs text-gray-600">
+                      <span className="flex items-center gap-1">
+                        <Lock className="w-3 h-3" />
+                        Paiement sécurisé
+                      </span>
+                      <span>•</span>
+                      <span>30 jours satisfait ou remboursé</span>
+                    </div>
 
                     <p className="text-xs text-gray-600 text-center">
                       En confirmant, vous acceptez nos CGV. Résiliation possible à tout moment.

@@ -205,82 +205,46 @@ export default function CheckoutProfessionnel() {
 
           {/* Layout 2 colonnes : Récap à gauche, Paiement à droite */}
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Colonne gauche : Récapitulatif */}
-            <div className="space-y-6">
+            {/* Colonne gauche : Fonctionnalités */}
+            <div>
               <Card className="bg-white/90 backdrop-blur">
                 <CardHeader>
-                  <CardTitle className="text-xl">Récapitulatif</CardTitle>
+                  <CardTitle className="text-xl">Comprend :</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Ce qui est inclus */}
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Ce qui est inclus</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <h5 className="font-medium text-gray-900 text-sm">Espace collaboratif complet</h5>
-                          <p className="text-xs text-gray-600 mt-0.5">Équipes, rôles, permissions</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <h5 className="font-medium text-gray-900 text-sm">Gestion documentaire avancée</h5>
-                          <p className="text-xs text-gray-600 mt-0.5">Jusqu'à 20 000 documents</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <h5 className="font-medium text-gray-900 text-sm">Partage sécurisé</h5>
-                          <p className="text-xs text-gray-600 mt-0.5">Jusqu'à 200 clients actifs</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <h5 className="font-medium text-gray-900 text-sm">35 signatures / mois / utilisateur</h5>
-                          <p className="text-xs text-gray-600 mt-0.5">Packs optionnels disponibles</p>
-                        </div>
-                      </div>
-                    </div>
+                <CardContent className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">100 Go de stockage</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">600 dossiers actifs</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">200 clients actifs</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">35 signatures / mois / utilisateur</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">Espace collaboratif complet</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">Gestion documentaire avancée</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900">Tableaux de bord</span>
                   </div>
 
-                  {/* Prix */}
-                  <div className="pt-6 border-t">
-                    <div className="space-y-2 mb-4">
-                      <div className="flex justify-between text-sm text-gray-700">
-                        <span>Prix unitaire</span>
-                        <span>{basePrice}€ / membre</span>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-700">
-                        <span>Nombre de membres</span>
-                        <span>{userCount}</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-baseline pt-3 border-t">
-                      <span className="text-gray-700 font-medium">Total {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}</span>
-                      <span className="text-3xl font-bold text-purple-600">{total}€</span>
-                    </div>
-                    {billingPeriod === 'yearly' && (
-                      <p className="text-xs text-green-600 font-medium mt-2">Économisez 10% avec le paiement annuel</p>
-                    )}
-                  </div>
-
-                  {/* Garanties */}
-                  <div className="pt-6 border-t bg-green-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
-                    <div className="flex items-start gap-3">
-                      <Lock className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h5 className="font-semibold text-gray-900 text-sm mb-2">Garanties</h5>
-                        <ul className="text-xs text-gray-600 space-y-1">
-                          <li>• Cryptage SSL de bout en bout</li>
-                          <li>• Aucune donnée bancaire stockée</li>
-                          <li>• 30 jours satisfait ou remboursé</li>
-                        </ul>
-                      </div>
-                    </div>
+                  <div className="pt-6 mt-6 border-t">
+                    <p className="text-sm text-purple-700 font-medium">
+                      🚀 Pensé pour les cabinets en croissance
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -429,7 +393,15 @@ export default function CheckoutProfessionnel() {
                     >
                       {loading ? "Redirection vers Stripe..." : `Procéder au paiement - ${total}€`}
                     </Button>
-
+                    {/* Garanties */}
+                    <div className="flex items-center justify-center gap-4 text-xs text-gray-600">
+                      <span className="flex items-center gap-1">
+                        <Lock className="w-3 h-3" />
+                        Paiement sécurisé
+                      </span>
+                      <span>•</span>
+                      <span>30 jours satisfait ou remboursé</span>
+                    </div>
                     <p className="text-xs text-gray-600 text-center">
                       En confirmant, vous acceptez nos CGV. Résiliation possible à tout moment.
                     </p>
