@@ -359,10 +359,18 @@ export default function CheckoutProfessionnel() {
                     <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
                       <div className="flex justify-between items-baseline mb-2">
                         <span className="text-gray-700 font-medium">Total</span>
-                        <span className="text-3xl font-bold text-purple-600">{total}€</span>
+                        <div className="text-right">
+                          {billingPeriod === 'yearly' && (
+                            <div className="text-sm text-gray-500 line-through">{Math.round(basePrice * userCount * 12)}€</div>
+                          )}
+                          <span className="text-3xl font-bold text-purple-600">{total}€</span>
+                        </div>
                       </div>
                       <p className="text-xs text-gray-600">
                         {userCount} utilisateur{userCount > 1 ? 's' : ''} × {billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice}€ ({billingPeriod === 'monthly' ? 'mensuel' : 'annuel'})
+                        {billingPeriod === 'yearly' && (
+                          <span className="text-green-600 font-medium ml-1">(Économie de {Math.round(basePrice * userCount * 12) - total}€)</span>
+                        )}
                       </p>
                     </div>
 

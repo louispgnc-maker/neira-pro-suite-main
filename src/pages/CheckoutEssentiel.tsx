@@ -300,12 +300,20 @@ export default function CheckoutEssentiel() {
                     <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
                       <div className="flex justify-between items-baseline">
                         <span className="text-gray-700 font-medium">Total</span>
-                        <span className={`text-3xl font-bold ${
-                          role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                        }`}>{total}€</span>
+                        <div className="text-right">
+                          {billingPeriod === 'yearly' && (
+                            <div className="text-sm text-gray-500 line-through">{monthlyPrice * 12}€</div>
+                          )}
+                          <span className={`text-3xl font-bold ${
+                            role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                          }`}>{total}€</span>
+                        </div>
                       </div>
                       <p className="text-xs text-gray-600 mt-2">
                         Abonnement {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}
+                        {billingPeriod === 'yearly' && (
+                          <span className="text-green-600 font-medium ml-1">(Économie de {monthlyPrice * 12 - total}€)</span>
+                        )}
                       </p>
                     </div>
 
