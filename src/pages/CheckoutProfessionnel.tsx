@@ -172,13 +172,14 @@ export default function CheckoutProfessionnel() {
       <PublicHeader />
       
       <div className="container mx-auto px-4 py-24">
-        <button 
+        <Button 
+          variant="outline"
           onClick={() => navigate(-1)} 
-          className="flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-6"
+          className="mb-6 border-purple-300 text-purple-600 hover:bg-purple-50"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 mr-2" />
           Retour
-        </button>
+        </Button>
 
         <div className="max-w-7xl mx-auto">
           {/* Titre centré */}
