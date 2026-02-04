@@ -145,7 +145,7 @@ export default function CheckoutCabinetPlus() {
         quantity: userCount, // Nombre d'utilisateurs sélectionnés (1 à 50)
         cabinetId: memberData.cabinet_id,
         successUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`,
-        cancelUrl: `${window.location.origin}/checkout-cabinet-plus`
+        cancelUrl: `${window.location.origin}/checkout/cabinet-plus`
       });
 
       // Rediriger vers Stripe

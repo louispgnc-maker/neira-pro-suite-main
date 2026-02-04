@@ -145,7 +145,7 @@ export default function CheckoutProfessionnel() {
         quantity: userCount, // Nombre d'utilisateurs sélectionnés (2 à 10)
         cabinetId: memberData.cabinet_id,
         successUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`,
-        cancelUrl: `${window.location.origin}/checkout-professionnel`
+        cancelUrl: `${window.location.origin}/checkout/professionnel`
       });
 
       // Rediriger vers Stripe

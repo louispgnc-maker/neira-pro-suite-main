@@ -413,7 +413,7 @@ export default function Index() {
               </ul>
               <Button 
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6"
-                onClick={() => navigate("/checkout-essentiel")}
+                onClick={() => navigate("/checkout/essentiel")}
               >
                 Choisir Essentiel
               </Button>
@@ -441,7 +441,7 @@ export default function Index() {
               </ul>
               <Button 
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 font-bold"
-                onClick={() => navigate("/checkout-professionnel")}
+                onClick={() => navigate("/checkout/professionnel")}
               >
                 Choisir Professionnel
               </Button>
@@ -467,7 +467,7 @@ export default function Index() {
               <p className="text-gray-600 mb-6">🚀 Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille</p>
               <Button 
                 className="w-full bg-orange-600 hover:bg-orange-700 text-white py-6"
-                onClick={() => navigate("/checkout-cabinet-plus")}
+                onClick={() => navigate("/checkout/cabinet-plus")}
               >
                 Choisir Cabinet+
               </Button>
