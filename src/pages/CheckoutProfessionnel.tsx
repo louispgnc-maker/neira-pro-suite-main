@@ -355,19 +355,15 @@ export default function CheckoutProfessionnel() {
                       </div>
                     </div>
 
-                    {/* Informations de paiement */}
-                    <div className="space-y-4">
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <div className="flex items-start gap-3">
-                          <Lock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <h4 className="font-semibold text-blue-900 text-sm mb-1">Paiement 100% sécurisé</h4>
-                            <p className="text-xs text-blue-700">
-                              Vous serez redirigé vers notre page de paiement sécurisée Stripe pour finaliser votre abonnement.
-                            </p>
-                          </div>
-                        </div>
+                    {/* Total */}
+                    <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+                      <div className="flex justify-between items-baseline mb-2">
+                        <span className="text-gray-700 font-medium">Total</span>
+                        <span className="text-3xl font-bold text-purple-600">{total}€</span>
                       </div>
+                      <p className="text-xs text-gray-600">
+                        {userCount} utilisateur{userCount > 1 ? 's' : ''} × {billingPeriod === 'monthly' ? monthlyPrice : yearlyPrice}€ ({billingPeriod === 'monthly' ? 'mensuel' : 'annuel'})
+                      </p>
                     </div>
 
                     <Button 
