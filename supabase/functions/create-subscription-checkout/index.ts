@@ -56,6 +56,16 @@ serve(async (req) => {
         enabled: true,
       },
       
+      // ⚠️ TEXTE D'ENGAGEMENT visible sur la page de paiement Stripe
+      consent_collection: {
+        terms_of_service: 'required',
+      },
+      custom_text: {
+        terms_of_service_acceptance: {
+          message: '⚠️ ENGAGEMENT CONTRACTUEL DE 12 MOIS : En souscrivant à cet abonnement, vous acceptez un engagement ferme de 12 mois. Le paiement mensuel est une facilité de paiement mais l\'engagement reste d\'un an. Downgrade impossible pendant 12 mois. Upgrade autorisé à tout moment avec prorata. Les CGV sont disponibles sur neira.fr/cgv',
+        },
+      },
+      
       // Métadonnées pour le webhook
       metadata: {
         cabinet_id: cabinetId || 'pending',
