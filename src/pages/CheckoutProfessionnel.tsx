@@ -181,32 +181,40 @@ export default function CheckoutProfessionnel() {
         </button>
 
         <div className="max-w-7xl mx-auto">
-          {/* En-tête de l'offre */}
-          <div className="grid lg:grid-cols-3 gap-6 mb-8">
-            {/* Nom de la formule */}
-            <Card className="bg-white/90 backdrop-blur">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <h1 className="text-2xl font-bold text-purple-600">Neira Professionnel</h1>
-                  <span className="bg-purple-500 text-white px-2 py-1 rounded text-xs font-semibold">RECOMMANDÉ</span>
-                </div>
-                <p className="text-sm text-gray-600">Idéal pour petits cabinets 2–10 personnes</p>
-              </CardContent>
-            </Card>
-
-            {/* Limites et specs */}
-            <Card className="lg:col-span-2 bg-white/90 backdrop-blur">
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-3">Caractéristiques</h3>
-                <p className="text-sm text-gray-700">100 Go • 600 dossiers • 200 clients • 35 signatures/mois/utilisateur</p>
-              </CardContent>
-            </Card>
+          {/* Titre centré */}
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <h1 className="text-3xl font-bold text-purple-600">Neira Professionnel</h1>
+              <span className="bg-purple-500 text-white px-2 py-1 rounded text-xs font-semibold">RECOMMANDÉ</span>
+            </div>
+            <p className="text-gray-600">Idéal pour petits cabinets 2–10 personnes</p>
           </div>
 
           {/* Layout 2 colonnes : Récap à gauche, Paiement à droite */}
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Colonne gauche : Fonctionnalités */}
-            <div>
+            {/* Colonne gauche : Engagement + Fonctionnalités */}
+            <div className="space-y-6">
+              {/* Encadré engagement */}
+              <Card className="bg-purple-50 border-2 border-purple-300">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-3">
+                    <Calendar className="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <h4 className="font-bold text-purple-900 text-base mb-2">⚠️ Engagement de 12 mois</h4>
+                      <p className="text-sm text-purple-800 mb-2">
+                        Tous les abonnements Neira impliquent un <strong>engagement ferme de 12 mois</strong>. 
+                        Le paiement mensuel est une facilité de paiement, mais l'engagement reste d'un an.
+                      </p>
+                      <div className="flex flex-wrap gap-2 text-xs text-purple-900">
+                        <span className="bg-purple-200 px-2 py-1 rounded">🔒 Downgrade impossible pendant 12 mois</span>
+                        <span className="bg-green-200 px-2 py-1 rounded">✅ Upgrade autorisé à tout moment</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Fonctionnalités */}
               <Card className="bg-white/90 backdrop-blur">
                 <CardHeader>
                   <CardTitle className="text-xl">Comprend :</CardTitle>
@@ -261,24 +269,6 @@ export default function CheckoutProfessionnel() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* ⚠️ ENCADRÉ ENGAGEMENT - EN HAUT */}
-                    <div className="bg-purple-50 border-2 border-purple-300 rounded-lg p-4">
-                      <div className="flex items-start gap-3">
-                        <Calendar className="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" />
-                        <div className="flex-1">
-                          <h4 className="font-bold text-purple-900 text-base mb-2">⚠️ Engagement de 12 mois</h4>
-                          <p className="text-sm text-purple-800 mb-2">
-                            Tous les abonnements Neira impliquent un <strong>engagement ferme de 12 mois</strong>. 
-                            Le paiement mensuel est une facilité de paiement, mais l'engagement reste d'un an.
-                          </p>
-                          <div className="flex flex-wrap gap-2 text-xs text-purple-900">
-                            <span className="bg-purple-200 px-2 py-1 rounded">🔒 Downgrade impossible pendant 12 mois</span>
-                            <span className="bg-green-200 px-2 py-1 rounded">✅ Upgrade autorisé à tout moment</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
                     {/* Sélecteur nombre d'utilisateurs */}
                     <div className="space-y-3">
                       <Label className="text-gray-900">Nombre d'utilisateurs</Label>
