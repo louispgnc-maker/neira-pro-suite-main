@@ -252,8 +252,8 @@ export default function CheckoutCabinetPlus() {
                     <span className="text-sm text-gray-900">Accès anticipé aux nouveautés</span>
                   </div>
 
-                  <div className="pt-6 mt-6 border-t bg-orange-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
-                    <p className="text-sm text-orange-700 font-medium">
+                  <div className="pt-6 mt-6 border-t">
+                    <p className="text-sm text-gray-700 italic">
                       🚀 Pour les cabinets recherchant une solution sans limite, quelle que soit leur taille
                     </p>
                   </div>

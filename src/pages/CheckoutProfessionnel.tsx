@@ -248,7 +248,7 @@ export default function CheckoutProfessionnel() {
                   </div>
 
                   <div className="pt-6 mt-6 border-t">
-                    <p className="text-sm text-purple-700 font-medium">
+                    <p className="text-sm text-gray-700 italic">
                       🚀 Pensé pour les cabinets en croissance
                     </p>
                   </div>
