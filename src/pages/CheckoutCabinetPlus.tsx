@@ -173,7 +173,7 @@ export default function CheckoutCabinetPlus() {
       
       <div className="container mx-auto px-4 py-24">
         <button 
-          onClick={() => navigate('/#pricing')} 
+          onClick={() => navigate(-1)} 
           className="flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -200,77 +200,99 @@ export default function CheckoutCabinetPlus() {
             </Card>
           </div>
 
-          {/* Layout 2 colonnes : Fonctionnalités à gauche, Paiement à droite */}
+          {/* Layout 2 colonnes : Récap à gauche, Paiement à droite */}
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Colonne gauche : Atouts */}
+            {/* Colonne gauche : Récapitulatif */}
             <div className="space-y-6">
               <Card className="bg-white/90 backdrop-blur">
                 <CardHeader>
-                  <CardTitle className="text-xl">Ce qui est inclus</CardTitle>
+                  <CardTitle className="text-xl">Récapitulatif</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-gray-900 text-sm">Espace collaboratif illimité</h4>
-                        <p className="text-xs text-gray-600 mt-0.5">Aucune limite de membres</p>
+                <CardContent className="space-y-6">
+                  {/* Ce qui est inclus */}
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3">Ce qui est inclus</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h5 className="font-medium text-gray-900 text-sm">Espace collaboratif illimité</h5>
+                          <p className="text-xs text-gray-600 mt-0.5">Aucune limite de membres</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-gray-900 text-sm">70 signatures / mois / utilisateur</h4>
-                        <p className="text-xs text-gray-600 mt-0.5">Aucune limite mensuelle</p>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h5 className="font-medium text-gray-900 text-sm">70 signatures / mois / utilisateur</h5>
+                          <p className="text-xs text-gray-600 mt-0.5">Aucune limite mensuelle</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-gray-900 text-sm">Workflows illimités</h4>
-                        <p className="text-xs text-gray-600 mt-0.5">Priorité CPU + files dédiées</p>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h5 className="font-medium text-gray-900 text-sm">Workflows illimités</h5>
+                          <p className="text-xs text-gray-600 mt-0.5">Priorité CPU + files dédiées</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-gray-900 text-sm">API + intégrations externes</h4>
-                        <p className="text-xs text-gray-600 mt-0.5">ERP, CRM, GED, Septeo, Microsoft 365, Google</p>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h5 className="font-medium text-gray-900 text-sm">API + intégrations externes</h5>
+                          <p className="text-xs text-gray-600 mt-0.5">ERP, CRM, GED, Septeo, Microsoft 365, Google</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-gray-900 text-sm">Support prioritaire + Account Manager dédié</h4>
-                        <p className="text-xs text-gray-600 mt-0.5">Réponse sous 2h</p>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h5 className="font-medium text-gray-900 text-sm">Support prioritaire + Account Manager dédié</h5>
+                          <p className="text-xs text-gray-600 mt-0.5">Réponse sous 2h</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
 
-              {/* Garanties et sécurité */}
-              <Card className="bg-white/90 backdrop-blur border border-green-200">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-3">
-                    <Lock className="w-6 h-6 text-green-600 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2 text-sm">Paiement 100% sécurisé</h4>
-                      <ul className="text-xs text-gray-600 space-y-1">
-                        <li>• Cryptage SSL de bout en bout</li>
-                        <li>• Aucune donnée bancaire stockée</li>
-                        <li>• Résiliation possible à tout moment</li>
-                        <li>• 30 jours satisfait ou remboursé</li>
-                      </ul>
+                  {/* Prix */}
+                  <div className="pt-6 border-t">
+                    <div className="space-y-2 mb-4">
+                      <div className="flex justify-between text-sm text-gray-700">
+                        <span>Prix unitaire</span>
+                        <span>{basePrice}€ / membre</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-gray-700">
+                        <span>Nombre de membres</span>
+                        <span>{userCount}</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-baseline pt-3 border-t">
+                      <span className="text-gray-700 font-medium">Total {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}</span>
+                      <span className="text-3xl font-bold text-orange-600">{total}€</span>
+                    </div>
+                    {billingPeriod === 'yearly' && (
+                      <p className="text-xs text-green-600 font-medium mt-2">Économisez 10% avec le paiement annuel</p>
+                    )}
+                  </div>
+
+                  {/* Garanties */}
+                  <div className="pt-6 border-t bg-green-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
+                    <div className="flex items-start gap-3">
+                      <Lock className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h5 className="font-semibold text-gray-900 text-sm mb-2">Garanties</h5>
+                        <ul className="text-xs text-gray-600 space-y-1">
+                          <li>• Cryptage SSL de bout en bout</li>
+                          <li>• Aucune donnée bancaire stockée</li>
+                          <li>• 30 jours satisfait ou remboursé</li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Colonne droite : Formulaire de paiement */}
-            <div className="space-y-6">
-              <Card className="bg-white/90 backdrop-blur border-2 border-primary">
+            {/* Colonne droite : Paiement */}
+            <div>
+              <Card className="bg-white/90 backdrop-blur sticky top-6">
                 <CardHeader>
                   <CardTitle className="text-xl flex items-center gap-2">
                     <CreditCard className="w-5 h-5" />
@@ -279,6 +301,24 @@ export default function CheckoutCabinetPlus() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* ⚠️ ENCADRÉ ENGAGEMENT - EN HAUT */}
+                    <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <Calendar className="w-6 h-6 text-orange-600 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <h4 className="font-bold text-orange-900 text-base mb-2">⚠️ Engagement de 12 mois</h4>
+                          <p className="text-sm text-orange-800 mb-2">
+                            Tous les abonnements Neira impliquent un <strong>engagement ferme de 12 mois</strong>. 
+                            Le paiement mensuel est une facilité de paiement, mais l'engagement reste d'un an.
+                          </p>
+                          <div className="flex flex-wrap gap-2 text-xs text-orange-900">
+                            <span className="bg-orange-200 px-2 py-1 rounded">🔒 Downgrade impossible pendant 12 mois</span>
+                            <span className="bg-green-200 px-2 py-1 rounded">✅ Upgrade autorisé à tout moment</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
                     {/* Sélecteur nombre d'utilisateurs */}
                     <div className="space-y-3">
                       <Label className="text-gray-900">Nombre d'utilisateurs</Label>
@@ -435,47 +475,16 @@ export default function CheckoutCabinetPlus() {
 
                     {/* Informations de paiement */}
                     <div className="space-y-4">
-                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                        <div className="flex items-start gap-3">
-                          <Calendar className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <h4 className="font-semibold text-orange-900 text-sm mb-1">⚠️ Engagement de 12 mois</h4>
-                            <p className="text-xs text-orange-700">
-                              Tous les abonnements Neira impliquent un <strong>engagement ferme de 12 mois</strong>. 
-                              Le paiement mensuel est une facilité de paiement, mais l'engagement reste d'un an.
-                            </p>
-                            <p className="text-xs text-orange-700 mt-2">
-                              🔒 <strong>Downgrade impossible</strong> pendant 12 mois • ✅ <strong>Upgrade autorisé</strong> à tout moment
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div className="flex items-start gap-3">
                           <Lock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                           <div>
-                            <h4 className="font-semibold text-blue-900 text-sm mb-1">Paiement sécurisé par Stripe</h4>
+                            <h4 className="font-semibold text-blue-900 text-sm mb-1">Paiement 100% sécurisé</h4>
                             <p className="text-xs text-blue-700">
                               Vous serez redirigé vers notre page de paiement sécurisée Stripe pour finaliser votre abonnement.
                             </p>
                           </div>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Récapitulatif */}
-                    <div className="border-t pt-4 space-y-2">
-                      <div className="flex justify-between text-sm text-gray-900">
-                        <span>Prix unitaire</span>
-                        <span>{basePrice}€ / membre</span>
-                      </div>
-                      <div className="flex justify-between font-bold text-base border-t pt-2 text-gray-900">
-                        <span>Total ({userCount} membre{userCount > 1 ? 's' : ''})</span>
-                        <span>{total}€</span>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        Facturation {billingPeriod === 'monthly' ? 'mensuelle' : 'annuelle'}
                       </div>
                     </div>
 

@@ -107,7 +107,7 @@ export default function CheckoutEssentiel() {
       
       <div className="container mx-auto px-4 py-24">
         <button 
-          onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`)} 
+          onClick={() => navigate(-1)} 
           className={`flex items-center gap-2 mb-6 ${
             role === 'notaire' 
               ? 'text-orange-600 hover:text-orange-700' 
@@ -140,37 +140,43 @@ export default function CheckoutEssentiel() {
             </Card>
           </div>
 
-          {/* Layout 2 colonnes : Fonctionnalités à gauche, Paiement à droite */}
+          {/* Layout 2 colonnes : Récap à gauche, Paiement à droite */}
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Colonne gauche : Atouts */}
+            {/* Colonne gauche : Récapitulatif */}
             <div className="space-y-6">
               <Card className="bg-white/90 backdrop-blur">
                 <CardHeader>
-                  <CardTitle className="text-xl">Ce qui est inclus</CardTitle>
+                  <CardTitle className="text-xl">Récapitulatif</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                      }`} />
-                      <div>
-                        <h4 className="font-medium text-gray-900 text-sm">Gestion documentaire</h4>
-                        <p className="text-xs text-gray-600 mt-0.5">Organisez tous vos documents</p>
+                <CardContent className="space-y-6">
+                  {/* Ce qui est inclus */}
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3">Ce qui est inclus</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                          role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                        }`} />
+                        <div>
+                          <h5 className="font-medium text-gray-900 text-sm">Gestion documentaire</h5>
+                          <p className="text-xs text-gray-600 mt-0.5">Organisez tous vos documents</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
-                      }`} />
-                      <div>
-                        <h4 className="font-medium text-gray-900 text-sm">Partage sécurisé client</h4>
-                        <p className="text-xs text-gray-600 mt-0.5">Échangez en toute sécurité</p>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                          role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                        }`} />
+                        <div>
+                          <h5 className="font-medium text-gray-900 text-sm">Partage sécurisé client</h5>
+                          <p className="text-xs text-gray-600 mt-0.5">Échangez en toute sécurité</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div className="mt-6 pt-6 border-t">
-                    <h4 className="font-semibold text-gray-900 mb-3 text-sm">Non inclus :</h4>
+
+                  {/* Non inclus */}
+                  <div className="pt-6 border-t">
+                    <h4 className="font-semibold text-gray-900 mb-3">Non inclus :</h4>
                     <div className="space-y-2">
                       <div className="flex items-start gap-2 text-sm text-gray-600">
                         <span className="text-red-500">•</span>
@@ -182,31 +188,41 @@ export default function CheckoutEssentiel() {
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
 
-              {/* Garanties et sécurité */}
-              <Card className="bg-white/90 backdrop-blur border border-green-200">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-3">
-                    <Lock className="w-6 h-6 text-green-600 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2 text-sm">Paiement 100% sécurisé</h4>
-                      <ul className="text-xs text-gray-600 space-y-1">
-                        <li>• Cryptage SSL de bout en bout</li>
-                        <li>• Aucune donnée bancaire stockée</li>
-                        <li>• Résiliation possible à tout moment</li>
-                        <li>• 30 jours satisfait ou remboursé</li>
-                      </ul>
+                  {/* Prix */}
+                  <div className="pt-6 border-t">
+                    <div className="flex justify-between items-baseline mb-2">
+                      <span className="text-gray-700">Prix {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'}</span>
+                      <span className={`text-3xl font-bold ${
+                        role === 'notaire' ? 'text-orange-600' : 'text-blue-600'
+                      }`}>{price}€</span>
+                    </div>
+                    {billingPeriod === 'yearly' && (
+                      <p className="text-xs text-green-600 font-medium">Économisez 10% avec le paiement annuel</p>
+                    )}
+                  </div>
+
+                  {/* Garanties */}
+                  <div className="pt-6 border-t bg-green-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
+                    <div className="flex items-start gap-3">
+                      <Lock className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h5 className="font-semibold text-gray-900 text-sm mb-2">Garanties</h5>
+                        <ul className="text-xs text-gray-600 space-y-1">
+                          <li>• Cryptage SSL de bout en bout</li>
+                          <li>• Aucune donnée bancaire stockée</li>
+                          <li>• 30 jours satisfait ou remboursé</li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Colonne droite : Formulaire de paiement */}
-            <div className="space-y-6">
-              <Card className="bg-white/90 backdrop-blur border-2 border-primary">
+            {/* Colonne droite : Paiement */}
+            <div>
+              <Card className="bg-white/90 backdrop-blur sticky top-6">
                 <CardHeader>
                   <CardTitle className="text-xl flex items-center gap-2">
                     <CreditCard className="w-5 h-5" />
@@ -215,6 +231,24 @@ export default function CheckoutEssentiel() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* ⚠️ ENCADRÉ ENGAGEMENT - EN HAUT */}
+                    <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <Calendar className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <h4 className="font-bold text-blue-900 text-base mb-2">⚠️ Engagement de 12 mois</h4>
+                          <p className="text-sm text-blue-800 mb-2">
+                            Tous les abonnements Neira impliquent un <strong>engagement ferme de 12 mois</strong>. 
+                            Le paiement mensuel est une facilité de paiement, mais l'engagement reste d'un an.
+                          </p>
+                          <div className="flex flex-wrap gap-2 text-xs text-blue-900">
+                            <span className="bg-blue-200 px-2 py-1 rounded">🔒 Downgrade impossible pendant 12 mois</span>
+                            <span className="bg-green-200 px-2 py-1 rounded">✅ Upgrade autorisé à tout moment</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
                     {/* Période de facturation */}
                     <div className="space-y-3">
                       <Label className="text-gray-900">Période de facturation</Label>
@@ -285,25 +319,9 @@ export default function CheckoutEssentiel() {
                     <div className="space-y-4">
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div className="flex items-start gap-3">
-                          <Calendar className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <h4 className="font-semibold text-blue-900 text-sm mb-1">⚠️ Engagement de 12 mois</h4>
-                            <p className="text-xs text-blue-700">
-                              Tous les abonnements Neira impliquent un <strong>engagement ferme de 12 mois</strong>. 
-                              Le paiement mensuel est une facilité de paiement, mais l'engagement reste d'un an.
-                            </p>
-                            <p className="text-xs text-blue-700 mt-2">
-                              🔒 <strong>Downgrade impossible</strong> pendant 12 mois • ✅ <strong>Upgrade autorisé</strong> à tout moment
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <div className="flex items-start gap-3">
                           <Lock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                           <div>
-                            <h4 className="font-semibold text-blue-900 text-sm mb-1">Paiement sécurisé par Stripe</h4>
+                            <h4 className="font-semibold text-blue-900 text-sm mb-1">Paiement 100% sécurisé</h4>
                             <p className="text-xs text-blue-700">
                               Vous serez redirigé vers notre page de paiement sécurisée Stripe pour finaliser votre abonnement.
                             </p>
