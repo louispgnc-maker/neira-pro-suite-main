@@ -127,6 +127,9 @@ const App = () => (
             
             {/* Routes checkout publiques */}
             <Route path="/checkout/:planId" element={<CheckoutPublic />} />
+            <Route path="/checkout/essentiel" element={<CheckoutEssentiel />} />
+            <Route path="/checkout/professionnel" element={<CheckoutProfessionnel />} />
+            <Route path="/checkout/cabinet-plus" element={<CheckoutCabinetPlus />} />
             <Route path="/subscription/success" element={<SubscriptionSuccess />} />
             <Route path="/create-account" element={<CreateAccountAfterPayment />} />
             
