@@ -163,12 +163,7 @@ export default function CheckoutCabinetPlus() {
 
   return (
     <TooltipProvider delayDuration={0}>
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100" style={{
-      backgroundImage: 'url(https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Mix%20deux%20couleurs.png)', 
-      backgroundSize: 'cover', 
-      backgroundPosition: 'center', 
-      backgroundAttachment: 'fixed' 
-    }}>
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-accent/10 to-background">
       <PublicHeader />
       
       <div className="container mx-auto px-4 pt-32 pb-24">
