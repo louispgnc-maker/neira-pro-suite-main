@@ -73,7 +73,10 @@ export function ChangePlanModal({
         quantity: numberOfMembers,
         cabinetId,
         successUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`,
-        cancelUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`
+        cancelUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`,
+        metadata: {
+          billing_period: billingPeriod
+        }
       });
 
       // Rediriger vers Stripe

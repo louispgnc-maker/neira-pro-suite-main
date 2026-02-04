@@ -7,6 +7,7 @@ export interface CreateCheckoutSessionParams {
   quantity: number; // Nombre de membres
   successUrl?: string;
   cancelUrl?: string;
+  metadata?: Record<string, string>; // Pour passer billing_period et autres infos
 }
 
 export async function createStripeCheckoutSession(params: CreateCheckoutSessionParams): Promise<string> {

@@ -136,6 +136,14 @@ serve(async (req) => {
               paymentMethodBrand = pm.card?.brand
             }
           }
+          
+          // Déterminer la période de facturation depuis metadata ou depuis l'intervalle Stripe
+          const billingPeriod = session.metadata?.billing_period || 
+                                (subscription.items.data[0]?.price.recurring?.interval === 'year' ? 'yearly' : 'monthly');
+          
+          // Calculer la date de fin d'engagement (12 mois à partir de maintenant)
+          const commitmentEndDate = new Date();
+          commitmentEndDate.setMonth(commitmentEndDate.getMonth() + 12);
 
           // Mettre à jour le cabinet
           const { error: updateError } = await supabaseAdmin
@@ -152,6 +160,9 @@ serve(async (req) => {
               payment_method_last4: paymentMethodLast4,
               payment_method_brand: paymentMethodBrand,
               subscription_started_at: subscription.started_at ? new Date(subscription.started_at * 1000).toISOString() : new Date().toISOString(),
+              billing_period: billingPeriod,
+              subscription_commitment_end_date: commitmentEndDate.toISOString(),
+              subscription_commitment_months: 12,
             })
             .eq('id', cabinetId)
 

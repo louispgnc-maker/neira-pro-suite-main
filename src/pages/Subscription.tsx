@@ -302,7 +302,7 @@ export default function Subscription() {
           
           const { data: cabinetData, error: cabinetError } = await supabase
             .from('cabinets')
-            .select('subscription_plan, subscription_status, subscription_started_at, subscription_expires_at, storage_used, storage_limit, nom')
+            .select('subscription_plan, subscription_status, subscription_started_at, subscription_expires_at, subscription_commitment_end_date, billing_period, storage_used, storage_limit, nom')
             .eq('id', cabinetId);
 
           console.log('Cabinet data (array):', cabinetData, 'Error:', cabinetError);
@@ -344,6 +344,41 @@ export default function Subscription() {
   }, [user, refreshTrigger]);
 
   const handleUpgrade = async (planId: 'essentiel' | 'professionnel' | 'cabinet-plus') => {
+    // Ordre des plans (pour détecter upgrade vs downgrade)
+    const planOrder: { [key: string]: number } = {
+      'essentiel': 1,
+      'professionnel': 2,
+      'cabinet-plus': 3
+    };
+    
+    const isDowngrade = planOrder[planId] < planOrder[currentPlan];
+    
+    // Bloquer le downgrade si on est encore en période d'engagement
+    if (isDowngrade) {
+      // Récupérer la date de fin d'engagement
+      const { data: cabinetData } = await supabase
+        .from('cabinets')
+        .select('subscription_commitment_end_date')
+        .eq('id', cabinetId)
+        .single();
+      
+      if (cabinetData?.subscription_commitment_end_date) {
+        const commitmentEndDate = new Date(cabinetData.subscription_commitment_end_date);
+        const now = new Date();
+        
+        if (now < commitmentEndDate) {
+          toast.error(
+            'Downgrade impossible',
+            {
+              description: `Votre engagement contractuel de 12 mois prend fin le ${commitmentEndDate.toLocaleDateString('fr-FR')}. Vous pourrez changer d'offre à cette date.`,
+              duration: 8000,
+            }
+          );
+          return;
+        }
+      }
+    }
+    
     // Vérifier si le plan choisi peut accueillir le nombre actuel de membres
     const planLimits: { [key: string]: number } = {
       'essentiel': 1,
