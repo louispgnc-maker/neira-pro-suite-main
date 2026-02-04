@@ -172,14 +172,16 @@ export default function CheckoutCabinetPlus() {
       <PublicHeader />
       
       <div className="container mx-auto px-4 py-24">
-        <Button 
-          variant="outline"
-          onClick={() => navigate(-1)} 
-          className="mb-6 border-orange-300 text-orange-600 hover:bg-orange-50"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour
-        </Button>
+        <div className="mb-8">
+          <Button 
+            variant="outline"
+            onClick={() => navigate(-1)} 
+            className="border-orange-300 text-orange-600 hover:bg-orange-50"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Retour
+          </Button>
+        </div>
 
         <div className="max-w-7xl mx-auto">
           {/* Titre centré */}

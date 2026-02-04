@@ -106,18 +106,20 @@ export default function CheckoutEssentiel() {
       <PublicHeader />
       
       <div className="container mx-auto px-4 py-24">
-        <Button 
-          variant="outline"
-          onClick={() => navigate(-1)} 
-          className={`mb-6 ${
-            role === 'notaire' 
-              ? 'border-orange-300 text-orange-600 hover:bg-orange-50' 
-              : 'border-blue-300 text-blue-600 hover:bg-blue-50'
-          }`}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour
-        </Button>
+        <div className="mb-8">
+          <Button 
+            variant="outline"
+            onClick={() => navigate(-1)} 
+            className={`${
+              role === 'notaire' 
+                ? 'border-orange-300 text-orange-600 hover:bg-orange-50' 
+                : 'border-blue-300 text-blue-600 hover:bg-blue-50'
+            }`}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Retour
+          </Button>
+        </div>
 
         <div className="max-w-7xl mx-auto">
           {/* Titre centré */}
