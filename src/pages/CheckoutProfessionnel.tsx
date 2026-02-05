@@ -105,6 +105,18 @@ export default function CheckoutProfessionnel() {
     setLoading(true);
     
     try {
+      // Si l'utilisateur n'est PAS connecté, rediriger vers création de compte avec retour vers checkout
+      if (!user) {
+        sessionStorage.setItem('checkout_return', JSON.stringify({
+          plan: 'professionnel',
+          billingPeriod,
+          userCount,
+          role
+        }));
+        navigate(`/${role}s/onboarding`);
+        return;
+      }
+
       // Obtenir le price ID Stripe pour le plan Professionnel selon la période
       const priceId = STRIPE_PRICE_IDS.professionnel[billingPeriod];
       if (!priceId) {
@@ -115,19 +127,16 @@ export default function CheckoutProfessionnel() {
         return;
       }
 
-      // Si l'utilisateur est connecté, récupérer son cabinet_id
-      let cabinetId = null;
-      if (user) {
-        const { data: memberData } = await supabase
-          .from('cabinet_members')
-          .select('cabinet_id')
-          .eq('user_id', user.id)
-          .single();
-        
-        cabinetId = memberData?.cabinet_id || null;
-      }
+      // Récupérer le cabinet_id de l'utilisateur connecté
+      const { data: memberData } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id')
+        .eq('user_id', user.id)
+        .single();
+      
+      const cabinetId = memberData?.cabinet_id || null;
 
-      // Créer la session de paiement Stripe (avec ou sans cabinet_id) (avec ou sans cabinet_id)
+      // Créer la session de paiement Stripe
       const checkoutUrl = await createStripeCheckoutSession({
         priceId,
         quantity: userCount, // Nombre d'utilisateurs sélectionnés (2 à 10)
