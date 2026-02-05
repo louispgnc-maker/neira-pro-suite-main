@@ -87,9 +87,30 @@ export default function Solution() {
       {/* Pricing Section */}
       <section className="py-20 px-6 bg-gradient-to-br from-slate-50 via-blue-100 to-purple-100">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-8">
             Choisissez l'offre adaptée à votre équipe
           </h2>
+          
+          {/* Encadré info essai + engagement */}
+          <div className="max-w-4xl mx-auto mb-12">
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-300 rounded-xl p-6 shadow-lg">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <span className="text-4xl">🎁</span>
+                  </div>
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    🎁 15 jours d'essai gratuit • Engagement 1 an • Paiement mensuel sans frais
+                  </h3>
+                  <p className="text-gray-700">
+                    Testez gratuitement pendant 15 jours, puis engagement d'1 an payable en 12 fois sans frais chaque mois
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Offre Essentiel */}

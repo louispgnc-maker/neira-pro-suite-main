@@ -138,14 +138,35 @@ serve(async (req) => {
           }
           
           // Déterminer la période de facturation depuis metadata ou depuis l'intervalle Stripe
-          const billingPeriod = session.metadata?.billing_period || 
+          const billingPeriod = subscription.metadata?.billing_period || 
+                                session.metadata?.billing_period ||
                                 (subscription.items.data[0]?.price.recurring?.interval === 'year' ? 'yearly' : 'monthly');
           
           // Calculer la date de fin d'engagement (12 mois à partir de maintenant)
-          const commitmentEndDate = new Date();
-          commitmentEndDate.setMonth(commitmentEndDate.getMonth() + 12);
+          // Priorité : metadata de la subscription > metadata de la session > calcul par défaut
+          let commitmentEndDate: Date;
+          if (subscription.metadata?.commitment_end_date) {
+            commitmentEndDate = new Date(subscription.metadata.commitment_end_date);
+            console.log('Using commitment_end_date from subscription metadata:', commitmentEndDate.toISOString());
+          } else if (session.metadata?.commitment_end_date) {
+            commitmentEndDate = new Date(session.metadata.commitment_end_date);
+            console.log('Using commitment_end_date from session metadata:', commitmentEndDate.toISOString());
+          } else {
+            // Fallback : calculer 12 mois à partir de la date de début de la subscription
+            const startDate = subscription.started_at ? new Date(subscription.started_at * 1000) : new Date();
+            commitmentEndDate = new Date(startDate);
+            commitmentEndDate.setMonth(commitmentEndDate.getMonth() + 12);
+            console.log('Calculated commitment_end_date (12 months from start):', commitmentEndDate.toISOString());
+          }
+
+          console.log('Billing period:', billingPeriod);
+          console.log('Commitment end date:', commitmentEndDate.toISOString());
+          console.log('Subscription cancel_at:', subscription.cancel_at ? new Date(subscription.cancel_at * 1000).toISOString() : 'none');
 
           // Mettre à jour le cabinet
+          // Déterminer le statut : trialing si en période d'essai, sinon active
+          const subscriptionStatus = subscription.status === 'trialing' ? 'trialing' : 'active';
+          
           const { error: updateError } = await supabaseAdmin
             .from('cabinets')
             .update({
@@ -153,7 +174,7 @@ serve(async (req) => {
               stripe_subscription_id: subscription.id,
               stripe_subscription_item_id: subscription.items.data[0]?.id,
               subscription_plan: tier,
-              subscription_status: 'active',
+              subscription_status: subscriptionStatus,
               current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
               max_members: quantity,
               payment_method_type: paymentMethodType,

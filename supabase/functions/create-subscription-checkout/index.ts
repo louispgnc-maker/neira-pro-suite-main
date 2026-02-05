@@ -18,7 +18,7 @@ serve(async (req) => {
   }
 
   try {
-    const { priceId, successUrl, cancelUrl, customerEmail, cabinetId, quantity } = await req.json()
+    const { priceId, successUrl, cancelUrl, customerEmail, cabinetId, quantity, metadata } = await req.json()
 
     console.log('=== CHECKOUT REQUEST START ===');
     console.log('Plan (priceId):', priceId);
@@ -27,6 +27,7 @@ serve(async (req) => {
     console.log('Customer email:', customerEmail || 'WILL BE COLLECTED');
     console.log('Success URL:', successUrl);
     console.log('Cancel URL:', cancelUrl);
+    console.log('Metadata:', metadata);
 
     if (!priceId || !quantity) {
       throw new Error('Price ID and quantity are required')
@@ -34,6 +35,18 @@ serve(async (req) => {
 
     console.log('Cabinet ID:', cabinetId || 'NEW USER')
     console.log('Creating checkout session without existing customer lookup')
+
+    // Déterminer si c'est mensuel ou annuel depuis les metadata
+    const billingPeriod = metadata?.billing_period || 'monthly'
+    const isMonthly = billingPeriod === 'monthly'
+    
+    // Calculer la date de fin d'engagement (12 mois à partir de maintenant)
+    const commitmentEndDate = new Date()
+    commitmentEndDate.setMonth(commitmentEndDate.getMonth() + 12)
+    const commitmentEndTimestamp = Math.floor(commitmentEndDate.getTime() / 1000)
+
+    console.log(`Billing period: ${billingPeriod}`)
+    console.log(`Commitment end date: ${commitmentEndDate.toISOString()} (timestamp: ${commitmentEndTimestamp})`)
 
     // Configuration de la session Checkout pour paiements internationaux
     const sessionParams: any = {
@@ -59,18 +72,32 @@ serve(async (req) => {
       // ⚠️ Message d'information sur l'engagement
       custom_text: {
         submit: {
-          message: 'Engagement de 12 mois - Paiement mensuel ou annuel avec -10%',
+          message: '🎁 15 jours d\'essai gratuit puis engagement de 12 mois - Paiement mensuel ou annuel avec -10%',
         },
       },
       
       // Métadonnées pour le webhook
       metadata: {
         cabinet_id: cabinetId || 'pending',
+        billing_period: billingPeriod,
+        commitment_end_date: commitmentEndDate.toISOString(),
       },
       subscription_data: {
+        // 🎁 ESSAI GRATUIT : 15 jours sans paiement
+        trial_period_days: 15,
+        trial_settings: {
+          end_behavior: {
+            missing_payment_method: 'cancel', // Annule si pas de moyen de paiement à la fin
+          },
+        },
         metadata: {
           cabinet_id: cabinetId || 'pending',
+          billing_period: billingPeriod,
+          commitment_end_date: commitmentEndDate.toISOString(),
         },
+        // 🔒 ENGAGEMENT 12 MOIS : Pour les abonnements mensuels, on fixe cancel_at à 12 mois
+        // Cela empêche l'annulation automatique avant la fin de l'engagement
+        ...(isMonthly ? { cancel_at: commitmentEndTimestamp } : {}),
       },
     }
 

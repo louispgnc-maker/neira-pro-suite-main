@@ -129,13 +129,35 @@ export default function CheckoutEssentiel() {
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Colonne gauche : Engagement + Fonctionnalités */}
             <div className="space-y-6">
+              {/* Encadré essai gratuit */}
+              <Card className="bg-green-50 border-2 border-green-300">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-2xl">🎁</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-green-900 text-base mb-2">🎁 15 jours d'essai gratuit</h4>
+                      <p className="text-sm text-green-800 mb-2">
+                        Profitez de <strong>15 jours gratuits</strong> pour tester toutes les fonctionnalités. 
+                        Aucun prélèvement avant la fin de la période d'essai.
+                      </p>
+                      <div className="flex flex-wrap gap-2 text-xs text-green-900">
+                        <span className="bg-green-200 px-2 py-1 rounded">✅ Accès complet immédiat</span>
+                        <span className="bg-green-200 px-2 py-1 rounded">✅ Sans engagement pendant l'essai</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Encadré engagement */}
               <Card className="bg-blue-50 border-2 border-blue-300">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-3">
                     <Calendar className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
-                      <h4 className="font-bold text-blue-900 text-base mb-2">⚠️ Engagement de 12 mois</h4>
+                      <h4 className="font-bold text-blue-900 text-base mb-2">⚠️ Après l'essai : Engagement de 12 mois</h4>
                       <p className="text-sm text-blue-800 mb-2">
                         Tous les abonnements Neira impliquent un <strong>engagement ferme de 12 mois</strong>. 
                         Le paiement mensuel est une facilité de paiement, mais l'engagement reste d'un an.
