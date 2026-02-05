@@ -92,18 +92,13 @@ export default function Solution() {
               Choisissez l'offre adaptée à votre équipe
             </h2>
             
-            {/* Bulle autocollant essai gratuit */}
-            <div className="absolute -top-4 right-0 md:right-12 animate-bounce">
-              <div className="relative">
-                <div className="bg-gradient-to-br from-green-400 to-green-600 text-white rounded-full px-6 py-3 shadow-2xl border-4 border-white transform rotate-12 hover:rotate-0 transition-transform duration-300">
-                  <div className="text-center">
-                    <div className="text-2xl font-black leading-tight">15 JOURS</div>
-                    <div className="text-xs font-bold uppercase tracking-wider">Gratuits</div>
-                    <div className="text-[10px] opacity-90">sur tous les plans</div>
-                  </div>
+            {/* Badge autocollant essai gratuit */}
+            <div className="absolute -top-4 right-0 md:right-12">
+              <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl px-5 py-2.5 shadow-lg border border-white/20 backdrop-blur-sm transform -rotate-3 hover:rotate-0 transition-all duration-300 hover:scale-105">
+                <div className="text-center">
+                  <div className="text-lg font-bold leading-tight">15 jours gratuits</div>
+                  <div className="text-[10px] font-medium opacity-90">tous les plans</div>
                 </div>
-                {/* Petit triangle/ombre pour effet autocollant */}
-                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-green-700 opacity-30"></div>
               </div>
             </div>
           </div>
