@@ -87,27 +87,23 @@ export default function Solution() {
       {/* Pricing Section */}
       <section className="py-20 px-6 bg-gradient-to-br from-slate-50 via-blue-100 to-purple-100">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-8">
-            Choisissez l'offre adaptée à votre équipe
-          </h2>
-          
-          {/* Encadré info essai + engagement */}
-          <div className="max-w-4xl mx-auto mb-12">
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-300 rounded-xl p-6 shadow-lg">
-              <div className="flex flex-col md:flex-row items-center gap-6">
-                <div className="flex-shrink-0">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-4xl">🎁</span>
+          <div className="relative">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
+              Choisissez l'offre adaptée à votre équipe
+            </h2>
+            
+            {/* Bulle autocollant essai gratuit */}
+            <div className="absolute -top-4 right-0 md:right-12 animate-bounce">
+              <div className="relative">
+                <div className="bg-gradient-to-br from-green-400 to-green-600 text-white rounded-full px-6 py-3 shadow-2xl border-4 border-white transform rotate-12 hover:rotate-0 transition-transform duration-300">
+                  <div className="text-center">
+                    <div className="text-2xl font-black leading-tight">15 JOURS</div>
+                    <div className="text-xs font-bold uppercase tracking-wider">Gratuits</div>
+                    <div className="text-[10px] opacity-90">sur tous les plans</div>
                   </div>
                 </div>
-                <div className="flex-1 text-center md:text-left">
-                  <h3 className="text-3xl font-bold text-gray-900 mb-1">
-                    15 jours de test gratuit
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    avant engagement
-                  </p>
-                </div>
+                {/* Petit triangle/ombre pour effet autocollant */}
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-green-700 opacity-30"></div>
               </div>
             </div>
           </div>
