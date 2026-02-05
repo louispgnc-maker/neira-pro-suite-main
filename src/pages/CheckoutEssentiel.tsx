@@ -39,17 +39,6 @@ export default function CheckoutEssentiel() {
     setLoading(true);
     
     try {
-      // Si l'utilisateur n'est PAS connecté, rediriger vers création de compte avec retour vers checkout
-      if (!user) {
-        sessionStorage.setItem('checkout_return', JSON.stringify({
-          plan: 'essentiel',
-          billingPeriod,
-          role
-        }));
-        navigate(`/${role}s/onboarding`);
-        return;
-      }
-
       // Obtenir le price ID Stripe pour le plan Essentiel selon la période
       const priceId = STRIPE_PRICE_IDS.essentiel[billingPeriod];
       if (!priceId) {
@@ -60,21 +49,29 @@ export default function CheckoutEssentiel() {
         return;
       }
 
-      // Récupérer le cabinet_id de l'utilisateur connecté
-      const { data: memberData } = await supabase
-        .from('cabinet_members')
-        .select('cabinet_id')
-        .eq('user_id', user.id)
-        .single();
-      
-      const cabinetId = memberData?.cabinet_id || null;
+      // Si l'utilisateur est connecté, récupérer le cabinet_id
+      let cabinetId = null;
+      if (user) {
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('cabinet_id')
+          .eq('user_id', user.id)
+          .single();
+        cabinetId = memberData?.cabinet_id || null;
+      }
 
       // Créer la session de paiement Stripe
+      // Si pas connecté: redirige vers /create-account après paiement
+      // Si connecté: redirige vers le dashboard
+      const successUrl = user 
+        ? `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`
+        : `${window.location.origin}/create-account?session_id={CHECKOUT_SESSION_ID}&role=${role}&plan=essentiel&billing=${billingPeriod}`;
+      
       const checkoutUrl = await createStripeCheckoutSession({
         priceId,
         quantity: 1, // Plan Essentiel = 1 utilisateur
         cabinetId: cabinetId,
-        successUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`,
+        successUrl,
         cancelUrl: `${window.location.origin}/checkout/essentiel`
       });
 
