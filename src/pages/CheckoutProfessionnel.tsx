@@ -105,30 +105,6 @@ export default function CheckoutProfessionnel() {
     setLoading(true);
     
     try {
-      // Vérifier que l'utilisateur est connecté
-      if (!user) {
-        toast.error("Erreur", {
-          description: "Vous devez être connecté pour souscrire"
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Récupérer le cabinet de l'utilisateur
-      const { data: memberData, error: memberError } = await supabase
-        .from('cabinet_members')
-        .select('cabinet_id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (memberError || !memberData?.cabinet_id) {
-        toast.error("Erreur", {
-          description: "Cabinet non trouvé. Veuillez contacter le support."
-        });
-        setLoading(false);
-        return;
-      }
-
       // Obtenir le price ID Stripe pour le plan Professionnel selon la période
       const priceId = STRIPE_PRICE_IDS.professionnel[billingPeriod];
       if (!priceId) {
@@ -139,11 +115,23 @@ export default function CheckoutProfessionnel() {
         return;
       }
 
-      // Créer la session de paiement Stripe
+      // Si l'utilisateur est connecté, récupérer son cabinet_id
+      let cabinetId = null;
+      if (user) {
+        const { data: memberData } = await supabase
+          .from('cabinet_members')
+          .select('cabinet_id')
+          .eq('user_id', user.id)
+          .single();
+        
+        cabinetId = memberData?.cabinet_id || null;
+      }
+
+      // Créer la session de paiement Stripe (avec ou sans cabinet_id) (avec ou sans cabinet_id)
       const checkoutUrl = await createStripeCheckoutSession({
         priceId,
         quantity: userCount, // Nombre d'utilisateurs sélectionnés (2 à 10)
-        cabinetId: memberData.cabinet_id,
+        cabinetId: cabinetId,
         successUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`,
         cancelUrl: `${window.location.origin}/checkout/professionnel`
       });
