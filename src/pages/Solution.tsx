@@ -101,11 +101,11 @@ export default function Solution() {
                   </div>
                 </div>
                 <div className="flex-1 text-center md:text-left">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    🎁 15 jours d'essai gratuit • Engagement 1 an • Paiement mensuel sans frais
+                  <h3 className="text-3xl font-bold text-gray-900 mb-1">
+                    15 jours de test gratuit
                   </h3>
-                  <p className="text-gray-700">
-                    Testez gratuitement pendant 15 jours, puis engagement d'1 an payable en 12 fois sans frais chaque mois
+                  <p className="text-sm text-gray-600">
+                    avant engagement
                   </p>
                 </div>
               </div>
