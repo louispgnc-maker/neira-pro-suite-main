@@ -54,6 +54,8 @@ export default function CreateAccountAfterPayment() {
             role: role, // Ajouter le rôle dans les métadonnées
           },
           emailRedirectTo: undefined, // Pas de redirection email
+          // Désactiver l'email de confirmation car déjà validé par paiement Stripe
+          // L'utilisateur a payé, donc email valide
         },
       });
 
