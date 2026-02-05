@@ -156,19 +156,42 @@ export default function CreateAccountAfterPayment() {
         }
       }
 
-      // Stocker le session_id et les infos de plan dans localStorage pour le lier au cabinet
-      if (sessionId) {
+      // 🏢 CRÉATION AUTOMATIQUE DU CABINET
+      console.log('🏢 Création automatique du cabinet...');
+      const cabinetName = `Cabinet ${formData.lastName}`;
+      
+      const { data: cabinetId, error: cabinetError } = await supabase.rpc('create_cabinet', {
+        nom_param: cabinetName,
+        raison_sociale_param: cabinetName,
+        siret_param: '',
+        adresse_param: '',
+        code_postal_param: '',
+        ville_param: '',
+        telephone_param: '',
+        email_param: formData.email,
+        role_param: selectedRole
+      });
+
+      if (cabinetError) {
+        console.error('❌ Erreur création cabinet:', cabinetError);
+        throw new Error('Erreur lors de la création du cabinet');
+      }
+
+      console.log('✅ Cabinet créé avec ID:', cabinetId);
+
+      // Stocker le session_id et cabinet_id pour le webhook Stripe
+      if (sessionId && cabinetId) {
         localStorage.setItem('pending_cabinet_session', sessionId);
-        // Note: les infos de plan seront récupérées depuis le webhook Stripe
+        localStorage.setItem(`cabinet_for_session_${sessionId}`, cabinetId);
       }
 
       toast.success("Compte créé avec succès !", {
-        description: "Vous allez être redirigé pour créer votre cabinet"
+        description: "Redirection vers votre espace professionnel..."
       });
 
-      // Rediriger vers la création du cabinet avec le rôle
+      // Rediriger directement vers le dashboard
       setTimeout(() => {
-        navigate(`/onboarding/create-cabinet?profession=${selectedRole}`);
+        navigate(`/${selectedRole}s/dashboard`, { replace: true });
       }, 1500);
 
     } catch (error: any) {
