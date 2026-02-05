@@ -94,10 +94,9 @@ serve(async (req) => {
           cabinet_id: cabinetId || 'pending',
           billing_period: billingPeriod,
           commitment_end_date: commitmentEndDate.toISOString(),
+          // 🔒 ENGAGEMENT 12 MOIS : Enregistré dans metadata pour gestion ultérieure
+          commitment_months: '12',
         },
-        // 🔒 ENGAGEMENT 12 MOIS : Pour les abonnements mensuels, on fixe cancel_at à 12 mois
-        // Cela empêche l'annulation automatique avant la fin de l'engagement
-        ...(isMonthly ? { cancel_at: commitmentEndTimestamp } : {}),
       },
     }
 
