@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserCircle, Lock, Mail, Eye, EyeOff } from "lucide-react";
+import { UserCircle, Lock, Mail, Eye, EyeOff, Scale, Building2 } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 
@@ -12,7 +12,7 @@ export default function CreateAccountAfterPayment() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
-  const role = searchParams.get('role') as 'avocat' | 'notaire' || 'avocat';
+  const urlRole = searchParams.get('role') as 'avocat' | 'notaire' | null;
   
   const [formData, setFormData] = useState({
     email: '',
@@ -23,6 +23,20 @@ export default function CreateAccountAfterPayment() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'avocat' | 'notaire' | null>(urlRole);
+
+  // Si pas de rôle dans l'URL, rediriger vers sélection profession
+  useEffect(() => {
+    if (!urlRole && !selectedRole) {
+      // Stocker les params pour revenir après sélection
+      if (sessionId) {
+        sessionStorage.setItem('pending_account_session', sessionId);
+      }
+      navigate('/select-profession');
+    } else if (urlRole && !selectedRole) {
+      setSelectedRole(urlRole);
+    }
+  }, [urlRole, selectedRole, sessionId, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,10 +51,18 @@ export default function CreateAccountAfterPayment() {
       return;
     }
 
+    if (!selectedRole) {
+      toast.error("Veuillez sélectionner votre profession");
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
 
     try {
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      
+      console.log('🔐 Création compte avec rôle:', selectedRole);
       
       // Créer le compte avec Supabase Auth avec le rôle
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -51,7 +73,7 @@ export default function CreateAccountAfterPayment() {
             full_name: fullName,
             first_name: formData.firstName,
             last_name: formData.lastName,
-            role: role, // Ajouter le rôle dans les métadonnées
+            role: selectedRole, // Ajouter le rôle dans les métadonnées
           },
           emailRedirectTo: undefined, // Pas de redirection email
           // Désactiver l'email de confirmation car déjà validé par paiement Stripe
@@ -101,7 +123,7 @@ export default function CreateAccountAfterPayment() {
       
       // Si après 5 tentatives le profil n'existe toujours pas, le créer manuellement
       if (!profileExists) {
-        console.log('⚠️ Trigger n\'a pas créé le profil, création manuelle...');
+        console.loselectedR('⚠️ Trigger n\'a pas créé le profil, création manuelle...');
         const { error: manualProfileError } = await supabase
           .from('profiles')
           .insert({
@@ -119,20 +141,20 @@ export default function CreateAccountAfterPayment() {
         }
       } else {
         // Le profil existe : mettre à jour le rôle ET les infos
-        console.log('🔄 Mise à jour du profil avec le rôle:', role);
+        console.log('🔄 Mise à jour du profil avec le rôle:', selectedRole);
         const { error: updateProfileError } = await supabase
           .from('profiles')
           .update({
             first_name: formData.firstName,
             last_name: formData.lastName,
-            role: role
+            role: selectedRole
           })
           .eq('id', authData.user.id);
         
         if (updateProfileError) {
           console.error('❌ Erreur mise à jour profil:', updateProfileError);
         } else {
-          console.log('✅ Profil mis à jour avec rôle:', role);
+          console.log('✅ Profil mis à jour avec rôle:', selectedRole);
         }
       }
 
@@ -148,7 +170,7 @@ export default function CreateAccountAfterPayment() {
 
       // Rediriger vers la création du cabinet avec le rôle
       setTimeout(() => {
-        navigate(`/onboarding/create-cabinet?profession=${role}`);
+        navigate(`/onboarding/create-cabinet?profession=${selectedRole}`);
       }, 1500);
 
     } catch (error: any) {
@@ -186,6 +208,43 @@ export default function CreateAccountAfterPayment() {
         </CardHeader>
 
         <CardContent>
+          {/* Sélection de profession si pas dans l'URL */}
+          {!selectedRole && (
+            <div className="space-y-4 mb-6">
+              <Label className="text-center block text-base font-semibold">
+                Je suis...
+              </Label>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 hover:border-blue-500"
+                  onClick={() => setSelectedRole('avocat')}
+                >
+                  <Scale className="w-8 h-8 text-blue-600" />
+                  <span className="font-semibold">Avocat</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-500"
+                  onClick={() => setSelectedRole('notaire')}
+                >
+                  <Building2 className="w-8 h-8 text-orange-600" />
+                  <span className="font-semibold">Notaire</span>
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {selectedRole && (
+            <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+              <p className="text-sm text-center text-gray-700">
+                Espace : <span className="font-bold capitalize">{selectedRole}</span>
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
