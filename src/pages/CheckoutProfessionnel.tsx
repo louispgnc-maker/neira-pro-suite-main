@@ -127,11 +127,8 @@ export default function CheckoutProfessionnel() {
       }
 
       // Créer la session de paiement Stripe
-      // Si pas connecté: redirige vers sélection profession puis création compte
-      // Si connecté: redirige vers le dashboard
-      const successUrl = user 
-        ? `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`
-        : `${window.location.origin}/select-profession?session_id={CHECKOUT_SESSION_ID}&plan=professionnel&billing=${billingPeriod}&users=${userCount}`;
+      // Toujours rediriger vers la sélection de profession puis création de compte
+      const successUrl = `${window.location.origin}/select-profession?session_id={CHECKOUT_SESSION_ID}&plan=professionnel&billing=${billingPeriod}`;
       
       const checkoutUrl = await createStripeCheckoutSession({
         priceId,
