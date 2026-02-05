@@ -189,6 +189,41 @@ serve(async (req) => {
 
           if (updateError) {
             console.error('❌ Error updating cabinet:', updateError)
+          } else {
+            console.log('✅ Cabinet updated successfully')
+            
+            // 🎁 BONUS ESSAI : Ajouter 5 signatures gratuites pendant la période d'essai
+            if (subscription.status === 'trialing' && subscription.trial_end) {
+              const trialEndDate = new Date(subscription.trial_end * 1000)
+              console.log('🎁 Adding 5 free signatures for trial period until:', trialEndDate.toISOString())
+              
+              // Récupérer tous les membres actifs du cabinet
+              const { data: members } = await supabaseAdmin
+                .from('cabinet_members')
+                .select('id, user_id, email')
+                .eq('cabinet_id', cabinetId)
+                .eq('status', 'active')
+              
+              if (members && members.length > 0) {
+                // Ajouter 5 signatures gratuites à chaque membre
+                const { error: signaturesError } = await supabaseAdmin
+                  .from('cabinet_members')
+                  .update({
+                    signature_addon_quantity: 5,
+                    signature_addon_price: 0, // Gratuit
+                    signature_addon_purchased_at: new Date().toISOString(),
+                    signature_addon_expires_at: trialEndDate.toISOString()
+                  })
+                  .eq('cabinet_id', cabinetId)
+                  .eq('status', 'active')
+                
+                if (signaturesError) {
+                  console.error('❌ Error adding trial signatures:', signaturesError)
+                } else {
+                  console.log(`✅ Added 5 trial signatures to ${members.length} member(s)`)
+                }
+              }
+            }
           }
 
           // Récupérer les infos du cabinet et du owner pour l'email
