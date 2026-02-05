@@ -77,7 +77,7 @@ export default function CreateAccountAfterPayment() {
       }
 
       // Le profil est créé automatiquement par le trigger handle_new_user()
-      // Vérifier que le profil existe et le créer manuellement si nécessaire
+      // Vérifier que le profil existe et le créer/mettre à jour si nécessaire
       let retries = 0;
       let profileExists = false;
       
@@ -114,6 +114,23 @@ export default function CreateAccountAfterPayment() {
           console.error('❌ Erreur création manuelle profil:', manualProfileError);
         } else {
           console.log('✅ Profil créé manuellement');
+        }
+      } else {
+        // Le profil existe : mettre à jour le rôle ET les infos
+        console.log('🔄 Mise à jour du profil avec le rôle:', role);
+        const { error: updateProfileError } = await supabase
+          .from('profiles')
+          .update({
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            role: role
+          })
+          .eq('id', authData.user.id);
+        
+        if (updateProfileError) {
+          console.error('❌ Erreur mise à jour profil:', updateProfileError);
+        } else {
+          console.log('✅ Profil mis à jour avec rôle:', role);
         }
       }
 
