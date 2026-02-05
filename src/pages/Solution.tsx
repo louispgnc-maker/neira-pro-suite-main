@@ -96,7 +96,7 @@ export default function Solution() {
             <div className="absolute -top-4 right-0 md:right-12">
               <div className="bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl px-5 py-2.5 shadow-lg border border-white/20 backdrop-blur-sm transform rotate-3 hover:rotate-0 transition-all duration-300 hover:scale-105">
                 <div className="text-center">
-                  <div className="text-lg font-bold leading-tight">15 jours gratuits</div>
+                  <div className="text-lg font-bold leading-tight">7 jours gratuits</div>
                   <div className="text-[10px] font-medium opacity-90">tous les plans</div>
                 </div>
               </div>

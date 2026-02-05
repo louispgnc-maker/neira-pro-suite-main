@@ -197,9 +197,9 @@ export default function CheckoutCabinetPlus() {
                       <span className="text-2xl">🎁</span>
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-bold text-green-900 text-base mb-2">🎁 15 jours d'essai gratuit</h4>
+                      <h4 className="font-bold text-green-900 text-base mb-2">🎁 7 jours d'essai gratuit</h4>
                       <p className="text-sm text-green-800 mb-2">
-                        Profitez de <strong>15 jours gratuits</strong> pour tester toutes les fonctionnalités. 
+                        Profitez de <strong>7 jours gratuits</strong> pour tester toutes les fonctionnalités. 
                         Aucun prélèvement avant la fin de la période d'essai.
                       </p>
                       <div className="flex flex-wrap gap-2 text-xs text-green-900">

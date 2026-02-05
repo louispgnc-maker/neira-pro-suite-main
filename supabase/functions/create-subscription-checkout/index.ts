@@ -72,7 +72,7 @@ serve(async (req) => {
       // ⚠️ Message d'information sur l'engagement
       custom_text: {
         submit: {
-          message: '🎁 15 jours d\'essai gratuit puis engagement de 12 mois - Paiement mensuel ou annuel avec -10%',
+          message: '🎁 7 jours d\'essai gratuit puis engagement de 12 mois - Paiement mensuel ou annuel avec -10%',
         },
       },
       
@@ -83,8 +83,8 @@ serve(async (req) => {
         commitment_end_date: commitmentEndDate.toISOString(),
       },
       subscription_data: {
-        // 🎁 ESSAI GRATUIT : 15 jours sans paiement
-        trial_period_days: 15,
+        // 🎁 ESSAI GRATUIT : 7 jours sans paiement
+        trial_period_days: 7,
         trial_settings: {
           end_behavior: {
             missing_payment_method: 'cancel', // Annule si pas de moyen de paiement à la fin
