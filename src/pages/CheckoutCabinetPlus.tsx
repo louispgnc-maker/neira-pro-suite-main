@@ -130,11 +130,11 @@ export default function CheckoutCabinetPlus() {
       }
 
       // Créer la session de paiement Stripe
-      // Si pas connecté: redirige vers /create-account après paiement
+      // Si pas connecté: redirige vers sélection profession puis création compte
       // Si connecté: redirige vers le dashboard
       const successUrl = user 
         ? `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`
-        : `${window.location.origin}/create-account?session_id={CHECKOUT_SESSION_ID}&role=${role}&plan=cabinet-plus&billing=${billingPeriod}&users=${userCount}`;
+        : `${window.location.origin}/select-profession?session_id={CHECKOUT_SESSION_ID}&plan=cabinet-plus&billing=${billingPeriod}&users=${userCount}`;
       
       const checkoutUrl = await createStripeCheckoutSession({
         priceId,

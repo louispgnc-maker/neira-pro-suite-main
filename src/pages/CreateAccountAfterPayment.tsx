@@ -25,18 +25,16 @@ export default function CreateAccountAfterPayment() {
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'avocat' | 'notaire' | null>(urlRole);
 
-  // Si pas de rôle dans l'URL, rediriger vers sélection profession
+  // Le rôle DOIT venir de l'URL (depuis select-profession)
   useEffect(() => {
-    if (!urlRole && !selectedRole) {
-      // Stocker les params pour revenir après sélection
-      if (sessionId) {
-        sessionStorage.setItem('pending_account_session', sessionId);
-      }
-      navigate('/select-profession');
-    } else if (urlRole && !selectedRole) {
+    if (!urlRole) {
+      // Pas de rôle = rediriger vers sélection profession
+      toast.error("Veuillez d'abord choisir votre profession");
+      navigate(`/select-profession${sessionId ? `?session_id=${sessionId}` : ''}`);
+    } else {
       setSelectedRole(urlRole);
     }
-  }, [urlRole, selectedRole, sessionId, navigate]);
+  }, [urlRole, sessionId, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -208,39 +206,11 @@ export default function CreateAccountAfterPayment() {
         </CardHeader>
 
         <CardContent>
-          {/* Sélection de profession si pas dans l'URL */}
-          {!selectedRole && (
-            <div className="space-y-4 mb-6">
-              <Label className="text-center block text-base font-semibold">
-                Je suis...
-              </Label>
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 hover:border-blue-500"
-                  onClick={() => setSelectedRole('avocat')}
-                >
-                  <Scale className="w-8 h-8 text-blue-600" />
-                  <span className="font-semibold">Avocat</span>
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-500"
-                  onClick={() => setSelectedRole('notaire')}
-                >
-                  <Building2 className="w-8 h-8 text-orange-600" />
-                  <span className="font-semibold">Notaire</span>
-                </Button>
-              </div>
-            </div>
-          )}
-
+          {/* Affichage de la profession choisie */}
           {selectedRole && (
-            <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
-              <p className="text-sm text-center text-gray-700">
-                Espace : <span className="font-bold capitalize">{selectedRole}</span>
+            <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-blue-200">
+              <p className="text-center text-gray-700">
+                Espace professionnel : <span className="font-bold capitalize text-lg">{selectedRole}</span>
               </p>
             </div>
           )}
