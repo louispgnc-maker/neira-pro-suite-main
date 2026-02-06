@@ -108,17 +108,11 @@ serve(async (req) => {
         console.log('✅ Abonnement Stripe annulé');
       } catch (stripeError: any) {
         console.error('❌ Erreur Stripe:', stripeError);
-        return new Response(
-          JSON.stringify({ error: `Erreur Stripe: ${stripeError.message}` }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        // Continuer quand même pour permettre la suppression du compte
+        console.log('⚠️ Continuation de la suppression malgré l\'erreur Stripe');
       }
     } else {
-      console.warn('⚠️ Aucun stripe_subscription_id trouvé, impossible d\'annuler sur Stripe');
-      return new Response(
-        JSON.stringify({ error: 'Aucun abonnement Stripe trouvé pour ce cabinet' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      console.warn('⚠️ Aucun stripe_subscription_id trouvé, suppression du compte sans annulation Stripe');
     }
 
     // Supprimer le cabinet et ses données
