@@ -84,17 +84,41 @@ serve(async (req) => {
       );
     }
 
+    // Récupérer l'ID de l'abonnement Stripe (peut être dans cabinet_members aussi)
+    let stripeSubscriptionId = cabinetData.stripe_subscription_id;
+    
+    if (!stripeSubscriptionId) {
+      console.log('Pas de stripe_subscription_id dans cabinets, recherche dans cabinet_members...');
+      const { data: memberData } = await supabaseClient
+        .from('cabinet_members')
+        .select('stripe_subscription_id')
+        .eq('cabinet_id', cabinetId)
+        .eq('user_id', user.id)
+        .single();
+      
+      stripeSubscriptionId = memberData?.stripe_subscription_id;
+    }
+
     // Annuler l'abonnement Stripe
-    if (cabinetData.stripe_subscription_id) {
-      console.log('📧 Annulation de l\'abonnement Stripe:', cabinetData.stripe_subscription_id);
+    if (stripeSubscriptionId) {
+      console.log('📧 Annulation de l\'abonnement Stripe:', stripeSubscriptionId);
       
       try {
-        await stripe.subscriptions.cancel(cabinetData.stripe_subscription_id);
+        await stripe.subscriptions.cancel(stripeSubscriptionId);
         console.log('✅ Abonnement Stripe annulé');
       } catch (stripeError: any) {
         console.error('❌ Erreur Stripe:', stripeError);
-        // Continuer même si Stripe échoue (l'abonnement n'a peut-être pas encore été créé)
+        return new Response(
+          JSON.stringify({ error: `Erreur Stripe: ${stripeError.message}` }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       }
+    } else {
+      console.warn('⚠️ Aucun stripe_subscription_id trouvé, impossible d\'annuler sur Stripe');
+      return new Response(
+        JSON.stringify({ error: 'Aucun abonnement Stripe trouvé pour ce cabinet' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Supprimer le cabinet et ses données
