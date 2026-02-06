@@ -553,6 +553,75 @@ export default function Subscription() {
             );
           })()}
 
+          {/* Section Renoncer à l'abonnement (pendant la période d'essai uniquement) */}
+          {isManager && subscriptionData?.status === 'trial' && subscriptionData?.expires_at && (
+            <Card className="mb-12 border-2 border-red-200 bg-red-50/50">
+              <CardHeader>
+                <CardTitle className="text-xl text-red-700 flex items-center gap-2">
+                  <Info className="h-5 w-5" />
+                  Période d'essai en cours
+                </CardTitle>
+                <CardDescription className="text-black">
+                  Vous êtes actuellement en période d'essai de 7 jours. Vous pouvez renoncer à votre abonnement avant le {new Date(subscriptionData.expires_at).toLocaleDateString('fr-FR')}.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-white rounded-lg p-4 border border-red-200">
+                  <p className="text-sm text-black mb-4">
+                    Si vous renoncez à votre abonnement maintenant :
+                  </p>
+                  <ul className="list-disc list-inside text-sm text-gray-700 mb-4 space-y-1">
+                    <li>Votre abonnement Stripe sera immédiatement annulé</li>
+                    <li>Vous ne serez pas facturé</li>
+                    <li>Votre compte sera supprimé</li>
+                    <li>Toutes vos données seront définitivement effacées</li>
+                  </ul>
+                  <Button
+                    onClick={async () => {
+                      if (!confirm('⚠️ ATTENTION : Cette action est irréversible.\n\nVotre compte et toutes vos données seront définitivement supprimés.\n\nÊtes-vous sûr de vouloir renoncer à votre abonnement ?')) {
+                        return;
+                      }
+
+                      try {
+                        setLoading(true);
+                        
+                        // Appeler l'Edge Function pour annuler l'abonnement et supprimer le compte
+                        const { data, error } = await supabase.functions.invoke('cancel-trial-subscription', {
+                          body: { cabinetId }
+                        });
+
+                        if (error) throw error;
+
+                        toast.success('Abonnement annulé', {
+                          description: 'Votre abonnement a été annulé et votre compte sera supprimé.'
+                        });
+
+                        // Déconnecter l'utilisateur
+                        await supabase.auth.signOut();
+                        
+                        // Rediriger vers la page d'accueil
+                        navigate('/');
+                      } catch (error: any) {
+                        console.error('Erreur lors de l\'annulation:', error);
+                        toast.error('Erreur', {
+                          description: error.message || 'Impossible d\'annuler l\'abonnement'
+                        });
+                        setLoading(false);
+                      }
+                    }}
+                    variant="destructive"
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Renoncer à mon abonnement
+                  </Button>
+                  <p className="text-xs text-gray-600 mt-2">
+                    ⚠️ Cette action est définitive et irréversible
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Section Gérer le nombre de membres (seulement pour Professionnel et Cabinet+) */}
           {isManager && (currentPlan === 'professionnel' || currentPlan === 'cabinet-plus') && (
             <Card className={`mb-12 border-2 ${role === 'notaire' ? 'border-orange-200 bg-orange-50/50' : 'border-blue-200 bg-blue-50/50'}`}>
