@@ -125,7 +125,6 @@ export default function OnboardingCreateCabinet() {
         code_postal_param: '',
         ville_param: '',
         telephone_param: formData.phone,
-        email_param: formData.email,
         role_param: profession || 'avocat'
       });
 
