@@ -29,7 +29,17 @@ export function ChangePlanModal({
   currentMembersCount
 }: ChangePlanModalProps) {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
-  const [numberOfMembers, setNumberOfMembers] = useState<number>(currentMembersCount);
+  
+  // Limites par plan
+  const planLimits: Record<string, { min: number; max: number }> = {
+    'essentiel': { min: 1, max: 1 },
+    'professionnel': { min: 2, max: 10 },
+    'cabinet-plus': { min: 1, max: 50 }
+  };
+  
+  // Initialiser avec le maximum entre currentMembersCount et le minimum requis pour le plan
+  const initialMembers = Math.max(currentMembersCount, planLimits[planId].min);
+  const [numberOfMembers, setNumberOfMembers] = useState<number>(initialMembers);
   const [loading, setLoading] = useState(false);
 
   // Configuration des prix par plan
@@ -37,13 +47,6 @@ export function ChangePlanModal({
     'essentiel': 45,
     'professionnel': 69,
     'cabinet-plus': 99
-  };
-
-  // Limites par plan
-  const planLimits: Record<string, { min: number; max: number }> = {
-    'essentiel': { min: 1, max: 1 },
-    'professionnel': { min: 2, max: 10 },
-    'cabinet-plus': { min: 1, max: 50 }
   };
 
   const basePrice = planPrices[planId];
