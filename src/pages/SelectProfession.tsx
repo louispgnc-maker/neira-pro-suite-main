@@ -56,7 +56,7 @@ export default function SelectProfession() {
             onClick={() => handleSelect('notaire')}
           >
             <CardHeader className="text-center">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center shadow-lg">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-orange-600 to-orange-700 flex items-center justify-center shadow-lg">
                 <Landmark className="w-10 h-10 text-white" />
               </div>
               <CardTitle className="text-2xl">Notaire</CardTitle>
