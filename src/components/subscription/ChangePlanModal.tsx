@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { STRIPE_PRICE_IDS } from '@/lib/stripeConfig';
 import { supabase } from '@/lib/supabaseClient';
+import { createStripeCheckoutSession } from '@/lib/stripeUtils';
 import { Crown, Zap, Users } from 'lucide-react';
 
 interface ChangePlanModalProps {
@@ -17,6 +18,7 @@ interface ChangePlanModalProps {
   role: 'avocat' | 'notaire';
   cabinetId: string;
   currentMembersCount: number;
+  hasStripeSubscription: boolean;
 }
 
 export function ChangePlanModal({
@@ -26,7 +28,8 @@ export function ChangePlanModal({
   planName,
   role,
   cabinetId,
-  currentMembersCount
+  currentMembersCount,
+  hasStripeSubscription
 }: ChangePlanModalProps) {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   
@@ -70,29 +73,44 @@ export function ChangePlanModal({
         return;
       }
 
-      // ✅ Utiliser la fonction update-subscription-plan pour conserver la période d'essai
-      const { data, error } = await supabase.functions.invoke('update-subscription-plan', {
-        body: {
-          cabinetId,
-          newPriceId: priceId,
-          quantity: numberOfMembers,
-        },
-      });
+      // Si l'utilisateur a déjà un abonnement Stripe, on le met à jour
+      if (hasStripeSubscription) {
+        const { data, error } = await supabase.functions.invoke('update-subscription-plan', {
+          body: {
+            cabinetId,
+            newPriceId: priceId,
+            quantity: numberOfMembers,
+          },
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast.success('Abonnement mis à jour !', {
-        description: 'Votre changement de plan a été appliqué avec succès'
-      });
+        toast.success('Abonnement mis à jour !', {
+          description: 'Votre changement de plan a été appliqué avec succès'
+        });
 
-      // Recharger la page pour afficher les nouvelles données
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+        // Recharger la page pour afficher les nouvelles données
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        // Sinon, on crée une nouvelle session de checkout
+        const url = await createStripeCheckoutSession(
+          priceId,
+          numberOfMembers,
+          planId,
+          billingPeriod,
+          cabinetId
+        );
+
+        if (url) {
+          window.location.href = url;
+        }
+      }
     } catch (error) {
-      console.error('Erreur création session Stripe:', error);
+      console.error('Erreur changement d\'abonnement:', error);
       toast.error('Erreur', {
-        description: error instanceof Error ? error.message : 'Impossible de créer la session de paiement'
+        description: error instanceof Error ? error.message : 'Impossible de modifier l\'abonnement'
       });
       setLoading(false);
     }

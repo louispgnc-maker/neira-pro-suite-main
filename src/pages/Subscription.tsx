@@ -323,7 +323,8 @@ export default function Subscription() {
               expires_at: cabinet.subscription_expires_at,
               storage_used: cabinet.storage_used || 0,
               storage_limit: cabinet.storage_limit || 21474836480,
-              cabinet_name: cabinet.nom || 'Mon Cabinet'
+              cabinet_name: cabinet.nom || 'Mon Cabinet',
+              stripe_subscription_id: cabinet.stripe_subscription_id || null
             });
             console.log('subscriptionData set with tier:', planValue);
           } else {
@@ -841,6 +842,7 @@ export default function Subscription() {
           role={role}
           cabinetId={cabinetId}
           currentMembersCount={activeMembersCount}
+          hasStripeSubscription={!!subscriptionData?.stripe_subscription_id}
         />
       )}
     </TooltipProvider>
