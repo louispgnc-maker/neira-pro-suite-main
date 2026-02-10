@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { STRIPE_PRICE_IDS } from '@/lib/stripeConfig';
 import { supabase } from '@/lib/supabaseClient';
-import { createStripeCheckoutSession } from '@/lib/stripeUtils';
+import { createStripeCheckoutSession } from '@/lib/stripeCheckout';
 import { Crown, Zap, Users } from 'lucide-react';
 
 interface ChangePlanModalProps {
@@ -95,13 +95,15 @@ export function ChangePlanModal({
         }, 1500);
       } else {
         // Sinon, on crée une nouvelle session de checkout
-        const url = await createStripeCheckoutSession(
+        const url = await createStripeCheckoutSession({
           priceId,
-          numberOfMembers,
-          planId,
-          billingPeriod,
-          cabinetId
-        );
+          quantity: numberOfMembers,
+          cabinetId,
+          metadata: {
+            billing_period: billingPeriod,
+            plan_id: planId,
+          }
+        });
 
         if (url) {
           window.location.href = url;
