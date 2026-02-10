@@ -67,13 +67,20 @@ serve(async (req) => {
     }
 
     const subscriptionId = cabinetData.stripe_subscription_id
-    const subscriptionItemId = cabinetData.stripe_subscription_item_id
 
     console.log('Current subscription:', subscriptionId)
-    console.log('Current subscription item:', subscriptionItemId)
 
-    // Récupérer l'abonnement Stripe pour garder trial_end
+    // Récupérer l'abonnement Stripe pour garder trial_end ET obtenir le subscription item
     const currentSubscription = await stripe.subscriptions.retrieve(subscriptionId)
+    
+    // Obtenir le subscription item ID (soit depuis la BDD, soit depuis Stripe)
+    const subscriptionItemId = cabinetData.stripe_subscription_item_id || currentSubscription.items.data[0]?.id
+    
+    if (!subscriptionItemId) {
+      throw new Error('Subscription item introuvable')
+    }
+    
+    console.log('Current subscription item:', subscriptionItemId)
     
     // ✅ CONSERVER LA DATE DE FIN D'ESSAI ORIGINALE
     const trialEnd = currentSubscription.trial_end
