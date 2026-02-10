@@ -192,6 +192,32 @@ serve(async (req) => {
           } else {
             console.log('✅ Cabinet updated successfully')
             
+            // 💳 Stocker le stripe_subscription_id dans cabinet_members pour le Fondateur
+            // Cela permet la résiliation d'essai de retrouver l'abonnement à annuler
+            const { data: founderMember } = await supabaseAdmin
+              .from('cabinet_members')
+              .select('id')
+              .eq('cabinet_id', cabinetId)
+              .eq('role_cabinet', 'Fondateur')
+              .eq('status', 'active')
+              .limit(1)
+              .single()
+            
+            if (founderMember) {
+              const { error: memberUpdateError } = await supabaseAdmin
+                .from('cabinet_members')
+                .update({
+                  stripe_subscription_id: subscription.id
+                })
+                .eq('id', founderMember.id)
+              
+              if (memberUpdateError) {
+                console.error('❌ Error updating founder stripe_subscription_id:', memberUpdateError)
+              } else {
+                console.log('✅ Founder member updated with stripe_subscription_id')
+              }
+            }
+            
             // 🎁 BONUS ESSAI : Ajouter 5 signatures gratuites pendant la période d'essai
             if (subscription.status === 'trialing' && subscription.trial_end) {
               const trialEndDate = new Date(subscription.trial_end * 1000)

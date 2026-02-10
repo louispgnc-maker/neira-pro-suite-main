@@ -63,7 +63,7 @@ export function canAssignRole(userRole: CabinetRole | string | null, targetRole:
     return true;
   }
   if (userRole === CABINET_ROLES.ASSOCIE) {
-    return targetRole !== CABINET_ROLES.FONDATEUR && targetRole !== CABINET_ROLES.ASSOCIE && targetRole !== 'owner';
+    return targetRole !== CABINET_ROLES.FONDATEUR && targetRole !== CABINET_ROLES.ASSOCIE;
   }
   return false;
 }
@@ -78,7 +78,7 @@ export function canModifyMemberRole(userRole: CabinetRole | string | null, targe
     return true;
   }
   if (userRole === CABINET_ROLES.ASSOCIE) {
-    return targetMemberRole !== CABINET_ROLES.FONDATEUR && targetMemberRole !== CABINET_ROLES.ASSOCIE && targetMemberRole !== 'owner';
+    return targetMemberRole !== CABINET_ROLES.FONDATEUR && targetMemberRole !== CABINET_ROLES.ASSOCIE;
   }
   return false;
 }

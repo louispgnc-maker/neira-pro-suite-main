@@ -5,8 +5,8 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { createStripeCheckoutSession } from '@/lib/stripeCheckout';
 import { STRIPE_PRICE_IDS } from '@/lib/stripeConfig';
+import { supabase } from '@/lib/supabaseClient';
 import { Crown, Zap, Users } from 'lucide-react';
 
 interface ChangePlanModalProps {
@@ -67,21 +67,25 @@ export function ChangePlanModal({
         return;
       }
 
-      // Créer la session Stripe Checkout
-      const checkoutUrl = await createStripeCheckoutSession({
-        priceId,
-        quantity: numberOfMembers,
-        cabinetId,
-        successUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription?payment=success`,
-        cancelUrl: `${window.location.origin}/${role === 'notaire' ? 'notaires' : 'avocats'}/subscription`,
-        metadata: {
-          billing_period: billingPeriod
-        }
+      // ✅ Utiliser la fonction update-subscription-plan pour conserver la période d'essai
+      const { data, error } = await supabase.functions.invoke('update-subscription-plan', {
+        body: {
+          cabinetId,
+          newPriceId: priceId,
+          quantity: numberOfMembers,
+        },
       });
 
-      // Rediriger vers Stripe
-      // Utiliser replace() pour ne pas ajouter Stripe dans l'historique
-      window.location.replace(checkoutUrl);
+      if (error) throw error;
+
+      toast.success('Abonnement mis à jour !', {
+        description: 'Votre changement de plan a été appliqué avec succès'
+      });
+
+      // Recharger la page pour afficher les nouvelles données
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       console.error('Erreur création session Stripe:', error);
       toast.error('Erreur', {

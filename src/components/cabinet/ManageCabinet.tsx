@@ -867,7 +867,7 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                     <TableCell>{member.nom || '—'}</TableCell>
                     <TableCell>
                       {currentUserRole && canChangeRoles(currentUserRole) && canModifyMemberRole(currentUserRole, member.role_cabinet) ? (
-                        (member.role_cabinet === 'owner' || member.role_cabinet === 'Fondateur') ? (
+                        (member.role_cabinet === 'Fondateur') ? (
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
@@ -914,10 +914,10 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                         )
                         ) : (
                           <Badge
-                            variant={(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner' || member.role_cabinet === 'Associé') ? 'default' : 'secondary'}
-                            className={`text-xs ${(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'owner' || member.role_cabinet === 'Associé') ? (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white') : (['Notaire','Clerc de Notaire','Formaliste','Juriste Notarial'].includes(member.role_cabinet || '') ? 'bg-orange-600 hover:bg-orange-700 text-white' : '')}`}
+                            variant={(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'Associé') ? 'default' : 'secondary'}
+                            className={`text-xs ${(member.role_cabinet === 'Fondateur' || member.role_cabinet === 'Associé') ? (role === 'notaire' ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white') : (['Notaire','Clerc de Notaire','Formaliste','Juriste Notarial'].includes(member.role_cabinet || '') ? 'bg-orange-600 hover:bg-orange-700 text-white' : '')}`}
                           >
-                            {member.role_cabinet === 'owner' ? 'Fondateur' : member.role_cabinet}
+                            {member.role_cabinet}
                           </Badge>
                         )}
                     </TableCell>
