@@ -33,6 +33,48 @@ serve(async (req) => {
       throw new Error('Price ID and quantity are required')
     }
 
+    // ✨ CALCULER LES JOURS D'ESSAI RESTANTS si changement de plan pendant l'essai
+    let trialDays = 7; // Par défaut : 7 jours pour un nouvel abonnement
+    
+    if (cabinetId) {
+      console.log('Checking existing subscription for cabinet:', cabinetId);
+      
+      const supabaseAdmin = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      );
+      
+      const { data: cabinetData } = await supabaseAdmin
+        .from('cabinets')
+        .select('stripe_subscription_id')
+        .eq('id', cabinetId)
+        .single();
+      
+      if (cabinetData?.stripe_subscription_id) {
+        console.log('Found existing subscription:', cabinetData.stripe_subscription_id);
+        
+        // Récupérer l'abonnement Stripe existant
+        const existingSubscription = await stripe.subscriptions.retrieve(cabinetData.stripe_subscription_id);
+        
+        if (existingSubscription.status === 'trialing' && existingSubscription.trial_end) {
+          // Calculer les jours restants
+          const now = Math.floor(Date.now() / 1000); // timestamp actuel en secondes
+          const trialEnd = existingSubscription.trial_end;
+          const secondsRemaining = trialEnd - now;
+          const daysRemaining = Math.ceil(secondsRemaining / 86400); // 86400 secondes = 1 jour
+          
+          if (daysRemaining > 0) {
+            trialDays = daysRemaining;
+            console.log(`✨ Preserving trial period: ${daysRemaining} days remaining (original trial ends: ${new Date(trialEnd * 1000).toISOString()})`);
+          }
+        } else {
+          console.log('Existing subscription is not in trial, using default 7 days');
+        }
+      }
+    }
+
+    console.log(`Trial period for this checkout: ${trialDays} days`);
+
     console.log('Cabinet ID:', cabinetId || 'NEW USER')
     console.log('Creating checkout session without existing customer lookup')
 
@@ -72,7 +114,7 @@ serve(async (req) => {
       // ⚠️ Message d'information sur l'engagement
       custom_text: {
         submit: {
-          message: '🎁 7 jours d\'essai gratuit puis engagement de 12 mois - Paiement mensuel ou annuel avec -10%',
+          message: `🎁 ${trialDays} jour${trialDays > 1 ? 's' : ''} d'essai gratuit puis engagement de 12 mois - Paiement ${billingPeriod === 'monthly' ? 'mensuel' : 'annuel avec -10%'}`,
         },
       },
       
@@ -83,8 +125,8 @@ serve(async (req) => {
         commitment_end_date: commitmentEndDate.toISOString(),
       },
       subscription_data: {
-        // 🎁 ESSAI GRATUIT : 7 jours sans paiement
-        trial_period_days: 7,
+        // 🎁 ESSAI GRATUIT : Utilise les jours restants ou 7 jours par défaut
+        trial_period_days: trialDays,
         trial_settings: {
           end_behavior: {
             missing_payment_method: 'cancel', // Annule si pas de moyen de paiement à la fin
