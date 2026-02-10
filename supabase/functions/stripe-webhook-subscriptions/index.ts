@@ -8,6 +8,15 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
 })
 
 const PRICE_TO_TIER: Record<string, string> = {
+  // Prix LIVE (PRODUCTION)
+  'price_1Sw3kI7epLIfQ2kHKNMxZmWk': 'essentiel',    // LIVE monthly
+  'price_1Sw3kI7epLIfQ2kHerSaOUnH': 'essentiel',    // LIVE yearly
+  'price_1Sw3kJ7epLIfQ2kHouItA7j4': 'professionnel', // LIVE monthly
+  'price_1Sw3kK7epLIfQ2kHQ85fUBwh': 'professionnel', // LIVE yearly
+  'price_1Sw3kL7epLIfQ2kHLI9QWT7H': 'cabinet-plus',  // LIVE monthly
+  'price_1Sw3kL7epLIfQ2kHkyG6nqV4': 'cabinet-plus',  // LIVE yearly
+  
+  // Prix TEST (pour dev)
   'price_1Sv3Vl7epLIfQ2kHxrIagkmU': 'essentiel',    // TEST monthly
   'price_1Sv3WB7epLIfQ2kH82SeKT89': 'essentiel',    // TEST yearly
   'price_1Sv3Xr7epLIfQ2kHOjEwtgTE': 'professionnel', // TEST monthly
