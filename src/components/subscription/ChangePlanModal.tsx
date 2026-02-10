@@ -99,6 +99,8 @@ export function ChangePlanModal({
           priceId,
           quantity: numberOfMembers,
           cabinetId,
+          successUrl: `${window.location.origin}/${role}s/subscription?upgrade=success`,
+          cancelUrl: `${window.location.origin}/${role}s/subscription`,
           metadata: {
             billing_period: billingPeriod,
             plan_id: planId,
