@@ -383,7 +383,7 @@ export function AppSidebar() {
                 <img 
                   src="https://elysrdqujzlbvnjfilvh.supabase.co/storage/v1/object/public/neira/Nouveau%20logo%20Neira.png" 
                   alt="Neira" 
-                  className="w-16 h-16 rounded-lg object-cover"
+                  className={`w-16 h-16 rounded-lg object-cover ${role === 'notaire' ? 'brightness-0 saturate-100 invert-[54%] sepia-[95%] saturate-[3568%] hue-rotate-[360deg] brightness-[97%] contrast-[103%]' : ''}`}
                 />
               </NavLink>
               <div>
