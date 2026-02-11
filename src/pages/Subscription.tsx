@@ -130,10 +130,36 @@ export default function Subscription() {
   // Afficher un toast de succès si le paiement vient de réussir
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get('payment') === 'success') {
+    if (params.get('payment') === 'success' || params.get('upgrade') === 'success') {
       toast.success('Changement d\'abonnement réussi !', {
         description: 'Votre nouvel abonnement est maintenant actif.'
       });
+      
+      // Attendre que le webhook Stripe mette à jour la DB (peut prendre 2-3 secondes)
+      const pollForUpdate = () => {
+        let attempts = 0;
+        const maxAttempts = 5;
+        
+        const interval = setInterval(() => {
+          attempts++;
+          console.log(`🔄 Polling for subscription update (attempt ${attempts}/${maxAttempts})`);
+          setRefreshTrigger(prev => prev + 1);
+          
+          if (attempts >= maxAttempts) {
+            clearInterval(interval);
+          }
+        }, 2000); // Vérifier toutes les 2 secondes
+        
+        // Nettoyer après 10 secondes max
+        setTimeout(() => clearInterval(interval), 10000);
+      };
+      
+      // Première vérification immédiate
+      setRefreshTrigger(prev => prev + 1);
+      
+      // Puis polling pendant quelques secondes
+      setTimeout(pollForUpdate, 1000);
+      
       // Nettoyer l'URL
       navigate(location.pathname, { replace: true });
     }
