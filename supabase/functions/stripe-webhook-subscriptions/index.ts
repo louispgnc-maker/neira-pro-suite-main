@@ -137,6 +137,24 @@ serve(async (req) => {
           const tier = PRICE_TO_TIER[priceId] || 'essentiel'
           const quantity = subscription.items.data[0]?.quantity || 1
           
+          // 🔄 VÉRIFIER SI C'EST UN CHANGEMENT D'ABONNEMENT
+          // Si le cabinet a déjà un stripe_subscription_id différent, c'est un changement
+          let isUpgrade = false
+          if (cabinetId) {
+            const { data: existingCabinet } = await supabaseAdmin
+              .from('cabinets')
+              .select('stripe_subscription_id, subscription_plan')
+              .eq('id', cabinetId)
+              .single()
+            
+            if (existingCabinet?.stripe_subscription_id && existingCabinet.stripe_subscription_id !== subscription.id) {
+              isUpgrade = true
+              console.log(`🔄 UPGRADE DETECTED: ${existingCabinet.subscription_plan} -> ${tier}`)
+              console.log(`   Old subscription: ${existingCabinet.stripe_subscription_id}`)
+              console.log(`   New subscription: ${subscription.id}`)
+            }
+          }
+          
           // 🔄 ANNULER LES ANCIENS ABONNEMENTS du même client
           // Pour éviter les doublons quand un utilisateur change de plan
           const customerId = subscription.customer as string
@@ -207,7 +225,11 @@ serve(async (req) => {
           // Déterminer le statut : trialing si en période d'essai, sinon active
           const subscriptionStatus = subscription.status === 'trialing' ? 'trialing' : 'active';
           
-          console.log(`📝 Updating cabinet ${cabinetId} with subscription ${subscription.id}`);
+          if (isUpgrade) {
+            console.log(`🔄 UPGRADE: Updating cabinet ${cabinetId} with NEW subscription ${subscription.id}`);
+          } else {
+            console.log(`📝 NEW SUBSCRIPTION: Updating cabinet ${cabinetId} with subscription ${subscription.id}`);
+          }
           
           const { error: updateError } = await supabaseAdmin
             .from('cabinets')
