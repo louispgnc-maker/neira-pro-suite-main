@@ -23,13 +23,46 @@ import {
 export default function CheckoutCabinetPlus() {
   useCleanStripeHistory(); // Nettoyer l'historique si on vient de Stripe
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
-  const [userCount, setUserCount] = useState(1);
-  const [minMembers, setMinMembers] = useState(1);
+  const [userCount, setUserCount] = useState(2);
+  const [minMembers, setMinMembers] = useState(2);
   const [customUserCount, setCustomUserCount] = useState('');
   const [showCustomInput, setShowCustomInput] = useState(false);
+  
+  const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
+
+  // 🔒 BLOQUER si l'utilisateur a déjà un abonnement actif
+  useEffect(() => {
+    const checkExistingSubscription = async () => {
+      if (!user) return;
+      
+      const { data: memberData } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (memberData?.cabinet_id) {
+        const { data: cabinetData } = await supabase
+          .from('cabinets')
+          .select('stripe_subscription_id, subscription_plan')
+          .eq('id', memberData.cabinet_id)
+          .single();
+        
+        if (cabinetData?.stripe_subscription_id) {
+          toast.info('Vous avez déjà un abonnement', {
+            description: 'Pour changer de plan, utilisez la page Abonnement'
+          });
+          navigate(`/${role}s/subscription`, { replace: true });
+        }
+      }
+    };
+    
+    checkExistingSubscription();
+  }, [user, navigate, role]);
 
   console.log('CheckoutCabinetPlus component mounted, user:', user);
 

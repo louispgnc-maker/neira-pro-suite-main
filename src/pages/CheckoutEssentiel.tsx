@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +28,36 @@ export default function CheckoutEssentiel() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   
   const role: 'avocat' | 'notaire' = location.pathname.includes('/notaires') ? 'notaire' : 'avocat';
+
+  // 🔒 BLOQUER si l'utilisateur a déjà un abonnement actif
+  useEffect(() => {
+    const checkExistingSubscription = async () => {
+      if (!user) return;
+      
+      const { data: memberData } = await supabase
+        .from('cabinet_members')
+        .select('cabinet_id')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (memberData?.cabinet_id) {
+        const { data: cabinetData } = await supabase
+          .from('cabinets')
+          .select('stripe_subscription_id, subscription_plan')
+          .eq('id', memberData.cabinet_id)
+          .single();
+        
+        if (cabinetData?.stripe_subscription_id) {
+          toast.info('Vous avez déjà un abonnement', {
+            description: 'Pour changer de plan, utilisez la page Abonnement'
+          });
+          navigate(`/${role}s/subscription`, { replace: true });
+        }
+      }
+    };
+    
+    checkExistingSubscription();
+  }, [user, navigate, role]);
 
   const monthlyPrice = 45;
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.9); // 10% de réduction
