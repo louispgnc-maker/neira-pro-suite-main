@@ -90,7 +90,7 @@ export default function CheckoutPublic() {
   }
 
   // Initialisation du nombre d'utilisateurs selon le plan
-  const initialUsers = planId === 'essentiel' ? 1 : planId === 'professionnel' ? 2 : 1;
+  const initialUsers = planId === 'essentiel' ? 1 : planId === 'professionnel' ? 2 : 2;
   const [numberOfUsers, setNumberOfUsers] = useState<number>(initialUsers);
 
   const Icon = planConfig.icon;
@@ -102,7 +102,7 @@ export default function CheckoutPublic() {
   // Détermine si on affiche le sélecteur de membres
   const showUserSelector = planId === 'professionnel' || planId === 'cabinet-plus';
   const maxUsers = planId === 'professionnel' ? 10 : 50;
-  const minUsers = planId === 'professionnel' ? 2 : 1;
+  const minUsers = planId === 'professionnel' ? 2 : 2;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

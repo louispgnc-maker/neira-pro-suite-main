@@ -37,7 +37,7 @@ export function ChangePlanModal({
   const planLimits: Record<string, { min: number; max: number }> = {
     'essentiel': { min: 1, max: 1 },
     'professionnel': { min: 2, max: 10 },
-    'cabinet-plus': { min: 1, max: 50 }
+    'cabinet-plus': { min: 2, max: 50 }
   };
   
   // Initialiser avec le maximum entre currentMembersCount et le minimum requis pour le plan
