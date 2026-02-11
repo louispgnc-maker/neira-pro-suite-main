@@ -132,6 +132,25 @@ serve(async (req) => {
           const tier = PRICE_TO_TIER[priceId] || 'essentiel'
           const quantity = subscription.items.data[0]?.quantity || 1
           
+          // 🔄 ANNULER LES ANCIENS ABONNEMENTS du même client
+          // Pour éviter les doublons quand un utilisateur change de plan
+          const customerId = subscription.customer as string
+          console.log('🔍 Checking for existing subscriptions for customer:', customerId)
+          
+          const existingSubscriptions = await stripe.subscriptions.list({
+            customer: customerId,
+            status: 'all',
+            limit: 100,
+          })
+          
+          for (const oldSub of existingSubscriptions.data) {
+            // Annuler tous les autres abonnements actifs ou en période d'essai
+            if (oldSub.id !== subscription.id && (oldSub.status === 'active' || oldSub.status === 'trialing')) {
+              console.log(`🗑️ Canceling old subscription: ${oldSub.id} (status: ${oldSub.status})`)
+              await stripe.subscriptions.cancel(oldSub.id)
+            }
+          }
+          
           // Récupérer le payment method
           let paymentMethodType = 'unknown'
           let paymentMethodLast4 = null
