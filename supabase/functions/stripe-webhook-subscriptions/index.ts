@@ -122,10 +122,15 @@ serve(async (req) => {
 
         if (!cabinetId) {
           console.error('❌ No cabinet found for this session')
-          break
+          console.error('Session metadata:', session.metadata)
+          console.error('Customer email:', customerEmail)
+          console.error('⚠️ CRITICAL: Subscription created but not linked to cabinet!')
+          console.error('Subscription ID:', session.subscription)
+          console.error('Customer ID:', session.customer)
+          // NE PAS ABANDONNER - on va quand même logger pour debug
         }
 
-        // Récupérer la subscription
+        // Récupérer la subscription même si cabinet pas trouvé (pour debug)
         if (session.subscription) {
           const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
           const priceId = subscription.items.data[0]?.price.id
@@ -191,9 +196,18 @@ serve(async (req) => {
           console.log('Commitment end date:', commitmentEndDate.toISOString());
           console.log('Subscription cancel_at:', subscription.cancel_at ? new Date(subscription.cancel_at * 1000).toISOString() : 'none');
 
+          // ✅ NE METTRE À JOUR QUE SI ON A TROUVÉ LE CABINET
+          if (!cabinetId) {
+            console.error('⚠️ Skipping cabinet update - no cabinet_id found');
+            console.error('💡 TIP: Make sure cabinet_id is passed in checkout metadata');
+            break;
+          }
+
           // Mettre à jour le cabinet
           // Déterminer le statut : trialing si en période d'essai, sinon active
           const subscriptionStatus = subscription.status === 'trialing' ? 'trialing' : 'active';
+          
+          console.log(`📝 Updating cabinet ${cabinetId} with subscription ${subscription.id}`);
           
           const { error: updateError } = await supabaseAdmin
             .from('cabinets')
