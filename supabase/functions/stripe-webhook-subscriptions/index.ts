@@ -256,7 +256,23 @@ serve(async (req) => {
           } else {
             console.log('✅ Cabinet updated successfully')
             
-            // 💳 Stocker le stripe_subscription_id dans cabinet_members pour le Fondateur
+            // � DÉFINIR cancel_at SUR STRIPE pour l'engagement de 12 mois
+            // Ne pas annuler immédiatement mais à la fin de l'engagement
+            const commitmentEndTimestamp = Math.floor(commitmentEndDate.getTime() / 1000);
+            
+            if (!subscription.cancel_at || subscription.cancel_at !== commitmentEndTimestamp) {
+              try {
+                console.log(`🔒 Setting cancel_at to ${commitmentEndDate.toISOString()} (12 months commitment)`);
+                await stripe.subscriptions.update(subscription.id, {
+                  cancel_at: commitmentEndTimestamp,
+                });
+                console.log('✅ Subscription will auto-cancel at end of 12-month commitment');
+              } catch (cancelError) {
+                console.error('❌ Error setting cancel_at on Stripe:', cancelError);
+              }
+            }
+            
+            // �💳 Stocker le stripe_subscription_id dans cabinet_members pour le Fondateur
             // Cela permet la résiliation d'essai de retrouver l'abonnement à annuler
             const { data: founderMember } = await supabaseAdmin
               .from('cabinet_members')
