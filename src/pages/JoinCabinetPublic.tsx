@@ -90,20 +90,46 @@ export default function JoinCabinetPublic() {
       // Attendre un peu que le trigger de création de profil s'exécute
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Mettre à jour le membre cabinet de pending à active
-      const { error: updateError } = await supabase
+      // Vérifier si un membre pending existe déjà
+      const { data: existingMember } = await supabase
         .from('cabinet_members')
-        .update({
-          user_id: authData.user.id,
-          status: 'active',
-          joined_at: new Date().toISOString()
-        })
+        .select('id, status')
         .eq('cabinet_id', cabinetInfo.id)
         .eq('email', email.trim().toLowerCase())
-        .eq('status', 'pending');
+        .single();
 
-      if (updateError) {
-        console.error('Erreur mise à jour membre:', updateError);
+      if (existingMember?.status === 'pending') {
+        // Mettre à jour le membre existant de pending à active
+        const { error: updateError } = await supabase
+          .from('cabinet_members')
+          .update({
+            user_id: authData.user.id,
+            status: 'active',
+            nom: `${firstName.trim()} ${lastName.trim()}`,
+            joined_at: new Date().toISOString()
+          })
+          .eq('id', existingMember.id);
+
+        if (updateError) {
+          console.error('Erreur mise à jour membre:', updateError);
+        }
+      } else {
+        // Créer un nouveau membre directement actif
+        const { error: insertError } = await supabase
+          .from('cabinet_members')
+          .insert({
+            cabinet_id: cabinetInfo.id,
+            user_id: authData.user.id,
+            email: email.trim().toLowerCase(),
+            nom: `${firstName.trim()} ${lastName.trim()}`,
+            status: 'active',
+            joined_at: new Date().toISOString()
+          });
+
+        if (insertError) {
+          console.error('Erreur création membre:', insertError);
+          throw insertError;
+        }
       }
 
       toast.success('Compte créé avec succès !', {
