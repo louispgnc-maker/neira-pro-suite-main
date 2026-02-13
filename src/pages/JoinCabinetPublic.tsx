@@ -146,10 +146,6 @@ export default function JoinCabinetPublic() {
         throw new Error('Le membre n\'a pas pu être créé dans le cabinet');
       }
 
-      toast.success('Compte créé avec succès !', {
-        description: `Vous avez rejoint le cabinet "${cabinetInfo.nom}"`
-      });
-
       // Connecter l'utilisateur explicitement pour établir la session
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
@@ -158,7 +154,6 @@ export default function JoinCabinetPublic() {
 
       if (signInError) {
         console.error('Erreur connexion:', signInError);
-        // Rediriger vers la page de connexion si échec
         toast.error('Compte créé mais connexion échouée', {
           description: 'Veuillez vous connecter manuellement'
         });
@@ -166,14 +161,17 @@ export default function JoinCabinetPublic() {
         return;
       }
 
-      // Attendre que la session et les données soient bien synchronisées
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      toast.success('Compte créé avec succès !', {
+        description: `Vous avez rejoint le cabinet "${cabinetInfo.nom}"`
+      });
 
-      // Rediriger vers le dashboard selon le rôle
+      // Rediriger vers le dashboard selon le rôle avec rechargement complet
       const dashboardUrl = cabinetInfo.role === 'notaire' 
         ? 'https://www.neira.fr/notaires/dashboard' 
         : 'https://www.neira.fr/avocats/dashboard';
-      window.location.href = dashboardUrl;
+      
+      // Utiliser window.location.replace pour un rechargement complet
+      window.location.replace(dashboardUrl);
     } catch (error: any) {
       console.error('Erreur création compte:', error);
       toast.error('Erreur', {
