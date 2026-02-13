@@ -112,6 +112,7 @@ export default function JoinCabinetPublic() {
 
         if (updateError) {
           console.error('Erreur mise à jour membre:', updateError);
+          throw updateError;
         }
       } else {
         // Créer un nouveau membre directement actif
@@ -130,6 +131,19 @@ export default function JoinCabinetPublic() {
           console.error('Erreur création membre:', insertError);
           throw insertError;
         }
+      }
+
+      // Vérifier que le membre est bien créé avant de continuer
+      const { data: verifyMember } = await supabase
+        .from('cabinet_members')
+        .select('id')
+        .eq('cabinet_id', cabinetInfo.id)
+        .eq('user_id', authData.user.id)
+        .eq('status', 'active')
+        .single();
+
+      if (!verifyMember) {
+        throw new Error('Le membre n\'a pas pu être créé dans le cabinet');
       }
 
       toast.success('Compte créé avec succès !', {
@@ -152,8 +166,8 @@ export default function JoinCabinetPublic() {
         return;
       }
 
-      // Attendre que la session soit bien établie
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Attendre que la session et les données soient bien synchronisées
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // Rediriger vers le dashboard selon le rôle
       const dashboardUrl = cabinetInfo.role === 'notaire' 
