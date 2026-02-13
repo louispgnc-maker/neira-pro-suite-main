@@ -772,10 +772,10 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                   Membres du cabinet
                 </Label>
                 <Badge
-                  variant={members.length >= (cabinet.max_members || 1) ? 'destructive' : 'default'}
-                  className={members.length >= (cabinet.max_members || 1) ? '' : (role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600')}
+                  variant={members.filter(m => m.status === 'active').length >= (cabinet.max_members || 1) ? 'destructive' : 'default'}
+                  className={members.filter(m => m.status === 'active').length >= (cabinet.max_members || 1) ? '' : (role === 'notaire' ? 'bg-orange-600' : 'bg-blue-600')}
                 >
-                  {members.length} / {cabinet.max_members === 0 || cabinet.max_members === 999 ? '∞' : cabinet.max_members}
+                  {members.filter(m => m.status === 'active').length} / {cabinet.max_members === 0 || cabinet.max_members === 999 ? '∞' : cabinet.max_members}
                 </Badge>
                 {cabinet.subscription_plan === 'essentiel' && (
                   <Badge variant="secondary" className="text-xs">
@@ -866,11 +866,18 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
               </TableHeader>
               <TableBody>
                 {members.map((member) => (
-                  <TableRow key={member.id}>
-                    <TableCell className="font-mono text-xs">{member.email}</TableCell>
+                  <TableRow key={member.id} className={member.status === 'pending' ? 'opacity-60' : ''}>
+                    <TableCell className="font-mono text-xs">
+                      {member.email}
+                      {member.status === 'pending' && (
+                        <Badge variant="outline" className="ml-2 text-xs">En attente</Badge>
+                      )}
+                    </TableCell>
                     <TableCell>{member.nom || '—'}</TableCell>
                     <TableCell>
-                      {currentUserRole && canChangeRoles(currentUserRole) && canModifyMemberRole(currentUserRole, member.role_cabinet) ? (
+                      {member.status === 'pending' ? (
+                        <span className="text-muted-foreground text-sm">—</span>
+                      ) : currentUserRole && canChangeRoles(currentUserRole) && canModifyMemberRole(currentUserRole, member.role_cabinet) ? (
                         (member.role_cabinet === 'Fondateur') ? (
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
