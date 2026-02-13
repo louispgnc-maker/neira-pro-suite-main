@@ -8,9 +8,24 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function ConfirmSubscription() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  // Attendre que l'authentification soit chargée
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  // Rediriger si non authentifié
+  if (!user) {
+    navigate('/', { replace: true });
+    return null;
+  }
 
   const handleConfirm = async () => {
     setLoading(true);
