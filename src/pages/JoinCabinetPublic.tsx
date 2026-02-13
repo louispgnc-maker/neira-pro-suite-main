@@ -154,6 +154,25 @@ export default function JoinCabinetPublic() {
         description: `Vous avez rejoint le cabinet "${cabinetInfo.nom}"`
       });
 
+      // Connecter l'utilisateur explicitement pour établir la session
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password
+      });
+
+      if (signInError) {
+        console.error('Erreur connexion:', signInError);
+        // Rediriger vers la page de connexion si échec
+        toast.error('Compte créé mais connexion échouée', {
+          description: 'Veuillez vous connecter manuellement'
+        });
+        navigate('/login', { replace: true });
+        return;
+      }
+
+      // Attendre que la session soit bien établie
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       // Rediriger vers le dashboard selon le rôle
       const dashboardPath = cabinetInfo.role === 'notaire' ? '/notaires/dashboard' : '/avocats/dashboard';
       navigate(dashboardPath, { replace: true });
