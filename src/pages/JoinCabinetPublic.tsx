@@ -28,38 +28,33 @@ export default function JoinCabinetPublic() {
 
     setLoading(true);
     try {
-      // Vérifier que le code d'accès existe
-      const { data: cabinet, error: cabinetError } = await supabase
-        .from('cabinets')
-        .select('id, nom, role, code_acces')
-        .eq('code_acces', accessCode.trim())
-        .single();
+      // Utiliser la fonction RPC publique
+      const { data, error } = await supabase.rpc('verify_access_code', {
+        code_param: accessCode.trim(),
+        email_param: email.trim()
+      });
 
-      if (cabinetError || !cabinet) {
-        toast.error('Code d\'accès invalide');
-        return;
-      }
+      if (error) throw error;
 
-      // Vérifier qu'il y a une invitation pending pour cet email
-      const { data: invitation, error: inviteError } = await supabase
-        .from('cabinet_members')
-        .select('id, nom')
-        .eq('cabinet_id', cabinet.id)
-        .eq('email', email.trim().toLowerCase())
-        .eq('status', 'pending')
-        .single();
+      const result = data as { success: boolean; error?: string; cabinet?: any; invitation?: any };
 
-      if (inviteError || !invitation) {
-        toast.error('Aucune invitation trouvée pour cet email');
+      if (!result.success) {
+        toast.error(result.error || 'Erreur de vérification');
         return;
       }
 
       // Code valide et invitation trouvée
-      setCabinetInfo({ id: cabinet.id, nom: cabinet.nom, role: cabinet.role });
-      setFirstName(invitation.nom?.split(' ')[0] || '');
-      setLastName(invitation.nom?.split(' ').slice(1).join(' ') || '');
+      setCabinetInfo({
+        id: result.cabinet.id,
+        nom: result.cabinet.nom,
+        role: result.cabinet.role
+      });
+      
+      const fullName = result.invitation.nom || '';
+      setFirstName(fullName.split(' ')[0] || '');
+      setLastName(fullName.split(' ').slice(1).join(' ') || '');
       setStep('account');
-      toast.success(`Invitation trouvée pour le cabinet "${cabinet.nom}"`);
+      toast.success(`Invitation trouvée pour le cabinet "${result.cabinet.nom}"`);
     } catch (error) {
       console.error('Erreur vérification code:', error);
       toast.error('Erreur lors de la vérification');
