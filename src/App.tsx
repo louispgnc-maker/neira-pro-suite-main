@@ -60,6 +60,7 @@ import TestThanks from "./pages/test/TestThanks";
 import TestLogin from "./pages/test/TestLogin";
 import TestCreateCabinet from "./pages/test/TestCreateCabinet";
 import ConfirmEmail from "./pages/ConfirmEmail";
+import ConfirmSubscription from "./pages/ConfirmSubscription";
 import MentionsLegales from "./pages/MentionsLegales";
 import RGPD from "./pages/RGPD";
 import CGU from "./pages/CGU";
@@ -109,6 +110,7 @@ const App = () => (
             <Route path="/test-subscription/login" element={<TestLogin />} />
             <Route path="/test-subscription/create-cabinet" element={<TestCreateCabinet />} />
             <Route path="/confirm-email" element={<ConfirmEmail />} />
+            <Route path="/confirm-subscription" element={<ConfirmSubscription />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/oauth-callback" element={<OAuthCallback />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
