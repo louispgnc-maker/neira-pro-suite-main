@@ -215,6 +215,16 @@ export default function JoinCabinetPublic() {
           ) : (
             <>
               <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  disabled
+                  className="bg-gray-50"
+                />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="firstName">Prénom</Label>
                 <Input
                   id="firstName"
