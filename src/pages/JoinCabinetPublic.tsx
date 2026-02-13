@@ -156,8 +156,10 @@ export default function JoinCabinetPublic() {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Rediriger vers le dashboard selon le rôle
-      const dashboardPath = cabinetInfo.role === 'notaire' ? '/notaires/dashboard' : '/avocats/dashboard';
-      navigate(dashboardPath, { replace: true });
+      const dashboardUrl = cabinetInfo.role === 'notaire' 
+        ? 'https://www.neira.fr/notaires/dashboard' 
+        : 'https://www.neira.fr/avocats/dashboard';
+      window.location.href = dashboardUrl;
     } catch (error: any) {
       console.error('Erreur création compte:', error);
       toast.error('Erreur', {
