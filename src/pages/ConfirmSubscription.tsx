@@ -32,16 +32,18 @@ export default function ConfirmSubscription() {
     try {
       if (!user) throw new Error('Non authentifié');
 
-      // Récupérer le cabinet
+      // Récupérer le cabinet et son rôle
       const { data: memberData } = await supabase
         .from('cabinet_members')
-        .select('cabinet_id')
+        .select('cabinet_id, cabinets(role)')
         .eq('user_id', user.id)
         .single();
 
       if (!memberData?.cabinet_id) {
         throw new Error('Cabinet non trouvé');
       }
+
+      const cabinetRole = (memberData.cabinets as any)?.role;
 
       // Marquer l'essai comme confirmé
       const { error } = await supabase
@@ -55,8 +57,9 @@ export default function ConfirmSubscription() {
         description: 'Vous pouvez maintenant continuer à utiliser Neira'
       });
 
-      // Rediriger vers le tableau de bord
-      navigate('/avocats/dashboard', { replace: true });
+      // Rediriger vers le tableau de bord selon le rôle
+      const dashboardPath = cabinetRole === 'notaire' ? '/notaires/dashboard' : '/avocats/dashboard';
+      navigate(dashboardPath, { replace: true });
     } catch (error) {
       console.error('Erreur confirmation:', error);
       toast.error('Erreur', {
