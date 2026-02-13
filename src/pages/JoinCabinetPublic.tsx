@@ -90,24 +90,6 @@ export default function JoinCabinetPublic() {
       // Attendre un peu que le trigger de création de profil s'exécute
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Créer ou mettre à jour le profil avec la profession du cabinet
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: authData.user.id,
-          email: email.trim().toLowerCase(),
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          profession: cabinetInfo.role,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'id'
-        });
-
-      if (profileError) {
-        console.error('Erreur mise à jour profil:', profileError);
-      }
-
       // Vérifier si un membre pending existe déjà
       const { data: existingMember } = await supabase
         .from('cabinet_members')
