@@ -121,10 +121,6 @@ export default function ConfirmSubscription() {
                   <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
                   <span>Gagnez du temps</span>
                 </li>
-                <li className="flex items-start gap-2 text-blue-800">
-                  <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <span>Support prioritaire</span>
-                </li>
               </ul>
               <Button
                 onClick={handleConfirm}
@@ -136,23 +132,23 @@ export default function ConfirmSubscription() {
             </div>
 
             {/* Option 2: Fermer le compte */}
-            <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6">
+            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6">
               <div className="flex items-center gap-3 mb-4">
-                <XCircle className="w-8 h-8 text-gray-400" />
-                <h3 className="font-bold text-xl text-gray-700">Fermer mon compte</h3>
+                <XCircle className="w-8 h-8 text-red-400" />
+                <h3 className="font-bold text-xl text-red-700">Fermer mon compte</h3>
               </div>
               <div className="mb-6">
-                <p className="text-sm text-gray-600 mb-3">⚠️ En fermant votre compte :</p>
+                <p className="text-sm text-red-600 mb-3">⚠️ En fermant votre compte :</p>
                 <ul className="space-y-2 text-sm">
-                  <li className="flex items-start gap-2 text-gray-700">
+                  <li className="flex items-start gap-2 text-red-700">
                     <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
                     <span>Dossiers supprimés</span>
                   </li>
-                  <li className="flex items-start gap-2 text-gray-700">
+                  <li className="flex items-start gap-2 text-red-700">
                     <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
                     <span>Documents perdus</span>
                   </li>
-                  <li className="flex items-start gap-2 text-gray-700">
+                  <li className="flex items-start gap-2 text-red-700">
                     <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
                     <span>Compte supprimé</span>
                   </li>
@@ -162,7 +158,7 @@ export default function ConfirmSubscription() {
                 onClick={handleCancel}
                 disabled={loading}
                 variant="outline"
-                className="w-full border-2 border-gray-300 text-gray-700 hover:bg-gray-100 h-12"
+                className="w-full border-2 border-red-300 text-red-700 hover:bg-red-100 h-12"
               >
                 Fermer mon compte
               </Button>
