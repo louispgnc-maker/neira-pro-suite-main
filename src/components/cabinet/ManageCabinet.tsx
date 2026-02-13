@@ -381,12 +381,16 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
 
     setInviteLoading(true);
     try {
+      console.log('📧 Invitation:', { email: inviteEmail.trim(), nom: inviteName.trim() || inviteEmail.trim() });
+      
       // Utiliser la fonction RPC pour inviter (bypass RLS)
       const { data: memberId, error } = await supabase.rpc('invite_cabinet_member', {
         cabinet_id_param: cabinet.id,
         email_param: inviteEmail.trim(),
         nom_param: inviteName.trim() || inviteEmail.trim(),
       });
+
+      console.log('🔍 RPC result:', { memberId, error });
 
       if (error) throw error;
 
