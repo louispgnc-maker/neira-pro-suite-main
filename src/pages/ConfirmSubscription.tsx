@@ -101,7 +101,7 @@ export default function ConfirmSubscription() {
           </div>
           <CardTitle className="text-3xl">Votre essai gratuit de 7 jours est terminé</CardTitle>
           <CardDescription className="text-lg mt-2">
-            Vous avez découvert Neira pendant 7 jours. Que souhaitez-vous faire maintenant ?
+            Que souhaitez-vous faire maintenant ?
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -109,33 +109,27 @@ export default function ConfirmSubscription() {
             {/* Option 1: Continuer */}
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-600 rounded-xl p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6 text-white" />
-                </div>
+                <CheckCircle2 className="w-8 h-8 text-blue-600" />
                 <h3 className="font-bold text-xl text-blue-900">Continuer avec Neira</h3>
               </div>
-              <ul className="space-y-3 mb-6">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-blue-800">Conservez tous vos dossiers et documents</span>
+              <ul className="space-y-2 mb-6 text-sm">
+                <li className="flex items-start gap-2 text-blue-800">
+                  <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  <span>Conservez vos dossiers</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-blue-800">Continuez à gagner du temps au quotidien</span>
+                <li className="flex items-start gap-2 text-blue-800">
+                  <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  <span>Gagnez du temps</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-blue-800">Support client prioritaire</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-blue-800">Engagement 12 mois, paiement flexible</span>
+                <li className="flex items-start gap-2 text-blue-800">
+                  <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  <span>Support prioritaire</span>
                 </li>
               </ul>
               <Button
                 onClick={handleConfirm}
                 disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-semibold shadow-lg"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-semibold"
               >
                 Continuer avec Neira
               </Button>
@@ -144,27 +138,23 @@ export default function ConfirmSubscription() {
             {/* Option 2: Fermer le compte */}
             <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
-                  <XCircle className="w-6 h-6 text-white" />
-                </div>
+                <XCircle className="w-8 h-8 text-gray-400" />
                 <h3 className="font-bold text-xl text-gray-700">Fermer mon compte</h3>
               </div>
               <div className="mb-6">
-                <p className="text-gray-600 mb-4">
-                  ⚠️ En fermant votre compte :
-                </p>
-                <ul className="space-y-2">
-                  <li className="flex items-start gap-2">
-                    <XCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Tous vos dossiers seront supprimés</span>
+                <p className="text-sm text-gray-600 mb-3">⚠️ En fermant votre compte :</p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2 text-gray-700">
+                    <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+                    <span>Dossiers supprimés</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <XCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Tous vos documents seront perdus</span>
+                  <li className="flex items-start gap-2 text-gray-700">
+                    <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+                    <span>Documents perdus</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <XCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Votre compte sera définitivement supprimé</span>
+                  <li className="flex items-start gap-2 text-gray-700">
+                    <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+                    <span>Compte supprimé</span>
                   </li>
                 </ul>
               </div>
@@ -178,10 +168,6 @@ export default function ConfirmSubscription() {
               </Button>
             </div>
           </div>
-
-          <p className="text-sm text-muted-foreground text-center pt-4 border-t">
-            En continuant, votre moyen de paiement sera débité selon la périodicité choisie lors de votre inscription.
-          </p>
         </CardContent>
       </Card>
     </div>
