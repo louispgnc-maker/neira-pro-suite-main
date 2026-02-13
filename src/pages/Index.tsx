@@ -510,6 +510,7 @@ export default function Index() {
               { label: "Mentions légales", href: "/mentions-legales" },
               { label: "RGPD", href: "/rgpd" },
               { label: "CGU", href: "/cgu" },
+              { label: "Rejoindre un cabinet", href: "/join-cabinet" },
               { label: "Contact", href: "/contact" }
             ].map((link, i) => (
               <a key={i} href={link.href} className="hover:text-white transition-colors">{link.label}</a>
