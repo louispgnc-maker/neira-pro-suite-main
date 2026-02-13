@@ -217,15 +217,19 @@ export default function NotaireAuth() {
             >
               Voir nos offres
             </Button>
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={() => navigate('/join-cabinet')}
-                className="text-sm text-gray-600 hover:text-orange-600 hover:underline"
-              >
-                Vous avez un code d'accès ?
-              </button>
-            </div>
+          </div>
+          
+          <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+            <p className="text-sm text-gray-700 mb-2 text-center font-medium">
+              👥 Vous avez été invité par votre cabinet ?
+            </p>
+            <Button
+              variant="outline"
+              className="w-full border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
+              onClick={() => navigate('/join-cabinet')}
+            >
+              Rejoindre avec un code d'accès
+            </Button>
           </div>
         </CardContent>
       </Card>

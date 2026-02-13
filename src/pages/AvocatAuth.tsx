@@ -217,15 +217,19 @@ export default function AvocatAuth() {
             >
               Voir nos offres
             </Button>
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={() => navigate('/join-cabinet')}
-                className="text-sm text-gray-600 hover:text-blue-600 hover:underline"
-              >
-                Vous avez un code d'accès ?
-              </button>
-            </div>
+          </div>
+          
+          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-gray-700 mb-2 text-center font-medium">
+              👥 Vous avez été invité par votre cabinet ?
+            </p>
+            <Button
+              variant="outline"
+              className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+              onClick={() => navigate('/join-cabinet')}
+            >
+              Rejoindre avec un code d'accès
+            </Button>
           </div>
         </CardContent>
       </Card>
