@@ -107,6 +107,25 @@ serve(async (req) => {
         proration_behavior: 'always_invoice',
       })
     }
+    
+    // 🔒 VÉRIFIER ET DÉFINIR cancel_at pour l'engagement de 12 mois
+    if (!currentSubscription.cancel_at) {
+      // Calculer 12 mois à partir de la date de début de l'abonnement
+      const startDate = currentSubscription.started_at 
+        ? new Date(currentSubscription.started_at * 1000) 
+        : new Date();
+      const commitmentDate = new Date(startDate);
+      commitmentDate.setMonth(commitmentDate.getMonth() + 12);
+      const commitmentTimestamp = Math.floor(commitmentDate.getTime() / 1000);
+      
+      console.log('🔒 Setting 12-month commitment, will cancel at:', commitmentDate.toISOString());
+      
+      await stripe.subscriptions.update(subscriptionId, {
+        cancel_at: commitmentTimestamp,
+      });
+    } else {
+      console.log('✅ Commitment already set, cancel_at:', new Date(currentSubscription.cancel_at * 1000).toISOString());
+    }
 
     console.log('✅ Subscription updated successfully')
 
