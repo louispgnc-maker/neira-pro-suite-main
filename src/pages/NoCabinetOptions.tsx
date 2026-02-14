@@ -203,7 +203,8 @@ export default function NoCabinetOptions() {
                       {loading ? 'Connexion...' : 'Valider'}
                     </Button>
                     <Button 
-                      variant="outline" 
+                      variant="outline"
+                      className="bg-white hover:bg-gray-50"
                       onClick={() => {
                         setShowCodeInput(false);
                         setAccessCode('');
