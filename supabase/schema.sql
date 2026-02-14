@@ -4,11 +4,19 @@
 -- 0) PROFILES (user metadata and role)
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
-  email text,
   first_name text,
   last_name text,
   role text not null default 'avocat', -- 'avocat' | 'notaire'
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  cabinet_id uuid,
+  subscription_plan text,
+  fonction text,
+  telephone_pro text,
+  email_pro text,
+  adresse_pro text,
+  photo_url text,
+  signature_url text,
+  updated_at timestamptz
 );
 
 alter table public.profiles enable row level security;
@@ -29,10 +37,9 @@ create index if not exists profiles_role_idx on public.profiles(role);
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer as $$
 begin
-  insert into public.profiles (id, email, first_name, last_name, role)
+  insert into public.profiles (id, first_name, last_name, role)
   values (
     new.id,
-    new.email,
     coalesce(new.raw_user_meta_data->>'first_name', ''),
     coalesce(new.raw_user_meta_data->>'last_name', ''),
     coalesce(new.raw_user_meta_data->>'role', 'avocat')
