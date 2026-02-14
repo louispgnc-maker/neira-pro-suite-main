@@ -69,6 +69,11 @@ export default function JoinCabinetPublic() {
       return;
     }
 
+    if (password.length < 6) {
+      toast.error('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
+
     setLoading(true);
     try {
       let userId: string;
@@ -336,6 +341,7 @@ export default function JoinCabinetPublic() {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
                 />
+                <p className="text-xs text-muted-foreground">Minimum 6 caractères</p>
               </div>
               <Alert className="bg-green-50 border-green-200">
                 <AlertDescription className="text-sm text-green-800">
