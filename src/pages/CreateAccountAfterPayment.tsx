@@ -85,19 +85,6 @@ export default function CreateAccountAfterPayment() {
         throw new Error("Erreur lors de la création du compte");
       }
 
-      // Créer l'utilisateur dans la table users
-      const { error: userError } = await supabase
-        .from('users')
-        .insert({
-          id: authData.user.id,
-          email: formData.email,
-          full_name: fullName,
-        });
-
-      if (userError) {
-        console.error('Erreur création user:', userError);
-      }
-
       // Le profil est créé automatiquement par le trigger handle_new_user()
       // Vérifier que le profil existe et le créer/mettre à jour si nécessaire
       let retries = 0;
