@@ -60,14 +60,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const last_name = typeof metaTyped.last_name === 'string' ? metaTyped.last_name : 
                     typeof metaTyped.nom === 'string' ? metaTyped.nom : 
                     (existing?.last_name ?? '');
-  const email = u.email ?? existing?.email ?? '';
   const role = typeof metaTyped.role === 'string' ? metaTyped.role : (existing?.role ?? 'avocat'); // Default role is 'avocat'
 
       if (!existing) {
         // Create profile if missing
         const { data: inserted, error: insertError } = await supabase
           .from('profiles')
-          .insert({ id: u.id, email, first_name, last_name, role })
+          .insert({ id: u.id, first_name, last_name, role })
           .select()
           .single();
         if (insertError) {
