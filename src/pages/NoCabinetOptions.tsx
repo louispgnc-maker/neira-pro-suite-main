@@ -86,49 +86,15 @@ export default function NoCabinetOptions() {
         if (insertError) throw insertError;
       }
 
-      const { data: verifyMember } = await supabase
-        .from('cabinet_members')
-        .select('id')
-        .eq('cabinet_id', cabinetInfo.id)
-        .eq('user_id', userId)
-        .eq('status', 'active')
-        .single();
-
-      if (!verifyMember) {
-        throw new Error('Le membre n\'a pas pu être créé dans le cabinet');
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      let cabinetFound = false;
-      for (let i = 0; i < 10; i++) {
-        const { data: userCabinets } = await supabase.rpc('get_user_cabinets');
-        
-        if (userCabinets && userCabinets.length > 0) {
-          const matchingCabinet = userCabinets.find((c: any) => c.id === cabinetInfo.id);
-          if (matchingCabinet) {
-            cabinetFound = true;
-            break;
-          }
-        }
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-
-      if (!cabinetFound) {
-        throw new Error('Le cabinet n\'apparaît pas dans vos cabinets. Réessayez de vous connecter.');
-      }
-
-      toast.success('Vous avez rejoint le cabinet !', {
-        description: `Bienvenue dans "${cabinetInfo.nom}"`
+      toast.success('Cabinet associé !', {
+        description: `Vous avez rejoint "${cabinetInfo.nom}"`
       });
 
+      // Attendre un peu pour que le toast s'affiche
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const dashboardUrl = cabinetInfo.role === 'notaire' 
-        ? '/notaires/dashboard' 
-        : '/avocats/dashboard';
-      
-      window.location.replace(dashboardUrl);
+      // Recharger simplement la page, le routing fera le reste
+      window.location.reload();
     } catch (error: any) {
       console.error('Erreur rejoindre cabinet:', error);
       toast.error('Erreur', {
