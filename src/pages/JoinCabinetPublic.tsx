@@ -71,24 +71,39 @@ export default function JoinCabinetPublic() {
 
     setLoading(true);
     try {
-      // Créer le compte Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      // D'abord vérifier si l'utilisateur existe déjà
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
-        password,
-        options: {
-          data: {
-            first_name: firstName.trim(),
-            last_name: lastName.trim(),
-            role: cabinetInfo.role,
-          }
-        }
+        password
       });
 
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('Compte non créé');
+      let userId: string;
 
-      // Attendre un peu que le trigger de création de profil s'exécute
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (signInError) {
+        // L'utilisateur n'existe pas, créer le compte
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: email.trim().toLowerCase(),
+          password,
+          options: {
+            data: {
+              first_name: firstName.trim(),
+              last_name: lastName.trim(),
+              role: cabinetInfo.role,
+            }
+          }
+        });
+
+        if (authError) throw authError;
+        if (!authData.user) throw new Error('Compte non créé');
+        
+        userId = authData.user.id;
+
+        // Attendre un peu que le trigger de création de profil s'exécute
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } else {
+        // L'utilisateur existe déjà et est maintenant connecté
+        userId = signInData.user.id;
+      }
 
       // Vérifier si un membre pending existe déjà
       const { data: existingMember } = await supabase
@@ -103,7 +118,7 @@ export default function JoinCabinetPublic() {
         const { error: updateError } = await supabase
           .from('cabinet_members')
           .update({
-            user_id: authData.user.id,
+            user_id: userId,
             status: 'active',
             nom: `${firstName.trim()} ${lastName.trim()}`,
             joined_at: new Date().toISOString()
@@ -120,7 +135,7 @@ export default function JoinCabinetPublic() {
           .from('cabinet_members')
           .insert({
             cabinet_id: cabinetInfo.id,
-            user_id: authData.user.id,
+            user_id: userId,
             email: email.trim().toLowerCase(),
             nom: `${firstName.trim()} ${lastName.trim()}`,
             status: 'active',
@@ -138,7 +153,7 @@ export default function JoinCabinetPublic() {
         .from('cabinet_members')
         .select('id')
         .eq('cabinet_id', cabinetInfo.id)
-        .eq('user_id', authData.user.id)
+        .eq('user_id', userId,)
         .eq('status', 'active')
         .single();
 
@@ -146,23 +161,8 @@ export default function JoinCabinetPublic() {
         throw new Error('Le membre n\'a pas pu être créé dans le cabinet');
       }
 
-      // Connecter l'utilisateur explicitement pour établir la session
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
-        password
-      });
-
-      if (signInError) {
-        console.error('Erreur connexion:', signInError);
-        toast.error('Compte créé mais connexion échouée', {
-          description: 'Veuillez vous connecter manuellement'
-        });
-        navigate('/login', { replace: true });
-        return;
-      }
-
-      toast.success('Compte créé avec succès !', {
-        description: `Vous avez rejoint le cabinet "${cabinetInfo.nom}"`
+      toast.success('Vous avez rejoint le cabinet !', {
+        description: `Bienvenue dans "${cabinetInfo.nom}"`
       });
 
       // Rediriger vers le dashboard selon le rôle avec rechargement complet
