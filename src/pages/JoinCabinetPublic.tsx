@@ -161,9 +161,28 @@ export default function JoinCabinetPublic() {
         throw new Error('Le membre n\'a pas pu être créé dans le cabinet');
       }
 
+      // Vérifier que get_user_cabinets retourne bien le cabinet avant de rediriger
+      let cabinetFound = false;
+      for (let i = 0; i < 5; i++) {
+        const { data: userCabinets } = await supabase.rpc('get_user_cabinets');
+        if (userCabinets && userCabinets.length > 0) {
+          cabinetFound = true;
+          break;
+        }
+        // Attendre un peu avant de réessayer
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      if (!cabinetFound) {
+        console.warn('Cabinet non trouvé par get_user_cabinets, redirection quand même');
+      }
+
       toast.success('Vous avez rejoint le cabinet !', {
         description: `Bienvenue dans "${cabinetInfo.nom}"`
       });
+
+      // Attendre un peu pour que le toast s'affiche
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Rediriger vers le dashboard selon le rôle avec rechargement complet
       const dashboardUrl = cabinetInfo.role === 'notaire' 
