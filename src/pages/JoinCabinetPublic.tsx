@@ -104,6 +104,7 @@ export default function JoinCabinetPublic() {
         }
 
         userId = signInData.user.id;
+        isNewAccount = false; // Marquer explicitement comme compte existant
       } else if (authError) {
         throw authError;
       } else {
