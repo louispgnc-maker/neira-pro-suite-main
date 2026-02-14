@@ -78,7 +78,7 @@ export default function ClientDiscussion() {
           // Get the first cabinet member (professional) from the cabinet
           const { data: cabinetMember } = await supabase
             .from('cabinet_members')
-            .select('user_id, profiles(id, first_name, last_name, photo_url, email)')
+            .select('user_id, email, profiles(id, first_name, last_name, photo_url)')
             .eq('cabinet_id', clientData.owner_id)
             .eq('status', 'active')
             .limit(1)
@@ -90,7 +90,7 @@ export default function ClientDiscussion() {
               first_name: cabinetMember.profiles.first_name || '',
               last_name: cabinetMember.profiles.last_name || '',
               photo_url: cabinetMember.profiles.photo_url,
-              email: cabinetMember.profiles.email,
+              email: cabinetMember.email,
             });
           }
         }
