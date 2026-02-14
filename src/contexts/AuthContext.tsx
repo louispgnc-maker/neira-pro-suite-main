@@ -63,17 +63,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const role = typeof metaTyped.role === 'string' ? metaTyped.role : (existing?.role ?? 'avocat'); // Default role is 'avocat'
 
       if (!existing) {
-        // Create profile if missing
-        const { data: inserted, error: insertError } = await supabase
-          .from('profiles')
-          .insert({ id: u.id, first_name, last_name, role })
-          .select()
-          .single();
-        if (insertError) {
-          console.error('Erreur création profil:', insertError);
-          return null;
-        }
-        return inserted as UserProfile;
+        // Le profil sera créé automatiquement par le trigger handle_new_user
+        // On retourne null et laisse le code réessayer
+        return null;
       }
 
       // Optionally enrich missing names/role from metadata
