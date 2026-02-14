@@ -1,20 +1,56 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Scale, Landmark } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function SelectProfession() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleSelect = (profession: 'avocat' | 'notaire') => {
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+      setLoading(false);
+    };
+    checkAuth();
+  }, []);
+
+  const handleSelect = async (profession: 'avocat' | 'notaire') => {
     // Stocker le choix de profession
     localStorage.setItem('selectedProfession', profession);
     
-    // Rediriger vers la création de compte avec le rôle et session_id
-    navigate(`/create-account?role=${profession}&session_id=${sessionId}`);
+    if (isAuthenticated) {
+      // Utilisateur déjà connecté : mettre à jour son profil et aller vers onboarding
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        // Mettre à jour le rôle dans le profil
+        await supabase
+          .from('profiles')
+          .update({ role: profession })
+          .eq('id', session.user.id);
+      }
+      
+      // Rediriger vers la création de cabinet
+      navigate(`/onboarding/create-cabinet?role=${profession}`);
+    } else {
+      // Utilisateur non connecté : créer un compte d'abord
+      navigate(`/create-account?role=${profession}&session_id=${sessionId}`);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">

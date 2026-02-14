@@ -16,7 +16,7 @@ export default function NoCabinetOptions() {
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Option 1: Rejoindre un cabinet */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/join-cabinet')}>
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/join-cabinet-with-code')}>
             <CardHeader className="text-center">
               <div className="mx-auto mb-4 w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
                 <Users className="w-8 h-8 text-blue-600" />
@@ -41,7 +41,7 @@ export default function NoCabinetOptions() {
                   Collaborez avec votre équipe
                 </li>
               </ul>
-              <Button className="w-full" onClick={() => navigate('/join-cabinet')}>
+              <Button className="w-full" onClick={() => navigate('/join-cabinet-with-code')}>
                 Entrer mon code d'accès
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
