@@ -37,6 +37,7 @@ import Cabinet from "./pages/Cabinet";
 import CreateCabinet from "./pages/CreateCabinet";
 import JoinCabinet from "./pages/JoinCabinet";
 import JoinCabinetPublic from "./pages/JoinCabinetPublic";
+import NoCabinetOptions from "./pages/NoCabinetOptions";
 import EspaceCollaboratif from "./pages/EspaceCollaboratif";
 import Subscription from "./pages/Subscription";
 import ContactSupport from "./pages/ContactSupport";
@@ -140,6 +141,7 @@ const App = () => (
             <Route path="/select-profession" element={<SelectProfession />} />
             <Route path="/onboarding/create-cabinet" element={<OnboardingCreateCabinet />} />
             <Route path="/join-cabinet" element={<JoinCabinetPublic />} />
+            <Route path="/no-cabinet-options" element={<NoCabinetOptions />} />
             
             {/* Routes Avocat */}
             <Route path="/avocats/auth" element={<AvocatAuth />} />

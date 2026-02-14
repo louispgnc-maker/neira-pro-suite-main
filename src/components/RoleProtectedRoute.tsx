@@ -164,11 +164,8 @@ export default function RoleProtectedRoute({ children, requiredRole }: RoleProte
       return <Navigate to="/client-login" replace />;
     }
     
-    // L'utilisateur n'a pas de cabinet, rediriger vers la page de test pour créer son cabinet
-    toast.error("Aucun cabinet trouvé", {
-      description: "Veuillez créer votre cabinet pour accéder à cet espace."
-    });
-    return <Navigate to="/test-subscription" replace />;
+    // L'utilisateur n'a pas de cabinet, lui proposer de rejoindre un cabinet ou de souscrire
+    return <Navigate to="/no-cabinet-options" replace />;
   }
 
   if (userRole && userRole !== requiredRole) {

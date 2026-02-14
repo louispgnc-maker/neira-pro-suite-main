@@ -108,15 +108,14 @@ export default function CreateAccountAfterPayment() {
       
       // Si après 5 tentatives le profil n'existe toujours pas, le créer manuellement
       if (!profileExists) {
-        console.loselectedR('⚠️ Trigger n\'a pas créé le profil, création manuelle...');
+        console.log('⚠️ Trigger n\'a pas créé le profil, création manuelle...');
         const { error: manualProfileError } = await supabase
           .from('profiles')
           .insert({
             id: authData.user.id,
-            email: formData.email,
             first_name: formData.firstName,
             last_name: formData.lastName,
-            role: role
+            role: selectedRole
           });
         
         if (manualProfileError) {
