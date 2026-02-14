@@ -169,20 +169,42 @@ export default function JoinCabinetPublic() {
         throw new Error('Le membre n\'a pas pu être créé dans le cabinet');
       }
 
+      // Attendre que la session soit complètement établie
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Vérifier que la session est bien active avec le bon utilisateur
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session || session.user.id !== userId) {
+        throw new Error('Session non établie correctement');
+      }
+
       // Vérifier que get_user_cabinets retourne bien le cabinet avant de rediriger
       let cabinetFound = false;
-      for (let i = 0; i < 5; i++) {
-        const { data: userCabinets } = await supabase.rpc('get_user_cabinets');
+      for (let i = 0; i < 10; i++) {
+        const { data: userCabinets, error: cabinetsError } = await supabase.rpc('get_user_cabinets');
+        
+        console.log(`[JoinCabinet] Tentative ${i + 1}/10:`, {
+          cabinets: userCabinets,
+          error: cabinetsError,
+          sessionUserId: session.user.id,
+          expectedUserId: userId
+        });
+
         if (userCabinets && userCabinets.length > 0) {
-          cabinetFound = true;
-          break;
+          const matchingCabinet = userCabinets.find((c: any) => c.id === cabinetInfo.id);
+          if (matchingCabinet) {
+            cabinetFound = true;
+            console.log('[JoinCabinet] Cabinet trouvé:', matchingCabinet);
+            break;
+          }
         }
         // Attendre un peu avant de réessayer
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
       if (!cabinetFound) {
-        console.warn('Cabinet non trouvé par get_user_cabinets, redirection quand même');
+        console.error('[JoinCabinet] Cabinet non trouvé après 10 tentatives');
+        throw new Error('Le cabinet n\'apparaît pas dans vos cabinets. Réessayez de vous connecter.');
       }
 
       toast.success('Vous avez rejoint le cabinet !', {
