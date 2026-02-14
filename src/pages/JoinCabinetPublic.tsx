@@ -71,38 +71,46 @@ export default function JoinCabinetPublic() {
 
     setLoading(true);
     try {
-      // D'abord vérifier si l'utilisateur existe déjà
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      let userId: string;
+      let isNewAccount = false;
+
+      // Vérifier si l'utilisateur existe déjà en essayant de créer le compte
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
-        password
+        password,
+        options: {
+          data: {
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            role: cabinetInfo.role,
+          }
+        }
       });
 
-      let userId: string;
-
-      if (signInError) {
-        // L'utilisateur n'existe pas, créer le compte
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+      if (authError && authError.message.includes('already registered')) {
+        // L'utilisateur existe déjà, se connecter
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email: email.trim().toLowerCase(),
-          password,
-          options: {
-            data: {
-              first_name: firstName.trim(),
-              last_name: lastName.trim(),
-              role: cabinetInfo.role,
-            }
-          }
+          password
         });
 
-        if (authError) throw authError;
-        if (!authData.user) throw new Error('Compte non créé');
-        
-        userId = authData.user.id;
+        if (signInError) {
+          throw new Error('Email déjà utilisé. Vérifiez votre mot de passe.');
+        }
 
-        // Attendre un peu que le trigger de création de profil s'exécute
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      } else {
-        // L'utilisateur existe déjà et est maintenant connecté
         userId = signInData.user.id;
+      } else if (authError) {
+        throw authError;
+      } else {
+        // Nouveau compte créé
+        if (!authData.user) throw new Error('Compte non créé');
+        userId = authData.user.id;
+        isNewAccount = true;
+      }
+
+      // Si c'est un nouveau compte, attendre que le trigger crée le profil
+      if (isNewAccount) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
       // Vérifier si un membre pending existe déjà
