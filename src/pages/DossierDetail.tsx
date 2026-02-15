@@ -510,7 +510,7 @@ export default function DossierDetail() {
 
       // Mettre à jour les associations contrats
       await supabase.from('client_dossier_contrats').delete().eq('dossier_id', dossier.id);
-      if (editSelectedContrats.length > 0 && editSelectedContrats[0]) {
+      if (editSelectedContrats.length > 0 && editSelectedContrats[0] && editSelectedContrats[0] !== 'none') {
         const { error: insertContratError } = await supabase
           .from('client_dossier_contrats')
           .insert({
@@ -520,6 +520,7 @@ export default function DossierDetail() {
         
         if (insertContratError) {
           console.error('Erreur insertion contrat:', insertContratError);
+          toast.error('Erreur lors de l\'association du contrat');
         }
       }
 
