@@ -133,6 +133,8 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           .select('max_signatures_per_month')
           .eq('id', cabinetId)
           .single();
+        
+        console.log('🔑 Cabinet max_signatures_per_month:', cabinetData?.max_signatures_per_month);
 
         // Vérifier si l'addon est toujours valide (pas expiré)
         let addonSignatures = 0;
