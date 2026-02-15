@@ -98,12 +98,23 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           ? `${profileData.first_name} ${profileData.last_name}`
           : member.email;
 
-        // Compter les DOSSIERS de l'ESPACE PERSONNEL uniquement
-        const { count: dossiersCount } = await supabase
+        // Compter les DOSSIERS (comme la page Dossiers: personnel + partagés)
+        const { data: personalDossiers } = await supabase
           .from('dossiers')
-          .select('*', { count: 'exact', head: true })
+          .select('id')
           .eq('owner_id', member.user_id)
           .eq('role', role);
+        
+        const { data: sharedDossiers } = await supabase
+          .from('cabinet_dossiers')
+          .select('dossier_id')
+          .eq('cabinet_id', cabinetId);
+        
+        const dossierIds = new Set([
+          ...(personalDossiers || []).map(d => d.id),
+          ...(sharedDossiers || []).map(d => d.dossier_id)
+        ]);
+        const dossiersCount = dossierIds.size;
 
         // Compter les CLIENTS (comme la page Clients: cabinet + partagés)
         const { data: cabinetClients } = await supabase
@@ -123,7 +134,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
         ]);
         const clientsCount = clientIds.size;
 
-        // Compter les DOCUMENTS de l'ESPACE PERSONNEL uniquement
+        // Compter les DOCUMENTS (comme la page Documents: personnel uniquement)
         const { count: documentsCount } = await supabase
           .from('documents')
           .select('*', { count: 'exact', head: true })
