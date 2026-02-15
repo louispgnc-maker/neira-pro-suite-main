@@ -43,10 +43,21 @@ export default function NoCabinetOptions() {
       }
 
       const currentUserId = session.user.id;
-      const currentEmail = session.user.email;
+      
+      // Récupérer l'email depuis auth.users directement
+      const { data: userData, error: userError } = await supabase
+        .from('auth.users')
+        .select('email')
+        .eq('id', currentUserId)
+        .single();
+
+      const currentEmail = userData?.email || session.user.email;
+
+      console.log('🔍 Session user:', session.user);
+      console.log('🔍 Email trouvé:', currentEmail);
 
       if (!currentEmail) {
-        toast.error('Email introuvable');
+        toast.error('Email introuvable dans votre compte');
         return;
       }
 
