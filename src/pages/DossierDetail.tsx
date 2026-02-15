@@ -349,19 +349,6 @@ export default function DossierDetail() {
           setAllContrats(allContratsData as AssocContrat[]);
         }
 
-        // Charger les contrats disponibles pour la sélection
-        const { data: allContratsData, error: contratsError } = await supabase
-          .from('contrats')
-          .select('id, name, category')
-          .eq('owner_id', user.id)
-          .eq('role', role);
-        
-        if (contratsError) {
-          console.error('Error loading contrats:', contratsError);
-        } else if (allContratsData && mounted) {
-          setAllContrats(allContratsData as AssocContrat[]);
-        }
-
         // Charger les documents disponibles pour la sélection
         const { data: allDocumentsData, error: docsError } = await supabase
           .from('documents')
