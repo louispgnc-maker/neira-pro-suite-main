@@ -43,78 +43,34 @@ export default function NoCabinetOptions() {
       }
 
       const currentUserId = session.user.id;
-      
-      // Récupérer l'email depuis auth.users directement
-      const { data: userData, error: userError } = await supabase
-        .from('auth.users')
-        .select('email')
-        .eq('id', currentUserId)
-        .single();
-
-      const currentEmail = userData?.email || session.user.email;
-
-      console.log('🔍 Session user:', session.user);
-      console.log('🔍 Email trouvé:', currentEmail);
+      const currentEmail = session.user.email || '';
 
       if (!currentEmail) {
         toast.error('Email introuvable dans votre compte');
         return;
       }
 
-      // Vérifier le code d'accès
-      const { data, error } = await supabase.rpc('verify_access_code', {
-        code_param: accessCode.trim(),
-        email_param: currentEmail
+      // Utiliser la fonction RPC qui fait tout côté serveur
+      const { data, error } = await supabase.rpc('join_cabinet_with_code', {
+        p_code: accessCode.trim(),
+        p_user_id: currentUserId,
+        p_email: currentEmail
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erreur RPC:', error);
+        throw error;
+      }
 
-      const result = data as { success: boolean; error?: string; cabinet?: any };
+      const result = data as { success: boolean; error?: string; cabinet?: any; member?: any };
 
       if (!result.success) {
-        toast.error(result.error || 'Code invalide');
+        toast.error(result.error || 'Erreur');
         return;
       }
 
-      // Supprimer l'ancien membre s'il existe
-      await supabase
-        .from('cabinet_members')
-        .delete()
-        .eq('cabinet_id', result.cabinet.id)
-        .eq('email', currentEmail);
-
-      // Créer le nouveau membre directement
-      console.log('📝 Tentative insertion avec:', {
-        cabinet_id: result.cabinet.id,
-        user_id: currentUserId,
-        email: currentEmail
-      });
-
-      const { data: insertData, error: insertError } = await supabase
-        .from('cabinet_members')
-        .insert({
-          cabinet_id: result.cabinet.id,
-          user_id: currentUserId,
-          email: currentEmail,
-          nom: '',
-          status: 'active',
-          joined_at: new Date().toISOString()
-        })
-        .select();
-
-      if (insertError) {
-        console.error('❌ Erreur insert complète:', {
-          message: insertError.message,
-          details: insertError.details,
-          hint: insertError.hint,
-          code: insertError.code
-        });
-        throw new Error(`Erreur: ${insertError.message} (${insertError.code})`);
-      }
-
-      console.log('✅ Insertion réussie:', insertData);
-
-      toast.success('Cabinet rejoint !');
+      console.log('✅ Cabinet rejoint:', result);
+      toast.success(`Cabinet ${result.cabinet.nom} rejoint !`);
       
       // Attendre 500ms puis recharger
       await new Promise(resolve => setTimeout(resolve, 500));
