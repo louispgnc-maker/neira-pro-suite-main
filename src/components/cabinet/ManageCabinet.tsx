@@ -965,7 +965,6 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                         </Button>
                       )}
                     </TableCell>
-                    </TableCell>
                     {currentUserRole && canRemoveMembers(currentUserRole) && (
                       <TableCell className="text-right">
                         {member.status === 'pending' ? (
