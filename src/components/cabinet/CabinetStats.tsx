@@ -75,10 +75,35 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
   const loadAllStats = async () => {
     setLoading(true);
     try {
+      console.log('🔍 Loading stats for cabinet:', cabinetId, 'with', members.length, 'members');
+      
       const memberStats: MemberStats[] = [];
 
+      // Compter le total du cabinet une seule fois (optimisation)
+      const { count: totalDossiers } = await supabase
+        .from('cabinet_dossiers')
+        .select('*', { count: 'exact', head: true })
+        .eq('cabinet_id', cabinetId);
+
+      const { count: totalClients } = await supabase
+        .from('cabinet_clients')
+        .select('*', { count: 'exact', head: true })
+        .eq('cabinet_id', cabinetId);
+
+      const { count: totalDocuments } = await supabase
+        .from('cabinet_documents')
+        .select('*', { count: 'exact', head: true })
+        .eq('cabinet_id', cabinetId);
+
+      console.log('📊 Total cabinet:', { totalDossiers, totalClients, totalDocuments });
+
       for (const member of members) {
-        if (!member.user_id) continue; // Skip invitations pending
+        console.log('👤 Processing member:', member.email, 'user_id:', member.user_id);
+        
+        if (!member.user_id) {
+          console.warn('⚠️ Skipping member without user_id:', member.email);
+          continue;
+        }
 
         // Récupérer le prénom et nom du profil utilisateur
         const { data: profileData } = await supabase
@@ -90,18 +115,6 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
         const displayName = profileData?.first_name && profileData?.last_name
           ? `${profileData.first_name} ${profileData.last_name}`
           : member.email;
-
-        // Compter les dossiers partagés du cabinet (sans filtrer par membre)
-        const { count: dossiersCount } = await supabase
-          .from('cabinet_dossiers')
-          .select('*', { count: 'exact', head: true })
-          .eq('cabinet_id', cabinetId);
-
-        // Compter les clients partagés du cabinet (sans filtrer par membre)
-        const { count: clientsCount } = await supabase
-          .from('cabinet_clients')
-          .select('*', { count: 'exact', head: true })
-          .eq('cabinet_id', cabinetId);
 
         // Récupérer les signatures utilisées et l'addon personnel + date d'expiration
         const { data: memberData } = await supabase
@@ -135,24 +148,21 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
         const baseSignatures = cabinetData?.max_signatures_per_month ?? limits.signatures;
         const memberSignatureLimit = baseSignatures !== null ? baseSignatures + addonSignatures : 999999;
 
-        // Compter les documents partagés du cabinet (sans filtrer par membre)
-        const { count: documentsCount } = await supabase
-          .from('cabinet_documents')
-          .select('*', { count: 'exact', head: true })
-          .eq('cabinet_id', cabinetId);
-
+        // Chaque membre partage les MÊMES totaux du cabinet (données collaboratives)
+        // Seules les signatures sont individuelles par membre
         memberStats.push({
           user_id: member.user_id,
           email: member.email,
           nom: displayName,
-          dossiers: dossiersCount || 0,
-          clients: clientsCount || 0,
+          dossiers: totalDossiers || 0,
+          clients: totalClients || 0,
           signatures: memberData?.signatures_used || 0,
           signature_limit: memberSignatureLimit,
-          documents: documentsCount || 0
+          documents: totalDocuments || 0
         });
       }
 
+      console.log('✅ Stats loaded:', memberStats);
       setStats(memberStats);
     } catch (error) {
       console.error('Error loading cabinet stats:', error);
