@@ -110,6 +110,8 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           .select('*', { count: 'exact', head: true })
           .eq('owner_id', member.user_id)
           .eq('role', role);
+        
+        console.log(`📊 Clients for ${member.email}:`, clientsCount, 'with owner_id:', member.user_id, 'and role:', role);
 
         const { count: documentsCount } = await supabase
           .from('documents')
