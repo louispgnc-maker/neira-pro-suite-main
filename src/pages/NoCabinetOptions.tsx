@@ -35,10 +35,25 @@ export default function NoCabinetOptions() {
 
     setLoading(true);
     try {
-      // Vérifier le code
+      // Récupérer la session actuelle
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        toast.error('Session expirée');
+        return;
+      }
+
+      const currentUserId = session.user.id;
+      const currentEmail = session.user.email;
+
+      if (!currentEmail) {
+        toast.error('Email introuvable');
+        return;
+      }
+
+      // Vérifier le code d'accès
       const { data, error } = await supabase.rpc('verify_access_code', {
         code_param: accessCode.trim(),
-        email_param: userEmail
+        email_param: currentEmail
       });
 
       if (error) throw error;
@@ -55,21 +70,21 @@ export default function NoCabinetOptions() {
         .from('cabinet_members')
         .delete()
         .eq('cabinet_id', result.cabinet.id)
-        .eq('email', userEmail);
+        .eq('email', currentEmail);
 
       // Créer le nouveau membre directement
       console.log('📝 Tentative insertion avec:', {
         cabinet_id: result.cabinet.id,
-        user_id: userId,
-        email: userEmail
+        user_id: currentUserId,
+        email: currentEmail
       });
 
       const { data: insertData, error: insertError } = await supabase
         .from('cabinet_members')
         .insert({
           cabinet_id: result.cabinet.id,
-          user_id: userId,
-          email: userEmail,
+          user_id: currentUserId,
+          email: currentEmail,
           nom: '',
           status: 'active',
           joined_at: new Date().toISOString()
