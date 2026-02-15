@@ -1105,14 +1105,14 @@ export default function DossierDetail() {
                 <Label>Contrat associé</Label>
               </div>
               <Select 
-                value={editSelectedContrats.length > 0 ? editSelectedContrats[0] : ""} 
-                onValueChange={(value) => setEditSelectedContrats(value ? [value] : [])}
+                value={editSelectedContrats.length > 0 ? editSelectedContrats[0] : "none"} 
+                onValueChange={(value) => setEditSelectedContrats(value === "none" ? [] : [value])}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner un contrat" />
                 </SelectTrigger>
                 <SelectContent className={selectContentClass}>
-                  <SelectItem value="" className={selectItemClass}>
+                  <SelectItem value="none" className={selectItemClass}>
                     <span className="text-gray-500">Aucun contrat</span>
                   </SelectItem>
                   {allContrats.map(contrat => (
