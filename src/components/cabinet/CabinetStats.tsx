@@ -397,7 +397,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
                       </div>
 
                       {/* Section d'achat de forfaits signatures pour plan essentiel ou professionnel */}
-                      {(subscriptionPlan === 'essentiel' || subscriptionPlan === 'professionnel') && (
+                      {(subscriptionPlan === 'essentiel' || subscriptionPlan === 'professionnel' || subscriptionPlan === 'cabinet-plus') && (
                         <div className="border-t pt-4">
                           <Button
                             onClick={() => {
