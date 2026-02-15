@@ -236,24 +236,31 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
           try {
             const { data: membersTableData, error: tableErr } = await supabase
               .from('cabinet_members')
-              .select(`
-                id,
-                email,
-                nom,
-                role_cabinet,
-                status,
-                joined_at,
-                profiles!inner(first_name, last_name)
-              `)
+              .select('id, email, nom, role_cabinet, status, joined_at, user_id')
               .eq('cabinet_id', cabinetId);
             if (tableErr) throw tableErr;
             
-            // Flatten profiles into member object
+            // Récupérer les profiles séparément
+            const userIds = membersTableData?.map((m: any) => m.user_id).filter(Boolean) || [];
+            let profilesMap: Record<string, any> = {};
+            
+            if (userIds.length > 0) {
+              const { data: profilesData } = await supabase
+                .from('profiles')
+                .select('id, first_name, last_name')
+                .in('id', userIds);
+              
+              profilesData?.forEach((p: any) => {
+                profilesMap[p.id] = p;
+              });
+            }
+            
+            // Fusionner profiles avec members
             membersRes = Array.isArray(membersTableData) 
               ? membersTableData.map((m: any) => ({
                   ...m,
-                  first_name: m.profiles?.first_name,
-                  last_name: m.profiles?.last_name
+                  first_name: profilesMap[m.user_id]?.first_name,
+                  last_name: profilesMap[m.user_id]?.last_name
                 }))
               : [];
           } catch (tableErr) {
