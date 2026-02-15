@@ -1492,15 +1492,17 @@ export default function EspaceCollaboratif() {
             </Badge>
           )}
           
-          {/* Management button - always visible */}
-          <Button
-            onClick={() => cabinet?.id && navigate(`/${cabinetRole}s/cabinet?id=${cabinet.id}`)}
-            className={colorClass}
-            disabled={!cabinet || loading || !(isCabinetOwner || currentUserRole === 'Associé')}
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            Gérer le cabinet
-          </Button>
+          {/* Management button - visible uniquement pour fondateur/associé */}
+          {(isCabinetOwner || currentUserRole === 'Associé') && (
+            <Button
+              onClick={() => cabinet?.id && navigate(`/${cabinetRole}s/cabinet?id=${cabinet.id}`)}
+              className={colorClass}
+              disabled={!cabinet || loading}
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Gérer le cabinet
+            </Button>
+          )}
         </div>
       </div>
 
