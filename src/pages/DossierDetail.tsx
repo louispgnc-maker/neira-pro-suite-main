@@ -349,6 +349,19 @@ export default function DossierDetail() {
           setAllContrats(allContratsData as AssocContrat[]);
         }
 
+        // Charger les contrats disponibles pour la sélection
+        const { data: allContratsData, error: contratsError } = await supabase
+          .from('contrats')
+          .select('id, name, category')
+          .eq('owner_id', user.id)
+          .eq('role', role);
+        
+        if (contratsError) {
+          console.error('Error loading contrats:', contratsError);
+        } else if (allContratsData && mounted) {
+          setAllContrats(allContratsData as AssocContrat[]);
+        }
+
         // Charger les documents disponibles pour la sélection
         const { data: allDocumentsData, error: docsError } = await supabase
           .from('documents')
@@ -506,6 +519,21 @@ export default function DossierDetail() {
           .eq('id', dossier.id);
         
         if (updateErrorOld) throw updateErrorOld;
+      }
+
+      // Mettre à jour les associations contrats
+      await supabase.from('client_dossier_contrats').delete().eq('dossier_id', dossier.id);
+      if (editSelectedContrats.length > 0 && editSelectedContrats[0]) {
+        const { error: insertContratError } = await supabase
+          .from('client_dossier_contrats')
+          .insert({
+            dossier_id: dossier.id,
+            contrat_id: editSelectedContrats[0]
+          });
+        
+        if (insertContratError) {
+          console.error('Erreur insertion contrat:', insertContratError);
+        }
       }
 
       // Mettre à jour les associations documents pour client_dossiers_new
@@ -1082,6 +1110,36 @@ export default function DossierDetail() {
                   </SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Contrats */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Contrat associé</Label>
+              </div>
+              <Select 
+                value={editSelectedContrats.length > 0 ? editSelectedContrats[0] : ""} 
+                onValueChange={(value) => setEditSelectedContrats(value ? [value] : [])}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner un contrat" />
+                </SelectTrigger>
+                <SelectContent className={selectContentClass}>
+                  <SelectItem value="" className={selectItemClass}>
+                    <span className="text-gray-500">Aucun contrat</span>
+                  </SelectItem>
+                  {allContrats.map(contrat => (
+                    <SelectItem key={contrat.id} value={contrat.id} className={selectItemClass}>
+                      {contrat.name} {contrat.category && `(${contrat.category})`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {editSelectedContrats.length > 0 && (
+                <div className="text-sm text-muted-foreground">
+                  Contrat sélectionné : {allContrats.find(c => c.id === editSelectedContrats[0])?.name}
+                </div>
+              )}
             </div>
 
             {/* Documents */}
