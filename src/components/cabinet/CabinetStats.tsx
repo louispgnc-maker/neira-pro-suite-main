@@ -98,26 +98,26 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           ? `${profileData.first_name} ${profileData.last_name}`
           : member.email;
 
-        // Compter les DOSSIERS partagés au CABINET par ce membre
+        // Compter les DOSSIERS de l'ESPACE PERSONNEL de ce membre (filtré par rôle)
         const { count: dossiersCount } = await supabase
-          .from('cabinet_dossiers')
+          .from('dossiers')
           .select('*', { count: 'exact', head: true })
-          .eq('cabinet_id', cabinetId)
-          .eq('shared_by', member.user_id);
+          .eq('owner_id', member.user_id)
+          .eq('role', role);
 
-        // Compter les CLIENTS partagés au CABINET par ce membre
+        // Compter les CLIENTS de l'ESPACE PERSONNEL de ce membre (filtré par rôle)
         const { count: clientsCount } = await supabase
-          .from('cabinet_clients')
+          .from('clients')
           .select('*', { count: 'exact', head: true })
-          .eq('cabinet_id', cabinetId)
-          .eq('shared_by', member.user_id);
+          .eq('owner_id', member.user_id)
+          .eq('role', role);
 
-        // Compter les DOCUMENTS partagés au CABINET par ce membre
+        // Compter les DOCUMENTS de l'ESPACE PERSONNEL de ce membre (filtré par rôle)
         const { count: documentsCount } = await supabase
-          .from('cabinet_documents')
+          .from('documents')
           .select('*', { count: 'exact', head: true })
-          .eq('cabinet_id', cabinetId)
-          .eq('shared_by', member.user_id);
+          .eq('owner_id', member.user_id)
+          .eq('role', role);
 
         // Récupérer les signatures utilisées et l'addon personnel + date d'expiration
         const { data: memberData } = await supabase
