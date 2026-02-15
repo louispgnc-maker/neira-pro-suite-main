@@ -176,7 +176,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
   };
 
   // Stats globales = total des données partagées dans le cabinet
-  const [totalStats, setTotalStats] = React.useState({ 
+  const [totalStats, setTotalStats] = useState({ 
     dossiers: 0, clients: 0, signatures: 0, documents: 0 
   });
 
