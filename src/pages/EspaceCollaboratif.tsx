@@ -1654,7 +1654,7 @@ export default function EspaceCollaboratif() {
                             {item.type} partagé le {new Date(item.shared_at).toLocaleDateString()}
                           </p>
                           <div className="flex items-center gap-3">
-                            {(user && (item.shared_by === user.id || isCabinetOwner)) && (
+                            {user && (
                               <button
                                 onClick={(e) => { e.stopPropagation(); deleteSharedItem(
                                   item.type === 'Document' ? 'cabinet_documents' : item.type === 'Dossier' ? 'cabinet_dossiers' : 'cabinet_contrats',
@@ -1780,7 +1780,7 @@ export default function EspaceCollaboratif() {
                                     <Share2 className="h-4 w-4 text-gray-900" />
                                   </button>
 
-                                  {(user && (doc.shared_by === user.id || isCabinetOwner)) && (
+                                  {user && (
                                     <button
                                       onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_documents', doc.id); }}
                                       className="p-1 rounded hover:bg-gray-100"
@@ -1887,7 +1887,7 @@ export default function EspaceCollaboratif() {
                                   Type: {contrat.contrat_type} • Partagé le {new Date(contrat.shared_at).toLocaleDateString()}
                                 </p>
                                 <div className="flex items-center gap-3">
-                                  {(user && (contrat.shared_by === user.id || isCabinetOwner)) && (
+                                  {user && (
                                     <button
                                       onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_contrats', contrat.id); }}
                                       className="p-1 rounded hover:bg-gray-100"
@@ -1992,7 +1992,7 @@ export default function EspaceCollaboratif() {
                               </p>
 
                               <div className="flex items-center gap-3">
-                                {(user && (dossier.shared_by === user.id || isCabinetOwner)) && (
+                                {user && (
                                   <button
                                     onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_dossiers', dossier.id); }}
                                     className="p-1 rounded hover:bg-gray-100"
@@ -2083,7 +2083,7 @@ export default function EspaceCollaboratif() {
                               Partagé le {new Date(client.shared_at).toLocaleDateString()}
                             </p>
                             <div className="flex items-center gap-3">
-                              {(user && (client.shared_by === user.id || isCabinetOwner)) && (
+                              {user && (
                                 <button
                                   onClick={(e) => { e.stopPropagation(); deleteSharedItem('cabinet_clients', client.id); }}
                                   className="p-1 rounded hover:bg-gray-100"
