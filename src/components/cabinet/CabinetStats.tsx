@@ -91,19 +91,19 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           ? `${profileData.first_name} ${profileData.last_name}`
           : member.email;
 
-        // Compter les dossiers
+        // Compter les dossiers partagés du cabinet
         const { count: dossiersCount } = await supabase
-          .from('dossiers')
+          .from('cabinet_dossiers')
           .select('*', { count: 'exact', head: true })
-          .eq('owner_id', member.user_id)
-          .eq('role', role);
+          .eq('cabinet_id', cabinetId)
+          .eq('shared_by', member.user_id);
 
-        // Compter les clients
+        // Compter les clients partagés du cabinet
         const { count: clientsCount } = await supabase
-          .from('clients')
+          .from('cabinet_clients')
           .select('*', { count: 'exact', head: true })
-          .eq('owner_id', member.user_id)
-          .eq('role', role);
+          .eq('cabinet_id', cabinetId)
+          .eq('shared_by', member.user_id);
 
         // Récupérer les signatures utilisées et l'addon personnel + date d'expiration
         const { data: memberData } = await supabase
@@ -137,12 +137,12 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
         const baseSignatures = cabinetData?.max_signatures_per_month ?? limits.signatures;
         const memberSignatureLimit = baseSignatures !== null ? baseSignatures + addonSignatures : 999999;
 
-        // Compter les documents
+        // Compter les documents partagés du cabinet
         const { count: documentsCount } = await supabase
-          .from('documents')
+          .from('cabinet_documents')
           .select('*', { count: 'exact', head: true })
-          .eq('owner_id', member.user_id)
-          .eq('role', role);
+          .eq('cabinet_id', cabinetId)
+          .eq('shared_by', member.user_id);
 
         memberStats.push({
           user_id: member.user_id,
