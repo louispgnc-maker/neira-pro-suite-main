@@ -58,7 +58,13 @@ export default function NoCabinetOptions() {
         .eq('email', userEmail);
 
       // Créer le nouveau membre directement
-      const { error: insertError } = await supabase
+      console.log('📝 Tentative insertion avec:', {
+        cabinet_id: result.cabinet.id,
+        user_id: userId,
+        email: userEmail
+      });
+
+      const { data: insertData, error: insertError } = await supabase
         .from('cabinet_members')
         .insert({
           cabinet_id: result.cabinet.id,
@@ -67,12 +73,20 @@ export default function NoCabinetOptions() {
           nom: '',
           status: 'active',
           joined_at: new Date().toISOString()
-        });
+        })
+        .select();
 
       if (insertError) {
-        console.error('Erreur insert:', insertError);
-        throw new Error('Erreur lors de l\'insertion');
+        console.error('❌ Erreur insert complète:', {
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint,
+          code: insertError.code
+        });
+        throw new Error(`Erreur: ${insertError.message} (${insertError.code})`);
       }
+
+      console.log('✅ Insertion réussie:', insertData);
 
       toast.success('Cabinet rejoint !');
       
