@@ -35,6 +35,7 @@ export default function NoCabinetOptions() {
 
     setLoading(true);
     try {
+      // Vérifier le code
       const { data, error } = await supabase.rpc('verify_access_code', {
         code_param: accessCode.trim(),
         email_param: userEmail
@@ -42,64 +43,45 @@ export default function NoCabinetOptions() {
 
       if (error) throw error;
 
-      const result = data as { success: boolean; error?: string; cabinet?: any; invitation?: any };
+      const result = data as { success: boolean; error?: string; cabinet?: any };
 
       if (!result.success) {
-        toast.error(result.error || 'Code d\'accès invalide');
+        toast.error(result.error || 'Code invalide');
         return;
       }
 
-      const cabinetInfo = result.cabinet;
-      const invitation = result.invitation;
-
-      const { data: existingMember } = await supabase
+      // Supprimer l'ancien membre s'il existe
+      await supabase
         .from('cabinet_members')
-        .select('id, status, nom')
-        .eq('cabinet_id', cabinetInfo.id)
-        .eq('email', userEmail)
-        .single();
+        .delete()
+        .eq('cabinet_id', result.cabinet.id)
+        .eq('email', userEmail);
 
-      if (existingMember?.status === 'pending') {
-        const { error: updateError } = await supabase
-          .from('cabinet_members')
-          .update({
-            user_id: userId,
-            status: 'active',
-            joined_at: new Date().toISOString()
-          })
-          .eq('id', existingMember.id);
+      // Créer le nouveau membre directement
+      const { error: insertError } = await supabase
+        .from('cabinet_members')
+        .insert({
+          cabinet_id: result.cabinet.id,
+          user_id: userId,
+          email: userEmail,
+          nom: '',
+          status: 'active',
+          joined_at: new Date().toISOString()
+        });
 
-        if (updateError) throw updateError;
-      } else {
-        const nom = invitation?.nom || '';
-        const { error: insertError } = await supabase
-          .from('cabinet_members')
-          .insert({
-            cabinet_id: cabinetInfo.id,
-            user_id: userId,
-            email: userEmail,
-            nom: nom,
-            status: 'active',
-            joined_at: new Date().toISOString()
-          });
-
-        if (insertError) throw insertError;
+      if (insertError) {
+        console.error('Erreur insert:', insertError);
+        throw new Error('Erreur lors de l\'insertion');
       }
 
-      toast.success('Cabinet associé !', {
-        description: `Vous avez rejoint "${cabinetInfo.nom}"`
-      });
-
-      // Attendre un peu pour que le toast s'affiche
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Recharger simplement la page, le routing fera le reste
+      toast.success('Cabinet rejoint !');
+      
+      // Attendre 500ms puis recharger
+      await new Promise(resolve => setTimeout(resolve, 500));
       window.location.reload();
     } catch (error: any) {
-      console.error('Erreur rejoindre cabinet:', error);
-      toast.error('Erreur', {
-        description: error.message || 'Impossible de rejoindre le cabinet'
-      });
+      console.error('Erreur:', error);
+      toast.error(error.message || 'Erreur');
     } finally {
       setLoading(false);
     }
