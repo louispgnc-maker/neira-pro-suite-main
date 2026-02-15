@@ -98,26 +98,59 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           ? `${profileData.first_name} ${profileData.last_name}`
           : member.email;
 
-        // Compter les DOSSIERS de l'ESPACE PERSONNEL de ce membre (filtré par rôle)
-        const { count: dossiersCount } = await supabase
+        // Compter les DOSSIERS (PERSONNEL + PARTAGÉS AU CABINET, dédupliqués)
+        const { data: personalDossiers } = await supabase
           .from('dossiers')
-          .select('*', { count: 'exact', head: true })
+          .select('id')
           .eq('owner_id', member.user_id)
           .eq('role', role);
+        
+        const { data: sharedDossiers } = await supabase
+          .from('cabinet_dossiers')
+          .select('dossier_id')
+          .eq('cabinet_id', cabinetId);
+        
+        const dossierIds = new Set([
+          ...(personalDossiers || []).map(d => d.id),
+          ...(sharedDossiers || []).map(d => d.dossier_id)
+        ]);
+        const dossiersCount = dossierIds.size;
 
-        // Compter les CLIENTS de l'ESPACE PERSONNEL de ce membre (filtré par rôle)
-        const { count: clientsCount } = await supabase
+        // Compter les CLIENTS (PERSONNEL + PARTAGÉS AU CABINET, dédupliqués)
+        const { data: personalClients } = await supabase
           .from('clients')
-          .select('*', { count: 'exact', head: true })
+          .select('id')
           .eq('owner_id', member.user_id)
           .eq('role', role);
+        
+        const { data: sharedClients } = await supabase
+          .from('cabinet_clients')
+          .select('client_id')
+          .eq('cabinet_id', cabinetId);
+        
+        const clientIds = new Set([
+          ...(personalClients || []).map(c => c.id),
+          ...(sharedClients || []).map(c => c.client_id)
+        ]);
+        const clientsCount = clientIds.size;
 
-        // Compter les DOCUMENTS de l'ESPACE PERSONNEL de ce membre (filtré par rôle)
-        const { count: documentsCount } = await supabase
+        // Compter les DOCUMENTS (PERSONNEL + PARTAGÉS AU CABINET, dédupliqués)
+        const { data: personalDocuments } = await supabase
           .from('documents')
-          .select('*', { count: 'exact', head: true })
+          .select('id')
           .eq('owner_id', member.user_id)
           .eq('role', role);
+        
+        const { data: sharedDocuments } = await supabase
+          .from('cabinet_documents')
+          .select('document_id')
+          .eq('cabinet_id', cabinetId);
+        
+        const documentIds = new Set([
+          ...(personalDocuments || []).map(d => d.id),
+          ...(sharedDocuments || []).map(d => d.document_id)
+        ]);
+        const documentsCount = documentIds.size;
 
         // Récupérer les signatures utilisées et l'addon personnel + date d'expiration
         const { data: memberData } = await supabase
