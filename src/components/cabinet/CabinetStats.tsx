@@ -98,23 +98,26 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           ? `${profileData.first_name} ${profileData.last_name}`
           : member.email;
 
-        // Compter les DOSSIERS PERSONNELS de ce membre
+        // Compter les DOSSIERS PERSONNELS de ce membre (filtré par rôle avocat/notaire)
         const { count: dossiersCount } = await supabase
           .from('dossiers')
           .select('*', { count: 'exact', head: true })
-          .eq('owner_id', member.user_id);
+          .eq('owner_id', member.user_id)
+          .eq('role', role);
 
-        // Compter les CLIENTS PERSONNELS de ce membre
+        // Compter les CLIENTS PERSONNELS de ce membre (filtré par rôle avocat/notaire)
         const { count: clientsCount } = await supabase
           .from('clients')
           .select('*', { count: 'exact', head: true })
-          .eq('owner_id', member.user_id);
+          .eq('owner_id', member.user_id)
+          .eq('role', role);
 
-        // Compter les DOCUMENTS PERSONNELS de ce membre
+        // Compter les DOCUMENTS PERSONNELS de ce membre (filtré par rôle avocat/notaire)
         const { count: documentsCount } = await supabase
           .from('documents')
           .select('*', { count: 'exact', head: true })
-          .eq('owner_id', member.user_id);
+          .eq('owner_id', member.user_id)
+          .eq('role', role);
 
         // Récupérer les signatures utilisées et l'addon personnel + date d'expiration
         const { data: memberData } = await supabase
