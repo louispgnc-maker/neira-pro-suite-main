@@ -134,23 +134,12 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
         ]);
         const clientsCount = clientIds.size;
 
-        // Compter les DOCUMENTS (personnel + partagés au cabinet, dédupliqués)
-        const { data: personalDocuments } = await supabase
+        // Compter les DOCUMENTS de l'ESPACE PERSONNEL uniquement
+        const { count: documentsCount } = await supabase
           .from('documents')
-          .select('id')
+          .select('*', { count: 'exact', head: true })
           .eq('owner_id', member.user_id)
           .eq('role', role);
-        
-        const { data: sharedDocuments } = await supabase
-          .from('cabinet_documents')
-          .select('document_id')
-          .eq('cabinet_id', cabinetId);
-        
-        const documentIds = new Set([
-          ...(personalDocuments || []).map(d => d.id),
-          ...(sharedDocuments || []).map(d => d.document_id)
-        ]);
-        const documentsCount = documentIds.size;
 
         // Récupérer les signatures utilisées et l'addon personnel + date d'expiration
         const { data: memberData } = await supabase
