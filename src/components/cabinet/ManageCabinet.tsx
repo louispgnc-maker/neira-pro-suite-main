@@ -275,15 +275,18 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
             if (idsToFetch.length > 0) {
               const { data: profilesData } = await supabase
                 .from('profiles')
-                .select('id, email, nom, full_name')
+                .select('id, first_name, last_name')
                 .in('id', idsToFetch as string[]);
               if (Array.isArray(profilesData)) {
                 for (const p of profilesData as unknown[]) {
                   const pid = String((p as Record<string, unknown>)['id'] ?? '');
+                  const firstName = String((p as Record<string, unknown>)['first_name'] ?? '');
+                  const lastName = String((p as Record<string, unknown>)['last_name'] ?? '');
+                  const fullName = firstName && lastName ? `${firstName} ${lastName}` : '';
                   fallback.push({
                     id: pid,
                     email: String((p as Record<string, unknown>)['email'] ?? ''),
-                    nom: String((p as Record<string, unknown>)['nom'] ?? (p as Record<string, unknown>)['full_name'] ?? ''),
+                    nom: fullName,
                     role_cabinet: pid === ownerId ? 'Fondateur' : 'Membre',
                     status: 'active',
                   });
@@ -298,15 +301,21 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
           setMembers(fallback.length > 0 ? fallback : []);
         } else {
           // Normalize unknown items into CabinetMember[]
-          const normalized: CabinetMember[] = (membersRes as unknown[]).map((m) => ({
-            id: String((m as Record<string, unknown>)['id'] ?? ''),
-            user_id: String((m as Record<string, unknown>)['user_id'] ?? ''),
-            email: String((m as Record<string, unknown>)['email'] ?? ''),
-            nom: String((m as Record<string, unknown>)['nom'] ?? '') || undefined,
-            role_cabinet: String((m as Record<string, unknown>)['role_cabinet'] ?? ''),
-            status: String((m as Record<string, unknown>)['status'] ?? ''),
-            joined_at: (m as Record<string, unknown>)['joined_at'] ? String((m as Record<string, unknown>)['joined_at']) : undefined,
-          }));
+          const normalized: CabinetMember[] = (membersRes as unknown[]).map((m) => {
+            const firstName = String((m as Record<string, unknown>)['first_name'] ?? '');
+            const lastName = String((m as Record<string, unknown>)['last_name'] ?? '');
+            const fullName = firstName && lastName ? `${firstName} ${lastName}` : '';
+            
+            return {
+              id: String((m as Record<string, unknown>)['id'] ?? ''),
+              user_id: String((m as Record<string, unknown>)['user_id'] ?? ''),
+              email: String((m as Record<string, unknown>)['email'] ?? ''),
+              nom: fullName || String((m as Record<string, unknown>)['nom'] ?? '') || undefined,
+              role_cabinet: String((m as Record<string, unknown>)['role_cabinet'] ?? ''),
+              status: String((m as Record<string, unknown>)['status'] ?? ''),
+              joined_at: (m as Record<string, unknown>)['joined_at'] ? String((m as Record<string, unknown>)['joined_at']) : undefined,
+            };
+          });
           setMembers(normalized);
           
           // Set current user's role for permissions - use user_id to match
