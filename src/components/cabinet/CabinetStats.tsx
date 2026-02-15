@@ -175,12 +175,48 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
     }
   };
 
-  const totalStats = stats.reduce((acc, member) => ({
-    dossiers: acc.dossiers + member.dossiers,
-    clients: acc.clients + member.clients,
-    signatures: acc.signatures + member.signatures,
-    documents: acc.documents + member.documents
-  }), { dossiers: 0, clients: 0, signatures: 0, documents: 0 });
+  // Stats globales = total des données partagées dans le cabinet
+  const [totalStats, setTotalStats] = React.useState({ 
+    dossiers: 0, clients: 0, signatures: 0, documents: 0 
+  });
+
+  useEffect(() => {
+    const loadCabinetSharedStats = async () => {
+      try {
+        // Compter les données partagées du cabinet (tables cabinet_*)
+        const { count: dossiersCount } = await supabase
+          .from('cabinet_dossiers')
+          .select('*', { count: 'exact', head: true })
+          .eq('cabinet_id', cabinetId);
+
+        const { count: clientsCount } = await supabase
+          .from('cabinet_clients')
+          .select('*', { count: 'exact', head: true })
+          .eq('cabinet_id', cabinetId);
+
+        const { count: documentsCount } = await supabase
+          .from('cabinet_documents')
+          .select('*', { count: 'exact', head: true })
+          .eq('cabinet_id', cabinetId);
+
+        // Total des signatures de tous les membres
+        const totalSignatures = stats.reduce((acc, member) => acc + member.signatures, 0);
+
+        setTotalStats({
+          dossiers: dossiersCount || 0,
+          clients: clientsCount || 0,
+          signatures: totalSignatures,
+          documents: documentsCount || 0
+        });
+      } catch (error) {
+        console.error('Error loading cabinet shared stats:', error);
+      }
+    };
+
+    if (cabinetId && stats.length > 0) {
+      loadCabinetSharedStats();
+    }
+  }, [cabinetId, stats]);
 
   const getUsagePercentage = (used: number, limit: number) => {
     if (limit >= 999999) return 0;
