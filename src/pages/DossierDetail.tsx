@@ -307,23 +307,19 @@ export default function DossierDetail() {
           setClients(clientList);
         }
         
-        // Charger les contrats liés depuis la nouvelle table
-        const { data: contratLinks } = await supabase
-          .from('client_dossier_contrats')
-          .select('contrat_id, contrats(id, name, category, content, contenu_json)')
-          .eq('dossier_id', id);
-        
-        if (contratLinks && mounted) {
-          const contratList = contratLinks.map((link: any) => ({
-            id: link.contrats.id,
-            name: link.contrats.name,
-            category: link.contrats.category,
-            content: link.contrats.content,
-            contenu_json: link.contrats.contenu_json
-          }));
-          setContrats(contratList);
+        // Charger le contrat lié directement depuis client_dossiers_new
+        if (clientDossier?.contrat_id) {
+          const { data: contratData } = await supabase
+            .from('contrats')
+            .select('id, name, category, content, contenu_json')
+            .eq('id', clientDossier.contrat_id)
+            .single();
+          
+          if (contratData && mounted) {
+            setContrats([contratData]);
+          }
         } else {
-          // Fallback: essayer l'ancienne table
+          // Fallback: essayer l'ancienne table dossier_contrats
           const { data: oldContratLinks } = await supabase
             .from('dossier_contrats')
             .select('contrat_id, contrats(id, name, category, content, contenu_json)')
@@ -525,20 +521,19 @@ export default function DossierDetail() {
         if (updateErrorOld) throw updateErrorOld;
       }
 
-      // Mettre à jour les associations contrats
-      await supabase.from('client_dossier_contrats').delete().eq('dossier_id', dossier.id);
-      if (editSelectedContrats.length > 0 && editSelectedContrats[0] && editSelectedContrats[0] !== 'none') {
-        const { error: insertContratError } = await supabase
-          .from('client_dossier_contrats')
-          .insert({
-            dossier_id: dossier.id,
-            contrat_id: editSelectedContrats[0]
-          });
-        
-        if (insertContratError) {
-          console.error('Erreur insertion contrat:', insertContratError);
-          toast.error('Erreur lors de l\'association du contrat');
-        }
+      // Mettre à jour le contrat associé directement dans client_dossiers_new
+      const newContratId = (editSelectedContrats.length > 0 && editSelectedContrats[0] && editSelectedContrats[0] !== 'none') 
+        ? editSelectedContrats[0] 
+        : null;
+      
+      const { error: updateContratError } = await supabase
+        .from('client_dossiers_new')
+        .update({ contrat_id: newContratId })
+        .eq('id', dossier.id);
+      
+      if (updateContratError) {
+        console.error('Erreur mise à jour contrat:', updateContratError);
+        toast.error('Erreur lors de l\'association du contrat');
       }
 
       // Mettre à jour les associations documents pour client_dossiers_new
