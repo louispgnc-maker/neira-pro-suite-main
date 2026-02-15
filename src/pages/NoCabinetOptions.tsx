@@ -72,9 +72,9 @@ export default function NoCabinetOptions() {
       console.log('✅ Cabinet rejoint:', result);
       toast.success(`Cabinet ${result.cabinet.nom} rejoint !`);
       
-      // Attendre 500ms puis recharger
+      // Rediriger vers le dashboard
       await new Promise(resolve => setTimeout(resolve, 500));
-      window.location.reload();
+      navigate('/dashboard');
     } catch (error: any) {
       console.error('Erreur:', error);
       toast.error(error.message || 'Erreur');
