@@ -950,10 +950,6 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                     <TableCell>
                       {member.status === 'pending' ? (
                         <span className="text-muted-foreground text-sm">—</span>
-                      ) : cabinet?.subscription_plan === 'cabinet-plus' ? (
-                        <Badge className="bg-green-600 text-white">
-                          Illimité
-                        </Badge>
                       ) : (
                         <Button
                           variant="outline"
@@ -968,6 +964,7 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                           Acheter
                         </Button>
                       )}
+                    </TableCell>
                     </TableCell>
                     {currentUserRole && canRemoveMembers(currentUserRole) && (
                       <TableCell className="text-right">
