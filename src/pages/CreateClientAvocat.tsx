@@ -164,7 +164,8 @@ export default function CreateClientAvocat() {
       const situationFamilialeData = etatCivil ? { situation_familiale: etatCivil } : null;
 
       const { data: inserted, error: insertErr } = await supabase.from('clients').insert({
-        owner_id: cabinetMember.cabinet_id,
+        owner_id: user.id,
+        user_id: user.id,
         role,
         name: `${prenom} ${nom}`,
         nom,
