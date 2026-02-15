@@ -697,17 +697,6 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                 >
                   <Copy className="h-4 w-4" />
                 </Button>
-                {currentUserRole === 'Fondateur' && (
-                  <Button
-                    type="button"
-                    size="icon"
-                    onClick={regenerateCode}
-                    title="Régénérer le code"
-                    className={colorClass}
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                )}
               </div>
             </div>
           )}
@@ -873,7 +862,11 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                         <Badge variant="outline" className="ml-2 text-xs">En attente</Badge>
                       )}
                     </TableCell>
-                    <TableCell>{member.nom || '—'}</TableCell>
+                    <TableCell>
+                      {member.nom || member.first_name || member.last_name 
+                        ? `${member.first_name || ''} ${member.last_name || ''}`.trim() || member.nom 
+                        : '—'}
+                    </TableCell>
                     <TableCell>
                       {member.status === 'pending' ? (
                         <span className="text-muted-foreground text-sm">—</span>
