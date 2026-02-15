@@ -1018,8 +1018,8 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
         </CardContent>
       </Card>
 
-      {/* Statistiques globales du cabinet - visible seulement pour le fondateur */}
-      {isOwner && cabinet && (
+      {/* Statistiques globales du cabinet - visible pour tous les membres */}
+      {cabinet && (
         <CabinetStats
           cabinetId={cabinet.id}
           subscriptionPlan={cabinet.subscription_plan || 'essentiel'}
