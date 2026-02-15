@@ -221,21 +221,21 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
         // Recherche dans les documents (espace personnel)
         const { data: documents } = await supabase
           .from('documents')
-          .select('id, nom, type')
+          .select('id, name, client_name, status')
           .eq('owner_id', user.id)
           .eq('role', userRole)
-          .ilike('nom', `%${searchQuery}%`)
+          .ilike('name', `%${searchQuery}%`)
           .limit(5);
 
         if (documents) {
           documents.forEach(doc => {
             dynamicResults.push({
               id: doc.id,
-              title: doc.nom || 'Document sans nom',
+              title: doc.name || 'Document sans nom',
               path: `/documents`,
-              keywords: [doc.type || ''],
+              keywords: [doc.client_name || '', doc.status || ''],
               category: 'Documents',
-              section: doc.type || undefined
+              section: doc.client_name || undefined
             });
           });
         }
