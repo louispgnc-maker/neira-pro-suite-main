@@ -684,22 +684,21 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {currentUserRole && (currentUserRole === 'Fondateur' || currentUserRole === 'Associé') && (
-            <div className="space-y-2">
-              <Label>Code d'accès du cabinet</Label>
-              <div className="flex gap-2">
-                <Input value={cabinet.code_acces} readOnly className="font-mono" />
-                <Button 
-                  type="button" 
-                  size="icon" 
-                  onClick={copyCode}
-                  className={colorClass}
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
+          {/* Code d'accès visible pour tous les membres */}
+          <div className="space-y-2">
+            <Label>Code d'accès du cabinet</Label>
+            <div className="flex gap-2">
+              <Input value={cabinet.code_acces} readOnly className="font-mono" />
+              <Button 
+                type="button" 
+                size="icon" 
+                onClick={copyCode}
+                className={colorClass}
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
             </div>
-          )}
+          </div>
 
           {/* Upgrade alert if at limit */}
           {isOwner && cabinet.subscription_plan === 'essentiel' && (

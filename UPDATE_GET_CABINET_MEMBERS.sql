@@ -1,5 +1,9 @@
 -- Modifier la fonction get_cabinet_members_simple pour inclure first_name et last_name
 
+-- D'abord supprimer l'ancienne version
+DROP FUNCTION IF EXISTS get_cabinet_members_simple(uuid);
+
+-- Recréer avec les nouveaux champs
 CREATE OR REPLACE FUNCTION get_cabinet_members_simple(cabinet_id_param uuid)
 RETURNS TABLE (
   id uuid,
