@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabaseClient";
 
 interface SearchItem {
   title: string;
@@ -10,6 +11,7 @@ interface SearchItem {
   keywords: string[];
   category: string;
   section?: string; // Sous-section de la page
+  id?: string; // ID de l'élément (pour dossiers, clients, documents)
 }
 
 const searchIndex: SearchItem[] = [
@@ -152,47 +154,120 @@ export function GlobalSearch({ userRole = "avocat", hideButton = false }: Global
     }
 
     const searchQuery = query.toLowerCase();
+    
+    // Recherche dans l'index statique (pages)
     const filtered = searchIndex.filter(item => {
       const titleMatch = item.title.toLowerCase().includes(searchQuery);
       const sectionMatch = item.section?.toLowerCase().includes(searchQuery);
-      // Ne chercher dans les keywords que si pas de match dans title/section
       const keywordMatch = item.keywords.some(keyword => 
         keyword.toLowerCase().includes(searchQuery)
       );
-      
-      // Priorité : afficher seulement si le mot est dans le titre ou la section
-      // Les keywords servent juste à élargir la recherche
       return titleMatch || sectionMatch || keywordMatch;
     });
 
-    // Trier pour mettre les correspondances visibles en premier
-    const sorted = filtered.sort((a, b) => {
-      const aVisibleMatch = a.title.toLowerCase().includes(searchQuery) || 
-                           a.section?.toLowerCase().includes(searchQuery);
-      const bVisibleMatch = b.title.toLowerCase().includes(searchQuery) || 
-                           b.section?.toLowerCase().includes(searchQuery);
-      
-      // Prioriser les matchs visibles
-      if (aVisibleMatch && !bVisibleMatch) return -1;
-      if (!aVisibleMatch && bVisibleMatch) return 1;
-      
-      // Puis les matchs exacts
-      const aExactTitle = a.title.toLowerCase() === searchQuery;
-      const bExactTitle = b.title.toLowerCase() === searchQuery;
-      const aExactSection = a.section?.toLowerCase() === searchQuery;
-      const bExactSection = b.section?.toLowerCase() === searchQuery;
-      
-      if (aExactTitle && !bExactTitle) return -1;
-      if (!aExactTitle && bExactTitle) return 1;
-      if (aExactSection && !bExactSection) return -1;
-      if (!aExactSection && bExactSection) return 1;
-      
-      return 0;
-    });
+    // Recherche dynamique dans les données utilisateur
+    const searchUserData = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return filtered;
 
-    setResults(sorted.slice(0, 10)); // Limiter à 10 résultats
-    setSelectedIndex(0);
-  }, [query]);
+        const dynamicResults: SearchItem[] = [];
+
+        // Recherche dans les dossiers (espace personnel)
+        const { data: dossiers } = await supabase
+          .from('dossiers')
+          .select('id, nom, client_nom')
+          .eq('owner_id', user.id)
+          .eq('role', userRole)
+          .or(`nom.ilike.%${searchQuery}%,client_nom.ilike.%${searchQuery}%`)
+          .limit(5);
+
+        if (dossiers) {
+          dossiers.forEach(d => {
+            dynamicResults.push({
+              id: d.id,
+              title: d.nom || 'Sans titre',
+              path: `/dossiers/${d.id}`,
+              keywords: [d.client_nom || ''],
+              category: 'Dossiers',
+              section: d.client_nom || undefined
+            });
+          });
+        }
+
+        // Recherche dans les clients (espace personnel)
+        const { data: clients } = await supabase
+          .from('clients')
+          .select('id, nom, prenom, email')
+          .eq('owner_id', user.id)
+          .eq('role', userRole)
+          .or(`nom.ilike.%${searchQuery}%,prenom.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`)
+          .limit(5);
+
+        if (clients) {
+          clients.forEach(c => {
+            const fullName = `${c.prenom || ''} ${c.nom || ''}`.trim();
+            dynamicResults.push({
+              id: c.id,
+              title: fullName || c.email || 'Client sans nom',
+              path: `/clients/${c.id}`,
+              keywords: [c.email || ''],
+              category: 'Clients',
+              section: c.email || undefined
+            });
+          });
+        }
+
+        // Recherche dans les documents (espace personnel)
+        const { data: documents } = await supabase
+          .from('documents')
+          .select('id, nom, type')
+          .eq('owner_id', user.id)
+          .eq('role', userRole)
+          .ilike('nom', `%${searchQuery}%`)
+          .limit(5);
+
+        if (documents) {
+          documents.forEach(doc => {
+            dynamicResults.push({
+              id: doc.id,
+              title: doc.nom || 'Document sans nom',
+              path: `/documents`,
+              keywords: [doc.type || ''],
+              category: 'Documents',
+              section: doc.type || undefined
+            });
+          });
+        }
+
+        // Combiner résultats statiques et dynamiques
+        const combined = [...dynamicResults, ...filtered];
+        
+        // Trier pour mettre les correspondances visibles en premier
+        const sorted = combined.sort((a, b) => {
+          const aVisibleMatch = a.title.toLowerCase().includes(searchQuery) || 
+                               a.section?.toLowerCase().includes(searchQuery);
+          const bVisibleMatch = b.title.toLowerCase().includes(searchQuery) || 
+                               b.section?.toLowerCase().includes(searchQuery);
+          
+          if (aVisibleMatch && !bVisibleMatch) return -1;
+          if (!aVisibleMatch && bVisibleMatch) return 1;
+          
+          return 0;
+        });
+
+        setResults(sorted.slice(0, 10));
+        setSelectedIndex(0);
+      } catch (error) {
+        console.error('Search error:', error);
+        // En cas d'erreur, retourner uniquement les résultats statiques
+        setResults(filtered.slice(0, 10));
+        setSelectedIndex(0);
+      }
+    };
+
+    searchUserData();
+  }, [query, userRole]);
 
   // Navigation au clavier
   const handleKeyDown = (e: React.KeyboardEvent) => {
