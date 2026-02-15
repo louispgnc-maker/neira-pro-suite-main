@@ -307,9 +307,9 @@ export default function DossierDetail() {
           setClients(clientList);
         }
         
-        // Charger les contrats liés
+        // Charger les contrats liés depuis la nouvelle table
         const { data: contratLinks } = await supabase
-          .from('dossier_contrats')
+          .from('client_dossier_contrats')
           .select('contrat_id, contrats(id, name, category, content, contenu_json)')
           .eq('dossier_id', id);
         
@@ -322,6 +322,23 @@ export default function DossierDetail() {
             contenu_json: link.contrats.contenu_json
           }));
           setContrats(contratList);
+        } else {
+          // Fallback: essayer l'ancienne table
+          const { data: oldContratLinks } = await supabase
+            .from('dossier_contrats')
+            .select('contrat_id, contrats(id, name, category, content, contenu_json)')
+            .eq('dossier_id', id);
+          
+          if (oldContratLinks && mounted) {
+            const contratList = oldContratLinks.map((link: any) => ({
+              id: link.contrats.id,
+              name: link.contrats.name,
+              category: link.contrats.category,
+              content: link.contrats.content,
+              contenu_json: link.contrats.contenu_json
+            }));
+            setContrats(contratList);
+          }
         }
 
         // Charger toutes les listes pour le dialogue de modification
