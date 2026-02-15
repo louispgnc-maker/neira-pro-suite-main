@@ -98,41 +98,19 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           ? `${profileData.first_name} ${profileData.last_name}`
           : member.email;
 
-        // Compter les DOSSIERS (personnel + partagés au cabinet, dédupliqués)
-        const { data: personalDossiers } = await supabase
+        // Compter les DOSSIERS de l'ESPACE PERSONNEL uniquement
+        const { count: dossiersCount } = await supabase
           .from('dossiers')
-          .select('id')
+          .select('*', { count: 'exact', head: true })
           .eq('owner_id', member.user_id)
           .eq('role', role);
-        
-        const { data: sharedDossiers } = await supabase
-          .from('cabinet_dossiers')
-          .select('dossier_id')
-          .eq('cabinet_id', cabinetId);
-        
-        const dossierIds = new Set([
-          ...(personalDossiers || []).map(d => d.id),
-          ...(sharedDossiers || []).map(d => d.dossier_id)
-        ]);
-        const dossiersCount = dossierIds.size;
 
-        // Compter les CLIENTS (du cabinet + partagés, dédupliqués)
-        const { data: cabinetClients } = await supabase
+        // Compter les CLIENTS de l'ESPACE PERSONNEL uniquement
+        const { count: clientsCount } = await supabase
           .from('clients')
-          .select('id')
-          .eq('owner_id', cabinetId)
+          .select('*', { count: 'exact', head: true })
+          .eq('owner_id', member.user_id)
           .eq('role', role);
-        
-        const { data: sharedClients } = await supabase
-          .from('cabinet_clients')
-          .select('client_id')
-          .eq('cabinet_id', cabinetId);
-        
-        const clientIds = new Set([
-          ...(cabinetClients || []).map(c => c.id),
-          ...(sharedClients || []).map(c => c.client_id)
-        ]);
-        const clientsCount = clientIds.size;
 
         // Compter les DOCUMENTS de l'ESPACE PERSONNEL uniquement
         const { count: documentsCount } = await supabase
