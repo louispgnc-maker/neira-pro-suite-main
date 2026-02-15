@@ -105,12 +105,23 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           .eq('owner_id', member.user_id)
           .eq('role', role);
 
-        // Compter les CLIENTS de l'ESPACE PERSONNEL uniquement
-        const { count: clientsCount } = await supabase
+        // Compter les CLIENTS (comme la page Clients: cabinet + partagés)
+        const { data: cabinetClients } = await supabase
           .from('clients')
-          .select('*', { count: 'exact', head: true })
-          .eq('owner_id', member.user_id)
+          .select('id')
+          .eq('owner_id', cabinetId)
           .eq('role', role);
+        
+        const { data: sharedClients } = await supabase
+          .from('cabinet_clients')
+          .select('client_id')
+          .eq('cabinet_id', cabinetId);
+        
+        const clientIds = new Set([
+          ...(cabinetClients || []).map(c => c.id),
+          ...(sharedClients || []).map(c => c.client_id)
+        ]);
+        const clientsCount = clientIds.size;
 
         // Compter les DOCUMENTS de l'ESPACE PERSONNEL uniquement
         const { count: documentsCount } = await supabase
