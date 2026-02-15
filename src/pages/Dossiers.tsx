@@ -151,47 +151,7 @@ export default function Dossiers() {
         .order('created_at', { ascending: false });
 
       let list = (d || []) as DossierRow[];
-      // Fetch cabinet shared dossiers and merge so members see shared dossiers like shared documents
-      try {
-        const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
-        const cabinets = Array.isArray(cabinetsData) ? (cabinetsData as unknown[]) : [];
-        const filtered = cabinets.filter((c) => (c as Record<string, unknown>)['role'] === role);
-        const userCabinet = filtered[0] || null;
-        if (userCabinet) {
-          try {
-            const cabinetIdParam = String((userCabinet as Record<string, unknown>)['id'] ?? '');
-            const { data: sharedDossiers } = await supabase.rpc('get_cabinet_dossiers', { cabinet_id_param: cabinetIdParam });
-            if (Array.isArray(sharedDossiers) && sharedDossiers.length > 0) {
-              // Map cabinet_dossiers rows to DossierRow while marking them as shared
-              const mapped = (sharedDossiers as unknown[]).map((sd) => {
-                const s = sd as Record<string, unknown>;
-                return {
-                  id: String(s['dossier_id'] ?? s['id'] ?? ''),
-                  title: String(s['title'] ?? ''),
-                  status: String(s['status'] ?? '—'),
-                  created_at: String(s['shared_at'] ?? s['created_at'] ?? ''),
-                  // helper metadata kept as properties on the object for later counting
-                  _shared: true,
-                  _cabinet_row_id: String(s['id'] ?? ''),
-                  _attached_document_count: Array.isArray(s['attached_document_ids'] as unknown) ? (s['attached_document_ids'] as unknown[]).length : 0,
-                } as unknown as DossierRow & Record<string, unknown>;
-              });
-
-              // merge owned and shared, de-dup by original dossier id
-              const byId = new Map<string, DossierRow & Record<string, unknown>>();
-              list.forEach((it) => byId.set(it.id, it as DossierRow & Record<string, unknown>));
-              mapped.forEach((it) => {
-                if (!byId.has(it.id)) byId.set(it.id, it as DossierRow & Record<string, unknown>);
-              });
-              list = Array.from(byId.values());
-            }
-          } catch (e) {
-            // ignore shared fetch errors
-          }
-        }
-      } catch (e) {
-        // ignore get_user_cabinets errors
-      }
+      
       // If search filter provided, refetch server-side with ilike
       if (debounced) {
         const { data: sd, error: sErr } = await supabase
