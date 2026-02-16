@@ -87,10 +87,15 @@ export default function ContratDetail() {
     }
   }, [savingProgress, displayedProgress, waitingProgress]);
 
-  // Fonction pour générer et télécharger le PDF du contrat
+  // Fonction pour générer et sauvegarder le PDF du contrat dans l'espace personnel
   const handleGeneratePdf = async () => {
     if (!contrat || !contrat.content) {
       toast.error("Aucun contenu à transformer en PDF");
+      return;
+    }
+    
+    if (!user) {
+      toast.error("Vous devez être connecté");
       return;
     }
     
@@ -98,6 +103,7 @@ export default function ContratDetail() {
     toast.info("Génération du PDF en cours...");
     
     try {
+      // Générer le PDF
       const { data, error } = await supabase.functions.invoke('generate-pdf-from-html', {
         body: {
           html: contrat.content,
@@ -117,17 +123,36 @@ export default function ContratDetail() {
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: 'application/pdf' });
       
-      // Créer un lien de téléchargement
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${contrat.name}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      // Générer un nom de fichier unique
+      const timestamp = Date.now();
+      const fileName = `${contrat.name.replace(/[^a-z0-9]/gi, '_')}_${timestamp}.pdf`;
+      const filePath = `${user.id}/${fileName}`;
       
-      toast.success("✅ PDF généré avec succès !");
+      // Uploader dans Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(filePath, blob, {
+          contentType: 'application/pdf',
+          upsert: false
+        });
+      
+      if (uploadError) throw uploadError;
+      
+      // Créer l'entrée dans la table documents
+      const { error: dbError } = await supabase
+        .from('documents')
+        .insert({
+          owner_id: user.id,
+          name: `${contrat.name}.pdf`,
+          type: 'application/pdf',
+          size: blob.size,
+          path: filePath,
+          category: 'Contrats'
+        });
+      
+      if (dbError) throw dbError;
+      
+      toast.success("✅ PDF enregistré dans vos documents !");
     } catch (error) {
       console.error('Erreur génération PDF:', error);
       toast.error("Erreur lors de la génération du PDF", {
@@ -905,8 +930,11 @@ export default function ContratDetail() {
                             onClick={handleGeneratePdf}
                             disabled={generatingPdf}
                             size="sm"
-                            variant="outline"
-                            className="gap-2"
+                            className={`gap-2 text-white ${
+                              role === 'notaire' 
+                                ? 'bg-orange-600 hover:bg-orange-700' 
+                                : 'bg-blue-600 hover:bg-blue-700'
+                            }`}
                           >
                             {generatingPdf ? (
                               <RefreshCw className="h-4 w-4 animate-spin" />
