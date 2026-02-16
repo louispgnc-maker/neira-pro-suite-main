@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { ArrowLeft, RefreshCw, Edit, Save, X, FileEdit } from "lucide-react";
+import { ArrowLeft, RefreshCw, Edit, Save, X, FileEdit, FileDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -46,6 +46,7 @@ export default function ContratDetail() {
   const [displayedProgress, setDisplayedProgress] = useState(0); // Pourcentage affiché avec animation
   const [waitingProgress, setWaitingProgress] = useState<number | null>(null); // Progression cible pendant l'attente AI
   const [clients, setClients] = useState<any[]>([]);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
   
   // États pour l'édition des informations
   const [editingInfo, setEditingInfo] = useState(false);
@@ -85,6 +86,57 @@ export default function ContratDetail() {
       setDisplayedProgress(0);
     }
   }, [savingProgress, displayedProgress, waitingProgress]);
+
+  // Fonction pour générer et télécharger le PDF du contrat
+  const handleGeneratePdf = async () => {
+    if (!contrat || !contrat.content) {
+      toast.error("Aucun contenu à transformer en PDF");
+      return;
+    }
+    
+    setGeneratingPdf(true);
+    toast.info("Génération du PDF en cours...");
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-pdf-from-html', {
+        body: {
+          html: contrat.content,
+          filename: `${contrat.name.replace(/[^a-z0-9]/gi, '_')}.pdf`
+        }
+      });
+      
+      if (error) throw error;
+      
+      // Décoder le base64 et créer un blob
+      const pdfBase64 = data.pdf;
+      const byteCharacters = atob(pdfBase64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      
+      // Créer un lien de téléchargement
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${contrat.name}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success("✅ PDF généré avec succès !");
+    } catch (error) {
+      console.error('Erreur génération PDF:', error);
+      toast.error("Erreur lors de la génération du PDF", {
+        description: error instanceof Error ? error.message : "Veuillez réessayer"
+      });
+    } finally {
+      setGeneratingPdf(false);
+    }
+  };
 
   // Fonction pour régénérer le contrat avec l'IA
   const handleRegenerate = async () => {
@@ -848,18 +900,34 @@ export default function ContratDetail() {
                   {isOwner && (
                     <div className="flex gap-2">
                       {!editingContent && (
-                        <Button 
-                          onClick={startEditingContent} 
-                          size="sm"
-                          className={`gap-2 text-white ${
-                            role === 'notaire' 
-                              ? 'bg-orange-600 hover:bg-orange-700' 
-                              : 'bg-blue-600 hover:bg-blue-700'
-                          }`}
-                        >
-                          <Edit className="h-4 w-4" />
-                          Modifier
-                        </Button>
+                        <>
+                          <Button 
+                            onClick={handleGeneratePdf}
+                            disabled={generatingPdf}
+                            size="sm"
+                            variant="outline"
+                            className="gap-2"
+                          >
+                            {generatingPdf ? (
+                              <RefreshCw className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <FileDown className="h-4 w-4" />
+                            )}
+                            {generatingPdf ? 'Génération...' : 'Télécharger PDF'}
+                          </Button>
+                          <Button 
+                            onClick={startEditingContent} 
+                            size="sm"
+                            className={`gap-2 text-white ${
+                              role === 'notaire' 
+                                ? 'bg-orange-600 hover:bg-orange-700' 
+                                : 'bg-blue-600 hover:bg-blue-700'
+                            }`}
+                          >
+                            <Edit className="h-4 w-4" />
+                            Modifier
+                          </Button>
+                        </>
                       )}
                       {editingContent ? (
                         <>
