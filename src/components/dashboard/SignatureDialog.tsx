@@ -18,6 +18,18 @@ type Document = {
   updated_at: string;
 };
 
+type Dossier = {
+  id: string;
+  title: string;
+  updated_at: string;
+};
+
+type Contrat = {
+  id: string;
+  name: string;
+  updated_at: string;
+};
+
 type Signatory = {
   firstName: string;
   lastName: string;
@@ -34,9 +46,12 @@ type SignatureDialogProps = {
 export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDialogProps) {
   const { user, profile } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [itemType, setItemType] = useState<'document' | 'dossier' | 'contrat'>('document');
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [selectedDocumentId, setSelectedDocumentId] = useState<string>('');
-  const [documentSearchOpen, setDocumentSearchOpen] = useState(false);
+  const [dossiers, setDossiers] = useState<Dossier[]>([]);
+  const [contrats, setContrats] = useState<Contrat[]>([]);
+  const [selectedItemId, setSelectedItemId] = useState<string>('');
+  const [itemSearchOpen, setItemSearchOpen] = useState(false);
   const [signatureLevel, setSignatureLevel] = useState<'simple' | 'advanced' | 'qualified'>('simple');
   const [signatories, setSignatories] = useState<Signatory[]>([
     { firstName: '', lastName: '', email: '', phone: '' }
@@ -53,29 +68,64 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
 
   useEffect(() => {
     if (open && user) {
-      loadDocuments();
+      loadItems();
     }
-  }, [open, user]);
+  }, [open, user, itemType]);
 
-  const loadDocuments = async () => {
+  const loadItems = async () => {
     if (!user) return;
 
-    const { data, error } = await supabase
-      .from('documents')
-      .select('id, name, storage_path, updated_at')
-      .eq('owner_id', user.id)
-      .order('updated_at', { ascending: false, nullsFirst: false })
-      .limit(50);
+    if (itemType === 'document') {
+      const { data, error } = await supabase
+        .from('documents')
+        .select('id, name, storage_path, updated_at')
+        .eq('owner_id', user.id)
+        .order('updated_at', { ascending: false, nullsFirst: false })
+        .limit(50);
 
-    if (error) {
-      console.error('Error loading documents:', error);
-      toast.error('Erreur lors du chargement des documents');
-    } else {
-      setDocuments(data || []);
+      if (error) {
+        console.error('Error loading documents:', error);
+        toast.error('Erreur lors du chargement des documents');
+      } else {
+        setDocuments(data || []);
+      }
+    } else if (itemType === 'dossier') {
+      const { data, error } = await supabase
+        .from('dossiers')
+        .select('id, title, updated_at')
+        .eq('owner_id', user.id)
+        .order('updated_at', { ascending: false, nullsFirst: false })
+        .limit(50);
+
+      if (error) {
+        console.error('Error loading dossiers:', error);
+        toast.error('Erreur lors du chargement des dossiers');
+      } else {
+        setDossiers(data || []);
+      }
+    } else if (itemType === 'contrat') {
+      const { data, error } = await supabase
+        .from('contrats')
+        .select('id, name, updated_at')
+        .eq('owner_id', user.id)
+        .order('updated_at', { ascending: false, nullsFirst: false })
+        .limit(50);
+
+      if (error) {
+        console.error('Error loading contrats:', error);
+        toast.error('Erreur lors du chargement des contrats');
+      } else {
+        setContrats(data || []);
+      }
     }
   };
 
   const addSignatory = () => {
+    // Limité à 1 signataire pour signature simple
+    if (signatories.length >= 1) {
+      toast.error('Signature simple limitée à 1 signataire');
+      return;
+    }
     setSignatories([...signatories, { firstName: '', lastName: '', email: '', phone: '' }]);
   };
 
@@ -92,14 +142,14 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
   };
 
   const handleSubmit = async () => {
-    if (!selectedDocumentId) {
-      toast.error('Veuillez sélectionner un document');
+    if (!selectedItemId) {
+      toast.error('Veuillez sélectionner un élément à faire signer');
       return;
     }
 
     const invalidSignatory = signatories.find(s => !s.firstName || !s.lastName || !s.email);
     if (invalidSignatory) {
-      toast.error('Veuillez remplir tous les champs obligatoires des signataires');
+      toast.error('Veuillez remplir tous les champs obligatoires du signataire');
       return;
     }
 
@@ -111,7 +161,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            documentId: selectedDocumentId,
+            itemId: selectedItemId,
+            itemType: itemType,
             signatories: signatories,
             signatureLevel: signatureLevel
           })
@@ -125,15 +176,16 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
       const data = await response.json();
 
       toast.success('Demande de signature créée avec succès!', {
-        description: 'Les signataires ont reçu un email avec le lien de signature'
+        description: 'Le signataire a reçu un email avec le lien de signature'
       });
 
       onOpenChange(false);
       onSuccess?.();
       
       // Reset form
-      setSelectedDocumentId('');
+      setSelectedItemId('');
       setSignatories([{ firstName: '', lastName: '', email: '', phone: '' }]);
+      setItemType('document');
 
     } catch (error: any) {
       console.error('Error creating signature:', error);
@@ -154,44 +206,96 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
             Lancer une signature électronique
           </DialogTitle>
           <DialogDescription>
-            Sélectionnez un document et ajoutez les signataires pour lancer une demande de signature avec Universign
+            Signature simple • 1 signataire • 1 signature
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Document selection with search */}
+          {/* Type selection */}
           <div className="space-y-2">
-            <Label htmlFor="document">Document à signer *</Label>
-            <Popover open={documentSearchOpen} onOpenChange={setDocumentSearchOpen}>
+            <Label htmlFor="item-type">Type d'élément à faire signer *</Label>
+            <Select value={itemType} onValueChange={(value: any) => {
+              setItemType(value);
+              setSelectedItemId('');
+            }}>
+              <SelectTrigger 
+                id="item-type" 
+                className={role === 'notaire' 
+                  ? 'border-orange-300 hover:bg-orange-100 hover:text-black hover:border-orange-300' 
+                  : 'border-blue-300 hover:bg-blue-100 hover:text-black hover:border-blue-300'}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem 
+                  value="document"
+                  className={role === 'notaire'
+                    ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
+                    : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
+                >
+                  Document
+                </SelectItem>
+                <SelectItem 
+                  value="dossier"
+                  className={role === 'notaire'
+                    ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
+                    : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
+                >
+                  Dossier
+                </SelectItem>
+                <SelectItem 
+                  value="contrat"
+                  className={role === 'notaire'
+                    ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
+                    : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
+                >
+                  Contrat
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Document/Dossier/Contrat selection with search */}
+          <div className="space-y-2">
+            <Label htmlFor="item">
+              {itemType === 'document' && 'Document à signer *'}
+              {itemType === 'dossier' && 'Dossier à faire signer *'}
+              {itemType === 'contrat' && 'Contrat à faire signer *'}
+            </Label>
+            <Popover open={itemSearchOpen} onOpenChange={setItemSearchOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   role="combobox"
-                  aria-expanded={documentSearchOpen}
+                  aria-expanded={itemSearchOpen}
                   className={`w-full justify-between ${role === 'notaire' 
                     ? 'border-orange-300 hover:bg-orange-100 hover:text-black hover:border-orange-300' 
                     : 'border-blue-300 hover:bg-blue-100 hover:text-black hover:border-blue-300'}`}
                 >
-                  {selectedDocumentId
-                    ? documents.find((doc) => doc.id === selectedDocumentId)?.name
-                    : "Sélectionnez un document"}
+                  {selectedItemId
+                    ? (itemType === 'document' 
+                        ? documents.find((doc) => doc.id === selectedItemId)?.name
+                        : itemType === 'dossier'
+                        ? dossiers.find((d) => d.id === selectedItemId)?.title
+                        : contrats.find((c) => c.id === selectedItemId)?.name)
+                    : `Sélectionnez un ${itemType === 'document' ? 'document' : itemType === 'dossier' ? 'dossier' : 'contrat'}`}
                   <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-full p-0" align="start">
                 <Command>
-                  <CommandInput placeholder="Rechercher un document..." />
+                  <CommandInput placeholder={`Rechercher un ${itemType === 'document' ? 'document' : itemType === 'dossier' ? 'dossier' : 'contrat'}...`} />
                   <CommandList>
-                    <CommandEmpty>Aucun document trouvé</CommandEmpty>
+                    <CommandEmpty>Aucun élément trouvé</CommandEmpty>
                     <CommandGroup>
-                      {documents.map((doc) => (
+                      {itemType === 'document' && documents.map((doc) => (
                         <CommandItem
                           key={doc.id}
                           value={`${doc.id}-${doc.name}`}
                           keywords={[doc.name]}
                           onSelect={() => {
-                            setSelectedDocumentId(doc.id);
-                            setDocumentSearchOpen(false);
+                            setSelectedItemId(doc.id);
+                            setItemSearchOpen(false);
                           }}
                           className={role === 'notaire'
                             ? 'hover:bg-orange-100 hover:text-black data-[selected=true]:bg-orange-100 data-[selected=true]:text-black aria-selected:bg-orange-100 aria-selected:text-black cursor-pointer'
@@ -201,14 +305,58 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                           {doc.name}
                         </CommandItem>
                       ))}
+                      {itemType === 'dossier' && dossiers.map((dossier) => (
+                        <CommandItem
+                          key={dossier.id}
+                          value={`${dossier.id}-${dossier.title}`}
+                          keywords={[dossier.title]}
+                          onSelect={() => {
+                            setSelectedItemId(dossier.id);
+                            setItemSearchOpen(false);
+                          }}
+                          className={role === 'notaire'
+                            ? 'hover:bg-orange-100 hover:text-black data-[selected=true]:bg-orange-100 data-[selected=true]:text-black aria-selected:bg-orange-100 aria-selected:text-black cursor-pointer'
+                            : 'hover:bg-blue-100 hover:text-black data-[selected=true]:bg-blue-100 data-[selected=true]:text-black aria-selected:bg-blue-100 aria-selected:text-black cursor-pointer'}
+                        >
+                          <FileText className="mr-2 h-4 w-4" />
+                          {dossier.title}
+                        </CommandItem>
+                      ))}
+                      {itemType === 'contrat' && contrats.map((contrat) => (
+                        <CommandItem
+                          key={contrat.id}
+                          value={`${contrat.id}-${contrat.name}`}
+                          keywords={[contrat.name]}
+                          onSelect={() => {
+                            setSelectedItemId(contrat.id);
+                            setItemSearchOpen(false);
+                          }}
+                          className={role === 'notaire'
+                            ? 'hover:bg-orange-100 hover:text-black data-[selected=true]:bg-orange-100 data-[selected=true]:text-black aria-selected:bg-orange-100 aria-selected:text-black cursor-pointer'
+                            : 'hover:bg-blue-100 hover:text-black data-[selected=true]:bg-blue-100 data-[selected=true]:text-black aria-selected:bg-blue-100 aria-selected:text-black cursor-pointer'}
+                        >
+                          <FileText className="mr-2 h-4 w-4" />
+                          {contrat.name}
+                        </CommandItem>
+                      ))}
                     </CommandGroup>
                   </CommandList>
                 </Command>
               </PopoverContent>
             </Popover>
-            {documents.length === 0 && (
+            {itemType === 'document' && documents.length === 0 && (
               <p className="text-sm text-gray-600">
                 Aucun document disponible pour signature
+              </p>
+            )}
+            {itemType === 'dossier' && dossiers.length === 0 && (
+              <p className="text-sm text-gray-600">
+                Aucun dossier disponible pour signature
+              </p>
+            )}
+            {itemType === 'contrat' && contrats.length === 0 && (
+              <p className="text-sm text-gray-600">
+                Aucun contrat disponible pour signature
               </p>
             )}
           </div>
@@ -219,38 +367,13 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
           {/* Signatories */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label>Signataires *</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addSignatory}
-                className={role === 'notaire' 
-                  ? 'hover:bg-orange-100 hover:text-black border-orange-300' 
-                  : 'hover:bg-blue-100 hover:text-black border-blue-300'}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Ajouter un signataire
-              </Button>
+              <Label>Signataire * (maximum 1)</Label>
             </div>
 
             {signatories.map((signatory, index) => (
               <div key={index} className="border rounded-lg p-4 space-y-3">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Signataire {index + 1}</span>
-                  {signatories.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeSignatory(index)}
-                      className={role === 'notaire' 
-                        ? 'hover:bg-orange-100 hover:text-orange-600' 
-                        : 'hover:bg-blue-100 hover:text-blue-600'}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
+                  <span className="text-sm font-medium">Signataire</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
