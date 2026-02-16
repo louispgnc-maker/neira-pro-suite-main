@@ -12,11 +12,11 @@ serve(async (req) => {
   }
 
   try {
-    const { documentId, signatories, signatureLevel = 'simple' } = await req.json();
+    const { itemId, itemType = 'document', signatories, signatureLevel = 'simple' } = await req.json();
 
-    if (!documentId || !signatories || signatories.length === 0) {
+    if (!itemId || !itemType || !signatories || signatories.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'Document ID and signatories required' }),
+        JSON.stringify({ error: 'Item ID, type and signatories required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -26,28 +26,120 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    // Get document info
-    const { data: document, error: docError } = await supabase
-      .from('documents')
-      .select('*, owner:owner_id(*)')
-      .eq('id', documentId)
-      .single();
+    let documentData: any = null;
+    let fileData: Blob | null = null;
+    let documentName = '';
+    let ownerId = '';
+    let role = 'avocat';
 
-    if (docError || !document) {
+    // Handle different item types
+    if (itemType === 'document') {
+      // Get document info
+      const { data: document, error: docError } = await supabase
+        .from('documents')
+        .select('*, owner:owner_id(*)')
+        .eq('id', itemId)
+        .single();
+
+      if (docError || !document) {
+        return new Response(
+          JSON.stringify({ error: 'Document not found' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Get the file from storage
+      const { data: file, error: downloadError } = await supabase.storage
+        .from('documents')
+        .download(document.storage_path);
+
+      if (downloadError || !file) {
+        return new Response(
+          JSON.stringify({ error: 'Failed to download document' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      fileData = file;
+      documentName = document.name;
+      ownerId = document.owner_id;
+      role = document.role || 'avocat';
+      documentData = document;
+
+    } else if (itemType === 'contrat' || itemType === 'dossier') {
+      let contratId = itemId;
+
+      // If dossier, get the associated contrat
+      if (itemType === 'dossier') {
+        const { data: dossierContrat, error: dcError } = await supabase
+          .from('dossier_contrats')
+          .select('contrat_id, dossiers!inner(owner_id, role)')
+          .eq('dossier_id', itemId)
+          .limit(1)
+          .single();
+
+        if (dcError || !dossierContrat) {
+          return new Response(
+            JSON.stringify({ error: 'No contract found for this dossier' }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        contratId = dossierContrat.contrat_id;
+        ownerId = dossierContrat.dossiers.owner_id;
+        role = dossierContrat.dossiers.role || 'avocat';
+      }
+
+      // Get contrat info
+      const { data: contrat, error: contratError } = await supabase
+        .from('contrats')
+        .select('*')
+        .eq('id', contratId)
+        .single();
+
+      if (contratError || !contrat) {
+        return new Response(
+          JSON.stringify({ error: 'Contract not found' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      if (!ownerId) {
+        ownerId = contrat.owner_id;
+        role = contrat.role || 'notaire';
+      }
+
+      // Convert contrat content to PDF using a PDF generation service
+      // For now, we'll use a simple HTML to PDF conversion
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; padding: 40px; }
+            h1 { text-align: center; }
+            p { line-height: 1.6; }
+          </style>
+        </head>
+        <body>
+          <h1>${contrat.name}</h1>
+          <div>${contrat.content || 'Contenu du contrat non disponible'}</div>
+        </body>
+        </html>
+      `;
+
+      // Call PDF generation API (you'll need to implement this)
+      // For now, returning error as PDF generation needs to be implemented
       return new Response(
-        JSON.stringify({ error: 'Document not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'PDF generation for contracts not yet implemented. Please use Document type for now.' }),
+        { status: 501, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Get the file from storage
-    const { data: fileData, error: downloadError } = await supabase.storage
-      .from('documents')
-      .download(document.storage_path);
-
-    if (downloadError || !fileData) {
+    if (!fileData) {
       return new Response(
-        JSON.stringify({ error: 'Failed to download document' }),
+        JSON.stringify({ error: 'No file data available' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -79,7 +171,7 @@ serve(async (req) => {
       profile: profileMap[signatureLevel] || 'default',
       chainingMode: 'email', // Envoi email séquentiel
       documents: [{
-        name: document.name,
+        name: documentName,
         content: base64File,
         documentType: 'pdf'
       }],
@@ -128,13 +220,13 @@ serve(async (req) => {
       .from('signatures')
       .insert({
         id: crypto.randomUUID(),
-        document_id: documentId,
+        document_id: itemType === 'document' ? itemId : null,
         universign_transaction_id: universignData.id || universignData.transactionId,
-        document_name: document.name,
+        document_name: documentName,
         signer_name: signatories.map((s: any) => `${s.firstName} ${s.lastName}`).join(', '),
         status: 'pending',
-        owner_id: document.owner_id,
-        role: document.role || 'avocat',
+        owner_id: ownerId,
+        role: role,
         created_at: new Date().toISOString()
       });
 

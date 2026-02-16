@@ -218,7 +218,12 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
                   <strong>1 signataire = 1 signature</strong>
                 </p>
                 <p className={`text-xs mt-1 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
-                  Chaque signataire recevra un lien unique par email pour apposer sa signature
+                  {itemType === 'document' && '📄 Document : signature directe sur le fichier PDF'}
+                  {itemType === 'contrat' && '📝 Contrat : le texte sera converti en PDF puis signé'}
+                  {itemType === 'dossier' && '📁 Dossier : signature du contrat associé (converti en PDF)'}
+                </p>
+                <p className={`text-xs mt-1 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
+                  Chaque signataire recevra un lien unique par email
                 </p>
               </div>
             </div>
