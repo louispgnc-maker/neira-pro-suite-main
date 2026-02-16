@@ -109,32 +109,85 @@ serve(async (req) => {
         role = contrat.role || 'notaire';
       }
 
-      // Convert contrat content to PDF using a PDF generation service
-      // For now, we'll use a simple HTML to PDF conversion
+      // Convert contrat content to PDF
       const htmlContent = `
         <!DOCTYPE html>
         <html>
         <head>
           <meta charset="UTF-8">
           <style>
-            body { font-family: Arial, sans-serif; padding: 40px; }
-            h1 { text-align: center; }
-            p { line-height: 1.6; }
+            @page { margin: 2cm; }
+            body { 
+              font-family: 'Times New Roman', Times, serif; 
+              font-size: 12pt;
+              line-height: 1.6;
+              color: #000;
+            }
+            h1 { 
+              text-align: center;
+              font-size: 18pt;
+              margin-bottom: 30px;
+              text-transform: uppercase;
+            }
+            .content {
+              text-align: justify;
+              white-space: pre-wrap;
+            }
+            .metadata {
+              margin-top: 50px;
+              font-size: 10pt;
+              color: #666;
+              border-top: 1px solid #ccc;
+              padding-top: 20px;
+            }
           </style>
         </head>
         <body>
           <h1>${contrat.name}</h1>
-          <div>${contrat.content || 'Contenu du contrat non disponible'}</div>
+          <div class="content">${contrat.content || 'Contenu du contrat non disponible'}</div>
+          <div class="metadata">
+            <p>Date de création: ${new Date().toLocaleDateString('fr-FR')}</p>
+            <p>Type: ${contrat.type || 'Contrat'}</p>
+          </div>
         </body>
         </html>
       `;
 
-      // Call PDF generation API (you'll need to implement this)
-      // For now, returning error as PDF generation needs to be implemented
-      return new Response(
-        JSON.stringify({ error: 'PDF generation for contracts not yet implemented. Please use Document type for now.' }),
-        { status: 501, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      // Call our PDF generation function
+      try {
+        const pdfResponse = await fetch(
+          `${Deno.env.get('SUPABASE_URL')}/functions/v1/generate-pdf-from-html`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`
+            },
+            body: JSON.stringify({ html: htmlContent })
+          }
+        );
+
+        if (!pdfResponse.ok) {
+          throw new Error('PDF generation failed');
+        }
+
+        const pdfData = await pdfResponse.json();
+        
+        if (!pdfData.pdf) {
+          throw new Error('No PDF data returned');
+        }
+
+        // Convert base64 to Blob
+        const pdfBytes = Uint8Array.from(atob(pdfData.pdf), c => c.charCodeAt(0));
+        fileData = new Blob([pdfBytes], { type: 'application/pdf' });
+        documentName = `${contrat.name}.pdf`;
+      } catch (pdfError) {
+        console.error('PDF generation error:', pdfError);
+        return new Response(
+          JSON.stringify({ error: 'Failed to generate PDF from contract content', details: pdfError.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
     if (!fileData) {
