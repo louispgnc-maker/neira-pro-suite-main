@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { PDFDocument, rgb, StandardFonts } from "npm:pdf-lib@1.17.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -56,35 +57,65 @@ serve(async (req) => {
       .replace(/[ \t]+/g, ' ')
       .trim();
 
-    // Utiliser une approche basique de génération PDF sans bibliothèque externe
-    // Créer un PDF simple avec PDFDocument
-    const PDFDocument = (await import("npm:pdfkit@0.13.0")).default;
-    const chunks: Uint8Array[] = [];
+    // Créer un document PDF avec pdf-lib
+    const pdfDoc = await PDFDocument.create();
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     
-    const doc = new PDFDocument({
-      size: 'A4',
-      margins: {
-        top: 50,
-        bottom: 50,
-        left: 50,
-        right: 50
+    // Ajouter une page
+    let page = pdfDoc.addPage([595, 842]); // A4
+    const { width, height } = page.getSize();
+    const margin = 50;
+    const maxWidth = width - 2 * margin;
+    let y = height - margin;
+    const lineHeight = 14;
+    const titleSize = 14;
+    const textSize = 11;
+
+    // Fonction pour ajouter du texte avec gestion des sauts de page
+    const addText = (text: string, fontSize: number, font: any, isBold = false) => {
+      const lines = [];
+      const words = text.split(' ');
+      let currentLine = '';
+      
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        const textWidth = font.widthOfTextAtSize(testLine, fontSize);
+        
+        if (textWidth > maxWidth && currentLine) {
+          lines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
       }
-    });
+      if (currentLine) lines.push(currentLine);
+      
+      for (const line of lines) {
+        if (y < margin + lineHeight) {
+          page = pdfDoc.addPage([595, 842]);
+          y = height - margin;
+        }
+        
+        page.drawText(line, {
+          x: margin,
+          y: y,
+          size: fontSize,
+          font: font,
+          color: rgb(0, 0, 0),
+        });
+        
+        y -= lineHeight;
+      }
+      
+      // Espace après paragraphe
+      y -= lineHeight * 0.3;
+    };
 
-    // Collecter les chunks
-    doc.on('data', (chunk: Uint8Array) => chunks.push(chunk));
-    
-    // Promesse pour attendre la fin de génération
-    const pdfPromise = new Promise((resolve, reject) => {
-      doc.on('end', () => resolve(chunks));
-      doc.on('error', reject);
-    });
-
-    // Ajouter le texte
+    // Traiter chaque paragraphe
     const paragraphs = text.split(/\n+/);
     
-    for (let i = 0; i < paragraphs.length; i++) {
-      const paragraph = paragraphs[i];
+    for (const paragraph of paragraphs) {
       if (!paragraph.trim()) continue;
       
       // Détecter si c'est un titre
@@ -92,34 +123,18 @@ serve(async (req) => {
                       /^(ENTRE|ARTICLE|TITRE|CHAPITRE|PRÉAMBULE|IL A ÉTÉ CONVENU)/i.test(paragraph);
       
       if (isTitle) {
-        doc.fontSize(14).font('Helvetica-Bold').text(paragraph, {
-          align: 'left'
-        });
-        doc.moveDown(0.5);
+        addText(paragraph, titleSize, fontBold, true);
+        y -= lineHeight * 0.5;
       } else {
-        doc.fontSize(11).font('Helvetica').text(paragraph, {
-          align: 'justify'
-        });
-        doc.moveDown(0.3);
+        addText(paragraph, textSize, font, false);
       }
     }
 
-    // Finaliser le document
-    doc.end();
-    
-    // Attendre la fin de génération
-    await pdfPromise;
-    
-    // Concaténer tous les chunks
-    const pdfBuffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
-    let offset = 0;
-    for (const chunk of chunks) {
-      pdfBuffer.set(chunk, offset);
-      offset += chunk.length;
-    }
+    // Sauvegarder le PDF
+    const pdfBytes = await pdfDoc.save();
     
     // Convertir en base64
-    const base64Pdf = btoa(String.fromCharCode(...pdfBuffer));
+    const base64Pdf = btoa(String.fromCharCode(...pdfBytes));
 
     return new Response(
       JSON.stringify({ 
