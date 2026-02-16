@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { jsPDF } from "npm:jspdf@2.5.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,21 +20,6 @@ serve(async (req) => {
       );
     }
 
-    // Créer un nouveau document PDF avec jsPDF (bibliothèque pure, sans dépendance externe)
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
-    
-    // Configuration
-    const pageWidth = 210; // A4 width in mm
-    const pageHeight = 297; // A4 height in mm
-    const margin = 20;
-    const maxWidth = pageWidth - (2 * margin);
-    const lineHeight = 7;
-    let y = margin;
-    
     // Nettoyer le HTML et extraire le texte
     let text = html
       // Remplacer les sauts de ligne HTML par des sauts de ligne réels
@@ -54,73 +38,88 @@ serve(async (req) => {
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
+      .replace(/&rsquo;/g, "'")
+      .replace(/&lsquo;/g, "'")
+      .replace(/&rdquo;/g, '"')
+      .replace(/&ldquo;/g, '"')
+      .replace(/&eacute;/g, 'é')
+      .replace(/&egrave;/g, 'è')
+      .replace(/&ecirc;/g, 'ê')
+      .replace(/&agrave;/g, 'à')
+      .replace(/&acirc;/g, 'â')
+      .replace(/&icirc;/g, 'î')
+      .replace(/&ocirc;/g, 'ô')
+      .replace(/&ugrave;/g, 'ù')
+      .replace(/&ucirc;/g, 'û')
+      .replace(/&ccedil;/g, 'ç')
       // Nettoyer les espaces multiples
       .replace(/[ \t]+/g, ' ')
       .trim();
+
+    // Utiliser une approche basique de génération PDF sans bibliothèque externe
+    // Créer un PDF simple avec PDFDocument
+    const PDFDocument = (await import("npm:pdfkit@0.13.0")).default;
+    const chunks: Uint8Array[] = [];
     
-    // Diviser en paragraphes
+    const doc = new PDFDocument({
+      size: 'A4',
+      margins: {
+        top: 50,
+        bottom: 50,
+        left: 50,
+        right: 50
+      }
+    });
+
+    // Collecter les chunks
+    doc.on('data', (chunk: Uint8Array) => chunks.push(chunk));
+    
+    // Promesse pour attendre la fin de génération
+    const pdfPromise = new Promise((resolve, reject) => {
+      doc.on('end', () => resolve(chunks));
+      doc.on('error', reject);
+    });
+
+    // Ajouter le texte
     const paragraphs = text.split(/\n+/);
     
-    // Fonction pour ajouter une nouvelle page si nécessaire
-    const checkPageBreak = () => {
-      if (y > pageHeight - margin - 20) {
-        doc.addPage();
-        y = margin;
-      }
-    };
-    
-    // Ajouter chaque paragraphe
-    for (const paragraph of paragraphs) {
+    for (let i = 0; i < paragraphs.length; i++) {
+      const paragraph = paragraphs[i];
       if (!paragraph.trim()) continue;
       
-      // Détecter si c'est un titre (commence par des majuscules ou mots clés)
+      // Détecter si c'est un titre
       const isTitle = /^[A-ZÉÈÊËÀÂÎÏÔÙ\s]{3,}$/.test(paragraph.trim()) || 
                       /^(ENTRE|ARTICLE|TITRE|CHAPITRE|PRÉAMBULE|IL A ÉTÉ CONVENU)/i.test(paragraph);
       
-      // Définir la police
       if (isTitle) {
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(12);
+        doc.fontSize(14).font('Helvetica-Bold').text(paragraph, {
+          align: 'left'
+        });
+        doc.moveDown(0.5);
       } else {
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(10);
-      }
-      
-      // Diviser le texte en lignes qui tiennent dans la largeur
-      const lines = doc.splitTextToSize(paragraph, maxWidth);
-      
-      // Ajouter chaque ligne
-      for (const line of lines) {
-        checkPageBreak();
-        doc.text(line, margin, y);
-        y += lineHeight;
-      }
-      
-      // Ajouter un espace après les titres
-      if (isTitle) {
-        y += 3;
+        doc.fontSize(11).font('Helvetica').text(paragraph, {
+          align: 'justify'
+        });
+        doc.moveDown(0.3);
       }
     }
+
+    // Finaliser le document
+    doc.end();
     
-    // Ajouter les numéros de page
-    const pageCount = doc.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.text(
-        `Page ${i} / ${pageCount}`,
-        pageWidth / 2,
-        pageHeight - 10,
-        { align: 'center' }
-      );
+    // Attendre la fin de génération
+    await pdfPromise;
+    
+    // Concaténer tous les chunks
+    const pdfBuffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+    let offset = 0;
+    for (const chunk of chunks) {
+      pdfBuffer.set(chunk, offset);
+      offset += chunk.length;
     }
     
-    // Générer le PDF en base64
-    const pdfOutput = doc.output('arraybuffer');
-    const base64Pdf = btoa(
-      String.fromCharCode(...new Uint8Array(pdfOutput))
-    );
+    // Convertir en base64
+    const base64Pdf = btoa(String.fromCharCode(...pdfBuffer));
 
     return new Response(
       JSON.stringify({ 
@@ -133,7 +132,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('[PDF Generation] Error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message || 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
