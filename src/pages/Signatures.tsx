@@ -18,6 +18,7 @@ import { useLocation } from "react-router-dom";
 import { ResourceCounter } from "@/components/subscription/ResourceCounter";
 import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
 import { getCurrentBillingCycleStart } from "@/lib/billingCycle";
+import { SignatureDialog } from "@/components/dashboard/SignatureDialog";
 
 type SignatureRow = {
   id: string;
@@ -35,6 +36,7 @@ export default function Signatures() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
+  const [signatureDialogOpen, setSignatureDialogOpen] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(search.trim()), 300);
@@ -144,7 +146,7 @@ export default function Signatures() {
               </p>
             </div>
           ) : (
-            <Button className={mainButtonColor}>
+            <Button className={mainButtonColor} onClick={() => setSignatureDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
               Nouvelle signature
             </Button>
@@ -192,7 +194,7 @@ export default function Signatures() {
           <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
             <div className="text-center">
               <p className="text-gray-900">Aucunes signatures</p>
-              <Button className={mainButtonColor + " mt-4"}>
+              <Button className={mainButtonColor + " mt-4"} onClick={() => setSignatureDialogOpen(true)}>
                 Ajoutez ici vos documents signés
               </Button>
             </div>
@@ -230,6 +232,13 @@ export default function Signatures() {
           </div>
         )}
       </div>
+
+      {/* Signature Dialog */}
+      <SignatureDialog 
+        open={signatureDialogOpen} 
+        onOpenChange={setSignatureDialogOpen}
+        onSuccess={() => setRefreshTrigger(prev => prev + 1)}
+      />
     </AppLayout>
   );
 }
