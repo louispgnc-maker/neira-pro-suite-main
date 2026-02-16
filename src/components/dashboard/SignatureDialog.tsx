@@ -106,7 +106,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
     setLoading(true);
     try {
       const response = await fetch(
-        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/yousign-create-signature',
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-create-signature',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -154,7 +154,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
             Lancer une signature électronique
           </DialogTitle>
           <DialogDescription>
-            Sélectionnez un document et ajoutez les signataires pour lancer une demande de signature avec YouSign
+            Sélectionnez un document et ajoutez les signataires pour lancer une demande de signature avec Universign
           </DialogDescription>
         </DialogHeader>
 

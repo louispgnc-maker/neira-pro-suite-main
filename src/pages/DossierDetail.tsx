@@ -122,7 +122,7 @@ export default function DossierDetail() {
         // D'abord essayer de charger depuis client_dossiers_new (nouveaux dossiers)
         const { data: clientDossier } = await supabase
           .from('client_dossiers_new')
-          .select('id, titre, status, description, created_at, cabinet_id, client_id')
+          .select('id, titre, status, description, created_at, cabinet_id, client_id, contrat_id')
           .eq('id', id)
           .maybeSingle();
         
@@ -316,6 +316,7 @@ export default function DossierDetail() {
             .single();
           
           if (contratData && mounted) {
+            console.log('✅ Contrat associé au dossier:', contratData.name);
             setContrats([contratData]);
           }
         } else {
@@ -333,6 +334,9 @@ export default function DossierDetail() {
               content: link.contrats.content,
               contenu_json: link.contrats.contenu_json
             }));
+            if (contratList.length > 0) {
+              console.log('✅ Contrat(s) associé(s) au dossier:', contratList.map(c => c.name).join(', '));
+            }
             setContrats(contratList);
           }
         }
