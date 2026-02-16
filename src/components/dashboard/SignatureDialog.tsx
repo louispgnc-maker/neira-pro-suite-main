@@ -121,11 +121,6 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
   };
 
   const addSignatory = () => {
-    // Limité à 1 signataire pour signature simple
-    if (signatories.length >= 1) {
-      toast.error('Signature simple limitée à 1 signataire');
-      return;
-    }
     setSignatories([...signatories, { firstName: '', lastName: '', email: '', phone: '' }]);
   };
 
@@ -206,11 +201,29 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
             Lancer une signature électronique
           </DialogTitle>
           <DialogDescription>
-            Signature simple • 1 signataire • 1 signature
+            Sélectionnez un élément et ajoutez les signataires pour lancer une demande de signature avec Universign
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Signature info banner */}
+          <div className={`p-4 rounded-lg border-2 ${role === 'notaire' ? 'bg-orange-50 border-orange-300' : 'bg-blue-50 border-blue-300'}`}>
+            <div className="flex items-start gap-3">
+              <FileText className={`h-5 w-5 mt-0.5 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`} />
+              <div>
+                <h3 className={`font-semibold text-sm ${role === 'notaire' ? 'text-orange-900' : 'text-blue-900'}`}>
+                  Signature simple
+                </h3>
+                <p className={`text-sm mt-1 ${role === 'notaire' ? 'text-orange-700' : 'text-blue-700'}`}>
+                  <strong>1 signataire = 1 signature</strong>
+                </p>
+                <p className={`text-xs mt-1 ${role === 'notaire' ? 'text-orange-600' : 'text-blue-600'}`}>
+                  Chaque signataire recevra un lien unique par email pour apposer sa signature
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Type selection */}
           <div className="space-y-2">
             <Label htmlFor="item-type">Type d'élément à faire signer *</Label>
@@ -367,13 +380,42 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
           {/* Signatories */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label>Signataire * (maximum 1)</Label>
+              <Label>Signataires *</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addSignatory}
+                className={role === 'notaire' 
+                  ? 'hover:bg-orange-100 hover:text-black border-orange-300' 
+                  : 'hover:bg-blue-100 hover:text-black border-blue-300'}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Ajouter un signataire
+              </Button>
+            </div>
+
+            <div className={`text-xs p-2 rounded ${role === 'notaire' ? 'bg-orange-50 text-orange-700' : 'bg-blue-50 text-blue-700'}`}>
+              💡 <strong>Rappel :</strong> 1 signataire = 1 signature électronique
             </div>
 
             {signatories.map((signatory, index) => (
               <div key={index} className="border rounded-lg p-4 space-y-3">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Signataire</span>
+                  <span className="text-sm font-medium">Signataire {index + 1}</span>
+                  {signatories.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeSignatory(index)}
+                      className={role === 'notaire' 
+                        ? 'hover:bg-orange-100 hover:text-orange-600' 
+                        : 'hover:bg-blue-100 hover:text-blue-600'}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
