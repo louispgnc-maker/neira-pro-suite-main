@@ -41,16 +41,18 @@ type SignatureDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  preSelectedContractId?: string;
+  preSelectedContractName?: string;
 };
 
-export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDialogProps) {
+export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedContractId, preSelectedContractName }: SignatureDialogProps) {
   const { user, profile } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [itemType, setItemType] = useState<'document' | 'dossier' | 'contrat'>('document');
+  const [itemType, setItemType] = useState<'document' | 'dossier' | 'contrat'>(preSelectedContractId ? 'contrat' : 'document');
   const [documents, setDocuments] = useState<Document[]>([]);
   const [dossiers, setDossiers] = useState<Dossier[]>([]);
   const [contrats, setContrats] = useState<Contrat[]>([]);
-  const [selectedItemId, setSelectedItemId] = useState<string>('');
+  const [selectedItemId, setSelectedItemId] = useState<string>(preSelectedContractId || '');
   const [itemSearchOpen, setItemSearchOpen] = useState(false);
   const [signatureLevel, setSignatureLevel] = useState<'simple' | 'advanced' | 'qualified'>('simple');
   const [signatories, setSignatories] = useState<Signatory[]>([
@@ -229,57 +231,60 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
             </div>
           </div>
 
-          {/* Type selection */}
-          <div className="space-y-2">
-            <Label htmlFor="item-type">Type d'élément à faire signer *</Label>
-            <Select value={itemType} onValueChange={(value: any) => {
-              setItemType(value);
-              setSelectedItemId('');
-            }}>
-              <SelectTrigger 
-                id="item-type" 
-                className={role === 'notaire' 
-                  ? 'border-orange-300 hover:bg-orange-100 hover:text-black hover:border-orange-300' 
-                  : 'border-blue-300 hover:bg-blue-100 hover:text-black hover:border-blue-300'}
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem 
-                  value="document"
-                  className={role === 'notaire'
-                    ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
-                    : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
+          {/* Type selection - Caché si contrat pré-sélectionné */}
+          {!preSelectedContractId && (
+            <div className="space-y-2">
+              <Label htmlFor="item-type">Type d'élément à faire signer *</Label>
+              <Select value={itemType} onValueChange={(value: any) => {
+                setItemType(value);
+                setSelectedItemId('');
+              }}>
+                <SelectTrigger 
+                  id="item-type" 
+                  className={role === 'notaire' 
+                    ? 'border-orange-300 hover:bg-orange-100 hover:text-black hover:border-orange-300' 
+                    : 'border-blue-300 hover:bg-blue-100 hover:text-black hover:border-blue-300'}
                 >
-                  Document
-                </SelectItem>
-                <SelectItem 
-                  value="dossier"
-                  className={role === 'notaire'
-                    ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
-                    : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
-                >
-                  Dossier
-                </SelectItem>
-                <SelectItem 
-                  value="contrat"
-                  className={role === 'notaire'
-                    ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
-                    : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
-                >
-                  Contrat
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem 
+                    value="document"
+                    className={role === 'notaire'
+                      ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
+                      : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
+                  >
+                    Document
+                  </SelectItem>
+                  <SelectItem 
+                    value="dossier"
+                    className={role === 'notaire'
+                      ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
+                      : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
+                  >
+                    Dossier
+                  </SelectItem>
+                  <SelectItem 
+                    value="contrat"
+                    className={role === 'notaire'
+                      ? 'hover:bg-orange-100 hover:text-black focus:bg-orange-100 focus:text-black data-[state=checked]:bg-orange-100 data-[state=checked]:text-black'
+                      : 'hover:bg-blue-100 hover:text-black focus:bg-blue-100 focus:text-black data-[state=checked]:bg-blue-100 data-[state=checked]:text-black'}
+                  >
+                    Contrat
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
-          {/* Document/Dossier/Contrat selection with search */}
-          <div className="space-y-2">
-            <Label htmlFor="item">
-              {itemType === 'document' && 'Document à signer *'}
-              {itemType === 'dossier' && 'Dossier à faire signer *'}
-              {itemType === 'contrat' && 'Contrat à faire signer *'}
-            </Label>
+          {/* Document/Dossier/Contrat selection with search - Caché si contrat pré-sélectionné */}
+          {!preSelectedContractId && (
+            <div className="space-y-2">
+              <Label htmlFor="item">
+                {itemType === 'document' && 'Document à signer *'}
+                {itemType === 'dossier' && 'Dossier à faire signer *'}
+                {itemType === 'contrat' && 'Contrat à faire signer *'}
+              </Label>
             <Popover open={itemSearchOpen} onOpenChange={setItemSearchOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -378,6 +383,24 @@ export function SignatureDialog({ open, onOpenChange, onSuccess }: SignatureDial
               </p>
             )}
           </div>
+          )}
+
+          {/* Afficher le nom du contrat pré-sélectionné */}
+          {preSelectedContractId && preSelectedContractName && (
+            <div className="space-y-2">
+              <Label>Contrat à faire signer *</Label>
+              <div className={`p-3 rounded-md border ${
+                role === 'notaire' 
+                  ? 'bg-orange-50 border-orange-200 text-orange-900'
+                  : 'bg-blue-50 border-blue-200 text-blue-900'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  <span className="font-medium">{preSelectedContractName}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Signature Level - Hidden, always "simple" */}
           <input type="hidden" value="simple" />

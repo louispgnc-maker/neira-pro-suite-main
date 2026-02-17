@@ -1250,6 +1250,8 @@ export default function ContratDetail() {
       <SignatureDialog 
         open={signatureDialogOpen} 
         onOpenChange={setSignatureDialogOpen}
+        preSelectedContractId={contrat?.id}
+        preSelectedContractName={contrat?.name}
         onSuccess={() => {
           setSignatureDialogOpen(false);
           toast.success("Demande de signature envoyée !");
