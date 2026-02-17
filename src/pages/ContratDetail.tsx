@@ -5,9 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { ArrowLeft, RefreshCw, Edit, Save, X, FileEdit, FileDown } from "lucide-react";
+import { ArrowLeft, RefreshCw, Edit, Save, X, FileEdit, FileDown, Upload, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -87,41 +88,44 @@ export default function ContratDetail() {
     }
   }, [savingProgress, displayedProgress, waitingProgress]);
 
-  // Fonction pour générer et sauvegarder le PDF du contrat dans l'espace personnel
-  const handleGeneratePdf = async () => {
+  // Fonction pour générer le PDF (commune)
+  const generatePdfBlob = async () => {
     if (!contrat || !contrat.content) {
-      toast.error("Aucun contenu à transformer en PDF");
-      return;
+      throw new Error("Aucun contenu à transformer en PDF");
     }
     
+    const { data, error } = await supabase.functions.invoke('generate-pdf-from-html', {
+      body: {
+        html: contrat.content,
+        filename: `${contrat.name.replace(/[^a-z0-9]/gi, '_')}.pdf`
+      }
+    });
+    
+    if (error) throw error;
+    
+    // Décoder le base64 et créer un blob
+    const pdfBase64 = data.pdf;
+    const byteCharacters = atob(pdfBase64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: 'application/pdf' });
+  };
+
+  // Fonction pour sauvegarder le PDF dans l'espace personnel
+  const handleSavePdf = async () => {
     if (!user) {
       toast.error("Vous devez être connecté");
       return;
     }
     
     setGeneratingPdf(true);
-    toast.info("Génération du PDF en cours...");
+    toast.info("Enregistrement dans vos documents...");
     
     try {
-      // Générer le PDF
-      const { data, error } = await supabase.functions.invoke('generate-pdf-from-html', {
-        body: {
-          html: contrat.content,
-          filename: `${contrat.name.replace(/[^a-z0-9]/gi, '_')}.pdf`
-        }
-      });
-      
-      if (error) throw error;
-      
-      // Décoder le base64 et créer un blob
-      const pdfBase64 = data.pdf;
-      const byteCharacters = atob(pdfBase64);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const blob = await generatePdfBlob();
       
       // Générer un nom de fichier unique
       const timestamp = Date.now();
@@ -154,8 +158,37 @@ export default function ContratDetail() {
       
       toast.success("✅ PDF enregistré dans vos documents !");
     } catch (error) {
-      console.error('Erreur génération PDF:', error);
-      toast.error("Erreur lors de la génération du PDF", {
+      console.error('Erreur sauvegarde PDF:', error);
+      toast.error("Erreur lors de l'enregistrement du PDF", {
+        description: error instanceof Error ? error.message : "Veuillez réessayer"
+      });
+    } finally {
+      setGeneratingPdf(false);
+    }
+  };
+
+  // Fonction pour télécharger le PDF sur l'ordinateur
+  const handleDownloadPdf = async () => {
+    setGeneratingPdf(true);
+    toast.info("Génération du PDF...");
+    
+    try {
+      const blob = await generatePdfBlob();
+      
+      // Créer un lien de téléchargement
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${contrat.name}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success("✅ PDF téléchargé !");
+    } catch (error) {
+      console.error('Erreur téléchargement PDF:', error);
+      toast.error("Erreur lors du téléchargement du PDF", {
         description: error instanceof Error ? error.message : "Veuillez réessayer"
       });
     } finally {
@@ -926,23 +959,37 @@ export default function ContratDetail() {
                     <div className="flex gap-2">
                       {!editingContent && (
                         <>
-                          <Button 
-                            onClick={handleGeneratePdf}
-                            disabled={generatingPdf}
-                            size="sm"
-                            className={`gap-2 text-white ${
-                              role === 'notaire' 
-                                ? 'bg-orange-600 hover:bg-orange-700' 
-                                : 'bg-blue-600 hover:bg-blue-700'
-                            }`}
-                          >
-                            {generatingPdf ? (
-                              <RefreshCw className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <FileDown className="h-4 w-4" />
-                            )}
-                            {generatingPdf ? 'Génération...' : 'Télécharger PDF'}
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button 
+                                disabled={generatingPdf}
+                                size="sm"
+                                className={`gap-2 text-white ${
+                                  role === 'notaire' 
+                                    ? 'bg-orange-600 hover:bg-orange-700' 
+                                    : 'bg-blue-600 hover:bg-blue-700'
+                                }`}
+                              >
+                                {generatingPdf ? (
+                                  <RefreshCw className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <FileDown className="h-4 w-4" />
+                                )}
+                                {generatingPdf ? 'Génération...' : 'Exporter'}
+                                {!generatingPdf && <ChevronDown className="h-4 w-4 ml-1" />}
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={handleSavePdf}>
+                                <Upload className="mr-2 h-4 w-4" />
+                                Enregistrer sur l'espace
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={handleDownloadPdf}>
+                                <FileDown className="mr-2 h-4 w-4" />
+                                Télécharger sur l'ordinateur
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                           <Button 
                             onClick={startEditingContent} 
                             size="sm"

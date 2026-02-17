@@ -146,8 +146,14 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('[PDF Generation] Error:', error);
+    console.error('[PDF Generation] Error stack:', error.stack);
+    console.error('[PDF Generation] Error details:', JSON.stringify(error));
     return new Response(
-      JSON.stringify({ error: error.message || 'Unknown error' }),
+      JSON.stringify({ 
+        error: error.message || 'Unknown error',
+        details: error.stack || '',
+        type: error.name || 'Error'
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
