@@ -161,6 +161,15 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
         throw new Error('Vous devez être connecté pour créer une signature');
       }
 
+      const requestBody = {
+        itemId: itemToSign,
+        itemType: itemType,
+        signatories: signatories,
+        signatureLevel: signatureLevel
+      };
+      
+      console.log('Sending signature request:', requestBody);
+
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-create-signature',
         {
@@ -169,21 +178,18 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`
           },
-          body: JSON.stringify({
-            itemId: itemToSign,
-            itemType: itemType,
-            signatories: signatories,
-            signatureLevel: signatureLevel
-          })
+          body: JSON.stringify(requestBody)
         }
       );
 
+      const responseData = await response.json();
+      console.log('Signature response:', responseData);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Échec de la création de la demande de signature');
+        throw new Error(responseData.error || 'Échec de la création de la demande de signature');
       }
 
-      const data = await response.json();
+      const data = responseData;
 
       toast.success('Demande de signature créée avec succès!', {
         description: 'Le signataire a reçu un email avec le lien de signature'
