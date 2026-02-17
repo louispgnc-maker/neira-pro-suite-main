@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { ArrowLeft, RefreshCw, Edit, Save, X, FileEdit, FileDown, Upload, ChevronDown } from "lucide-react";
+import { ArrowLeft, RefreshCw, Edit, Save, X, FileEdit, FileDown, Upload, ChevronDown, Copy, PenTool } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -281,6 +281,33 @@ export default function ContratDetail() {
     } finally {
       setGeneratingPdf(false);
     }
+  };
+
+  // Fonction pour copier le texte du contrat
+  const handleCopyText = async () => {
+    if (!contrat?.content) {
+      toast.error("Aucun contenu à copier");
+      return;
+    }
+
+    try {
+      // Extraire le texte du HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = contrat.content;
+      const textContent = tempDiv.textContent || tempDiv.innerText || "";
+      
+      await navigator.clipboard.writeText(textContent);
+      toast.success("✅ Texte copié dans le presse-papiers !");
+    } catch (error) {
+      console.error('Erreur copie:', error);
+      toast.error("Erreur lors de la copie du texte");
+    }
+  };
+
+  // Fonction pour initier la signature du contrat
+  const handleSignContract = () => {
+    toast.info("Redirection vers la page de signature...");
+    navigate('/signatures');
   };
 
   // Fonction pour régénérer le contrat avec l'IA
@@ -1046,6 +1073,32 @@ export default function ContratDetail() {
                     <div className="flex gap-2">
                       {!editingContent && (
                         <>
+                          <Button 
+                            onClick={handleCopyText}
+                            size="sm"
+                            variant="outline"
+                            className={`gap-2 ${
+                              role === 'notaire' 
+                                ? 'border-orange-300 text-orange-700 hover:bg-orange-50' 
+                                : 'border-blue-300 text-blue-700 hover:bg-blue-50'
+                            }`}
+                          >
+                            <Copy className="h-4 w-4" />
+                            Copier
+                          </Button>
+                          <Button 
+                            onClick={handleSignContract}
+                            size="sm"
+                            variant="outline"
+                            className={`gap-2 ${
+                              role === 'notaire' 
+                                ? 'border-orange-300 text-orange-700 hover:bg-orange-50' 
+                                : 'border-blue-300 text-blue-700 hover:bg-blue-50'
+                            }`}
+                          >
+                            <PenTool className="h-4 w-4" />
+                            Signer
+                          </Button>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button 
