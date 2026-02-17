@@ -200,10 +200,9 @@ export default function ContratDetail() {
         .insert({
           owner_id: user.id,
           name: `${contrat.name}.pdf`,
-          type: 'application/pdf',
-          size: blob.size,
-          path: filePath,
-          category: 'Contrats'
+          storage_path: filePath,
+          status: 'Validé',
+          role: contrat.role || 'avocat'
         });
       
       if (dbError) throw dbError;
