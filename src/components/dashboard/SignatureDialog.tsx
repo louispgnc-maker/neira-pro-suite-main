@@ -154,11 +154,21 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
 
     setLoading(true);
     try {
+      // Récupérer le token de session pour l'authentification
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Vous devez être connecté pour créer une signature');
+      }
+
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-create-signature',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
           body: JSON.stringify({
             itemId: itemToSign,
             itemType: itemType,
@@ -169,7 +179,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
       );
 
       if (!response.ok) {
-        throw new Error('Échec de la création de la demande de signature');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Échec de la création de la demande de signature');
       }
 
       const data = await response.json();
