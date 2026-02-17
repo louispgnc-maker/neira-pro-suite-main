@@ -193,26 +193,11 @@ export default function ContratDetail() {
       
       if (uploadError) throw uploadError;
       
-      // Vérifier si une entrée existe déjà pour ce contrat (chercher par l'ID du contrat dans le path)
-      const { data: existingDocs, error: searchError } = await supabase
-        .from('documents')
-        .select('id, storage_path, name')
-        .eq('owner_id', user.id)
-        .like('storage_path', `%contrat_${contrat.id}.pdf`);
+      // Vérifier si le contrat a déjà un ID de document PDF enregistré
+      const existingPdfDocId = contrat.contenu_json?.pdf_document_id;
       
-      if (searchError) throw searchError;
-      
-      if (existingDocs && existingDocs.length > 0) {
-        // Supprimer les anciens fichiers du Storage si différents
-        for (const oldDoc of existingDocs) {
-          if (oldDoc.storage_path && oldDoc.storage_path !== filePath) {
-            await supabase.storage
-              .from('documents')
-              .remove([oldDoc.storage_path]);
-          }
-        }
-        
-        // Mettre à jour la première entrée et supprimer les doublons
+      if (existingPdfDocId) {
+        // Mettre à jour le document existant
         const { error: updateError } = await supabase
           .from('documents')
           .update({
@@ -221,23 +206,13 @@ export default function ContratDetail() {
             status: 'Validé',
             updated_at: new Date().toISOString()
           })
-          .eq('id', existingDocs[0].id);
+          .eq('id', existingPdfDocId);
         
         if (updateError) throw updateError;
-        
-        // Supprimer les entrées en double si elles existent
-        if (existingDocs.length > 1) {
-          const duplicateIds = existingDocs.slice(1).map(doc => doc.id);
-          await supabase
-            .from('documents')
-            .delete()
-            .in('id', duplicateIds);
-        }
-        
         toast.success("✅ PDF mis à jour dans vos documents !");
       } else {
-        // Créer une nouvelle entrée
-        const { error: insertError } = await supabase
+        // Créer une nouvelle entrée et sauvegarder son ID
+        const { data: newDoc, error: insertError } = await supabase
           .from('documents')
           .insert({
             owner_id: user.id,
@@ -245,9 +220,28 @@ export default function ContratDetail() {
             storage_path: filePath,
             status: 'Validé',
             role: contrat.role || 'avocat'
-          });
+          })
+          .select('id')
+          .single();
         
         if (insertError) throw insertError;
+        
+        // Sauvegarder l'ID du document dans le contrat pour les prochaines mises à jour
+        if (newDoc) {
+          const updatedContenuJson = {
+            ...(contrat.contenu_json || {}),
+            pdf_document_id: newDoc.id
+          };
+          
+          await supabase
+            .from('contrats')
+            .update({ contenu_json: updatedContenuJson })
+            .eq('id', contrat.id);
+          
+          // Mettre à jour l'état local
+          setContrat({ ...contrat, contenu_json: updatedContenuJson });
+        }
+        
         toast.success("✅ PDF enregistré dans vos documents !");
       }
     } catch (error) {
