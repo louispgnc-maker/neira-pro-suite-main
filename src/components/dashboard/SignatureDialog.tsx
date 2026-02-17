@@ -68,6 +68,14 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
     console.log('SignatureDialog - URL:', window.location.pathname, 'Detected role:', role, 'Profile role:', profile?.role);
   }, [role, profile]);
 
+  // Forcer itemType à 'contrat' quand un contrat est pré-sélectionné
+  useEffect(() => {
+    if (preSelectedContractId) {
+      setItemType('contrat');
+      setSelectedItemId(preSelectedContractId);
+    }
+  }, [preSelectedContractId]);
+
   useEffect(() => {
     if (open && user) {
       loadItems();
