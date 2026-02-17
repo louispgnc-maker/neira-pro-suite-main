@@ -193,25 +193,35 @@ export default function ContratDetail() {
       
       if (uploadError) throw uploadError;
       
-      // Vérifier si une entrée existe déjà pour ce contrat
+      // Vérifier si une entrée existe déjà pour ce contrat (chercher par nom)
+      const documentName = `${contrat.name}.pdf`;
       const { data: existingDocs, error: searchError } = await supabase
         .from('documents')
-        .select('id')
+        .select('id, storage_path')
         .eq('owner_id', user.id)
-        .eq('storage_path', filePath);
+        .eq('name', documentName);
       
       if (searchError) throw searchError;
       
       if (existingDocs && existingDocs.length > 0) {
+        // Supprimer l'ancien fichier du Storage s'il est différent
+        const oldDoc = existingDocs[0];
+        if (oldDoc.storage_path && oldDoc.storage_path !== filePath) {
+          await supabase.storage
+            .from('documents')
+            .remove([oldDoc.storage_path]);
+        }
+        
         // Mettre à jour l'entrée existante
         const { error: updateError } = await supabase
           .from('documents')
           .update({
-            name: `${contrat.name}.pdf`,
+            name: documentName,
+            storage_path: filePath,
             status: 'Validé',
             updated_at: new Date().toISOString()
           })
-          .eq('id', existingDocs[0].id);
+          .eq('id', oldDoc.id);
         
         if (updateError) throw updateError;
         toast.success("✅ PDF mis à jour dans vos documents !");
@@ -221,7 +231,7 @@ export default function ContratDetail() {
           .from('documents')
           .insert({
             owner_id: user.id,
-            name: `${contrat.name}.pdf`,
+            name: documentName,
             storage_path: filePath,
             status: 'Validé',
             role: contrat.role || 'avocat'
