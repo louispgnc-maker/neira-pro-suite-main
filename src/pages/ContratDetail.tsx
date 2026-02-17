@@ -179,35 +179,56 @@ export default function ContratDetail() {
     try {
       const blob = await generatePdfBlob();
       
-      // Générer un nom de fichier unique
-      const timestamp = Date.now();
-      const fileName = `${contrat.name.replace(/[^a-z0-9]/gi, '_')}_${timestamp}.pdf`;
+      // Utiliser un nom de fichier fixe basé sur l'ID du contrat pour permettre le remplacement
+      const fileName = `contrat_${contrat.id}.pdf`;
       const filePath = `${user.id}/${fileName}`;
       
-      // Uploader dans Supabase Storage
+      // Uploader dans Supabase Storage (upsert pour remplacer si existe)
       const { error: uploadError } = await supabase.storage
         .from('documents')
         .upload(filePath, blob, {
           contentType: 'application/pdf',
-          upsert: false
+          upsert: true  // Remplace le fichier s'il existe déjà
         });
       
       if (uploadError) throw uploadError;
       
-      // Créer l'entrée dans la table documents
-      const { error: dbError } = await supabase
+      // Vérifier si une entrée existe déjà pour ce contrat
+      const { data: existingDoc } = await supabase
         .from('documents')
-        .insert({
-          owner_id: user.id,
-          name: `${contrat.name}.pdf`,
-          storage_path: filePath,
-          status: 'Validé',
-          role: contrat.role || 'avocat'
-        });
+        .select('id')
+        .eq('owner_id', user.id)
+        .eq('storage_path', filePath)
+        .single();
       
-      if (dbError) throw dbError;
-      
-      toast.success("✅ PDF enregistré dans vos documents !");
+      if (existingDoc) {
+        // Mettre à jour l'entrée existante
+        const { error: updateError } = await supabase
+          .from('documents')
+          .update({
+            name: `${contrat.name}.pdf`,
+            status: 'Validé',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingDoc.id);
+        
+        if (updateError) throw updateError;
+        toast.success("✅ PDF mis à jour dans vos documents !");
+      } else {
+        // Créer une nouvelle entrée
+        const { error: insertError } = await supabase
+          .from('documents')
+          .insert({
+            owner_id: user.id,
+            name: `${contrat.name}.pdf`,
+            storage_path: filePath,
+            status: 'Validé',
+            role: contrat.role || 'avocat'
+          });
+        
+        if (insertError) throw insertError;
+        toast.success("✅ PDF enregistré dans vos documents !");
+      }
     } catch (error) {
       console.error('Erreur sauvegarde PDF:', error);
       toast.error("Erreur lors de l'enregistrement du PDF", {
