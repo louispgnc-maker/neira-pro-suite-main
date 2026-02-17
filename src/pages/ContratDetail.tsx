@@ -14,6 +14,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { generateContractWithAI, getClientInfo } from "@/lib/contractAIHelper";
 import jsPDF from 'jspdf';
+import { SignatureDialog } from "@/components/dashboard/SignatureDialog";
 
 interface Contrat {
   id: string;
@@ -49,6 +50,7 @@ export default function ContratDetail() {
   const [waitingProgress, setWaitingProgress] = useState<number | null>(null); // Progression cible pendant l'attente AI
   const [clients, setClients] = useState<any[]>([]);
   const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [signatureDialogOpen, setSignatureDialogOpen] = useState(false);
   
   // États pour l'édition des informations
   const [editingInfo, setEditingInfo] = useState(false);
@@ -306,8 +308,7 @@ export default function ContratDetail() {
 
   // Fonction pour initier la signature du contrat
   const handleSignContract = () => {
-    toast.info("Redirection vers la page de signature...");
-    navigate('/signatures');
+    setSignatureDialogOpen(true);
   };
 
   // Fonction pour régénérer le contrat avec l'IA
@@ -1244,6 +1245,16 @@ export default function ContratDetail() {
           </div>
         </div>
       )}
+
+      {/* Modal de signature */}
+      <SignatureDialog 
+        open={signatureDialogOpen} 
+        onOpenChange={setSignatureDialogOpen}
+        onSuccess={() => {
+          setSignatureDialogOpen(false);
+          toast.success("Demande de signature envoyée !");
+        }}
+      />
     </AppLayout>
   );
 }
