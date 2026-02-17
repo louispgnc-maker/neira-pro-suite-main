@@ -194,14 +194,15 @@ export default function ContratDetail() {
       if (uploadError) throw uploadError;
       
       // Vérifier si une entrée existe déjà pour ce contrat
-      const { data: existingDoc } = await supabase
+      const { data: existingDocs, error: searchError } = await supabase
         .from('documents')
         .select('id')
         .eq('owner_id', user.id)
-        .eq('storage_path', filePath)
-        .single();
+        .eq('storage_path', filePath);
       
-      if (existingDoc) {
+      if (searchError) throw searchError;
+      
+      if (existingDocs && existingDocs.length > 0) {
         // Mettre à jour l'entrée existante
         const { error: updateError } = await supabase
           .from('documents')
@@ -210,7 +211,7 @@ export default function ContratDetail() {
             status: 'Validé',
             updated_at: new Date().toISOString()
           })
-          .eq('id', existingDoc.id);
+          .eq('id', existingDocs[0].id);
         
         if (updateError) throw updateError;
         toast.success("✅ PDF mis à jour dans vos documents !");
