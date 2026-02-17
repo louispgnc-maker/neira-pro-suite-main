@@ -139,7 +139,9 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
   };
 
   const handleSubmit = async () => {
-    if (!selectedItemId) {
+    const itemToSign = preSelectedContractId || selectedItemId;
+    
+    if (!itemToSign) {
       toast.error('Veuillez sélectionner un élément à faire signer');
       return;
     }
@@ -158,7 +160,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            itemId: selectedItemId,
+            itemId: itemToSign,
             itemType: itemType,
             signatories: signatories,
             signatureLevel: signatureLevel
