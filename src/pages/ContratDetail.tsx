@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { generateContractWithAI, getClientInfo } from "@/lib/contractAIHelper";
+import jsPDF from 'jspdf';
 
 interface Contrat {
   id: string;
@@ -88,30 +89,81 @@ export default function ContratDetail() {
     }
   }, [savingProgress, displayedProgress, waitingProgress]);
 
-  // Fonction pour générer le PDF (commune)
+  // Fonction pour générer le PDF (commune) - VERSION CLIENT avec jsPDF
   const generatePdfBlob = async () => {
     if (!contrat || !contrat.content) {
       throw new Error("Aucun contenu à transformer en PDF");
     }
     
-    const { data, error } = await supabase.functions.invoke('generate-pdf-from-html', {
-      body: {
-        html: contrat.content,
-        filename: `${contrat.name.replace(/[^a-z0-9]/gi, '_')}.pdf`
+    try {
+      // Créer un nouveau document PDF
+      const doc = new jsPDF();
+      
+      // Configuration
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      const maxWidth = pageWidth - (margin * 2);
+      let y = margin;
+
+      // Titre du contrat
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      const titleLines = doc.splitTextToSize(contrat.name || "Contrat", maxWidth);
+      titleLines.forEach((line: string) => {
+        if (y > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(line, margin, y);
+        y += 8;
+      });
+
+      y += 5;
+
+      // Métadonnées
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Type: ${contrat.type || contrat.category || "N/A"}`, margin, y);
+      y += 7;
+      if (contrat.client_nom) {
+        doc.text(`Client: ${contrat.client_nom}`, margin, y);
+        y += 7;
       }
-    });
-    
-    if (error) throw error;
-    
-    // Décoder le base64 et créer un blob
-    const pdfBase64 = data.pdf;
-    const byteCharacters = atob(pdfBase64);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
+      doc.text(`Date: ${new Date(contrat.created_at).toLocaleDateString('fr-FR')}`, margin, y);
+      y += 10;
+
+      // Ligne de séparation
+      doc.setLineWidth(0.5);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 10;
+
+      // Contenu du contrat
+      doc.setFontSize(11);
+      
+      // Nettoyer le HTML et extraire le texte
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = contrat.content;
+      const textContent = tempDiv.textContent || tempDiv.innerText || "";
+      
+      const contentLines = doc.splitTextToSize(textContent, maxWidth);
+      
+      contentLines.forEach((line: string) => {
+        if (y > pageHeight - margin - 10) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(line, margin, y);
+        y += 6;
+      });
+
+      // Convertir en blob
+      const pdfBlob = doc.output('blob');
+      return pdfBlob;
+    } catch (error) {
+      console.error("Erreur génération PDF côté client:", error);
+      throw new Error("Impossible de générer le PDF");
     }
-    const byteArray = new Uint8Array(byteNumbers);
-    return new Blob([byteArray], { type: 'application/pdf' });
   };
 
   // Fonction pour sauvegarder le PDF dans l'espace personnel
