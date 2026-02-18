@@ -108,9 +108,19 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
               );
 
               if (response.ok) {
-                const blob = await response.blob();
-                const pdfUrl = URL.createObjectURL(blob);
-                setPreviewContent(pdfUrl);
+                const result = await response.json();
+                if (result.success && result.pdf) {
+                  // Convertir base64 en blob
+                  const byteCharacters = atob(result.pdf);
+                  const byteNumbers = new Array(byteCharacters.length);
+                  for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                  }
+                  const byteArray = new Uint8Array(byteNumbers);
+                  const blob = new Blob([byteArray], { type: 'application/pdf' });
+                  const pdfUrl = URL.createObjectURL(blob);
+                  setPreviewContent(pdfUrl);
+                }
               }
             }
           }
@@ -217,9 +227,19 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
               );
 
               if (response.ok) {
-                const blob = await response.blob();
-                const pdfUrl = URL.createObjectURL(blob);
-                setPreviewContent(pdfUrl);
+                const result = await response.json();
+                if (result.success && result.pdf) {
+                  // Convertir base64 en blob
+                  const byteCharacters = atob(result.pdf);
+                  const byteNumbers = new Array(byteCharacters.length);
+                  for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                  }
+                  const byteArray = new Uint8Array(byteNumbers);
+                  const blob = new Blob([byteArray], { type: 'application/pdf' });
+                  const pdfUrl = URL.createObjectURL(blob);
+                  setPreviewContent(pdfUrl);
+                }
               }
             }
           }
@@ -260,9 +280,21 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                 );
 
                 if (response.ok) {
-                  const blob = await response.blob();
-                  const pdfUrl = URL.createObjectURL(blob);
-                  setPreviewContent(pdfUrl);
+                  const result = await response.json();
+                  if (result.success && result.pdf) {
+                    // Convertir base64 en blob
+                    const byteCharacters = atob(result.pdf);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                      byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: 'application/pdf' });
+                    const pdfUrl = URL.createObjectURL(blob);
+                    setPreviewContent(pdfUrl);
+                  } else {
+                    setPreviewContent('NO_CONTRACT');
+                  }
                 } else {
                   setPreviewContent('NO_CONTRACT');
                 }
