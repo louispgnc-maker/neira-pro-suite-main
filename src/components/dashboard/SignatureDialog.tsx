@@ -503,7 +503,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                 <div className="bg-gray-50 px-4 py-2 border-b">
                   <h4 className="text-sm font-medium">Aperçu du document</h4>
                 </div>
-                <div className="p-4 max-h-[400px] overflow-auto bg-white">
+                <div className="p-4 max-h-[400px] overflow-y-scroll bg-white scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{ scrollbarWidth: 'thin' }}>
                   {previewLoading ? (
                     <div className="flex items-center justify-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
