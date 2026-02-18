@@ -58,6 +58,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
   const [signatories, setSignatories] = useState<Signatory[]>([
     { firstName: '', lastName: '', email: '', phone: '' }
   ]);
+  const [previewContent, setPreviewContent] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   // Determine role from URL path first (most reliable), then profile
   const role = window.location.pathname.includes('/notaires') || window.location.pathname.includes('/notaire') ? 'notaire' : 
@@ -70,9 +72,33 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
 
   // Forcer itemType à 'contrat' quand un contrat est pré-sélectionné
   useEffect(() => {
+    console.log('[SignatureDialog] preSelectedContractId:', preSelectedContractId);
     if (preSelectedContractId) {
+      console.log('[SignatureDialog] Setting itemType to contrat');
       setItemType('contrat');
       setSelectedItemId(preSelectedContractId);
+      
+      // Charger immédiatement le contenu du contrat
+      const loadContractPreview = async () => {
+        setPreviewLoading(true);
+        try {
+          const { data, error } = await supabase
+            .from('contrats')
+            .select('content')
+            .eq('id', preSelectedContractId)
+            .single();
+
+          if (!error && data) {
+            setPreviewContent(data.content || '<p>Contrat vide</p>');
+          }
+        } catch (error) {
+          console.error('Error loading contract preview:', error);
+        } finally {
+          setPreviewLoading(false);
+        }
+      };
+      
+      loadContractPreview();
     }
   }, [preSelectedContractId]);
 
@@ -130,6 +156,53 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
     }
   };
 
+  // Charger la preview du contenu sélectionné
+  useEffect(() => {
+    const loadPreview = async () => {
+      if (!selectedItemId || !itemType) {
+        setPreviewContent(null);
+        return;
+      }
+
+      setPreviewLoading(true);
+      try {
+        if (itemType === 'contrat') {
+          const { data, error } = await supabase
+            .from('contrats')
+            .select('content')
+            .eq('id', selectedItemId)
+            .single();
+
+          if (!error && data) {
+            setPreviewContent(data.content || '<p>Contrat vide</p>');
+          }
+        } else if (itemType === 'document') {
+          const { data: doc, error } = await supabase
+            .from('documents')
+            .select('storage_path')
+            .eq('id', selectedItemId)
+            .single();
+
+          if (!error && doc?.storage_path) {
+            const { data } = supabase.storage
+              .from('documents')
+              .getPublicUrl(doc.storage_path);
+            
+            if (data?.publicUrl) {
+              setPreviewContent(data.publicUrl);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading preview:', error);
+      } finally {
+        setPreviewLoading(false);
+      }
+    };
+
+    loadPreview();
+  }, [selectedItemId, itemType]);
+
   const addSignatory = () => {
     setSignatories([...signatories, { firstName: '', lastName: '', email: '', phone: '' }]);
   };
@@ -169,14 +242,20 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
         throw new Error('Vous devez être connecté pour créer une signature');
       }
 
+      // Déterminer le type correct : si un contrat est pré-sélectionné, c'est forcément un contrat
+      const correctItemType = preSelectedContractId ? 'contrat' : itemType;
+
       const requestBody = {
         itemId: itemToSign,
-        itemType: itemType,
+        itemType: correctItemType,
         signatories: signatories,
         signatureLevel: signatureLevel
       };
       
-      console.log('Sending signature request:', requestBody);
+      console.log('[SignatureDialog] preSelectedContractId:', preSelectedContractId);
+      console.log('[SignatureDialog] Current itemType state:', itemType);
+      console.log('[SignatureDialog] Correct itemType used:', correctItemType);
+      console.log('[SignatureDialog] Sending signature request:', requestBody);
 
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-create-signature',
@@ -416,6 +495,41 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
               <p className="text-sm text-gray-600">
                 Aucun contrat disponible pour signature
               </p>
+            )}
+
+            {/* Preview du contenu sélectionné */}
+            {selectedItemId && (
+              <div className="mt-4 border rounded-lg overflow-hidden">
+                <div className="bg-gray-50 px-4 py-2 border-b">
+                  <h4 className="text-sm font-medium">Aperçu du document</h4>
+                </div>
+                <div className="p-4 max-h-[400px] overflow-auto bg-white">
+                  {previewLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
+                  ) : previewContent ? (
+                    <>
+                      {itemType === 'contrat' ? (
+                        <div 
+                          className="prose max-w-none text-sm"
+                          dangerouslySetInnerHTML={{ __html: previewContent }}
+                        />
+                      ) : itemType === 'document' ? (
+                        <iframe
+                          src={previewContent}
+                          className="w-full h-[350px] border-0"
+                          title="Document preview"
+                        />
+                      ) : null}
+                    </>
+                  ) : (
+                    <p className="text-sm text-gray-500 text-center py-8">
+                      Aucun aperçu disponible
+                    </p>
+                  )}
+                </div>
+              </div>
             )}
           </div>
           )}
