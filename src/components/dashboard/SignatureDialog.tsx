@@ -199,9 +199,17 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
 
       const data = responseData;
 
-      toast.success('Demande de signature créée avec succès!', {
-        description: 'Le signataire a reçu un email avec le lien de signature'
-      });
+      // Ouvrir l'URL de signature Universign dans un nouvel onglet
+      if (data.signatureUrl) {
+        window.open(data.signatureUrl, '_blank');
+        toast.success('Demande de signature créée avec succès!', {
+          description: 'La page Universign s\'est ouverte dans un nouvel onglet'
+        });
+      } else {
+        toast.success('Demande de signature créée avec succès!', {
+          description: 'Le signataire a reçu un email avec le lien de signature'
+        });
+      }
 
       onOpenChange(false);
       onSuccess?.();

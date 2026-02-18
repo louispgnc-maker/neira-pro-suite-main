@@ -43,10 +43,23 @@ serve(async (req) => {
     // Universign API credentials
     const universignApiUrl = Deno.env.get('UNIVERSIGN_API_URL') || 'https://ws.universign.eu/tsa/v1';
     const universignApiKey = Deno.env.get('UNIVERSIGN_API_KEY');
+    const universignUsername = Deno.env.get('UNIVERSIGN_USERNAME');
+    const universignPassword = Deno.env.get('UNIVERSIGN_PASSWORD');
 
-    if (!universignApiKey) {
+    // Prepare authentication header
+    let authHeader = '';
+    
+    if (universignApiKey) {
+      authHeader = `Bearer ${universignApiKey}`;
+    } else if (universignUsername && universignPassword) {
+      const credentials = btoa(`${universignUsername}:${universignPassword}`);
+      authHeader = `Basic ${credentials}`;
+    } else {
       return new Response(
-        JSON.stringify({ error: 'Universign API key not configured' }),
+        JSON.stringify({ 
+          error: 'Universign API credentials not configured',
+          details: 'Please set either UNIVERSIGN_API_KEY or UNIVERSIGN_USERNAME + UNIVERSIGN_PASSWORD'
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -57,7 +70,7 @@ serve(async (req) => {
       {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${universignApiKey}`,
+          'Authorization': authHeader,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ id: transactionId })
@@ -109,7 +122,7 @@ serve(async (req) => {
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${universignApiKey}`,
+            'Authorization': authHeader,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ id: transactionId })
