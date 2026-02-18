@@ -78,18 +78,41 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
       setItemType('contrat');
       setSelectedItemId(preSelectedContractId);
       
-      // Charger immédiatement le contenu du contrat
+      // Charger immédiatement le contenu du contrat et générer le PDF
       const loadContractPreview = async () => {
         setPreviewLoading(true);
         try {
           const { data, error } = await supabase
             .from('contrats')
-            .select('content')
+            .select('content, name')
             .eq('id', preSelectedContractId)
             .single();
 
           if (!error && data) {
-            setPreviewContent(data.content || '<p>Contrat vide</p>');
+            // Générer le PDF via l'Edge Function
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+              const response = await fetch(
+                'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/generate-pdf-from-html',
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                  },
+                  body: JSON.stringify({
+                    html: data.content || '<p>Contrat vide</p>',
+                    filename: `${data.name}.pdf`
+                  })
+                }
+              );
+
+              if (response.ok) {
+                const blob = await response.blob();
+                const pdfUrl = URL.createObjectURL(blob);
+                setPreviewContent(pdfUrl);
+              }
+            }
           }
         } catch (error) {
           console.error('Error loading contract preview:', error);
@@ -167,14 +190,88 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
       setPreviewLoading(true);
       try {
         if (itemType === 'contrat') {
+          // Pour les contrats, générer un PDF comme dans l'export
           const { data, error } = await supabase
             .from('contrats')
-            .select('content')
+            .select('content, name')
             .eq('id', selectedItemId)
             .single();
 
           if (!error && data) {
-            setPreviewContent(data.content || '<p>Contrat vide</p>');
+            // Générer le PDF via l'Edge Function
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+              const response = await fetch(
+                'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/generate-pdf-from-html',
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                  },
+                  body: JSON.stringify({
+                    html: data.content || '<p>Contrat vide</p>',
+                    filename: `${data.name}.pdf`
+                  })
+                }
+              );
+
+              if (response.ok) {
+                const blob = await response.blob();
+                const pdfUrl = URL.createObjectURL(blob);
+                setPreviewContent(pdfUrl);
+              }
+            }
+          }
+        } else if (itemType === 'dossier') {
+          // Pour les dossiers, récupérer le contrat associé et générer son PDF
+          const { data: dossierContrats, error: dcError } = await supabase
+            .from('dossier_contrats')
+            .select('contrat_id')
+            .eq('dossier_id', selectedItemId)
+            .limit(1)
+            .single();
+
+          if (!dcError && dossierContrats?.contrat_id) {
+            // Récupérer le contrat
+            const { data: contrat, error: contratError } = await supabase
+              .from('contrats')
+              .select('content, name')
+              .eq('id', dossierContrats.contrat_id)
+              .single();
+
+            if (!contratError && contrat) {
+              // Générer le PDF du contrat
+              const { data: { session } } = await supabase.auth.getSession();
+              if (session) {
+                const response = await fetch(
+                  'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/generate-pdf-from-html',
+                  {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${session.access_token}`
+                    },
+                    body: JSON.stringify({
+                      html: contrat.content || '<p>Contrat vide</p>',
+                      filename: `${contrat.name}.pdf`
+                    })
+                  }
+                );
+
+                if (response.ok) {
+                  const blob = await response.blob();
+                  const pdfUrl = URL.createObjectURL(blob);
+                  setPreviewContent(pdfUrl);
+                } else {
+                  setPreviewContent('NO_CONTRACT');
+                }
+              }
+            } else {
+              setPreviewContent('NO_CONTRACT');
+            }
+          } else {
+            setPreviewContent('NO_CONTRACT');
           }
         } else if (itemType === 'document') {
           const { data: doc, error } = await supabase
@@ -508,14 +605,13 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                     <div className="flex items-center justify-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                     </div>
+                  ) : previewContent === 'NO_CONTRACT' ? (
+                    <p className="text-sm text-gray-500 text-center py-8">
+                      Pas de contrat à signer dans ce dossier
+                    </p>
                   ) : previewContent ? (
                     <>
-                      {itemType === 'contrat' ? (
-                        <div 
-                          className="prose max-w-none text-sm"
-                          dangerouslySetInnerHTML={{ __html: previewContent }}
-                        />
-                      ) : itemType === 'document' ? (
+                      {itemType === 'contrat' || itemType === 'document' || itemType === 'dossier' ? (
                         <iframe
                           src={previewContent}
                           className="w-full h-[350px] border-0"
