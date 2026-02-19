@@ -32,6 +32,7 @@ serve(async (req) => {
 
     let fileData: Blob | null = null;
     let documentName = '';
+    let documentUrl = '';
     let ownerId = '';
     let role = 'avocat';
 
@@ -55,21 +56,14 @@ serve(async (req) => {
         );
       }
 
-      console.log('[Universign] Downloading from storage:', document.storage_path);
-
-      const { data: file, error: downloadError } = await supabase.storage
+      // Get public URL instead of downloading
+      const { data: { publicUrl } } = supabase.storage
         .from('documents')
-        .download(document.storage_path);
+        .getPublicUrl(document.storage_path);
 
-      if (downloadError || !file) {
-        console.error('[Universign] Download failed:', downloadError);
-        return new Response(
-          JSON.stringify({ error: 'Failed to download document', details: downloadError?.message }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
+      console.log('[Universign] Document public URL:', publicUrl);
 
-      fileData = file;
+      documentUrl = publicUrl;
       documentName = document.name;
       ownerId = document.owner_id;
       role = document.role || 'avocat';
@@ -135,9 +129,9 @@ serve(async (req) => {
       fileData = new Blob([bytes], { type: 'application/pdf' });
     }
 
-    if (!fileData) {
+    if (!documentUrl) {
       return new Response(
-        JSON.stringify({ error: 'No file data' }),
+        JSON.stringify({ error: 'No document URL' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -152,34 +146,6 @@ serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-
-    console.log('[Universign] Uploading file...');
-
-    const arrayBuffer = await fileData.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-    const blob = new Blob([uint8Array], { type: 'application/pdf' });
-    
-    const uploadFormData = new FormData();
-    uploadFormData.append('file', blob, `${documentName}.pdf`);
-
-    const uploadResponse = await fetch(`${universignApiUrl}/files`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${universignApiKey}` },
-      body: uploadFormData
-    });
-
-    if (!uploadResponse.ok) {
-      const errorText = await uploadResponse.text();
-      console.error('[Universign] Upload failed:', errorText);
-      return new Response(
-        JSON.stringify({ error: 'Failed to upload file', details: errorText }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const uploadResult = await uploadResponse.json();
-    const fileId = uploadResult.id;
-    console.log('[Universign] File uploaded:', fileId);
 
     const firstSigner = signatories[0];
     
@@ -210,10 +176,11 @@ serve(async (req) => {
     const transactionId = transaction.id;
     console.log('[Universign] Transaction created:', transactionId);
 
-    // Étape 2: Ajouter le document à la transaction
-    console.log('[Universign] Step 2: Adding document to transaction...');
+    // Étape 2: Ajouter le document à la transaction via URL
+    console.log('[Universign] Step 2: Adding document via URL...');
     const addDocParams = new URLSearchParams();
-    addDocParams.append('document', fileId);
+    addDocParams.append('url', documentUrl);
+    addDocParams.append('name', `${documentName}.pdf`);
 
     const addDocResponse = await fetch(`${universignApiUrl}/transactions/${transactionId}/documents`, {
       method: 'POST',
