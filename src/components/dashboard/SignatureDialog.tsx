@@ -752,7 +752,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                     value={signatory.email}
                     onChange={(e) => updateSignatory(index, 'email', e.target.value)}
                     placeholder="jean.dupont@example.com"
-                    autoComplete="email"
+                    autoComplete="off"
                     name={`email-${index}`}
                   />
                 </div>
