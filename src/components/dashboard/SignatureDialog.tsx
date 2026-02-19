@@ -60,14 +60,6 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
   ]);
   const [previewContent, setPreviewContent] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [emailSuggestions] = useState<string[]>([
-    'louis.poignonec@essca.eu',
-    'louispgnc@gmail.com',
-    'contact@neira.fr',
-    'simontan33@ieatr.fr',
-    'paullthnl@gmail.com',
-    'robin.llievrel@gmail.com'
-  ]);
 
   // Determine role from URL path first (most reliable), then profile
   const role = window.location.pathname.includes('/notaires') || window.location.pathname.includes('/notaire') ? 'notaire' : 
@@ -754,21 +746,15 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
 
                 <div>
                   <Label htmlFor={`email-${index}`}>Email *</Label>
-                  <div className="relative">
-                    <Input
-                      id={`email-${index}`}
-                      type="email"
-                      value={signatory.email}
-                      onChange={(e) => updateSignatory(index, 'email', e.target.value)}
-                      placeholder="jean.dupont@example.com"
-                      list={`email-suggestions-${index}`}
-                    />
-                    <datalist id={`email-suggestions-${index}`}>
-                      {emailSuggestions.map((email, i) => (
-                        <option key={i} value={email} />
-                      ))}
-                    </datalist>
-                  </div>
+                  <Input
+                    id={`email-${index}`}
+                    type="email"
+                    value={signatory.email}
+                    onChange={(e) => updateSignatory(index, 'email', e.target.value)}
+                    placeholder="jean.dupont@example.com"
+                    autoComplete="email"
+                    name={`email-${index}`}
+                  />
                 </div>
 
                 <div>
