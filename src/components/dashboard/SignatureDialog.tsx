@@ -744,7 +744,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                   </div>
                 </div>
 
-                <div style={{ position: 'relative', zIndex: 9999 }}>
+                <div>
                   <Label htmlFor={`email-${index}`}>Email *</Label>
                   <Input
                     id={`email-${index}`}
@@ -754,7 +754,6 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                     placeholder="jean.dupont@example.com"
                     autoComplete="email"
                     name={`email-${index}`}
-                    style={{ position: 'relative', zIndex: 9999 }}
                   />
                 </div>
 
