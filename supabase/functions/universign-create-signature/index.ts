@@ -127,6 +127,149 @@ serve(async (req) => {
       }
       
       fileData = new Blob([bytes], { type: 'application/pdf' });
+      
+      // Upload le PDF dans Storage pour obtenir une URL publique
+      const fileName = `contracts/${contrat.id}_${Date.now()}.pdf`;
+      console.log('[Universign] Uploading contract PDF to Storage:', fileName);
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(fileName, fileData, {
+          contentType: 'application/pdf',
+          upsert: true
+        });
+
+      if (uploadError) {
+        console.error('[Universign] Storage upload error:', uploadError);
+        return new Response(
+          JSON.stringify({ error: 'Failed to upload PDF to storage', details: uploadError.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Récupérer l'URL publique
+      const { data: { publicUrl } } = supabase.storage
+        .from('documents')
+        .getPublicUrl(fileName);
+
+      documentUrl = publicUrl;
+      console.log('[Universign] Contract PDF uploaded, public URL:', documentUrl);
+
+    } else if (itemType === 'dossier') {
+      // Récupérer le dossier et son contrat associé
+      const { data: dossier, error: dossierError } = await supabase
+        .from('dossiers')
+        .select('*')
+        .eq('id', itemId)
+        .single();
+
+      if (dossierError || !dossier) {
+        return new Response(
+          JSON.stringify({ error: 'Dossier not found' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      documentName = dossier.nom || 'Dossier';
+      ownerId = dossier.owner_id;
+      role = dossier.role || 'avocat';
+
+      // Chercher le contrat associé
+      const { data: dossierContrat, error: dcError } = await supabase
+        .from('dossier_contrats')
+        .select('contrat_id')
+        .eq('dossier_id', itemId)
+        .single();
+
+      if (dcError || !dossierContrat) {
+        return new Response(
+          JSON.stringify({ error: 'No contract associated with this dossier' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Récupérer le contrat
+      const { data: contrat, error: contratError } = await supabase
+        .from('contrats')
+        .select('*')
+        .eq('id', dossierContrat.contrat_id)
+        .single();
+
+      if (contratError || !contrat) {
+        return new Response(
+          JSON.stringify({ error: 'Contract not found for this dossier' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Générer le PDF du contrat
+      const generatePdfUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/generate-pdf-from-html`;
+      
+      const pdfResponse = await fetch(generatePdfUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': req.headers.get('Authorization') || ''
+        },
+        body: JSON.stringify({
+          html: contrat.content || '<p>Contrat vide</p>',
+          filename: `${documentName}.pdf`
+        })
+      });
+
+      if (!pdfResponse.ok) {
+        const errorText = await pdfResponse.text();
+        console.error('[Universign] PDF generation failed:', errorText);
+        return new Response(
+          JSON.stringify({ error: 'Failed to generate PDF', details: errorText }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const pdfResult = await pdfResponse.json();
+      if (!pdfResult.success || !pdfResult.pdf) {
+        console.error('[Universign] PDF result invalid:', pdfResult);
+        return new Response(
+          JSON.stringify({ error: 'PDF generation returned invalid data' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Convertir base64 en Uint8Array
+      const binaryString2 = atob(pdfResult.pdf);
+      const bytes2 = new Uint8Array(binaryString2.length);
+      for (let i = 0; i < binaryString2.length; i++) {
+        bytes2[i] = binaryString2.charCodeAt(i);
+      }
+      
+      fileData = new Blob([bytes2], { type: 'application/pdf' });
+      
+      // Upload le PDF dans Storage
+      const fileName = `dossiers/${dossier.id}_${Date.now()}.pdf`;
+      console.log('[Universign] Uploading dossier PDF to Storage:', fileName);
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(fileName, fileData, {
+          contentType: 'application/pdf',
+          upsert: true
+        });
+
+      if (uploadError) {
+        console.error('[Universign] Storage upload error:', uploadError);
+        return new Response(
+          JSON.stringify({ error: 'Failed to upload PDF to storage', details: uploadError.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Récupérer l'URL publique
+      const { data: { publicUrl } } = supabase.storage
+        .from('documents')
+        .getPublicUrl(fileName);
+
+      documentUrl = publicUrl;
+      console.log('[Universign] Dossier PDF uploaded, public URL:', documentUrl);
     }
 
     if (!documentUrl) {
@@ -149,18 +292,50 @@ serve(async (req) => {
 
     const firstSigner = signatories[0];
     
-    // Étape 1: Créer une transaction vide
-    console.log('[Universign] Step 1: Creating transaction...');
-    const createTxResponse = await fetch(`${universignApiUrl}/transactions`, {
+    // Créer une transaction complète avec l'URL du document
+    console.log('[Universign] Creating full transaction with document URL...');
+    
+    const fullTransactionPayload = {
+      autostart: true,
+      name: documentName,
+      language: 'fr',
+      documents: [{
+        url: documentUrl,
+        name: `${documentName}.pdf`,
+        fields: [{
+          id: 'field_signature_1',
+          name: 'signature field',
+          page: 1,
+          x: 150,
+          y: 275,
+          type: 'signature'
+        }]
+      }],
+      signatures: [{
+        field: 'field_signature_1',
+        signer: firstSigner.email
+      }],
+      participants: [{
+        email: firstSigner.email,
+        schedule: [0],
+        full_name: `${firstSigner.firstName} ${firstSigner.lastName}`,
+        full_name_type: 'prerequisite',
+        invitation_subject: 'Demande de signature',
+        invitation_message: 'Veuillez signer le document ci-joint.',
+        min_signature_level: 'level1',
+        invitation_redirect_url: `${siteUrl}/signatures`
+      }]
+    };
+
+    console.log('[Universign] Transaction payload:', JSON.stringify(fullTransactionPayload, null, 2));
+
+    const createTxResponse = await fetch(`${universignApiUrl}/transactions/full`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${universignApiKey}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        name: documentName,
-        language: 'fr'
-      })
+      body: JSON.stringify(fullTransactionPayload)
     });
 
     if (!createTxResponse.ok) {
@@ -174,135 +349,11 @@ serve(async (req) => {
 
     const transaction = await createTxResponse.json();
     const transactionId = transaction.id;
-    console.log('[Universign] Transaction created:', transactionId);
-
-    // Étape 2: Ajouter le document à la transaction via URL
-    console.log('[Universign] Step 2: Adding document via URL...');
-    const addDocParams = new URLSearchParams();
-    addDocParams.append('url', documentUrl);
-    addDocParams.append('name', `${documentName}.pdf`);
-
-    const addDocResponse = await fetch(`${universignApiUrl}/transactions/${transactionId}/documents`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${universignApiKey}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: addDocParams.toString()
-    });
-
-    if (!addDocResponse.ok) {
-      const errorText = await addDocResponse.text();
-      console.error('[Universign] Add document failed:', errorText);
-      return new Response(
-        JSON.stringify({ error: 'Failed to add document', details: errorText }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const documentResult = await addDocResponse.json();
-    const documentId = documentResult.id;
-    console.log('[Universign] Document added:', documentId);
-
-    // Étape 3: Ajouter un champ de signature au document
-    console.log('[Universign] Step 3: Adding signature field...');
-    const addFieldParams = new URLSearchParams();
-    addFieldParams.append('type', 'signature');
-
-    const addFieldResponse = await fetch(`${universignApiUrl}/transactions/${transactionId}/documents/${documentId}/fields`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${universignApiKey}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: addFieldParams.toString()
-    });
-
-    if (!addFieldResponse.ok) {
-      const errorText = await addFieldResponse.text();
-      console.error('[Universign] Add field failed:', errorText);
-      return new Response(
-        JSON.stringify({ error: 'Failed to add signature field', details: errorText }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const fieldResult = await addFieldResponse.json();
-    const fieldId = fieldResult.id;
-    console.log('[Universign] Signature field added:', fieldId);
-
-    // Étape 4: Attribuer le signataire au champ
-    console.log('[Universign] Step 4: Assigning signer to field...');
-    const assignSignerParams = new URLSearchParams();
-    assignSignerParams.append('signer', firstSigner.email);
-    assignSignerParams.append('field', fieldId);
-
-    const assignSignerResponse = await fetch(`${universignApiUrl}/transactions/${transactionId}/signatures`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${universignApiKey}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: assignSignerParams.toString()
-    });
-
-    if (!assignSignerResponse.ok) {
-      const errorText = await assignSignerResponse.text();
-      console.error('[Universign] Assign signer failed:', errorText);
-      return new Response(
-        JSON.stringify({ error: 'Failed to assign signer', details: errorText }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    console.log('[Universign] Signer assigned successfully');
-
-    // Étape 5: Activer la notification du signataire
-    console.log('[Universign] Step 5: Enabling participant notification...');
-    const addParticipantParams = new URLSearchParams();
-    addParticipantParams.append('email', firstSigner.email);
-    addParticipantParams.append('schedule', '[0]');
-
-    const addParticipantResponse = await fetch(`${universignApiUrl}/transactions/${transactionId}/participants`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${universignApiKey}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: addParticipantParams.toString()
-    });
-
-    if (!addParticipantResponse.ok) {
-      const errorText = await addParticipantResponse.text();
-      console.error('[Universign] Add participant failed:', errorText);
-      return new Response(
-        JSON.stringify({ error: 'Failed to add participant', details: errorText }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    console.log('[Universign] Participant notification enabled');
-
-    console.log('[Universign] Participant notification enabled');
-
-    // Étape 6: Démarrer la transaction
-    console.log('[Universign] Step 6: Starting transaction...');
-    const startResponse = await fetch(`${universignApiUrl}/transactions/${transactionId}/start`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${universignApiKey}` }
-    });
-
-    if (!startResponse.ok) {
-      const errorText = await startResponse.text();
-      console.error('[Universign] Start failed:', errorText);
-      return new Response(
-        JSON.stringify({ error: 'Failed to start transaction', details: errorText }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const startedTransaction = await startResponse.json();
-    const signatureUrl = startedTransaction.actions?.[0]?.url || null;
+    const signatureUrl = transaction.actions?.[0]?.url || null;
+    
+    console.log('[Universign] Transaction created successfully');
+    console.log('[Universign] Transaction ID:', transactionId);
+    console.log('[Universign] Signature URL:', signatureUrl);
 
     const { error: insertError } = await supabase
       .from('signatures')
