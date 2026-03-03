@@ -15,8 +15,14 @@ serve(async (req) => {
     const body = await req.json();
     console.log('[Universign] Received request:', JSON.stringify(body));
     
-    const { itemId, itemType = 'document', signatories, signatureLevel = 'simple' } = body;
-    console.log('[Universign] Parsed - itemId:', itemId, 'itemType:', itemType, 'signatories:', signatories?.length);
+    const { 
+      itemId, 
+      itemType = 'document', 
+      signatories, 
+      signatureLevel = 'simple',
+      signaturePosition = { page: 1, x: 150, y: 275 }
+    } = body;
+    console.log('[Universign] Parsed - itemId:', itemId, 'itemType:', itemType, 'signatories:', signatories?.length, 'signaturePosition:', signaturePosition);
 
     if (!itemId || !itemType || !signatories || signatories.length === 0) {
       return new Response(
@@ -266,6 +272,9 @@ serve(async (req) => {
     // Create full transaction with Universign API v1 (JSON format)
     console.log('[Universign] Creating full transaction with base64 document...');
     
+    const webhookUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/universign-webhook`;
+    console.log('[Universign] Webhook URL:', webhookUrl);
+    
     // Universign API v1 - full transaction format with base64 content
     const transactionRequest = {
       autostart: true,
@@ -273,6 +282,7 @@ serve(async (req) => {
       language: 'fr',
       duration: 15500,
       private: false,
+      callback_url: webhookUrl,
       metadata: {
         itemType: itemType,
         itemId: itemId,
@@ -284,9 +294,9 @@ serve(async (req) => {
         fields: [{
           id: 'signature_field_1',
           name: 'Signature',
-          page: 1,
-          x: 150,
-          y: 275,
+          page: signaturePosition.page || 1,
+          x: signaturePosition.x || 150,
+          y: signaturePosition.y || 275,
           type: 'signature',
           consents: ['Je certifie avoir lu et accepté ce document']
         }]
