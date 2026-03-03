@@ -10,8 +10,8 @@
 
 ### URLs Universign
 
-- **Production** : `https://ws.universign.eu/tsa/v1`
-- **Test/Sandbox** : `https://sign.test.cryptolog.com/tsa/v1` (si disponible)
+- **Production** : `https://api.universign.com`
+- **Recette/Test** : `https://api.alpha.universign.com`
 
 ---
 
@@ -51,7 +51,7 @@ Configurez les identifiants API dans Supabase :
 # Méthode 1 : Via la CLI Supabase
 supabase secrets set UNIVERSIGN_USERNAME=votre_username
 supabase secrets set UNIVERSIGN_PASSWORD=votre_password
-supabase secrets set UNIVERSIGN_API_URL=https://ws.universign.eu/tsa/v1
+supabase secrets set UNIVERSIGN_API_URL=https://api.alpha.universign.com
 
 # Méthode 2 : Via le Dashboard Supabase
 # 1. Allez dans Settings > Edge Functions

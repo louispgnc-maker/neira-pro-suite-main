@@ -41,7 +41,7 @@ serve(async (req) => {
     }
 
     // Universign API credentials
-    const universignApiUrl = Deno.env.get('UNIVERSIGN_API_URL') || 'https://ws.universign.eu/tsa/v1';
+    const universignApiUrl = Deno.env.get('UNIVERSIGN_API_URL') || 'https://api.alpha.universign.com';
     const universignApiKey = Deno.env.get('UNIVERSIGN_API_KEY');
     const universignUsername = Deno.env.get('UNIVERSIGN_USERNAME');
     const universignPassword = Deno.env.get('UNIVERSIGN_PASSWORD');

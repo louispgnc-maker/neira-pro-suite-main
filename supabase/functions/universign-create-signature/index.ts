@@ -279,80 +279,171 @@ serve(async (req) => {
       );
     }
 
-    const universignApiUrl = Deno.env.get('UNIVERSIGN_API_URL') || 'https://api.universign.com/v1';
+    // Verify document URL is accessible
+    console.log('[Universign] Verifying document URL accessibility:', documentUrl);
+    try {
+      const testResponse = await fetch(documentUrl, { method: 'HEAD' });
+      console.log('[Universign] Document URL test status:', testResponse.status);
+      if (!testResponse.ok) {
+        console.error('[Universign] Document URL not accessible:', testResponse.status);
+        return new Response(
+          JSON.stringify({ 
+            error: 'Document URL not accessible', 
+            url: documentUrl,
+            status: testResponse.status 
+          }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } catch (urlError: any) {
+      console.error('[Universign] Error testing document URL:', urlError.message);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to verify document URL', 
+          url: documentUrl,
+          details: urlError.message 
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const universignApiUrl = Deno.env.get('UNIVERSIGN_API_URL') || 'https://api.alpha.universign.com';
     const universignApiKey = Deno.env.get('UNIVERSIGN_API_KEY');
+    const universignUsername = Deno.env.get('UNIVERSIGN_USERNAME');
+    const universignPassword = Deno.env.get('UNIVERSIGN_PASSWORD');
     const siteUrl = Deno.env.get('SITE_URL') || 'https://neira.fr';
 
-    if (!universignApiKey) {
+    // Check if we have either API key or username/password
+    if (!universignApiKey && (!universignUsername || !universignPassword)) {
       return new Response(
-        JSON.stringify({ error: 'Universign API key not configured' }),
+        JSON.stringify({ 
+          error: 'Universign credentials not configured',
+          details: 'Please set either UNIVERSIGN_API_KEY or UNIVERSIGN_USERNAME + UNIVERSIGN_PASSWORD'
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const firstSigner = signatories[0];
     
-    // Créer une transaction complète avec l'URL du document
+    // Create full transaction with Universign API v1 (JSON format)
     console.log('[Universign] Creating full transaction with document URL...');
     
-    const fullTransactionPayload = {
+    // Universign API v1 - full transaction format with JSON
+    const transactionRequest = {
       autostart: true,
       name: documentName,
       language: 'fr',
+      duration: 15500,
+      private: false,
+      metadata: {
+        itemType: itemType,
+        itemId: itemId,
+        documentName: documentName
+      },
       documents: [{
-        url: documentUrl,
         name: `${documentName}.pdf`,
+        url: documentUrl,
         fields: [{
-          id: 'field_signature_1',
-          name: 'signature field',
+          id: 'signature_field_1',
+          name: 'Signature',
           page: 1,
           x: 150,
           y: 275,
-          type: 'signature'
+          type: 'signature',
+          consents: ['Je certifie avoir lu et accepté ce document']
         }]
       }],
       signatures: [{
-        field: 'field_signature_1',
+        field: 'signature_field_1',
         signer: firstSigner.email
       }],
       participants: [{
         email: firstSigner.email,
-        schedule: [0],
         full_name: `${firstSigner.firstName} ${firstSigner.lastName}`,
         full_name_type: 'prerequisite',
-        invitation_subject: 'Demande de signature',
-        invitation_message: 'Veuillez signer le document ci-joint.',
-        min_signature_level: 'level1',
-        invitation_redirect_url: `${siteUrl}/signatures`
+        schedule: [0],
+        invitation_subject: `Signature requise : ${documentName}`,
+        invitation_message: `Bonjour ${firstSigner.firstName}, veuillez signer le document "${documentName}".`,
+        min_signature_level: 'level1'
       }]
     };
 
-    console.log('[Universign] Transaction payload:', JSON.stringify(fullTransactionPayload, null, 2));
+    console.log('[Universign] Transaction request:', JSON.stringify(transactionRequest, null, 2));
 
-    const createTxResponse = await fetch(`${universignApiUrl}/transactions/full`, {
+    // Prepare authorization headers with JSON content-type
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+
+    if (universignApiKey) {
+      // Use Bearer token authentication
+      headers['Authorization'] = `Bearer ${universignApiKey}`;
+      console.log('[Universign] Using API Key authentication');
+    } else if (universignUsername && universignPassword) {
+      // Use HTTP Basic authentication
+      const credentials = btoa(`${universignUsername}:${universignPassword}`);
+      headers['Authorization'] = `Basic ${credentials}`;
+      console.log('[Universign] Using Basic authentication');
+    }
+
+    // Create full transaction (autostart = true)
+    const endpoint = `${universignApiUrl}/v1/transactions/full`;
+    console.log('[Universign] API URL:', universignApiUrl);
+    console.log('[Universign] Request endpoint:', endpoint);
+    console.log('[Universign] Auth header:', headers['Authorization']?.substring(0, 20) + '...');
+    console.log('[Universign] Request body:', JSON.stringify(transactionRequest, null, 2));
+    
+    const createTxResponse = await fetch(endpoint, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${universignApiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(fullTransactionPayload)
+      headers,
+      body: JSON.stringify(transactionRequest)
     });
+
+    console.log('[Universign] Response status:', createTxResponse.status);
+    console.log('[Universign] Response headers:', JSON.stringify(Object.fromEntries(createTxResponse.headers.entries())));
 
     if (!createTxResponse.ok) {
       const errorText = await createTxResponse.text();
-      console.error('[Universign] Transaction creation failed:', errorText);
+      console.error('[Universign] Transaction creation failed');
+      console.error('[Universign] Status:', createTxResponse.status);
+      console.error('[Universign] Error response:', errorText);
+      console.error('[Universign] Request was:', JSON.stringify(transactionRequest, null, 2));
       return new Response(
-        JSON.stringify({ error: 'Failed to create transaction', details: errorText }),
+        JSON.stringify({ 
+          error: 'Failed to create transaction', 
+          status: createTxResponse.status,
+          details: errorText,
+          endpoint: universignApiUrl,
+          hint: createTxResponse.status === 401 ? 'Vérifiez vos identifiants Universign (API Key ou Username/Password)' : null
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const transaction = await createTxResponse.json();
-    const transactionId = transaction.id;
-    const signatureUrl = transaction.actions?.[0]?.url || null;
+    console.log('[Universign] Transaction response:', JSON.stringify(transaction, null, 2));
     
-    console.log('[Universign] Transaction created successfully');
+    // Full API returns the transaction object directly with autostart
+    const transactionId = transaction.id;
+    
+    console.log('[Universign] Transaction created and started successfully');
     console.log('[Universign] Transaction ID:', transactionId);
+
+    if (!transactionId) {
+      console.error('[Universign] No transaction ID in response');
+      return new Response(
+        JSON.stringify({ 
+          error: 'No transaction ID returned from Universign',
+          response: transaction 
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Get the signature URL from participants
+    const signatureUrl = transaction.participants?.[0]?.url || transaction.url || null;
+    
     console.log('[Universign] Signature URL:', signatureUrl);
 
     const { error: insertError } = await supabase
