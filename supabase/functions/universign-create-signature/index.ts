@@ -19,10 +19,9 @@ serve(async (req) => {
       itemId, 
       itemType = 'document', 
       signatories, 
-      signatureLevel = 'simple',
-      signaturePosition = { page: 1, x: 150, y: 275 }
+      signatureLevel = 'simple'
     } = body;
-    console.log('[Universign] Parsed - itemId:', itemId, 'itemType:', itemType, 'signatories:', signatories?.length, 'signaturePosition:', signaturePosition);
+    console.log('[Universign] Parsed - itemId:', itemId, 'itemType:', itemType, 'signatories:', signatories?.length);
 
     if (!itemId || !itemType || !signatories || signatories.length === 0) {
       return new Response(
@@ -290,20 +289,7 @@ serve(async (req) => {
       },
       documents: [{
         name: `${documentName}.pdf`,
-        content: documentBase64,
-        fields: [{
-          id: 'signature_field_1',
-          name: 'Signature',
-          page: signaturePosition.page || 1,
-          x: signaturePosition.x || 150,
-          y: signaturePosition.y || 275,
-          type: 'signature',
-          consents: ['Je certifie avoir lu et accepté ce document']
-        }]
-      }],
-      signatures: [{
-        field: 'signature_field_1',
-        signer: firstSigner.email
+        content: documentBase64
       }],
       participants: [{
         email: firstSigner.email,

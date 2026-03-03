@@ -58,7 +58,6 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
   const [signatories, setSignatories] = useState<Signatory[]>([
     { firstName: '', lastName: '', email: '', phone: '' }
   ]);
-  const [signaturePosition, setSignaturePosition] = useState({ page: 1, x: 50, y: 750 });
   const [previewContent, setPreviewContent] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
 
@@ -379,8 +378,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
         itemId: itemToSign,
         itemType: correctItemType,
         signatories: signatories,
-        signatureLevel: signatureLevel,
-        signaturePosition: signaturePosition
+        signatureLevel: signatureLevel
       };
       
       console.log('[SignatureDialog] preSelectedContractId:', preSelectedContractId);
@@ -427,7 +425,6 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
       // Reset form
       setSelectedItemId('');
       setSignatories([{ firstName: '', lastName: '', email: '', phone: '' }]);
-      setSignaturePosition({ page: 1, x: 50, y: 750 });
       setItemType('document');
 
     } catch (error: any) {
@@ -684,111 +681,6 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
 
           {/* Signature Level - Hidden, always "simple" */}
           <input type="hidden" value="simple" />
-
-          {/* Signature Position */}
-          <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
-            <div className="flex items-center justify-between">
-              <Label className="text-base font-semibold">Position de la signature</Label>
-              <span className="text-xs text-gray-500">Coordonnées du champ de signature</span>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="signature-page" className="text-sm">Page</Label>
-                <Input
-                  id="signature-page"
-                  type="number"
-                  min="1"
-                  value={signaturePosition.page}
-                  onChange={(e) => setSignaturePosition({ ...signaturePosition, page: parseInt(e.target.value) || 1 })}
-                  className={role === 'notaire' 
-                    ? 'border-orange-300 focus:border-orange-500' 
-                    : 'border-blue-300 focus:border-blue-500'}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="signature-x" className="text-sm">Position X</Label>
-                <Input
-                  id="signature-x"
-                  type="number"
-                  min="0"
-                  max="595"
-                  value={signaturePosition.x}
-                  onChange={(e) => setSignaturePosition({ ...signaturePosition, x: parseInt(e.target.value) || 0 })}
-                  className={role === 'notaire' 
-                    ? 'border-orange-300 focus:border-orange-500' 
-                    : 'border-blue-300 focus:border-blue-500'}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="signature-y" className="text-sm">Position Y</Label>
-                <Input
-                  id="signature-y"
-                  type="number"
-                  min="0"
-                  max="842"
-                  value={signaturePosition.y}
-                  onChange={(e) => setSignaturePosition({ ...signaturePosition, y: parseInt(e.target.value) || 0 })}
-                  className={role === 'notaire' 
-                    ? 'border-orange-300 focus:border-orange-500' 
-                    : 'border-blue-300 focus:border-blue-500'}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setSignaturePosition({ page: 1, x: 50, y: 750 })}
-                className={role === 'notaire' 
-                  ? 'text-xs hover:bg-orange-100 border-orange-200' 
-                  : 'text-xs hover:bg-blue-100 border-blue-200'}
-              >
-                📍 Bas gauche
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setSignaturePosition({ page: 1, x: 400, y: 750 })}
-                className={role === 'notaire' 
-                  ? 'text-xs hover:bg-orange-100 border-orange-200' 
-                  : 'text-xs hover:bg-blue-100 border-blue-200'}
-              >
-                📍 Bas droite
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setSignaturePosition({ page: 1, x: 250, y: 400 })}
-                className={role === 'notaire' 
-                  ? 'text-xs hover:bg-orange-100 border-orange-200' 
-                  : 'text-xs hover:bg-blue-100 border-blue-200'}
-              >
-                📍 Centre
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setSignaturePosition({ page: 1, x: 400, y: 50 })}
-                className={role === 'notaire' 
-                  ? 'text-xs hover:bg-orange-100 border-orange-200' 
-                  : 'text-xs hover:bg-blue-100 border-blue-200'}
-              >
-                📍 Haut droite
-              </Button>
-            </div>
-
-            <p className="text-xs text-gray-600">
-              💡 <strong>Astuce:</strong> Format A4 = 595x842 points. Y=0 en haut, Y=842 en bas.
-            </p>
-          </div>
 
           {/* Signatories */}
           <div className="space-y-4">
