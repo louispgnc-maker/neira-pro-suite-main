@@ -633,9 +633,9 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
             {selectedItemId && (
               <div className="mt-4 border rounded-lg overflow-hidden">
                 <div className="bg-gray-50 px-4 py-2 border-b">
-                  <h4 className="text-sm font-medium">Aperçu du document</h4>
+                  <h4 className="text-sm font-medium">Aperçu du document avec position de signature</h4>
                 </div>
-                <div className="p-4 max-h-[400px] overflow-y-scroll bg-white scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{ scrollbarWidth: 'thin' }}>
+                <div className="p-4 bg-white">
                   {previewLoading ? (
                     <div className="flex items-center justify-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -645,15 +645,42 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                       Pas de contrat à signer dans ce dossier
                     </p>
                   ) : previewContent ? (
-                    <>
+                    <div className="relative">
                       {itemType === 'contrat' || itemType === 'document' || itemType === 'dossier' ? (
-                        <iframe
-                          src={previewContent}
-                          className="w-full h-[350px] border-0"
-                          title="Document preview"
-                        />
+                        <>
+                          <iframe
+                            src={previewContent}
+                            className="w-full h-[350px] border-0"
+                            title="Document preview"
+                          />
+                          {/* Overlay pour la position de signature */}
+                          <div 
+                            className="absolute pointer-events-none"
+                            style={{
+                              top: `${(signaturePosition.y / 842) * 100}%`,
+                              left: `${(signaturePosition.x / 595) * 100}%`,
+                              transform: 'translate(-50%, -50%)'
+                            }}
+                          >
+                            <div className={`px-4 py-2 rounded shadow-lg border-2 ${
+                              role === 'notaire' 
+                                ? 'bg-orange-100 border-orange-500 text-orange-900'
+                                : 'bg-blue-100 border-blue-500 text-blue-900'
+                            }`}>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xl">✍️</span>
+                                <div className="text-xs font-semibold">
+                                  SIGNATURE
+                                  <div className="text-[10px] opacity-75">
+                                    Page {signaturePosition.page}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
                       ) : null}
-                    </>
+                    </div>
                   ) : (
                     <p className="text-sm text-gray-500 text-center py-8">
                       Aucun aperçu disponible
