@@ -645,42 +645,15 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                       Pas de contrat à signer dans ce dossier
                     </p>
                   ) : previewContent ? (
-                    <div className="relative">
+                    <>
                       {itemType === 'contrat' || itemType === 'document' || itemType === 'dossier' ? (
-                        <>
-                          <iframe
-                            src={previewContent}
-                            className="w-full h-[350px] border-0"
-                            title="Document preview"
-                          />
-                          {/* Overlay pour la position de signature */}
-                          <div 
-                            className="absolute pointer-events-none"
-                            style={{
-                              top: `${(signaturePosition.y / 842) * 100}%`,
-                              left: `${(signaturePosition.x / 595) * 100}%`,
-                              transform: 'translate(-50%, -50%)'
-                            }}
-                          >
-                            <div className={`px-4 py-2 rounded shadow-lg border-2 ${
-                              role === 'notaire' 
-                                ? 'bg-orange-100 border-orange-500 text-orange-900'
-                                : 'bg-blue-100 border-blue-500 text-blue-900'
-                            }`}>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xl">✍️</span>
-                                <div className="text-xs font-semibold">
-                                  SIGNATURE
-                                  <div className="text-[10px] opacity-75">
-                                    Page {signaturePosition.page}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </>
+                        <iframe
+                          src={previewContent}
+                          className="w-full h-[350px] border-0"
+                          title="Document preview"
+                        />
                       ) : null}
-                    </div>
+                    </>
                   ) : (
                     <p className="text-sm text-gray-500 text-center py-8">
                       Aucun aperçu disponible
