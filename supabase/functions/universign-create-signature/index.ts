@@ -418,12 +418,17 @@ serve(async (req) => {
       .insert({
         id: crypto.randomUUID(),
         document_id: itemType === 'document' ? itemId : null,
+        transaction_id: transactionId,
         universign_transaction_id: transactionId,
+        universign_url: signatureUrl,
         document_name: documentName,
         signer_name: `${firstSigner.firstName} ${firstSigner.lastName}`,
         status: 'pending',
         owner_id: ownerId,
         role: role,
+        signatories: signatories,
+        item_type: itemType,
+        item_id: itemId,
         created_at: new Date().toISOString()
       });
 
