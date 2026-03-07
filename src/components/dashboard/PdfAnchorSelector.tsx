@@ -200,13 +200,13 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
         )}
 
         {/* Wrapper pour le PDF */}
-        <div className="relative" style={{ minHeight: '100%' }}>
+        <div className="relative" style={{ height: '842px' }}>
           <iframe
             ref={iframeRef}
             src={currentPdfUrl}
             className="w-full border-0"
             style={{ 
-              height: '842px',
+              height: '100%',
               pointerEvents: clickMode ? 'none' : 'auto' // Désactiver l'iframe en mode clic
             }}
             title="Document preview"
