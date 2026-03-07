@@ -433,7 +433,10 @@ serve(async (req) => {
       });
 
     if (insertError) {
-      console.error('[Universign] DB error:', insertError);
+      console.error('[Universign] DB insert error:', insertError);
+      // Ne pas échouer la requête, Universign est déjà créé
+    } else {
+      console.log('[Universign] Signature enregistrée dans la DB avec toutes les infos');
     }
 
     return new Response(
