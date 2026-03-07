@@ -64,6 +64,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
   const [previewLoading, setPreviewLoading] = useState(false);
   const [anchorPositions, setAnchorPositions] = useState<Array<{page: number, x: number, y: number, pageWidth: number, pageHeight: number, signatoryIndex: number}>>([]);
   const [originalPdfBase64, setOriginalPdfBase64] = useState<string | null>(null);
+  const [authToken, setAuthToken] = useState<string>('');
 
   // Determine role from URL path first (most reliable), then profile
   const role = window.location.pathname.includes('/notaires') || window.location.pathname.includes('/notaire') ? 'notaire' : 
@@ -72,6 +73,15 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
 
   useEffect(() => {
     console.log('SignatureDialog - URL:', window.location.pathname, 'Detected role:', role, 'Profile role:', profile?.role);
+    
+    // Récupérer le token d'authentification
+    const getToken = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setAuthToken(session.access_token);
+      }
+    };
+    getToken();
   }, [role, profile]);
 
   // Forcer itemType à 'contrat' quand un contrat est pré-sélectionné
@@ -385,54 +395,17 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
       // Déterminer le type correct : si un contrat est pré-sélectionné, c'est forcément un contrat
       const correctItemType = preSelectedContractId ? 'contrat' : itemType;
 
-      // Étape 1: Si on a un PDF et des positions d'ancres, modifier le PDF d'abord
-      let pdfToUse = originalPdfBase64;
-      if (originalPdfBase64 && anchorPositions.length > 0) {
-        console.log('[SignatureDialog] Adding', anchorPositions.length, 'anchors to PDF');
-        
-        const anchorResponse = await fetch(
-          'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/add-signature-anchor',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${session.access_token}`
-            },
-            body: JSON.stringify({
-              pdfBase64: originalPdfBase64,
-              anchorPositions: anchorPositions
-            })
-          }
-        );
-
-        if (anchorResponse.ok) {
-          const anchorResult = await anchorResponse.json();
-          if (anchorResult.success && anchorResult.pdfBase64) {
-            pdfToUse = anchorResult.pdfBase64;
-            console.log('[SignatureDialog] Anchors added successfully');
-          }
-        } else {
-          console.error('[SignatureDialog] Failed to add anchors');
-          toast.error('Erreur lors de l\'ajout des ancres de signature');
-          setLoading(false);
-          return;
-        }
-      }
-
+      // Le PDF est déjà modifié avec toutes les ancres, on l'envoie directement
       const requestBody = {
         itemId: itemToSign,
         itemType: correctItemType,
         signatories: signatories,
         signatureLevel: signatureLevel,
-        // On envoie le PDF modifié si disponible
-        modifiedPdfBase64: pdfToUse,
+        modifiedPdfBase64: originalPdfBase64, // Le PDF contient déjà toutes les ancres
         anchorPositions: anchorPositions
       };
       
-      console.log('[SignatureDialog] preSelectedContractId:', preSelectedContractId);
-      console.log('[SignatureDialog] Current itemType state:', itemType);
-      console.log('[SignatureDialog] Correct itemType used:', correctItemType);
-      console.log('[SignatureDialog] Sending signature request with', anchorPositions.length, 'anchors');
+      console.log('[SignatureDialog] Sending signature request with PDF containing', anchorPositions.length, 'anchors');
 
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-create-signature',
@@ -689,9 +662,14 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                 ) : previewContent ? (
                   <PdfAnchorSelector 
                     pdfUrl={previewContent}
-                    onAnchorsSet={(positions) => setAnchorPositions(positions)}
+                    pdfBase64={originalPdfBase64}
+                    onPdfModified={(newPdfBase64, anchors) => {
+                      setOriginalPdfBase64(newPdfBase64);
+                      setAnchorPositions(anchors);
+                    }}
                     signatoryCount={signatories.length}
                     role={role}
+                    authToken={authToken}
                   />
                 ) : (
                   <p className="text-sm text-gray-500 text-center py-8 border rounded-lg">

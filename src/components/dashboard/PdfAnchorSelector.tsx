@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { MapPin, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 type AnchorPosition = {
   page: number;
@@ -13,9 +14,11 @@ type AnchorPosition = {
 
 type PdfAnchorSelectorProps = {
   pdfUrl: string;
-  onAnchorsSet: (positions: AnchorPosition[]) => void;
+  pdfBase64: string | null;
+  onPdfModified: (newPdfBase64: string, anchors: AnchorPosition[]) => void;
   signatoryCount: number;
   role?: 'avocat' | 'notaire';
+  authToken: string;
 };
 
 const COLORS = [
@@ -26,39 +29,32 @@ const COLORS = [
   { border: 'border-orange-600', bg: 'bg-orange-600', text: 'text-orange-600', name: 'Orange' },
 ];
 
-export function PdfAnchorSelector({ pdfUrl, onAnchorsSet, signatoryCount, role = 'avocat' }: PdfAnchorSelectorProps) {
+export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryCount, role = 'avocat', authToken }: PdfAnchorSelectorProps) {
   const [anchorPositions, setAnchorPositions] = useState<AnchorPosition[]>([]);
   const [loading, setLoading] = useState(true);
   const [clickMode, setClickMode] = useState(false);
   const [currentSignatoryIndex, setCurrentSignatoryIndex] = useState(0);
+  const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfUrl);
+  const [currentPdfBase64, setCurrentPdfBase64] = useState(pdfBase64);
+  const [modifying, setModifying] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Attendre que l'iframe soit chargée
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
   }, [pdfUrl]);
 
-  useEffect(() => {
-    // Notifier le parent quand les positions changent
-    onAnchorsSet(anchorPositions);
-  }, [anchorPositions, onAnchorsSet]);
-
-  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!clickMode || !containerRef.current) return;
+  const handleContainerClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!clickMode || !containerRef.current || !currentPdfBase64) return;
 
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const y = e.clientY - rect.top + (containerRef.current.scrollTop || 0); // Prendre en compte le scroll
 
-    // Dimensions approximatives d'une page A4 en points PDF (595x842)
     const containerWidth = rect.width;
-    const containerHeight = rect.height;
-    
-    // Convertir les coordonnées du clic en coordonnées PDF
     const pdfX = (x / containerWidth) * 595;
-    const pdfY = (y / containerHeight) * 842;
+    const pdfY = y;
 
     const position: AnchorPosition = {
       page: 1,
@@ -69,15 +65,64 @@ export function PdfAnchorSelector({ pdfUrl, onAnchorsSet, signatoryCount, role =
       signatoryIndex: currentSignatoryIndex
     };
 
-    // Remplacer l'ancre existante pour ce signataire ou en ajouter une nouvelle
+    // Ajouter l'ancre au tableau
     const newPositions = [...anchorPositions.filter(p => p.signatoryIndex !== currentSignatoryIndex), position];
     setAnchorPositions(newPositions);
 
-    // Passer au signataire suivant automatiquement
+    // Modifier le PDF immédiatement
+    setModifying(true);
+    try {
+      const response = await fetch(
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/add-signature-anchor',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({
+            pdfBase64: currentPdfBase64,
+            anchorPositions: [position] // Une seule ancre à la fois
+          })
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.pdfBase64) {
+          // Mettre à jour le PDF
+          setCurrentPdfBase64(result.pdfBase64);
+          
+          // Convertir en blob pour la preview
+          const byteCharacters = atob(result.pdfBase64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'application/pdf' });
+          const newPdfUrl = URL.createObjectURL(blob);
+          setCurrentPdfUrl(newPdfUrl);
+          
+          // Notifier le parent
+          onPdfModified(result.pdfBase64, newPositions);
+          
+          toast.success(`Ancre ${currentSignatoryIndex + 1} ajoutée au document`);
+        }
+      } else {
+        toast.error('Erreur lors de l\'ajout de l\'ancre');
+      }
+    } catch (error) {
+      console.error('[PdfAnchorSelector] Error adding anchor:', error);
+      toast.error('Erreur lors de l\'ajout de l\'ancre');
+    } finally {
+      setModifying(false);
+    }
+
+    // Passer au signataire suivant ou désactiver le mode clic
     if (currentSignatoryIndex < signatoryCount - 1) {
       setCurrentSignatoryIndex(currentSignatoryIndex + 1);
     } else {
-      // Désactiver le mode clic après la dernière ancre
       setClickMode(false);
     }
   };
@@ -96,6 +141,12 @@ export function PdfAnchorSelector({ pdfUrl, onAnchorsSet, signatoryCount, role =
       <div className="bg-gray-50 px-4 py-3 border-b rounded-t-lg">
         <div className="flex items-center justify-between mb-2">
           <h4 className="text-sm font-medium">Aperçu du document</h4>
+          {modifying && (
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Modification du PDF...
+            </div>
+          )}
         </div>
         
         {/* Boutons pour placer les ancres */}
@@ -110,6 +161,7 @@ export function PdfAnchorSelector({ pdfUrl, onAnchorsSet, signatoryCount, role =
                 variant={clickMode && currentSignatoryIndex === index ? "default" : "outline"}
                 size="sm"
                 onClick={() => startPlacingAnchor(index)}
+                disabled={modifying}
                 className={`${color.border} ${clickMode && currentSignatoryIndex === index ? color.bg + ' text-white' : color.text}`}
               >
                 <MapPin className="h-4 w-4 mr-1" />
@@ -120,7 +172,7 @@ export function PdfAnchorSelector({ pdfUrl, onAnchorsSet, signatoryCount, role =
           })}
         </div>
 
-        {clickMode && (
+        {clickMode && !modifying && (
           <div className={`mt-2 text-xs p-2 rounded ${
             role === 'notaire' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'
           }`}>
@@ -131,7 +183,7 @@ export function PdfAnchorSelector({ pdfUrl, onAnchorsSet, signatoryCount, role =
 
       <div 
         ref={containerRef}
-        className={`relative border rounded-b-lg bg-white ${clickMode ? 'cursor-crosshair' : 'cursor-auto'}`}
+        className={`relative border rounded-b-lg bg-white ${clickMode && !modifying ? 'cursor-crosshair' : 'cursor-auto'}`}
         style={{ height: '400px', overflow: 'auto' }}
         onClick={handleContainerClick}
       >
@@ -141,38 +193,15 @@ export function PdfAnchorSelector({ pdfUrl, onAnchorsSet, signatoryCount, role =
           </div>
         )}
 
-        {/* Wrapper pour le PDF et les ancres - scrolle ensemble */}
+        {/* Wrapper pour le PDF */}
         <div className="relative" style={{ minHeight: '100%' }}>
           <iframe
             ref={iframeRef}
-            src={pdfUrl}
-            className={`w-full border-0 ${clickMode ? 'pointer-events-none' : 'pointer-events-auto'}`}
-            style={{ height: '842px' }} // Hauteur fixe approximative d'une page A4
+            src={currentPdfUrl}
+            className={`w-full border-0 ${clickMode && !modifying ? 'pointer-events-none' : 'pointer-events-auto'}`}
+            style={{ height: '842px' }}
             title="Document preview"
           />
-
-          {/* Marqueurs de position de signature - à l'intérieur du wrapper qui scrolle */}
-          {anchorPositions.map((anchor) => {
-            const color = COLORS[anchor.signatoryIndex % COLORS.length];
-            return (
-              <div
-                key={anchor.signatoryIndex}
-                className={`absolute transform -translate-x-1/2 -translate-y-1/2 z-20 ${color.text}`}
-                style={{
-                  left: `${(anchor.x / anchor.pageWidth) * 100}%`,
-                  top: `${anchor.y}px`, // Position en pixels pour suivre le scroll
-                  pointerEvents: 'none'
-                }}
-              >
-                <div className="relative">
-                  <MapPin className="h-8 w-8 fill-current" />
-                  <div className={`absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-1 rounded text-xs font-medium text-white ${color.bg}`}>
-                    Signataire {anchor.signatoryIndex + 1}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
         </div>
       </div>
 
@@ -184,16 +213,8 @@ export function PdfAnchorSelector({ pdfUrl, onAnchorsSet, signatoryCount, role =
             return (
               <div key={anchor.signatoryIndex} className={`text-xs p-2 rounded-lg flex items-center justify-between ${color.bg} bg-opacity-10 ${color.text}`}>
                 <span>
-                  ✅ <strong>Signataire {anchor.signatoryIndex + 1}</strong> - Page {anchor.page}, X: {anchor.x}pt, Y: {anchor.y}pt
+                  ✅ <strong>Signataire {anchor.signatoryIndex + 1}</strong> - Ancre ajoutée au document
                 </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeAnchor(anchor.signatoryIndex)}
-                  className="h-6 px-2"
-                >
-                  Retirer
-                </Button>
               </div>
             );
           })}
