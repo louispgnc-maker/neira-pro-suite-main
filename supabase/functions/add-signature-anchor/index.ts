@@ -57,12 +57,13 @@ serve(async (req) => {
       console.log('[AddAnchor] Adding anchor:', anchorText, 'at:', { x, y, page: anchorPos.page });
       
       // Ajouter le texte à la position spécifiée
+      // Taille 2pt et couleur gris très clair pour être quasi invisible
       page.drawText(anchorText, {
         x,
         y,
-        size: 10,
+        size: 2, // Très petite taille
         font,
-        color: rgb(0, 0, 0),
+        color: rgb(0.9, 0.9, 0.9), // Gris très clair (presque blanc)
       });
     }
     
