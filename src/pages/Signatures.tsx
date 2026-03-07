@@ -212,7 +212,11 @@ export default function Signatures() {
               </TableHeader>
               <TableBody>
                 {signatures.map((sig) => (
-                  <TableRow key={sig.id}>
+                  <TableRow 
+                    key={sig.id}
+                    className="cursor-pointer hover:bg-gray-50"
+                    onClick={() => window.location.href = `/${role}s/signatures/${sig.id}`}
+                  >
                     <TableCell className="font-medium">{sig.signer_name}</TableCell>
                     <TableCell>{sig.document_name}</TableCell>
                     <TableCell>
