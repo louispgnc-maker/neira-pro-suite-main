@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Plus, X, Loader2, FileText, Search } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { PdfAnchorSelector } from './PdfAnchorSelector';
 
 type Document = {
   id: string;
@@ -61,6 +62,10 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
   const [signaturePosition, setSignaturePosition] = useState({ page: 1, x: 50, y: 750 });
   const [previewContent, setPreviewContent] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [anchorPosition, setAnchorPosition] = useState<{page: number, x: number, y: number, pageWidth: number, pageHeight: number} | null>(null);
+  const [originalPdfBase64, setOriginalPdfBase64] = useState<string | null>(null);
+  const [anchorPosition, setAnchorPosition] = useState<{page: number, x: number, y: number, pageWidth: number, pageHeight: number} | null>(null);
+  const [originalPdfBase64, setOriginalPdfBase64] = useState<string | null>(null);
 
   // Determine role from URL path first (most reliable), then profile
   const role = window.location.pathname.includes('/notaires') || window.location.pathname.includes('/notaire') ? 'notaire' : 
@@ -230,7 +235,9 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
               if (response.ok) {
                 const result = await response.json();
                 if (result.success && result.pdf) {
-                  // Convertir base64 en blob
+                  // Stocker le PDF base64 original
+                  setOriginalPdfBase64(result.pdf);
+                  // Convertir base64 en blob pour preview
                   const byteCharacters = atob(result.pdf);
                   const byteNumbers = new Array(byteCharacters.length);
                   for (let i = 0; i < byteCharacters.length; i++) {
@@ -357,6 +364,11 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
       return;
     }
 
+    if (!anchorPosition) {
+      toast.error('Veuillez cliquer sur le document pour placer la signature');
+      return;
+    }
+
     const invalidSignatory = signatories.find(s => !s.firstName || !s.lastName || !s.email);
     if (invalidSignatory) {
       toast.error('Veuillez remplir tous les champs obligatoires du signataire');
@@ -375,18 +387,53 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
       // Déterminer le type correct : si un contrat est pré-sélectionné, c'est forcément un contrat
       const correctItemType = preSelectedContractId ? 'contrat' : itemType;
 
+      // Étape 1: Si on a un PDF et une position d'ancre, modifier le PDF d'abord
+      let pdfToUse = originalPdfBase64;
+      if (originalPdfBase64 && anchorPosition) {
+        console.log('[SignatureDialog] Adding anchor to PDF at position:', anchorPosition);
+        
+        const anchorResponse = await fetch(
+          'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/add-signature-anchor',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({
+              pdfBase64: originalPdfBase64,
+              anchorPosition: anchorPosition
+            })
+          }
+        );
+
+        if (anchorResponse.ok) {
+          const anchorResult = await anchorResponse.json();
+          if (anchorResult.success && anchorResult.pdfBase64) {
+            pdfToUse = anchorResult.pdfBase64;
+            console.log('[SignatureDialog] Anchor added successfully');
+          }
+        } else {
+          console.error('[SignatureDialog] Failed to add anchor');
+          toast.error('Erreur lors de l\'ajout de l\'ancre de signature');
+          setLoading(false);
+          return;
+        }
+      }
+
       const requestBody = {
         itemId: itemToSign,
         itemType: correctItemType,
         signatories: signatories,
         signatureLevel: signatureLevel,
-        signaturePosition: signaturePosition
+        // On envoie le PDF modifié si disponible
+        modifiedPdfBase64: pdfToUse
       };
       
       console.log('[SignatureDialog] preSelectedContractId:', preSelectedContractId);
       console.log('[SignatureDialog] Current itemType state:', itemType);
       console.log('[SignatureDialog] Correct itemType used:', correctItemType);
-      console.log('[SignatureDialog] Sending signature request:', requestBody);
+      console.log('[SignatureDialog] Sending signature request with modified PDF');
 
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-create-signature',
@@ -631,35 +678,26 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
 
             {/* Preview du contenu sélectionné */}
             {selectedItemId && (
-              <div className="mt-4 border rounded-lg overflow-hidden">
-                <div className="bg-gray-50 px-4 py-2 border-b">
-                  <h4 className="text-sm font-medium">Aperçu du document avec position de signature</h4>
-                </div>
-                <div className="p-4 bg-white">
-                  {previewLoading ? (
-                    <div className="flex items-center justify-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                    </div>
-                  ) : previewContent === 'NO_CONTRACT' ? (
-                    <p className="text-sm text-gray-500 text-center py-8">
-                      Pas de contrat à signer dans ce dossier
-                    </p>
-                  ) : previewContent ? (
-                    <>
-                      {itemType === 'contrat' || itemType === 'document' || itemType === 'dossier' ? (
-                        <iframe
-                          src={previewContent}
-                          className="w-full h-[350px] border-0"
-                          title="Document preview"
-                        />
-                      ) : null}
-                    </>
-                  ) : (
-                    <p className="text-sm text-gray-500 text-center py-8">
-                      Aucun aperçu disponible
-                    </p>
-                  )}
-                </div>
+              <div className="mt-4">
+                {previewLoading ? (
+                  <div className="flex items-center justify-center py-8 border rounded-lg">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : previewContent === 'NO_CONTRACT' ? (
+                  <p className="text-sm text-gray-500 text-center py-8 border rounded-lg">
+                    Pas de contrat à signer dans ce dossier
+                  </p>
+                ) : previewContent ? (
+                  <PdfAnchorSelector 
+                    pdfUrl={previewContent}
+                    onAnchorSet={(position) => setAnchorPosition(position)}
+                    role={role}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-8 border rounded-lg">
+                    Aucun aperçu disponible
+                  </p>
+                )}
               </div>
             )}
           </div>

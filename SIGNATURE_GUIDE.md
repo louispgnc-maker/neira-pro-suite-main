@@ -2,7 +2,7 @@
 
 ## Utilisation
 
-Pour créer une signature avec une position personnalisée :
+Pour créer une signature avec une ancre textuelle :
 
 ```typescript
 const { data, error } = await supabase.functions.invoke('universign-create-signature', {
@@ -14,43 +14,41 @@ const { data, error } = await supabase.functions.invoke('universign-create-signa
       firstName: 'Jean',
       lastName: 'Dupont'
     }],
-    signaturePosition: {
-      page: 1,      // Numéro de page (commence à 1)
-      x: 150,       // Position X (en points, 0 = gauche)
-      y: 275        // Position Y (en points, 0 = haut)
-    }
+    signatureAnchor: '[SIGNER_ICI]'  // L'ancre sur laquelle placer la signature
   }
 });
 ```
 
-## Coordonnées de la signature
+## Ancre de signature
 
-- **page**: Numéro de la page où placer la signature (commence à 1)
-- **x**: Position horizontale en points (0 = bord gauche, ~595 = bord droit pour A4)
-- **y**: Position verticale en points (0 = haut de la page, ~842 = bas pour A4)
+**Important** : La signature se place automatiquement sur l'ancre `[SIGNER_ICI]` présente dans votre document PDF.
 
-### Exemples de positions communes (format A4)
+- **signatureAnchor** : Toujours `'[SIGNER_ICI]'` (valeur par défaut et recommandée)
 
-- **En bas à gauche**: `{ page: 1, x: 50, y: 750 }`
-- **En bas à droite**: `{ page: 1, x: 400, y: 750 }`
-- **En haut à droite**: `{ page: 1, x: 400, y: 50 }`
-- **Au centre**: `{ page: 1, x: 250, y: 400 }`
-- **Dernière page, en bas**: `{ page: -1, x: 50, y: 750 }` (à implémenter si nécessaire)
+### Comment utiliser les ancres dans vos documents
+
+1. Dans votre contrat HTML/PDF, ajoutez le mot-clé unique où vous voulez la signature :
+   ```html
+   <p>Fait à Paris, le 7 mars 2026</p>
+   <p><strong>__SIGNATURE_CLIENT__</strong></p>
+   ```
+
+2. La signature Universign sera automatiquement placée sur ce mot, quelle que soit sa position dans le document
+
+3. Vous pouvez utiliser plusieurs ancres différentes pour plusieurs signataires (à implémenter si besoin)
 
 ## Récupération du document signé
 
 Une fois la signature complétée :
 
 1. Le webhook `universign-webhook` est automatiquement appelé par Universign
-2. Le document signé est téléchargé et uploadé dans Storage
-3. Le champ `storage_path` du document est mis à jour avec le nouveau fichier signé
-4. Le champ `signed_at` est rempli avec la date de signature
+2. Le document signé est téléchargé et u`[SIGNER_ICI]` où vous voulez la signature :
+   ```html
+   <p>Fait à Paris, le 7 mars 2026</p>
+   <p><strong>[SIGNER_ICI]</strong></p>
+   ```
 
-Pour télécharger le document signé :
-
-```typescript
-const { data: document } = await supabase
-  .from('documents')
+2. La signature Universign sera automatiquement placée sur cette ancre, quelle que soit sa position dans le document
   .select('*')
   .eq('id', documentId)
   .single();
