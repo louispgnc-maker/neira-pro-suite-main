@@ -180,7 +180,7 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
           })}
           
           {/* Overlay transparent pour capturer les clics en mode placement */}
-          {clickMode && !modifying && (
+          {clickMode && (
             <div 
               className="absolute inset-0 cursor-crosshair z-10"
               onClick={handleContainerClick}
