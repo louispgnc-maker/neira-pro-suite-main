@@ -21,9 +21,10 @@ serve(async (req) => {
       signatories, 
       signatureLevel = 'simple',
       signatureAnchor = '[SIGNER_ICI]',
-      modifiedPdfBase64 = null
+      modifiedPdfBase64 = null,
+      anchorPositions = []
     } = body;
-    console.log('[Universign] Parsed - itemId:', itemId, 'itemType:', itemType, 'signatories:', signatories?.length, 'signatureAnchor:', signatureAnchor, 'hasModifiedPdf:', !!modifiedPdfBase64);
+    console.log('[Universign] Parsed - itemId:', itemId, 'itemType:', itemType, 'signatories:', signatories?.length, 'signatureAnchor:', signatureAnchor, 'hasModifiedPdf:', !!modifiedPdfBase64, 'anchors:', anchorPositions?.length);
 
     if (!itemId || !itemType || !signatories || signatories.length === 0) {
       return new Response(
@@ -284,6 +285,32 @@ serve(async (req) => {
     const webhookUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/universign-webhook`;
     console.log('[Universign] Webhook URL:', webhookUrl);
     
+    // Créer les fields (champs de signature) - un par signataire
+    const fields = signatories.map((signer: any, index: number) => ({
+      id: `signature_field_${index + 1}`,
+      name: `Signature ${index + 1}`,
+      anchor: `[SIGNER_ICI_${index + 1}]`,
+      type: 'signature',
+      consents: ['Je certifie avoir lu et accepté ce document']
+    }));
+
+    // Créer les signatures - lier chaque field à son signataire
+    const signatures = signatories.map((signer: any, index: number) => ({
+      field: `signature_field_${index + 1}`,
+      signer: signer.email
+    }));
+
+    // Créer les participants
+    const participants = signatories.map((signer: any, index: number) => ({
+      email: signer.email,
+      full_name: `${signer.firstName} ${signer.lastName}`,
+      full_name_type: 'prerequisite',
+      schedule: [index], // Ordre séquentiel : 0, 1, 2...
+      invitation_subject: `Signature requise : ${documentName}`,
+      invitation_message: `Bonjour ${signer.firstName}, veuillez signer le document "${documentName}".`,
+      min_signature_level: 'level1'
+    }));
+    
     // Universign API v1 - full transaction format with base64 content
     const transactionRequest = {
       autostart: true,
@@ -300,27 +327,10 @@ serve(async (req) => {
       documents: [{
         name: `${documentName}.pdf`,
         content: documentBase64,
-        fields: [{
-          id: 'signature_field_1',
-          name: 'Signature',
-          anchor: signatureAnchor,
-          type: 'signature',
-          consents: ['Je certifie avoir lu et accepté ce document']
-        }]
+        fields: fields
       }],
-      signatures: [{
-        field: 'signature_field_1',
-        signer: firstSigner.email
-      }],
-      participants: [{
-        email: firstSigner.email,
-        full_name: `${firstSigner.firstName} ${firstSigner.lastName}`,
-        full_name_type: 'prerequisite',
-        schedule: [0],
-        invitation_subject: `Signature requise : ${documentName}`,
-        invitation_message: `Bonjour ${firstSigner.firstName}, veuillez signer le document "${documentName}".`,
-        min_signature_level: 'level1'
-      }]
+      signatures: signatures,
+      participants: participants
     };
 
     console.log('[Universign] Transaction request (without base64):', JSON.stringify({

@@ -15,11 +15,11 @@ serve(async (req) => {
     const body = await req.json();
     console.log('[AddAnchor] Received request');
     
-    const { pdfBase64, anchorPosition } = body;
+    const { pdfBase64, anchorPositions } = body;
     
-    if (!pdfBase64 || !anchorPosition) {
+    if (!pdfBase64 || !anchorPositions || !Array.isArray(anchorPositions)) {
       return new Response(
-        JSON.stringify({ error: 'pdfBase64 and anchorPosition are required' }),
+        JSON.stringify({ error: 'pdfBase64 and anchorPositions array are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -30,37 +30,41 @@ serve(async (req) => {
     // Charger le PDF avec pdf-lib
     const pdfDoc = await PDFDocument.load(pdfBytes);
     
-    // Récupérer la page (par défaut page 1, index 0)
-    const pageIndex = (anchorPosition.page || 1) - 1;
-    const page = pdfDoc.getPages()[pageIndex];
-    
-    if (!page) {
-      return new Response(
-        JSON.stringify({ error: `Page ${anchorPosition.page} not found` }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     // Charger une police
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     
-    // Obtenir les dimensions de la page
-    const { height } = page.getSize();
-    
-    // Coordonnées : en PDF, Y=0 est en bas, donc on inverse
-    const x = anchorPosition.x || 50;
-    const y = height - (anchorPosition.y || 750); // Inverser Y
-    
-    console.log('[AddAnchor] Adding text at:', { x, y, page: anchorPosition.page });
-    
-    // Ajouter le texte [SIGNER_ICI] à la position spécifiée
-    page.drawText('[SIGNER_ICI]', {
-      x,
-      y,
-      size: 10,
-      font,
-      color: rgb(0, 0, 0),
-    });
+    // Ajouter une ancre pour chaque signataire
+    for (const anchorPos of anchorPositions) {
+      // Récupérer la page (par défaut page 1, index 0)
+      const pageIndex = (anchorPos.page || 1) - 1;
+      const page = pdfDoc.getPages()[pageIndex];
+      
+      if (!page) {
+        console.warn(`[AddAnchor] Page ${anchorPos.page} not found, skipping anchor for signatory ${anchorPos.signatoryIndex}`);
+        continue;
+      }
+
+      // Obtenir les dimensions de la page
+      const { height } = page.getSize();
+      
+      // Coordonnées : en PDF, Y=0 est en bas, donc on inverse
+      const x = anchorPos.x || 50;
+      const y = height - (anchorPos.y || 750); // Inverser Y
+      
+      // Créer une ancre unique pour chaque signataire
+      const anchorText = `[SIGNER_ICI_${anchorPos.signatoryIndex + 1}]`;
+      
+      console.log('[AddAnchor] Adding anchor:', anchorText, 'at:', { x, y, page: anchorPos.page });
+      
+      // Ajouter le texte à la position spécifiée
+      page.drawText(anchorText, {
+        x,
+        y,
+        size: 10,
+        font,
+        color: rgb(0, 0, 0),
+      });
+    }
     
     // Sauvegarder le PDF modifié
     const modifiedPdfBytes = await pdfDoc.save();
@@ -72,7 +76,7 @@ serve(async (req) => {
         .join('')
     );
     
-    console.log('[AddAnchor] PDF modified successfully');
+    console.log('[AddAnchor] PDF modified successfully with', anchorPositions.length, 'anchors');
     
     return new Response(
       JSON.stringify({ 

@@ -62,7 +62,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
   const [signaturePosition, setSignaturePosition] = useState({ page: 1, x: 50, y: 750 });
   const [previewContent, setPreviewContent] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [anchorPosition, setAnchorPosition] = useState<{page: number, x: number, y: number, pageWidth: number, pageHeight: number} | null>(null);
+  const [anchorPositions, setAnchorPositions] = useState<Array<{page: number, x: number, y: number, pageWidth: number, pageHeight: number, signatoryIndex: number}>>([]);
   const [originalPdfBase64, setOriginalPdfBase64] = useState<string | null>(null);
 
   // Determine role from URL path first (most reliable), then profile
@@ -362,8 +362,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
       return;
     }
 
-    if (!anchorPosition) {
-      toast.error('Veuillez cliquer sur le document pour placer la signature');
+    if (anchorPositions.length !== signatories.length) {
+      toast.error(`Veuillez placer ${signatories.length} ancre(s) de signature (une par signataire)`);
       return;
     }
 
@@ -385,10 +385,10 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
       // Déterminer le type correct : si un contrat est pré-sélectionné, c'est forcément un contrat
       const correctItemType = preSelectedContractId ? 'contrat' : itemType;
 
-      // Étape 1: Si on a un PDF et une position d'ancre, modifier le PDF d'abord
+      // Étape 1: Si on a un PDF et des positions d'ancres, modifier le PDF d'abord
       let pdfToUse = originalPdfBase64;
-      if (originalPdfBase64 && anchorPosition) {
-        console.log('[SignatureDialog] Adding anchor to PDF at position:', anchorPosition);
+      if (originalPdfBase64 && anchorPositions.length > 0) {
+        console.log('[SignatureDialog] Adding', anchorPositions.length, 'anchors to PDF');
         
         const anchorResponse = await fetch(
           'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/add-signature-anchor',
@@ -400,7 +400,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
             },
             body: JSON.stringify({
               pdfBase64: originalPdfBase64,
-              anchorPosition: anchorPosition
+              anchorPositions: anchorPositions
             })
           }
         );
@@ -409,11 +409,11 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
           const anchorResult = await anchorResponse.json();
           if (anchorResult.success && anchorResult.pdfBase64) {
             pdfToUse = anchorResult.pdfBase64;
-            console.log('[SignatureDialog] Anchor added successfully');
+            console.log('[SignatureDialog] Anchors added successfully');
           }
         } else {
-          console.error('[SignatureDialog] Failed to add anchor');
-          toast.error('Erreur lors de l\'ajout de l\'ancre de signature');
+          console.error('[SignatureDialog] Failed to add anchors');
+          toast.error('Erreur lors de l\'ajout des ancres de signature');
           setLoading(false);
           return;
         }
@@ -425,13 +425,14 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
         signatories: signatories,
         signatureLevel: signatureLevel,
         // On envoie le PDF modifié si disponible
-        modifiedPdfBase64: pdfToUse
+        modifiedPdfBase64: pdfToUse,
+        anchorPositions: anchorPositions
       };
       
       console.log('[SignatureDialog] preSelectedContractId:', preSelectedContractId);
       console.log('[SignatureDialog] Current itemType state:', itemType);
       console.log('[SignatureDialog] Correct itemType used:', correctItemType);
-      console.log('[SignatureDialog] Sending signature request with modified PDF');
+      console.log('[SignatureDialog] Sending signature request with', anchorPositions.length, 'anchors');
 
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-create-signature',
@@ -688,7 +689,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                 ) : previewContent ? (
                   <PdfAnchorSelector 
                     pdfUrl={previewContent}
-                    onAnchorSet={(position) => setAnchorPosition(position)}
+                    onAnchorsSet={(positions) => setAnchorPositions(positions)}
+                    signatoryCount={signatories.length}
                     role={role}
                   />
                 ) : (
