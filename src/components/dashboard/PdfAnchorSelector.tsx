@@ -183,9 +183,8 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
 
       <div 
         ref={containerRef}
-        className={`relative border rounded-b-lg bg-white ${clickMode && !modifying ? 'cursor-crosshair' : 'cursor-auto'}`}
+        className="relative border rounded-b-lg bg-white"
         style={{ height: '400px', overflow: 'auto' }}
-        onClick={handleContainerClick}
       >
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-50 z-10">
@@ -198,10 +197,19 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
           <iframe
             ref={iframeRef}
             src={currentPdfUrl}
-            className={`w-full border-0 ${clickMode && !modifying ? 'pointer-events-none' : 'pointer-events-auto'}`}
+            className="w-full border-0"
             style={{ height: '842px' }}
             title="Document preview"
           />
+          
+          {/* Overlay transparent pour capturer les clics en mode placement */}
+          {clickMode && !modifying && (
+            <div 
+              className="absolute inset-0 cursor-crosshair z-10"
+              onClick={handleContainerClick}
+              style={{ background: 'transparent' }}
+            />
+          )}
         </div>
       </div>
 
