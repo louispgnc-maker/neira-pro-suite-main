@@ -146,7 +146,7 @@ export function PdfAnchorSelector({ pdfUrl, onAnchorsSet, signatoryCount, role =
           <iframe
             ref={iframeRef}
             src={pdfUrl}
-            className="w-full border-0"
+            className={`w-full border-0 ${clickMode ? 'pointer-events-none' : 'pointer-events-auto'}`}
             style={{ height: '842px' }} // Hauteur fixe approximative d'une page A4
             title="Document preview"
           />
