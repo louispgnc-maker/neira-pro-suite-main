@@ -355,6 +355,14 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
   const removeSignatory = (index: number) => {
     if (signatories.length > 1) {
       setSignatories(signatories.filter((_, i) => i !== index));
+      // Supprimer aussi les coordonnées correspondantes et réindexer les autres
+      setAnchorPositions(anchorPositions
+        .filter(pos => pos.signatoryIndex !== index)
+        .map(pos => ({
+          ...pos,
+          signatoryIndex: pos.signatoryIndex > index ? pos.signatoryIndex - 1 : pos.signatoryIndex
+        }))
+      );
     }
   };
 
