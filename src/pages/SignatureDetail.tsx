@@ -63,6 +63,7 @@ export default function SignatureDetail() {
           return;
         }
 
+        console.log('[SignatureDetail] Données chargées:', data);
         setSignature(data as SignatureDetail);
 
         // Charger le PDF si c'est un document stocké
@@ -178,14 +179,13 @@ export default function SignatureDetail() {
     <AppLayout>
       <div className="p-6">
         <div className="mb-6">
-          <Button
-            variant="ghost"
+          <button
             onClick={() => navigate(`/${role}s/signatures`)}
-            className="mb-4"
+            className="mb-4 flex items-center text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour aux signatures
-          </Button>
+          </button>
           
           <div className="flex items-center justify-between">
             <div>
