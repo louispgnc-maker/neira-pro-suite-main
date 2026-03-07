@@ -64,8 +64,6 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
   const [previewLoading, setPreviewLoading] = useState(false);
   const [anchorPosition, setAnchorPosition] = useState<{page: number, x: number, y: number, pageWidth: number, pageHeight: number} | null>(null);
   const [originalPdfBase64, setOriginalPdfBase64] = useState<string | null>(null);
-  const [anchorPosition, setAnchorPosition] = useState<{page: number, x: number, y: number, pageWidth: number, pageHeight: number} | null>(null);
-  const [originalPdfBase64, setOriginalPdfBase64] = useState<string | null>(null);
 
   // Determine role from URL path first (most reliable), then profile
   const role = window.location.pathname.includes('/notaires') || window.location.pathname.includes('/notaire') ? 'notaire' : 
