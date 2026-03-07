@@ -76,12 +76,8 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
     
     toast.success(`Position Signataire ${currentSignatoryIndex + 1} enregistrée`);
 
-    // Passer au signataire suivant ou désactiver le mode clic
-    if (currentSignatoryIndex < signatoryCount - 1) {
-      setCurrentSignatoryIndex(currentSignatoryIndex + 1);
-    } else {
-      setClickMode(false);
-    }
+    // Désactiver le mode clic après avoir enregistré la position
+    setClickMode(false);
   };
 
   const removeAnchor = (signatoryIndex: number) => {
