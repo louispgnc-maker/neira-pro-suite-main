@@ -48,13 +48,19 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
   const handleContainerClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     if (!clickMode || !containerRef.current || !currentPdfBase64) return;
 
+    // Empêcher la propagation pour éviter les doubles clics
+    e.stopPropagation();
+
     const rect = containerRef.current.getBoundingClientRect();
+    const scrollTop = containerRef.current.scrollTop || 0;
     const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top + (containerRef.current.scrollTop || 0); // Prendre en compte le scroll
+    const y = e.clientY - rect.top + scrollTop; // Position absolue avec scroll
 
     const containerWidth = rect.width;
     const pdfX = (x / containerWidth) * 595;
     const pdfY = y;
+
+    console.log('[PdfAnchorSelector] Click at:', { x, y, pdfX, pdfY, scrollTop });
 
     const position: AnchorPosition = {
       page: 1,
@@ -68,6 +74,7 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
     // Ajouter l'ancre au tableau
     const newPositions = [...anchorPositions.filter(p => p.signatoryIndex !== currentSignatoryIndex), position];
     setAnchorPositions(newPositions);
+    console.log('[PdfAnchorSelector] Anchor added to positions:', newPositions.length, 'anchors');
 
     // Modifier le PDF immédiatement
     setModifying(true);
