@@ -19,6 +19,7 @@ type PdfAnchorSelectorProps = {
   signatoryCount: number;
   role?: 'avocat' | 'notaire';
   authToken: string;
+  anchorPositions: AnchorPosition[];
 };
 
 const COLORS = [
@@ -29,8 +30,7 @@ const COLORS = [
   { border: 'border-orange-600', bg: 'bg-orange-600', text: 'text-orange-600', name: 'Orange' },
 ];
 
-export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryCount, role = 'avocat', authToken }: PdfAnchorSelectorProps) {
-  const [anchorPositions, setAnchorPositions] = useState<AnchorPosition[]>([]);
+export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryCount, role = 'avocat', authToken, anchorPositions }: PdfAnchorSelectorProps) {
   const [loading, setLoading] = useState(true);
   const [clickMode, setClickMode] = useState(false);
   const [currentSignatoryIndex, setCurrentSignatoryIndex] = useState(0);
@@ -69,7 +69,6 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
 
     // Ajouter la position au tableau (remplacer si existe déjà pour ce signataire)
     const newPositions = [...anchorPositions.filter(p => p.signatoryIndex !== currentSignatoryIndex), position];
-    setAnchorPositions(newPositions);
     
     // Notifier le parent avec les nouvelles positions
     onPdfModified(pdfBase64!, newPositions);

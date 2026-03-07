@@ -676,6 +676,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                     signatoryCount={signatories.length}
                     role={role}
                     authToken={authToken}
+                    anchorPositions={anchorPositions}
                   />
                 ) : (
                   <p className="text-sm text-gray-500 text-center py-8 border rounded-lg">
