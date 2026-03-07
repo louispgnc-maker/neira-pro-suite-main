@@ -34,9 +34,6 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
   const [loading, setLoading] = useState(true);
   const [clickMode, setClickMode] = useState(false);
   const [currentSignatoryIndex, setCurrentSignatoryIndex] = useState(0);
-  const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfUrl);
-  const [currentPdfBase64, setCurrentPdfBase64] = useState(pdfBase64);
-  const [modifying, setModifying] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -45,20 +42,19 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
     return () => clearTimeout(timer);
   }, [pdfUrl]);
 
-  const handleContainerClick = async (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!clickMode || !containerRef.current || !currentPdfBase64) return;
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!clickMode || !containerRef.current) return;
 
-    // Empêcher la propagation pour éviter les doubles clics
     e.stopPropagation();
 
     const rect = containerRef.current.getBoundingClientRect();
     const scrollTop = containerRef.current.scrollTop || 0;
     const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top + scrollTop; // Position absolue avec scroll
+    const y = e.clientY - rect.top + scrollTop;
 
     const containerWidth = rect.width;
     const pdfX = (x / containerWidth) * 595;
-    const pdfY = y;
+    const pdfY = 842 - y; // Universign utilise l'origine en bas à gauche
 
     console.log('[PdfAnchorSelector] Click at:', { x, y, pdfX, pdfY, scrollTop });
 
@@ -71,60 +67,14 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
       signatoryIndex: currentSignatoryIndex
     };
 
-    // Ajouter l'ancre au tableau
+    // Ajouter la position au tableau (remplacer si existe déjà pour ce signataire)
     const newPositions = [...anchorPositions.filter(p => p.signatoryIndex !== currentSignatoryIndex), position];
     setAnchorPositions(newPositions);
-    console.log('[PdfAnchorSelector] Anchor added to positions:', newPositions.length, 'anchors');
-
-    // Modifier le PDF immédiatement
-    setModifying(true);
-    try {
-      const response = await fetch(
-        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/add-signature-anchor',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authToken}`
-          },
-          body: JSON.stringify({
-            pdfBase64: currentPdfBase64,
-            anchorPositions: [position] // Une seule ancre à la fois
-          })
-        }
-      );
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.pdfBase64) {
-          // Mettre à jour le PDF
-          setCurrentPdfBase64(result.pdfBase64);
-          
-          // Convertir en blob pour la preview
-          const byteCharacters = atob(result.pdfBase64);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: 'application/pdf' });
-          const newPdfUrl = URL.createObjectURL(blob);
-          setCurrentPdfUrl(newPdfUrl);
-          
-          // Notifier le parent
-          onPdfModified(result.pdfBase64, newPositions);
-          
-          toast.success(`Ancre ${currentSignatoryIndex + 1} ajoutée au document`);
-        }
-      } else {
-        toast.error('Erreur lors de l\'ajout de l\'ancre');
-      }
-    } catch (error) {
-      console.error('[PdfAnchorSelector] Error adding anchor:', error);
-      toast.error('Erreur lors de l\'ajout de l\'ancre');
-    } finally {
-      setModifying(false);
-    }
+    
+    // Notifier le parent avec les nouvelles positions
+    onPdfModified(pdfBase64!, newPositions);
+    
+    toast.success(`Position Signataire ${currentSignatoryIndex + 1} enregistrée`);
 
     // Passer au signataire suivant ou désactiver le mode clic
     if (currentSignatoryIndex < signatoryCount - 1) {
@@ -148,12 +98,6 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
       <div className="bg-gray-50 px-4 py-3 border-b rounded-t-lg">
         <div className="flex items-center justify-between mb-2">
           <h4 className="text-sm font-medium">Aperçu du document</h4>
-          {modifying && (
-            <div className="flex items-center gap-2 text-xs text-gray-600">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Modification du PDF...
-            </div>
-          )}
         </div>
         
         {/* Boutons pour placer les ancres */}
@@ -168,7 +112,6 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
                 variant={clickMode && currentSignatoryIndex === index ? "default" : "outline"}
                 size="sm"
                 onClick={() => startPlacingAnchor(index)}
-                disabled={modifying}
                 className={`${color.border} ${clickMode && currentSignatoryIndex === index ? color.bg + ' text-white' : color.text}`}
               >
                 <MapPin className="h-4 w-4 mr-1" />
@@ -179,11 +122,11 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
           })}
         </div>
 
-        {clickMode && !modifying && (
+        {clickMode && (
           <div className={`mt-2 text-xs p-2 rounded ${
             role === 'notaire' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'
           }`}>
-            👆 Cliquez sur le document pour placer l'ancre du <strong>Signataire {currentSignatoryIndex + 1}</strong>
+            👆 Cliquez sur le document pour placer la signature du <strong>Signataire {currentSignatoryIndex + 1}</strong>
           </div>
         )}
       </div>
@@ -203,11 +146,11 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
         <div className="relative" style={{ height: '842px' }}>
           <iframe
             ref={iframeRef}
-            src={currentPdfUrl}
+            src={pdfUrl}
             className="w-full border-0"
             style={{ 
               height: '100%',
-              pointerEvents: clickMode ? 'none' : 'auto' // Désactiver l'iframe en mode clic
+              pointerEvents: clickMode ? 'none' : 'auto'
             }}
             title="Document preview"
           />
@@ -215,13 +158,14 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
           {/* Marqueurs visuels colorés UNIQUEMENT pour la preview - disparaissent à l'envoi */}
           {anchorPositions.map((anchor) => {
             const color = COLORS[anchor.signatoryIndex % COLORS.length];
+            const displayY = 842 - anchor.y; // Reconvertir pour l'affichage
             return (
               <div
                 key={anchor.signatoryIndex}
                 className={`absolute transform -translate-x-1/2 -translate-y-1/2 z-20 ${color.text}`}
                 style={{
                   left: `${(anchor.x / anchor.pageWidth) * 100}%`,
-                  top: `${anchor.y}px`,
+                  top: `${displayY}px`,
                   pointerEvents: 'none'
                 }}
               >
@@ -254,7 +198,7 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
             return (
               <div key={anchor.signatoryIndex} className={`text-xs p-2 rounded-lg flex items-center justify-between ${color.bg} bg-opacity-10 ${color.text}`}>
                 <span>
-                  ✅ <strong>Signataire {anchor.signatoryIndex + 1}</strong> - Ancre ajoutée au document
+                  ✅ <strong>Signataire {anchor.signatoryIndex + 1}</strong> - Position enregistrée (x: {anchor.x}, y: {anchor.y})
                 </span>
               </div>
             );
@@ -264,7 +208,7 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
 
       {anchorPositions.length < signatoryCount && (
         <div className="text-xs p-3 bg-gray-50 text-gray-600 rounded-lg">
-          📍 Placez les ancres pour {signatoryCount - anchorPositions.length} signataire(s) restant(s)
+          📍 Placez les signatures pour {signatoryCount - anchorPositions.length} signataire(s) restant(s)
         </div>
       )}
     </div>

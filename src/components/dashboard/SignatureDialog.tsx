@@ -373,7 +373,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
     }
 
     if (anchorPositions.length !== signatories.length) {
-      toast.error(`Veuillez placer ${signatories.length} ancre(s) de signature (une par signataire)`);
+      toast.error(`Veuillez placer ${signatories.length} position(s) de signature (une par signataire)`);
       return;
     }
 
@@ -395,17 +395,16 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
       // Déterminer le type correct : si un contrat est pré-sélectionné, c'est forcément un contrat
       const correctItemType = preSelectedContractId ? 'contrat' : itemType;
 
-      // Le PDF est déjà modifié avec toutes les ancres, on l'envoie directement
+      // Envoyer les positions de signature (coordonnées x/y)
       const requestBody = {
         itemId: itemToSign,
         itemType: correctItemType,
         signatories: signatories,
         signatureLevel: signatureLevel,
-        modifiedPdfBase64: originalPdfBase64, // Le PDF contient déjà toutes les ancres
-        anchorPositions: anchorPositions
+        signaturePositions: anchorPositions
       };
       
-      console.log('[SignatureDialog] Sending signature request with PDF containing', anchorPositions.length, 'anchors');
+      console.log('[SignatureDialog] Sending signature request with', anchorPositions.length, 'positions:', anchorPositions);
 
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-create-signature',
@@ -663,9 +662,8 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                   <PdfAnchorSelector 
                     pdfUrl={previewContent}
                     pdfBase64={originalPdfBase64}
-                    onPdfModified={(newPdfBase64, anchors) => {
-                      setOriginalPdfBase64(newPdfBase64);
-                      setAnchorPositions(anchors);
+                    onPdfModified={(pdfBase64, positions) => {
+                      setAnchorPositions(positions);
                     }}
                     signatoryCount={signatories.length}
                     role={role}

@@ -20,11 +20,9 @@ serve(async (req) => {
       itemType = 'document', 
       signatories, 
       signatureLevel = 'simple',
-      signatureAnchor = '[SIGNER_ICI]',
-      modifiedPdfBase64 = null,
-      anchorPositions = []
+      signaturePositions = []
     } = body;
-    console.log('[Universign] Parsed - itemId:', itemId, 'itemType:', itemType, 'signatories:', signatories?.length, 'signatureAnchor:', signatureAnchor, 'hasModifiedPdf:', !!modifiedPdfBase64, 'anchors:', anchorPositions?.length);
+    console.log('[Universign] Parsed - itemId:', itemId, 'itemType:', itemType, 'signatories:', signatories?.length, 'positions:', signaturePositions?.length);
 
     if (!itemId || !itemType || !signatories || signatories.length === 0) {
       return new Response(
@@ -241,24 +239,16 @@ serve(async (req) => {
       );
     }
 
-    // Si un PDF modifié (avec ancre) est fourni, l'utiliser au lieu de générer
-    let documentBase64: string;
-    
-    if (modifiedPdfBase64) {
-      console.log('[Universign] Using modified PDF with anchor');
-      documentBase64 = modifiedPdfBase64;
-    } else {
-      // Convert Blob to base64
-      console.log('[Universign] Converting document to base64...');
-      const arrayBuffer = await fileData.arrayBuffer();
-      const uint8Array = new Uint8Array(arrayBuffer);
-      let binaryString = '';
-      for (let i = 0; i < uint8Array.length; i++) {
-        binaryString += String.fromCharCode(uint8Array[i]);
-      }
-      documentBase64 = btoa(binaryString);
-      console.log('[Universign] Document converted to base64, size:', documentBase64.length);
+    // Convert Blob to base64
+    console.log('[Universign] Converting document to base64...');
+    const arrayBuffer = await fileData.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    let binaryString = '';
+    for (let i = 0; i < uint8Array.length; i++) {
+      binaryString += String.fromCharCode(uint8Array[i]);
     }
+    const documentBase64 = btoa(binaryString);
+    console.log('[Universign] Document converted to base64, size:', documentBase64.length);
 
     const universignApiUrl = Deno.env.get('UNIVERSIGN_API_URL') || 'https://api.alpha.universign.com';
     const universignApiKey = Deno.env.get('UNIVERSIGN_API_KEY');
@@ -285,14 +275,19 @@ serve(async (req) => {
     const webhookUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/universign-webhook`;
     console.log('[Universign] Webhook URL:', webhookUrl);
     
-    // Créer les fields (champs de signature) - un par signataire
-    const fields = signatories.map((signer: any, index: number) => ({
-      id: `signature_field_${index + 1}`,
-      name: `Signature ${index + 1}`,
-      anchor: `[SIGNER_ICI_${index + 1}]`,
-      type: 'signature',
-      consents: ['Je certifie avoir lu et accepté ce document']
-    }));
+    // Créer les fields (champs de signature) - un par signataire avec coordonnées
+    const fields = signatories.map((signer: any, index: number) => {
+      const position = signaturePositions[index] || { page: 1, x: 50, y: 750 };
+      return {
+        id: `signature_field_${index + 1}`,
+        name: `Signature ${index + 1}`,
+        page: position.page,
+        x: position.x,
+        y: position.y,
+        type: 'signature',
+        consents: ['Je certifie avoir lu et accepté ce document']
+      };
+    });
 
     // Créer les signatures - lier chaque field à son signataire
     const signatures = signatories.map((signer: any, index: number) => ({
