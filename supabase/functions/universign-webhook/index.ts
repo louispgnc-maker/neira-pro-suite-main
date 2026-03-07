@@ -34,18 +34,18 @@ serve(async (req) => {
     const { data: signature, error: sigError } = await supabase
       .from('signatures')
       .select('*')
-      .eq('universign_transaction_id', transactionId)
+      .or(`transaction_id.eq.${transactionId},universign_transaction_id.eq.${transactionId}`)
       .single();
 
     if (sigError || !signature) {
-      console.error('[Universign Webhook] Signature not found:', sigError);
+      console.error('[Universign Webhook] Signature not found for transaction:', transactionId, sigError);
       return new Response(
         JSON.stringify({ error: 'Signature not found' }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('[Universign Webhook] Found signature:', signature.id);
+    console.log('[Universign Webhook] Found signature:', signature.id, 'current status:', signature.status);
 
     // Map Universign status to our status
     let newStatus = 'pending';
