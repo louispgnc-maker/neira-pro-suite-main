@@ -131,8 +131,8 @@ export function PdfAnchorSelector({ pdfUrl, onAnchorsSet, signatoryCount, role =
 
       <div 
         ref={containerRef}
-        className={`relative border rounded-b-lg overflow-auto bg-white ${clickMode ? 'cursor-crosshair' : 'cursor-auto'}`}
-        style={{ height: '400px' }}
+        className={`relative border rounded-b-lg bg-white ${clickMode ? 'cursor-crosshair' : 'cursor-auto'}`}
+        style={{ height: '400px', overflow: 'auto' }}
         onClick={handleContainerClick}
       >
         {loading && (
@@ -141,35 +141,39 @@ export function PdfAnchorSelector({ pdfUrl, onAnchorsSet, signatoryCount, role =
           </div>
         )}
 
-        <iframe
-          ref={iframeRef}
-          src={pdfUrl}
-          className={`w-full h-full border-0 ${clickMode ? 'pointer-events-none' : 'pointer-events-auto'}`}
-          title="Document preview"
-        />
+        {/* Wrapper pour le PDF et les ancres - scrolle ensemble */}
+        <div className="relative" style={{ minHeight: '100%' }}>
+          <iframe
+            ref={iframeRef}
+            src={pdfUrl}
+            className="w-full border-0"
+            style={{ height: '842px' }} // Hauteur fixe approximative d'une page A4
+            title="Document preview"
+          />
 
-        {/* Marqueurs de position de signature */}
-        {anchorPositions.map((anchor) => {
-          const color = COLORS[anchor.signatoryIndex % COLORS.length];
-          return (
-            <div
-              key={anchor.signatoryIndex}
-              className={`absolute transform -translate-x-1/2 -translate-y-1/2 z-20 ${color.text}`}
-              style={{
-                left: `${(anchor.x / anchor.pageWidth) * 100}%`,
-                top: `${(anchor.y / anchor.pageHeight) * 100}%`,
-                pointerEvents: 'none'
-              }}
-            >
-              <div className="relative">
-                <MapPin className="h-8 w-8 fill-current" />
-                <div className={`absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-1 rounded text-xs font-medium text-white ${color.bg}`}>
-                  Signataire {anchor.signatoryIndex + 1}
+          {/* Marqueurs de position de signature - à l'intérieur du wrapper qui scrolle */}
+          {anchorPositions.map((anchor) => {
+            const color = COLORS[anchor.signatoryIndex % COLORS.length];
+            return (
+              <div
+                key={anchor.signatoryIndex}
+                className={`absolute transform -translate-x-1/2 -translate-y-1/2 z-20 ${color.text}`}
+                style={{
+                  left: `${(anchor.x / anchor.pageWidth) * 100}%`,
+                  top: `${anchor.y}px`, // Position en pixels pour suivre le scroll
+                  pointerEvents: 'none'
+                }}
+              >
+                <div className="relative">
+                  <MapPin className="h-8 w-8 fill-current" />
+                  <div className={`absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-1 rounded text-xs font-medium text-white ${color.bg}`}>
+                    Signataire {anchor.signatoryIndex + 1}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Résumé des ancres placées */}
