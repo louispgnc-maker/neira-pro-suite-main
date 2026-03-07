@@ -284,6 +284,8 @@ serve(async (req) => {
         page: position.page,
         x: position.x,
         y: position.y,
+        width: 200,  // Largeur du champ de signature
+        height: 50,  // Hauteur du champ de signature
         type: 'signature',
         consents: ['Je certifie avoir lu et accepté ce document']
       };
