@@ -202,6 +202,29 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
             title="Document preview"
           />
           
+          {/* Marqueurs visuels colorés pour voir les ancres placées */}
+          {anchorPositions.map((anchor) => {
+            const color = COLORS[anchor.signatoryIndex % COLORS.length];
+            return (
+              <div
+                key={anchor.signatoryIndex}
+                className={`absolute transform -translate-x-1/2 -translate-y-1/2 z-20 ${color.text}`}
+                style={{
+                  left: `${(anchor.x / anchor.pageWidth) * 100}%`,
+                  top: `${anchor.y}px`,
+                  pointerEvents: 'none'
+                }}
+              >
+                <div className="relative">
+                  <MapPin className="h-8 w-8 fill-current drop-shadow-lg" />
+                  <div className={`absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-1 rounded text-xs font-medium text-white ${color.bg} shadow-lg`}>
+                    Signataire {anchor.signatoryIndex + 1}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          
           {/* Overlay transparent pour capturer les clics en mode placement */}
           {clickMode && !modifying && (
             <div 
