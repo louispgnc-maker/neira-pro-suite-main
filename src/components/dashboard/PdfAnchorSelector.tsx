@@ -205,7 +205,10 @@ export function PdfAnchorSelector({ pdfUrl, pdfBase64, onPdfModified, signatoryC
             ref={iframeRef}
             src={currentPdfUrl}
             className="w-full border-0"
-            style={{ height: '842px' }}
+            style={{ 
+              height: '842px',
+              pointerEvents: clickMode ? 'none' : 'auto' // Désactiver l'iframe en mode clic
+            }}
             title="Document preview"
           />
           
