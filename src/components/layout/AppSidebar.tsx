@@ -72,7 +72,6 @@ function getMenuItems(role: 'avocat' | 'notaire') {
     ],
     outils: [
       { title: "Statistiques", url: `${prefix}/statistiques`, icon: BarChart3, color: iconColor },
-      { title: "Templates IA", url: `${prefix}/templates`, icon: Library, color: iconColor },
       { title: "Paramètres", url: `${prefix}/profile`, icon: Settings, color: iconColor },
     ],
   };
