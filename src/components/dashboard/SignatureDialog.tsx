@@ -702,6 +702,33 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                   <span className="font-medium">{preSelectedContractName}</span>
                 </div>
               </div>
+
+              {/* Preview du PDF du contrat pré-sélectionné */}
+              <div className="mt-4">
+                {previewLoading ? (
+                  <div className="flex items-center justify-center py-8 border rounded-lg">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span className="ml-3 text-sm text-gray-600">Chargement du PDF...</span>
+                  </div>
+                ) : previewContent ? (
+                  <PdfAnchorSelector 
+                    pdfUrl={previewContent}
+                    pdfBase64={originalPdfBase64}
+                    onPdfModified={(pdfBase64, positions) => {
+                      setAnchorPositions(positions);
+                    }}
+                    signatoryCount={signatories.length}
+                    role={role}
+                    authToken={authToken}
+                    anchorPositions={anchorPositions}
+                  />
+                ) : (
+                  <div className="text-sm text-gray-500 text-center py-8 border rounded-lg">
+                    <p>Impossible de charger le PDF</p>
+                    <p className="text-xs mt-2">Le contrat sera converti en PDF lors de l'envoi</p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
