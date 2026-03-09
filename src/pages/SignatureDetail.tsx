@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 type SignatureDetail = {
   id: string;
@@ -239,17 +240,64 @@ export default function SignatureDetail() {
                     />
                     <Button variant="outline" className="w-full" onClick={() => window.open(pdfUrl, '_blank')}>
                       <Download className="h-4 w-4 mr-2" />
-                      Télécharger le document
+                      Télécharger le document original
                     </Button>
-                    {signature.status === 'signed' && signature.signed_document_path && (
+                    {signature.transaction_id && (
                       <Button 
                         className={mainButtonColor + " w-full"}
                         onClick={async () => {
-                          const { data } = supabase.storage
-                            .from('documents')
-                            .getPublicUrl(signature.signed_document_path!);
-                          if (data?.publicUrl) {
-                            window.open(data.publicUrl, '_blank');
+                          try {
+                            const { data: { session } } = await supabase.auth.getSession();
+                            if (!session) {
+                              toast.error('Session expirée');
+                              return;
+                            }
+
+                            const response = await fetch(
+                              'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/download-signed-document',
+                              {
+                                method: 'POST',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'Authorization': `Bearer ${session.access_token}`
+                                },
+                                body: JSON.stringify({
+                                  transactionId: signature.transaction_id
+                                })
+                              }
+                            );
+
+                            if (!response.ok) {
+                              toast.error('Erreur lors du téléchargement');
+                              return;
+                            }
+
+                            const result = await response.json();
+                            if (result.success && result.pdfBase64) {
+                              // Convertir base64 en blob et télécharger
+                              const byteCharacters = atob(result.pdfBase64);
+                              const byteNumbers = new Array(byteCharacters.length);
+                              for (let i = 0; i < byteCharacters.length; i++) {
+                                byteNumbers[i] = byteCharacters.charCodeAt(i);
+                              }
+                              const byteArray = new Uint8Array(byteNumbers);
+                              const blob = new Blob([byteArray], { type: 'application/pdf' });
+                              const url = URL.createObjectURL(blob);
+                              
+                              // Télécharger
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = result.filename || 'document_signe.pdf';
+                              document.body.appendChild(a);
+                              a.click();
+                              document.body.removeChild(a);
+                              URL.revokeObjectURL(url);
+                              
+                              toast.success('Document signé téléchargé');
+                            }
+                          } catch (error) {
+                            console.error('Download error:', error);
+                            toast.error('Erreur lors du téléchargement');
                           }
                         }}
                       >
