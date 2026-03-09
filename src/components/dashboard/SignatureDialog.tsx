@@ -94,6 +94,7 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
       
       // Charger immédiatement le contenu du contrat et générer le PDF
       const loadContractPreview = async () => {
+        console.log('[SignatureDialog] Loading contract preview for:', preSelectedContractId);
         setPreviewLoading(true);
         try {
           const { data, error } = await supabase
@@ -102,10 +103,13 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
             .eq('id', preSelectedContractId)
             .single();
 
+          console.log('[SignatureDialog] Contract data loaded:', { hasContent: !!data?.content, name: data?.name, error });
+
           if (!error && data) {
             // Générer le PDF via l'Edge Function
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
+              console.log('[SignatureDialog] Calling generate-pdf-from-html...');
               const response = await fetch(
                 'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/generate-pdf-from-html',
                 {
@@ -121,10 +125,17 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                 }
               );
 
+              console.log('[SignatureDialog] PDF response status:', response.status);
+
               if (response.ok) {
                 const result = await response.json();
+                console.log('[SignatureDialog] PDF result:', { success: result.success, hasPdf: !!result.pdf });
+                
                 if (result.success && result.pdf) {
-                  // Convertir base64 en blob
+                  // Sauvegarder le base64 original pour PdfAnchorSelector
+                  setOriginalPdfBase64(result.pdf);
+                  
+                  // Convertir base64 en blob pour affichage
                   const byteCharacters = atob(result.pdf);
                   const byteNumbers = new Array(byteCharacters.length);
                   for (let i = 0; i < byteCharacters.length; i++) {
@@ -133,15 +144,25 @@ export function SignatureDialog({ open, onOpenChange, onSuccess, preSelectedCont
                   const byteArray = new Uint8Array(byteNumbers);
                   const blob = new Blob([byteArray], { type: 'application/pdf' });
                   const pdfUrl = URL.createObjectURL(blob);
+                  console.log('[SignatureDialog] PDF URL created:', pdfUrl);
                   setPreviewContent(pdfUrl);
+                } else {
+                  console.error('[SignatureDialog] PDF generation failed:', result);
                 }
+              } else {
+                console.error('[SignatureDialog] PDF request failed:', response.status, response.statusText);
               }
+            } else {
+              console.error('[SignatureDialog] No session found');
             }
+          } else {
+            console.error('[SignatureDialog] Contract load error:', error);
           }
         } catch (error) {
-          console.error('Error loading contract preview:', error);
+          console.error('[SignatureDialog] Error loading contract preview:', error);
         } finally {
           setPreviewLoading(false);
+          console.log('[SignatureDialog] Preview loading finished');
         }
       };
       
