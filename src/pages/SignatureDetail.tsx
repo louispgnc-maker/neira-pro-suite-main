@@ -26,6 +26,7 @@ type SignatureDetail = {
   document_url: string | null;
   item_type: string | null;
   item_id: string | null;
+  signed_document_path: string | null;
 };
 
 export default function SignatureDetail() {
@@ -227,6 +228,22 @@ export default function SignatureDetail() {
                       <Download className="h-4 w-4 mr-2" />
                       Télécharger le document
                     </Button>
+                    {signature.status === 'signed' && signature.signed_document_path && (
+                      <Button 
+                        className={mainButtonColor + " w-full"}
+                        onClick={async () => {
+                          const { data } = supabase.storage
+                            .from('documents')
+                            .getPublicUrl(signature.signed_document_path!);
+                          if (data?.publicUrl) {
+                            window.open(data.publicUrl, '_blank');
+                          }
+                        }}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Télécharger le document signé
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-[200px] bg-gray-50 rounded-lg">

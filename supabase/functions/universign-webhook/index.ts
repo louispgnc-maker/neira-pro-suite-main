@@ -126,6 +126,18 @@ serve(async (req) => {
         } else {
           console.log('[Universign Webhook] Signed document uploaded:', fileName);
 
+          // Update signature record with signed document path
+          const { error: sigUpdateError } = await supabase
+            .from('signatures')
+            .update({
+              signed_document_path: fileName
+            })
+            .eq('id', signature.id);
+
+          if (sigUpdateError) {
+            console.error('[Universign Webhook] Signature update error:', sigUpdateError);
+          }
+
           // Update document record with signed version
           if (signature.document_id) {
             const { error: docUpdateError } = await supabase
