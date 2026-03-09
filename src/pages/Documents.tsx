@@ -193,7 +193,7 @@ export default function Documents() {
         .select("id,name,client_name,status,updated_at,storage_path")
         .eq("owner_id", user.id)
         .eq("role", role)
-        .order("updated_at", { ascending: false, nullsFirst: false });
+        .order("created_at", { ascending: false }); // Plus récent en haut
       if (debounced) {
         // Basic case-insensitive filtering using ilike on name OR client_name
         query = query.or(`name.ilike.%${debounced}%,client_name.ilike.%${debounced}%`);

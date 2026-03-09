@@ -207,6 +207,7 @@ export default function Signatures() {
                   <TableHead>Signataire</TableHead>
                   <TableHead>Document</TableHead>
                   <TableHead>Statut</TableHead>
+                  <TableHead>Date de création</TableHead>
                   <TableHead>Dernier rappel</TableHead>
                 </TableRow>
               </TableHeader>
@@ -225,8 +226,13 @@ export default function Signatures() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-gray-900 text-sm">
+                      {sig.created_at
+                        ? new Date(sig.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                        : "-"}
+                    </TableCell>
+                    <TableCell className="text-gray-900 text-sm">
                       {sig.last_reminder_at
-                        ? new Date(sig.last_reminder_at).toLocaleDateString()
+                        ? new Date(sig.last_reminder_at).toLocaleDateString('fr-FR')
                         : "Jamais"}
                     </TableCell>
                   </TableRow>
