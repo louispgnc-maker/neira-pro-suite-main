@@ -67,6 +67,19 @@ export default function SignatureDetail() {
         console.log('[SignatureDetail] Données chargées:', data);
         setSignature(data as SignatureDetail);
 
+        // Si le document est signé et qu'on a le chemin du document signé, l'utiliser
+        if (data.status === 'signed' && data.signed_document_path) {
+          console.log('[SignatureDetail] Chargement du document signé:', data.signed_document_path);
+          const { data: urlData } = supabase.storage
+            .from('documents')
+            .getPublicUrl(data.signed_document_path);
+          
+          if (urlData?.publicUrl) {
+            setPdfUrl(urlData.publicUrl);
+            return; // On a le document signé, pas besoin de charger l'original
+          }
+        }
+
         // Charger le PDF si c'est un document stocké
         if (data.item_type === 'document' && data.item_id) {
           const { data: doc } = await supabase

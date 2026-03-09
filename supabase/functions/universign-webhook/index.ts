@@ -72,6 +72,27 @@ serve(async (req) => {
       console.error('[Universign Webhook] Update error:', updateError);
     }
 
+    // Update individual signer status if we have participant info
+    if (body.participants && signature.signatories) {
+      const updatedSignatories = signature.signatories.map((signer: any, index: number) => {
+        const participant = body.participants.find((p: any) => p.email === signer.email);
+        if (participant) {
+          return {
+            ...signer,
+            status: participant.status === 'completed' ? 'signed' : participant.status || 'pending'
+          };
+        }
+        return signer;
+      });
+
+      await supabase
+        .from('signatures')
+        .update({ signatories: updatedSignatories })
+        .eq('id', signature.id);
+
+      console.log('[Universign Webhook] Updated individual signer statuses');
+    }
+
     // If completed, download and save the signed document
     if (newStatus === 'signed' && documents && documents.length > 0) {
       console.log('[Universign Webhook] Document signed, downloading...');
