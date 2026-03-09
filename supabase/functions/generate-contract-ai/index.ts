@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import * as pdfjs from 'npm:pdfjs-dist@4.0.379';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -1137,10 +1138,15 @@ async function fetchTemplateExamples(contractType: string): Promise<string[]> {
           // Fichier texte simple
           content = await fileData.text();
         } else if (file.name.endsWith('.pdf')) {
-          // Pour PDF, on ne peut pas extraire le texte facilement en Deno sans lib
-          // On va juste mentionner qu'il existe
-          console.log(`📄 PDF détecté: ${file.name} (extraction texte non supportée)`);
-          continue;
+          // Extraction du texte depuis PDF
+          console.log(`📄 PDF détecté: ${file.name}, extraction en cours...`);
+          try {
+            content = await extractTextFromPDF(fileData);
+            console.log(`✅ Texte extrait du PDF: ${content.length} caractères`);
+          } catch (pdfError) {
+            console.error(`❌ Erreur extraction PDF ${file.name}:`, pdfError);
+            continue;
+          }
         } else if (file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
           // Pour DOCX, même problème
           console.log(`📄 DOCX détecté: ${file.name} (extraction texte non supportée)`);
@@ -1233,14 +1239,25 @@ async function fetchKnowledgeBase(contractType: string): Promise<string[]> {
             continue;
           }
 
-          // Lire le contenu (txt ou md uniquement)
+          // Lire le contenu (txt, md ou pdf)
+          let content = '';
+          
           if (file.name.endsWith('.txt') || file.name.endsWith('.md')) {
-            const content = await fileData.text();
-            if (content && content.length > 100) {
-              // Limiter à 5000 caractères par fichier
-              knowledge.push(content.substring(0, 5000));
-              console.log(`🧠 Connaissance chargée: ${category}/${file.name} (${content.length} caractères)`);
+            content = await fileData.text();
+          } else if (file.name.endsWith('.pdf')) {
+            try {
+              content = await extractTextFromPDF(fileData);
+              console.log(`📄 PDF connaissance extrait: ${file.name}`);
+            } catch (pdfError) {
+              console.error(`❌ Erreur extraction PDF ${file.name}:`, pdfError);
+              continue;
             }
+          }
+          
+          if (content && content.length > 100) {
+            // Limiter à 5000 caractères par fichier
+            knowledge.push(content.substring(0, 5000));
+            console.log(`🧠 Connaissance chargée: ${category}/${file.name} (${content.length} caractères)`);
           }
         } catch (fileError) {
           console.error(`❌ Erreur lecture ${file.name}:`, fileError);
@@ -1255,3 +1272,35 @@ async function fetchKnowledgeBase(contractType: string): Promise<string[]> {
     return [];
   }
 }
+
+/**
+ * Extrait le texte d'un fichier PDF
+ */
+async function extractTextFromPDF(fileData: Blob): Promise<string> {
+  try {
+    const arrayBuffer = await fileData.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    
+    // Charger le document PDF
+    const loadingTask = pdfjs.getDocument({ data: uint8Array });
+    const pdf = await loadingTask.promise;
+    
+    let fullText = '';
+    
+    // Extraire le texte de chaque page
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items
+        .map((item: any) => item.str)
+        .join(' ');
+      fullText += pageText + '\n\n';
+    }
+    
+    return fullText.trim();
+  } catch (error) {
+    console.error('❌ Erreur extraction texte PDF:', error);
+    throw error;
+  }
+}
+
