@@ -65,6 +65,7 @@ import TestLogin from "./pages/test/TestLogin";
 import TestCreateCabinet from "./pages/test/TestCreateCabinet";
 import ConfirmEmail from "./pages/ConfirmEmail";
 import ConfirmSubscription from "./pages/ConfirmSubscription";
+import TemplatesManagement from "./pages/TemplatesManagement";
 import MentionsLegales from "./pages/MentionsLegales";
 import RGPD from "./pages/RGPD";
 import CGU from "./pages/CGU";
@@ -176,6 +177,7 @@ const App = () => (
             <Route path="/avocats/subscription/manage-members" element={<RoleProtectedRoute requiredRole="avocat"><ManageMembersCount /></RoleProtectedRoute>} />
             <Route path="/avocats/payment-history" element={<RoleProtectedRoute requiredRole="avocat"><PaymentHistory /></RoleProtectedRoute>} />
             <Route path="/avocats/statistiques" element={<RoleProtectedRoute requiredRole="avocat"><Statistiques /></RoleProtectedRoute>} />
+            <Route path="/avocats/templates" element={<RoleProtectedRoute requiredRole="avocat"><TemplatesManagement /></RoleProtectedRoute>} />
             <Route path="/avocats/contact-support" element={<RoleProtectedRoute requiredRole="avocat"><ContactSupport /></RoleProtectedRoute>} />
             <Route path="/avocats/checkout/:planId" element={<RoleProtectedRoute requiredRole="avocat"><CheckoutPlan /></RoleProtectedRoute>} />
             
@@ -209,6 +211,7 @@ const App = () => (
             <Route path="/notaires/subscription/manage-members" element={<RoleProtectedRoute requiredRole="notaire"><ManageMembersCount /></RoleProtectedRoute>} />
             <Route path="/notaires/payment-history" element={<RoleProtectedRoute requiredRole="notaire"><PaymentHistory /></RoleProtectedRoute>} />
             <Route path="/notaires/statistiques" element={<RoleProtectedRoute requiredRole="notaire"><Statistiques /></RoleProtectedRoute>} />
+            <Route path="/notaires/templates" element={<RoleProtectedRoute requiredRole="notaire"><TemplatesManagement /></RoleProtectedRoute>} />
             <Route path="/notaires/contact-support" element={<RoleProtectedRoute requiredRole="notaire"><ContactSupport /></RoleProtectedRoute>} />
             <Route path="/notaires/checkout/:planId" element={<RoleProtectedRoute requiredRole="notaire"><CheckoutPlan /></RoleProtectedRoute>} />
             

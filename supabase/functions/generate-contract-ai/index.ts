@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -33,9 +34,14 @@ Deno.serve(async (req) => {
     console.log('📊 Nombre de champs:', Object.keys(formData).length);
     console.log('📎 Pièces jointes:', attachments?.length || 0, 'fichiers');
 
+    // Récupération des templates depuis Storage
+    console.log('📚 Recherche de templates pour:', contractType);
+    const templateExamples = await fetchTemplateExamples(contractType);
+    console.log('📚 Templates trouvés:', templateExamples.length);
+
     // Construction du prompt selon le type de contrat
     const systemPrompt = getSystemPrompt(contractType);
-    const userPrompt = buildUserPrompt(contractType, formData, clientInfo, attachments);
+    const userPrompt = buildUserPrompt(contractType, formData, clientInfo, attachments, templateExamples);
 
     console.log('💬 Prompt utilisateur (premier 500 chars):', userPrompt.substring(0, 500));
 
@@ -990,10 +996,26 @@ Structure:
   return contractPrompts[contractType] || basePrompt;
 }
 
-function buildUserPrompt(contractType: string, formData: any, clientInfo: any, attachments?: any[]): string {
+function buildUserPrompt(contractType: string, formData: any, clientInfo: any, attachments?: any[], templateExamples?: string[]): string {
   let prompt = `Génère le contrat suivant en respectant STRICTEMENT les instructions du system prompt.\n\n`;
   
   prompt += `TYPE DE DOCUMENT: ${contractType}\n\n`;
+  
+  // Ajouter les templates d'exemple si disponibles
+  if (templateExamples && templateExamples.length > 0) {
+    prompt += `📚 MODÈLES DE RÉFÉRENCE (${templateExamples.length}):\n`;
+    prompt += `Tu disposes de ${templateExamples.length} exemple(s) de contrat "${contractType}" déjà rédigé(s) par ce cabinet.\n`;
+    prompt += `Inspire-toi de leur STYLE, STRUCTURE et FORMULATIONS, mais adapte le contenu aux données fournies ci-dessous.\n\n`;
+    
+    templateExamples.forEach((template, index) => {
+      prompt += `--- MODÈLE ${index + 1} ---\n`;
+      prompt += template.substring(0, 8000); // Limiter à 8000 chars par template
+      prompt += `\n--- FIN MODÈLE ${index + 1} ---\n\n`;
+    });
+    
+    prompt += `⚠️ IMPORTANT: Ces modèles servent d'INSPIRATION pour le style et la structure.\n`;
+    prompt += `Tu dois ADAPTER le contenu aux données spécifiques du client fournies ci-dessous.\n\n`;
+  }
   
   prompt += `⚠️ RAPPEL CRITIQUE: NE GÉNÈRE QUE CE QUI EST DANS LES DONNÉES CI-DESSOUS\n`;
   prompt += `- Si une section/clause n'a pas de données correspondantes → NE LA GÉNÈRE PAS\n`;
@@ -1041,4 +1063,85 @@ function buildUserPrompt(contractType: string, formData: any, clientInfo: any, a
 RAPPEL CRITIQUE: Si une information n'est PAS dans les données fournies ci-dessus, tu DOIS écrire "[À COMPLÉTER]". Ne génère RIEN de ton imagination.`;
 
   return prompt;
+}
+
+/**
+ * Récupère les templates d'exemple depuis Storage pour un type de contrat donné
+ * Lit les fichiers PDF/DOCX/TXT du dossier correspondant
+ */
+async function fetchTemplateExamples(contractType: string): Promise<string[]> {
+  try {
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+
+    // Normaliser le nom du dossier (enlever caractères spéciaux)
+    const folderName = contractType.replace(/[\/\\]/g, '-');
+    
+    // Lister les fichiers dans le dossier du type de contrat
+    const { data: files, error: listError } = await supabase.storage
+      .from('contract-templates')
+      .list(folderName, {
+        limit: 5, // Max 5 templates par type
+        sortBy: { column: 'created_at', order: 'desc' }
+      });
+
+    if (listError || !files || files.length === 0) {
+      console.log(`📚 Aucun template trouvé pour: ${contractType}`);
+      return [];
+    }
+
+    console.log(`📚 ${files.length} template(s) trouvé(s) pour: ${contractType}`);
+
+    const templates: string[] = [];
+
+    for (const file of files) {
+      try {
+        const filePath = `${folderName}/${file.name}`;
+        console.log(`📄 Lecture template: ${filePath}`);
+
+        // Télécharger le fichier
+        const { data: fileData, error: downloadError } = await supabase.storage
+          .from('contract-templates')
+          .download(filePath);
+
+        if (downloadError || !fileData) {
+          console.error(`❌ Erreur téléchargement ${filePath}:`, downloadError);
+          continue;
+        }
+
+        // Lire le contenu selon le type
+        let content = '';
+        
+        if (file.name.endsWith('.txt')) {
+          // Fichier texte simple
+          content = await fileData.text();
+        } else if (file.name.endsWith('.pdf')) {
+          // Pour PDF, on ne peut pas extraire le texte facilement en Deno sans lib
+          // On va juste mentionner qu'il existe
+          console.log(`📄 PDF détecté: ${file.name} (extraction texte non supportée)`);
+          continue;
+        } else if (file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
+          // Pour DOCX, même problème
+          console.log(`📄 DOCX détecté: ${file.name} (extraction texte non supportée)`);
+          continue;
+        }
+
+        if (content && content.length > 100) {
+          templates.push(content);
+          console.log(`✅ Template chargé: ${file.name} (${content.length} caractères)`);
+        }
+
+      } catch (fileError) {
+        console.error(`❌ Erreur lecture fichier ${file.name}:`, fileError);
+      }
+    }
+
+    return templates;
+
+  } catch (error) {
+    console.error('❌ Erreur récupération templates:', error);
+    return [];
+  }
 }
