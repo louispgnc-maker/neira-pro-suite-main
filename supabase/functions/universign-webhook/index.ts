@@ -12,6 +12,22 @@ serve(async (req) => {
   }
 
   try {
+    // Check webhook secret key (optional but recommended)
+    const webhookSecret = Deno.env.get('UNIVERSIGN_WEBHOOK_SECRET');
+    if (webhookSecret) {
+      const authHeader = req.headers.get('authorization');
+      const urlParams = new URL(req.url).searchParams;
+      const keyFromUrl = urlParams.get('key');
+      
+      if (authHeader !== `Bearer ${webhookSecret}` && keyFromUrl !== webhookSecret) {
+        console.error('[Universign Webhook] Invalid webhook secret');
+        return new Response(
+          JSON.stringify({ error: 'Unauthorized' }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     const body = await req.json();
     console.log('[Universign Webhook] Received:', JSON.stringify(body, null, 2));
 
