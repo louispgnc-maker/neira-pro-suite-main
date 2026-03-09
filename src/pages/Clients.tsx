@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
-import { Plus, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Plus, AlertCircle, CheckCircle2, ExternalLink } from "lucide-react";
 import { Share2 } from 'lucide-react';
 import ShareToCollaborativeButton from '@/components/cabinet/ShareToCollaborativeButton';
 import { FicheClientMenu } from "@/components/dashboard/FicheClientMenu";
@@ -209,29 +209,29 @@ export default function Clients() {
                   {clients.map((client) => (
                     <Card 
                       key={client.id} 
-                      className="p-4 hover:shadow-md transition-shadow cursor-pointer" 
+                      className="p-4 hover:shadow-md transition-shadow" 
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1" onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}>
-                          <h3 className="font-semibold text-lg">{client.name}</h3>
-                          {client.missing_info ? (
-                            <p className="text-xs text-destructive flex items-center gap-1 mt-2 font-semibold">
-                              <AlertCircle className="h-3 w-3" />
-                              Dossier incomplet
-                            </p>
-                          ) : (
-                            <p className="text-xs text-success flex items-center gap-1 mt-2 font-semibold">
-                              <CheckCircle2 className="h-3 w-3" />
-                              Dossier complet
-                            </p>
-                          )}
-                          {client.created_at && (
-                            <p className="text-xs text-gray-600 mt-2">
-                              Ajouté le {new Date(client.created_at).toLocaleDateString()}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3">
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-start justify-between cursor-pointer" onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg">{client.name}</h3>
+                            {client.missing_info ? (
+                              <p className="text-xs text-destructive flex items-center gap-1 mt-2 font-semibold">
+                                <AlertCircle className="h-3 w-3" />
+                                Dossier incomplet
+                              </p>
+                            ) : (
+                              <p className="text-xs text-success flex items-center gap-1 mt-2 font-semibold">
+                                <CheckCircle2 className="h-3 w-3" />
+                                Dossier complet
+                              </p>
+                            )}
+                            {client.created_at && (
+                              <p className="text-xs text-gray-600 mt-2">
+                                Ajouté le {new Date(client.created_at).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
                           <Badge
                             variant="outline"
                             className={
@@ -242,6 +242,22 @@ export default function Clients() {
                           >
                             {client.kyc_status}
                           </Badge>
+                        </div>
+                        
+                        {/* Actions - Espace client et Partage */}
+                        <div className="flex items-center gap-2 pt-2 border-t">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1 text-xs"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(role === 'notaire' ? `/notaires/client-spaces/${client.id}` : `/avocats/client-spaces/${client.id}`);
+                            }}
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            Voir son espace
+                          </Button>
                           <ShareToCollaborativeButton clientId={client.id} clientName={client.name} role={role} />
                         </div>
                       </div>

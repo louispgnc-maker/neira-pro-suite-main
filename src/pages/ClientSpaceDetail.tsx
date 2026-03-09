@@ -304,7 +304,7 @@ export default function ClientSpaceDetail() {
           )
         `)
         .eq('id', id)
-        .eq('owner_id', cabinetId)
+        .eq('owner_id', user.id) // Vérifie que le client appartient à l'utilisateur connecté
         .single();
 
       if (error) throw error;
