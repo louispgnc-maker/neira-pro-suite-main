@@ -123,7 +123,11 @@ function getSystemPrompt(contractType: string, knowledgeBase: string[] = []): st
       basePrompt += `\n--- FIN RÉFÉRENCE ${index + 1} ---\n\n`;
     });
 
-    basePrompt += `⚠️ Ces références servent de GUIDE. Adapte leur contenu au contexte spécifique du contrat demandé.\n\n`;
+    basePrompt += `⚠️ RÈGLES D'UTILISATION DES RÉFÉRENCES:\n`;
+    basePrompt += `- Ces documents servent de GUIDE pour le style, les clauses juridiques et la structure\n`;
+    basePrompt += `- NE RÉUTILISE JAMAIS les noms, prénoms, adresses, montants, dates ou toute information personnelle de ces exemples\n`;
+    basePrompt += `- Reprends UNIQUEMENT le style rédactionnel, la formulation juridique et la structure des clauses\n`;
+    basePrompt += `- Adapte TOUT le contenu aux données spécifiques du client fournies dans le prompt utilisateur\n\n`;
   }
 
   basePrompt += `⚖️ CONFORMITÉ JURIDIQUE OBLIGATOIRE - RÈGLES STRICTES:
@@ -1025,7 +1029,7 @@ function buildUserPrompt(contractType: string, formData: any, clientInfo: any, a
   if (templateExamples && templateExamples.length > 0) {
     prompt += `📚 MODÈLES DE RÉFÉRENCE (${templateExamples.length}):\n`;
     prompt += `Tu disposes de ${templateExamples.length} exemple(s) de contrat "${contractType}" déjà rédigé(s) par ce cabinet.\n`;
-    prompt += `Inspire-toi de leur STYLE, STRUCTURE et FORMULATIONS, mais adapte le contenu aux données fournies ci-dessous.\n\n`;
+    prompt += `Ces modèles t'aident à comprendre le STYLE et la STRUCTURE attendus.\n\n`;
     
     templateExamples.forEach((template, index) => {
       prompt += `--- MODÈLE ${index + 1} ---\n`;
@@ -1033,8 +1037,13 @@ function buildUserPrompt(contractType: string, formData: any, clientInfo: any, a
       prompt += `\n--- FIN MODÈLE ${index + 1} ---\n\n`;
     });
     
-    prompt += `⚠️ IMPORTANT: Ces modèles servent d'INSPIRATION pour le style et la structure.\n`;
-    prompt += `Tu dois ADAPTER le contenu aux données spécifiques du client fournies ci-dessous.\n\n`;
+    prompt += `🚨 RÈGLES STRICTES D'UTILISATION DES MODÈLES:\n`;
+    prompt += `1. REPRENDS: Le style rédactionnel, les tournures juridiques, la structure des articles, les formulations professionnelles\n`;
+    prompt += `2. NE REPRENDS JAMAIS: Les noms (personnes/sociétés), adresses, montants, dates, numéros (SIRET/RCS/téléphone), emails, ou toute donnée personnelle\n`;
+    prompt += `3. REMPLACE: TOUTES les informations personnelles des modèles par celles du client fournies ci-dessous\n`;
+    prompt += `4. VÉRIFIE: Qu'aucun nom, adresse ou montant des modèles n'apparaisse dans ton contrat final\n`;
+    prompt += `5. UTILISE UNIQUEMENT: Les données du formulaire client ci-dessous pour remplir le contrat\n\n`;
+    prompt += `⚠️ SI UNE INFORMATION CLIENT MANQUE: Écris "[À COMPLÉTER]" - N'utilise JAMAIS les données des modèles comme valeur par défaut!\n\n`;
   }
   
   prompt += `⚠️ RAPPEL CRITIQUE: NE GÉNÈRE QUE CE QUI EST DANS LES DONNÉES CI-DESSOUS\n`;
