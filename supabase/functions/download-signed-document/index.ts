@@ -11,20 +11,32 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  console.log('[Download Signed] Starting request...');
+
   try {
-    const { transactionId } = await req.json();
+    const body = await req.json();
+    console.log('[Download Signed] Request body:', body);
+    
+    const { transactionId } = body;
     
     if (!transactionId) {
+      console.error('[Download Signed] No transaction ID provided');
       return new Response(
         JSON.stringify({ error: 'Transaction ID required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('[Download Signed] Transaction ID:', transactionId);
+
     const universignApiUrl = Deno.env.get('UNIVERSIGN_API_URL') || 'https://api.alpha.universign.com';
     const universignApiKey = Deno.env.get('UNIVERSIGN_API_KEY');
     const universignUsername = Deno.env.get('UNIVERSIGN_USERNAME');
     const universignPassword = Deno.env.get('UNIVERSIGN_PASSWORD');
+
+    console.log('[Download Signed] Universign URL:', universignApiUrl);
+    console.log('[Download Signed] Has API Key:', !!universignApiKey);
+    console.log('[Download Signed] Has Username:', !!universignUsername);
 
     // Prepare authorization headers
     const headers: Record<string, string> = {};
@@ -106,8 +118,10 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('[Download Signed] Error:', error);
+    console.error('[Download Signed] Error stack:', error.stack);
+    console.error('[Download Signed] Error message:', error.message);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message, stack: error.stack }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
