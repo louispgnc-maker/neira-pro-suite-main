@@ -148,22 +148,7 @@ export default function ClientSpaces() {
     try {
       setLoading(true);
 
-      // Récupérer les cabinets de l'utilisateur
-      const { data: cabinetsData } = await supabase.rpc('get_user_cabinets');
-      const cabinets = Array.isArray(cabinetsData) ? cabinetsData : [];
-      
-      if (cabinets.length === 0) {
-        setClients([]);
-        setFilteredClients([]);
-        setLoading(false);
-        return;
-      }
-
-      // Prendre le premier cabinet avec le bon rôle, ou le premier disponible
-      const matchingCabinet = cabinets.find((c: any) => c.role === role) || cabinets[0];
-      const cabinetId = matchingCabinet.id;
-
-      // Récupérer tous les clients avec leurs invitations
+      // Récupérer tous les clients personnels de l'utilisateur avec leurs invitations
       const { data: clientsData, error: clientsError } = await supabase
         .from('clients')
         .select(`
@@ -181,7 +166,8 @@ export default function ClientSpaces() {
             created_at
           )
         `)
-        .eq('owner_id', cabinetId)
+        .eq('owner_id', user.id) // Clients personnels de l'utilisateur
+        .eq('role', role) // Filtrer par rôle (avocat ou notaire)
         .order('created_at', { ascending: false });
 
       if (clientsError) throw clientsError;
