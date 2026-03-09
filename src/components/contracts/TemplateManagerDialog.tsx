@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { NOTAIRE_CONTRACT_CATEGORIES } from '@/components/dashboard/ContractSelectorNotaire';
 import { AVOCAT_CONTRACT_CATEGORIES } from '@/components/dashboard/ContractSelectorAvocat';
+import { sanitizeFileName } from '@/lib/fileHelpers';
 
 interface TemplateManagerDialogProps {
   open: boolean;
@@ -93,9 +94,11 @@ export function TemplateManagerDialog({ open, onOpenChange, role }: TemplateMana
     try {
       setUploading(true);
 
+      // Sanitize le nom du type de contrat pour le chemin
+      const sanitizedType = sanitizeFileName(selectedType);
       const fileExt = uploadFile.name.split('.').pop();
-      const fileName = `${selectedType}_${Date.now()}.${fileExt}`;
-      const filePath = `${selectedType}/${fileName}`;
+      const fileName = `${sanitizedType}_${Date.now()}.${fileExt}`;
+      const filePath = `${sanitizedType}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('contract-templates')
