@@ -39,8 +39,13 @@ Deno.serve(async (req) => {
     const templateExamples = await fetchTemplateExamples(contractType);
     console.log('📚 Templates trouvés:', templateExamples.length);
 
+    // Récupération de la base de connaissances générale
+    console.log('🧠 Chargement de la base de connaissances...');
+    const knowledgeBase = await fetchKnowledgeBase(contractType);
+    console.log('🧠 Connaissances chargées:', knowledgeBase.length, 'extraits');
+
     // Construction du prompt selon le type de contrat
-    const systemPrompt = getSystemPrompt(contractType);
+    const systemPrompt = getSystemPrompt(contractType, knowledgeBase);
     const userPrompt = buildUserPrompt(contractType, formData, clientInfo, attachments, templateExamples);
 
     console.log('💬 Prompt utilisateur (premier 500 chars):', userPrompt.substring(0, 500));
@@ -103,10 +108,24 @@ Deno.serve(async (req) => {
   }
 });
 
-function getSystemPrompt(contractType: string): string {
-  const basePrompt = `Tu es un expert juridique français spécialisé dans la rédaction de documents juridiques professionnels CONFORMES AU DROIT EN VIGUEUR.
+function getSystemPrompt(contractType: string, knowledgeBase: string[] = []): string {
+  let basePrompt = `Tu es un expert juridique français spécialisé dans la rédaction de documents juridiques professionnels CONFORMES AU DROIT EN VIGUEUR.`;
 
-⚖️ CONFORMITÉ JURIDIQUE OBLIGATOIRE - RÈGLES STRICTES:
+  // Ajouter la base de connaissances si disponible
+  if (knowledgeBase.length > 0) {
+    basePrompt += `\n\n📚 BASE DE CONNAISSANCES À CONSULTER:\n`;
+    basePrompt += `Tu disposes de connaissances juridiques spécialisées ci-dessous. Utilise-les comme RÉFÉRENCE pour enrichir tes rédactions.\n\n`;
+    
+    knowledgeBase.forEach((knowledge, index) => {
+      basePrompt += `--- RÉFÉRENCE ${index + 1} ---\n`;
+      basePrompt += knowledge;
+      basePrompt += `\n--- FIN RÉFÉRENCE ${index + 1} ---\n\n`;
+    });
+
+    basePrompt += `⚠️ Ces références servent de GUIDE. Adapte leur contenu au contexte spécifique du contrat demandé.\n\n`;
+  }
+
+  basePrompt += `⚖️ CONFORMITÉ JURIDIQUE OBLIGATOIRE - RÈGLES STRICTES:
 
 1. 🔒 RGPD ET PROTECTION DES DONNÉES (OBLIGATOIRE):
    - Inclus SYSTÉMATIQUEMENT un article "Protection des données personnelles" conforme au RGPD
@@ -1142,6 +1161,97 @@ async function fetchTemplateExamples(contractType: string): Promise<string[]> {
 
   } catch (error) {
     console.error('❌ Erreur récupération templates:', error);
+    return [];
+  }
+}
+
+/**
+ * Récupère la base de connaissances générale depuis Storage
+ * Lit les fichiers des catégories pertinentes au type de contrat
+ */
+async function fetchKnowledgeBase(contractType: string): Promise<string[]> {
+  try {
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+
+    const knowledge: string[] = [];
+
+    // Catégories à consulter selon le type de contrat
+    const categoriesToFetch = ['general']; // Toujours inclure
+
+    // Mapper les types de contrats aux catégories spécifiques
+    const contractTypeMapping: Record<string, string[]> = {
+      'CDI': ['social'],
+      'CDD': ['social'],
+      'Stage': ['social'],
+      'Rupture conventionnelle': ['social'],
+      'Bail commercial': ['immobilier', 'commercial'],
+      'Bail habitation': ['immobilier'],
+      'Compromis de vente': ['immobilier'],
+      'Promesse unilatérale': ['immobilier'],
+      'Dev web/application': ['commercial'],
+      'NDA': ['commercial'],
+      'Contrat de prêt': ['commercial'],
+      'PACS': ['famille'],
+      'Contrat de mariage': ['famille'],
+      'Convention divorce': ['famille'],
+      'Testament': ['famille'],
+      'Donation': ['famille', 'fiscal'],
+    };
+
+    // Ajouter les catégories spécifiques
+    if (contractTypeMapping[contractType]) {
+      categoriesToFetch.push(...contractTypeMapping[contractType]);
+    }
+
+    console.log(`🧠 Consultation catégories:`, categoriesToFetch.join(', '));
+
+    // Lire les fichiers de chaque catégorie (max 2 par catégorie)
+    for (const category of categoriesToFetch) {
+      const { data: files, error: listError } = await supabase.storage
+        .from('ai-knowledge-base')
+        .list(category, {
+          limit: 2, // Max 2 fichiers par catégorie pour ne pas surcharger
+          sortBy: { column: 'created_at', order: 'desc' }
+        });
+
+      if (listError || !files || files.length === 0) {
+        continue;
+      }
+
+      for (const file of files) {
+        try {
+          const filePath = `${category}/${file.name}`;
+          
+          const { data: fileData, error: downloadError } = await supabase.storage
+            .from('ai-knowledge-base')
+            .download(filePath);
+
+          if (downloadError || !fileData) {
+            continue;
+          }
+
+          // Lire le contenu (txt ou md uniquement)
+          if (file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+            const content = await fileData.text();
+            if (content && content.length > 100) {
+              // Limiter à 5000 caractères par fichier
+              knowledge.push(content.substring(0, 5000));
+              console.log(`🧠 Connaissance chargée: ${category}/${file.name} (${content.length} caractères)`);
+            }
+          }
+        } catch (fileError) {
+          console.error(`❌ Erreur lecture ${file.name}:`, fileError);
+        }
+      }
+    }
+
+    return knowledge;
+
+  } catch (error) {
+    console.error('❌ Erreur récupération base de connaissances:', error);
     return [];
   }
 }
