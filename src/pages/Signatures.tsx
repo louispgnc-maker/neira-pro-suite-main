@@ -83,7 +83,7 @@ export default function Signatures() {
         .eq("owner_id", user.id)
         .eq("role", role)
         .gte("created_at", cycleStartDate.toISOString()) // Filtrer par cycle actuel
-        .order("last_reminder_at", { ascending: false, nullsFirst: false});
+        .order("created_at", { ascending: false }); // Plus récent en haut
         
       if (debounced) {
         query = query.or(`signer_name.ilike.%${debounced}%,document_name.ilike.%${debounced}%`);
