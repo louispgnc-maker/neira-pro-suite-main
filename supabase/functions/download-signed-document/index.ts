@@ -29,89 +29,73 @@ serve(async (req) => {
 
     console.log('[Download Signed] Transaction ID:', transactionId);
 
-    const universignApiUrl = Deno.env.get('UNIVERSIGN_API_URL') || 'https://api.alpha.universign.com';
-    const universignApiKey = Deno.env.get('UNIVERSIGN_API_KEY');
-    const universignUsername = Deno.env.get('UNIVERSIGN_USERNAME');
-    const universignPassword = Deno.env.get('UNIVERSIGN_PASSWORD');
+    // Create Supabase client
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
 
-    console.log('[Download Signed] Universign URL:', universignApiUrl);
-    console.log('[Download Signed] Has API Key:', !!universignApiKey);
-    console.log('[Download Signed] Has Username:', !!universignUsername);
+    // Get signature record to find signed document path
+    console.log('[Download Signed] Fetching signature from database...');
+    const { data: signature, error: sigError } = await supabase
+      .from('signatures')
+      .select('*, documents(name)')
+      .eq('transaction_id', transactionId)
+      .single();
 
-    // Prepare authorization headers
-    const headers: Record<string, string> = {};
-    if (universignApiKey) {
-      headers['Authorization'] = `Bearer ${universignApiKey}`;
-    } else if (universignUsername && universignPassword) {
-      const credentials = btoa(`${universignUsername}:${universignPassword}`);
-      headers['Authorization'] = `Basic ${credentials}`;
-    }
-
-    // Get transaction details to find document IDs
-    console.log('[Download Signed] Getting transaction:', transactionId);
-    const transactionUrl = `${universignApiUrl}/v1/transactions/${transactionId}`;
-    const transactionResponse = await fetch(transactionUrl, {
-      method: 'GET',
-      headers
-    });
-
-    if (!transactionResponse.ok) {
-      const errorText = await transactionResponse.text();
-      console.error('[Download Signed] Error getting transaction:', errorText);
+    if (sigError || !signature) {
+      console.error('[Download Signed] Signature not found:', sigError);
       return new Response(
-        JSON.stringify({ error: 'Failed to get transaction from Universign' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const transaction = await transactionResponse.json();
-    console.log('[Download Signed] Transaction:', transaction);
-
-    if (!transaction.documents || transaction.documents.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'No documents found in transaction' }),
+        JSON.stringify({ error: 'Signature not found' }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Download the first document (signed)
-    const documentId = transaction.documents[0].id;
-    console.log('[Download Signed] Downloading document:', documentId);
-    
-    const downloadUrl = `${universignApiUrl}/v1/documents/${documentId}/download`;
-    const downloadResponse = await fetch(downloadUrl, {
-      method: 'GET',
-      headers
-    });
+    console.log('[Download Signed] Signature found:', signature);
 
-    if (!downloadResponse.ok) {
-      const errorText = await downloadResponse.text();
-      console.error('[Download Signed] Download failed:', errorText);
+    if (!signature.signed_document_path) {
+      console.log('[Download Signed] Document not yet signed');
       return new Response(
-        JSON.stringify({ error: 'Failed to download signed document' }),
+        JSON.stringify({ error: 'Document not yet signed. Please wait for all signatories to complete signing.' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Download signed document from Storage
+    console.log('[Download Signed] Downloading from Storage:', signature.signed_document_path);
+    const { data: fileData, error: downloadError } = await supabase.storage
+      .from('documents')
+      .download(signature.signed_document_path);
+
+    if (downloadError || !fileData) {
+      console.error('[Download Signed] Storage download error:', downloadError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to download signed document from storage' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Get the PDF blob
-    const pdfBlob = await downloadResponse.blob();
-    const arrayBuffer = await pdfBlob.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-    
+    console.log('[Download Signed] File downloaded, size:', fileData.size);
+
     // Convert to base64
+    const arrayBuffer = await fileData.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
     let binaryString = '';
     for (let i = 0; i < uint8Array.length; i++) {
       binaryString += String.fromCharCode(uint8Array[i]);
     }
     const pdfBase64 = btoa(binaryString);
 
-    console.log('[Download Signed] Document downloaded, size:', pdfBase64.length);
+    console.log('[Download Signed] Document converted to base64, size:', pdfBase64.length);
+
+    const documentName = signature.documents?.name || 'document';
+    const filename = `${documentName}_signe.pdf`;
 
     return new Response(
       JSON.stringify({ 
         success: true,
         pdfBase64,
-        filename: transaction.documents[0].name || 'document_signe.pdf'
+        filename
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
