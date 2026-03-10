@@ -427,6 +427,23 @@ export default function ContratDetail() {
     
     // Pattern ULTRA AGRESSIF 1 : Capture entre guillemets avec différents types de guillemets
     // Supporte: "le Vendeur", «le Vendeur», "l'Acheteur" (avec apostrophe)
+    
+    // Fonction helper pour capitaliser un rôle
+    const formatRole = (role: string): string => {
+      role = role.trim();
+      // Si commence par "le ", "la ", "l'", les garder tels quels
+      if (/^(le|la|l')\s+/i.test(role)) {
+        const article = role.match(/^(le|la|l')\s+/i)?.[1].toLowerCase();
+        const rest = role.replace(/^(le|la|l')\s+/i, '');
+        const capitalizedRest = rest.charAt(0).toUpperCase() + rest.slice(1);
+        return article === 'le' ? `Le ${capitalizedRest}` : 
+               article === 'la' ? `La ${capitalizedRest}` : 
+               `L'${capitalizedRest}`;
+      }
+      // Sinon juste capitaliser
+      return role.charAt(0).toUpperCase() + role.slice(1);
+    };
+    
     // Double guillemets anglais
     const pattern1a = /(?:dénommé|désigné)\s+"([^"]+)"/gi;
     const matches1a = content.matchAll(pattern1a);
@@ -434,7 +451,7 @@ export default function ContratDetail() {
       const role = match[1]?.trim();
       if (role && role.length > 2) {
         console.log('[detectContractParties] Found role in double quotes:', role);
-        const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
+        const capitalizedRole = formatRole(role);
         if (!parties.includes(capitalizedRole)) {
           parties.push(capitalizedRole);
         }
@@ -448,7 +465,7 @@ export default function ContratDetail() {
       const role = match[1]?.trim();
       if (role && role.length > 2) {
         console.log('[detectContractParties] Found role in french quotes:', role);
-        const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
+        const capitalizedRole = formatRole(role);
         if (!parties.includes(capitalizedRole)) {
           parties.push(capitalizedRole);
         }
@@ -462,7 +479,7 @@ export default function ContratDetail() {
       const role = match[1]?.trim();
       if (role && role.length > 2) {
         console.log('[detectContractParties] Found role in curly quotes:', role);
-        const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
+        const capitalizedRole = formatRole(role);
         if (!parties.includes(capitalizedRole)) {
           parties.push(capitalizedRole);
         }
@@ -767,6 +784,7 @@ export default function ContratDetail() {
           .order('nom', { ascending: true });
         
         if (clientsData && mounted) {
+          console.log('[ContratDetail] Clients loaded:', clientsData.length);
           setClients(clientsData);
         }
       } catch (error) {
