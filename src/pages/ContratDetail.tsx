@@ -817,6 +817,24 @@ export default function ContratDetail() {
     return () => { mounted = false };
   }, [user, id, role]);
 
+  // Auto-ouvrir l'interface de synchronisation des parties si nécessaire
+  useEffect(() => {
+    if (!contrat || loading || editingInfo) return;
+    
+    // Conditions pour ouvrir automatiquement l'interface:
+    // 1. Le contrat a du contenu
+    // 2. Des parties ont été détectées
+    // 3. Mais parties_clients est vide ou incomplet
+    const hasContent = !!contrat.content;
+    const hasDetectedParties = contractParties.length > 0;
+    const partiesClientsEmpty = !contrat.parties_clients || Object.keys(contrat.parties_clients).length === 0;
+    
+    if (hasContent && hasDetectedParties && partiesClientsEmpty) {
+      console.log('[ContratDetail] Auto-ouverture interface synchronisation parties:', contractParties);
+      startEditingInfo();
+    }
+  }, [contrat, loading, contractParties, editingInfo]);
+
   const goBack = () => {
     navigate(-1);
   };
