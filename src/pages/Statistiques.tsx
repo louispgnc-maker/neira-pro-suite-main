@@ -300,9 +300,9 @@ export default function Statistiques() {
                 <FolderOpen className="h-4 w-4 text-gray-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{dossierStats.total}</div>
+                <div className="text-2xl font-bold">{dossierStats.enCours}</div>
                 <p className="text-xs text-gray-600">
-                  {dossierStats.enCours} en cours, {dossierStats.urgents} urgents
+                  en cours
                 </p>
               </CardContent>
             </Card>
@@ -313,9 +313,9 @@ export default function Statistiques() {
                 <FileSignature className="h-4 w-4 text-gray-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{signatureStats.total}</div>
+                <div className="text-2xl font-bold">{signatureStats.electroniques}</div>
                 <p className="text-xs text-gray-600">
-                  {signatureStats.electroniques} électroniques / {signatureStats.presentielle} présentielle
+                  électroniques
                 </p>
               </CardContent>
             </Card>
