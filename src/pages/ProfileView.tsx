@@ -29,6 +29,7 @@ export default function ProfileView() {
   const [subscriptionInfo, setSubscriptionInfo] = useState<any>(null);
   const [cabinetId, setCabinetId] = useState<string | null>(null);
   const [memberCount, setMemberCount] = useState(0);
+  const [maxMembers, setMaxMembers] = useState(0); // Places payées
   const [signatureCreditsTotal, setSignatureCreditsTotal] = useState(0);
   const [signatureCreditsCount, setSignatureCreditsCount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState<{ last4: string; brand: string } | null>(null);
@@ -174,6 +175,7 @@ export default function ProfileView() {
 
   const loadMemberCount = async (cabinetId: string) => {
     try {
+      // Charger le nombre de membres actifs
       const { count, error } = await supabase
         .from('cabinet_members')
         .select('*', { count: 'exact', head: true })
@@ -182,6 +184,18 @@ export default function ProfileView() {
       
       if (!error && count !== null) {
         setMemberCount(count);
+      }
+      
+      // Charger max_members (places payées)
+      const { data: cabinetData, error: cabinetError } = await supabase
+        .from('cabinets')
+        .select('max_members')
+        .eq('id', cabinetId)
+        .single();
+      
+      if (!cabinetError && cabinetData) {
+        // Si max_members est null (illimité), utiliser le nombre actif
+        setMaxMembers(cabinetData.max_members || count || 1);
       }
     } catch (error) {
       console.error('Erreur chargement nombre de membres:', error);
@@ -300,7 +314,7 @@ export default function ProfileView() {
 
   const calculateMonthlyTotal = () => {
     const tierPrice = getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free');
-    const membersCost = tierPrice * memberCount;
+    const membersCost = tierPrice * maxMembers; // Utiliser places payées
     // Ajouter les crédits signatures payants (montant unique, pas mensuel)
     return membersCost + signatureCreditsTotal;
   };
@@ -603,7 +617,7 @@ export default function ProfileView() {
                   <div className="text-sm text-gray-600 space-y-2">
                     <div className="flex justify-between">
                       <span>Abonnement {subscriptionInfo?.subscription_tier || 'Free'}</span>
-                      <span>{getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')} € × {memberCount} = {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free') * memberCount} €</span>
+                      <span>{getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free')} € × {maxMembers} = {getSubscriptionPrice(subscriptionInfo?.subscription_tier || 'free') * maxMembers} €</span>
                     </div>
                     {signatureCreditsTotal > 0 && (
                       <div className="flex justify-between">
