@@ -425,15 +425,6 @@ export default function ContratDetail() {
     
     console.log('[detectContractParties] Analyzing content:', content.substring(0, 500));
     
-    // Liste de rôles contractuels connus avec leurs variations
-    const knownRoles = [
-      'franchiseur', 'franchisé', 'vendeur', 'acquéreur', 'acheteur',
-      'bailleur', 'locataire', 'employeur', 'salarié', 'employé',
-      'prestataire', 'client', 'donateur', 'donataire', 'cédant', 'cessionnaire',
-      'prêteur', 'emprunteur', 'mandant', 'mandataire', 'propriétaire', 'testateur',
-      'légataire', 'débiteur', 'créancier'
-    ];
-    
     // Pattern ULTRA AGRESSIF 1 : Capture entre guillemets avec différents types de guillemets
     // Supporte: "le Vendeur", «le Vendeur», 'le Vendeur', "le Vendeur"
     const patternQuotes = /(?:dénommé|désigné)\s+["""«']([^"""«']+)["""«']/gi;
@@ -511,17 +502,13 @@ export default function ContratDetail() {
       }
     }
     
-    console.log('[detectContractParties] Final detected parties:', parties);
-    
-    return parties.slice(0, 5); // Max 5 parties
-  };
-    }
-    
     // Fallback JSON si toujours vide
     if (parties.length === 0 && contrat?.contenu_json?.client_roles) {
+      console.log('[detectContractParties] Using JSON fallback from contenu_json');
       return contrat.contenu_json.client_roles.slice(0, 5);
     }
     
+    console.log('[detectContractParties] Final detected parties:', parties);
     return parties.slice(0, 5); // Max 5 parties
   };
 
