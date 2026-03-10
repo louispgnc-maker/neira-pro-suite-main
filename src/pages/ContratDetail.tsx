@@ -805,35 +805,41 @@ export default function ContratDetail() {
         setContrat(loadedContrat);
         setIsOwner(true); // C'est bien le propriétaire
         
-        // Détecter les parties dès le chargement et auto-sauvegarder si nécessaire
+        // TOUJOURS re-détecter les parties pour mettre à jour avec les nouveaux patterns
         let detectedParties: string[] = [];
         
-        if (loadedContrat.contenu_json?.client_roles && Array.isArray(loadedContrat.contenu_json.client_roles)) {
-          // Utiliser les parties déjà sauvegardées
-          detectedParties = loadedContrat.contenu_json.client_roles.slice(0, 5);
-        } else if (loadedContrat.content) {
-          // Détecter et sauvegarder automatiquement
+        if (loadedContrat.content) {
+          // Détecter avec les derniers patterns
           detectedParties = detectContractParties(loadedContrat.content);
           
           if (detectedParties.length > 0) {
-            // Sauvegarder les parties détectées dans contenu_json
-            const updatedContenuJson = {
-              ...(loadedContrat.contenu_json || {}),
-              client_roles: detectedParties
-            };
+            // Comparer avec les parties existantes
+            const existingParties = loadedContrat.contenu_json?.client_roles || [];
+            const partiesChanged = JSON.stringify(detectedParties) !== JSON.stringify(existingParties);
             
-            try {
-              await supabase
-                .from('contrats')
-                .update({ contenu_json: updatedContenuJson })
-                .eq('id', loadedContrat.id);
+            if (partiesChanged) {
+              // Sauvegarder les nouvelles parties détectées
+              const updatedContenuJson = {
+                ...(loadedContrat.contenu_json || {}),
+                client_roles: detectedParties
+              };
               
-              console.log('[ContratDetail] Auto-saved detected parties:', detectedParties);
-              loadedContrat.contenu_json = updatedContenuJson;
-            } catch (err) {
-              console.error('[ContratDetail] Failed to auto-save parties:', err);
+              try {
+                await supabase
+                  .from('contrats')
+                  .update({ contenu_json: updatedContenuJson })
+                  .eq('id', loadedContrat.id);
+                
+                console.log('[ContratDetail] Updated parties:', existingParties, '→', detectedParties);
+                loadedContrat.contenu_json = updatedContenuJson;
+              } catch (err) {
+                console.error('[ContratDetail] Failed to update parties:', err);
+              }
             }
           }
+        } else if (loadedContrat.contenu_json?.client_roles && Array.isArray(loadedContrat.contenu_json.client_roles)) {
+          // Fallback: utiliser les parties sauvegardées si pas de contenu
+          detectedParties = loadedContrat.contenu_json.client_roles.slice(0, 5);
         }
         
         setContractParties(detectedParties);
@@ -859,33 +865,38 @@ export default function ContratDetail() {
                 const loadedContrat = originalContrat as Contrat;
                 setContrat(loadedContrat);
                 
-                // Détecter les parties dès le chargement (contrat partagé)
+                // TOUJOURS re-détecter les parties (contrat partagé)
                 let detectedParties: string[] = [];
                 
-                if (loadedContrat.contenu_json?.client_roles && Array.isArray(loadedContrat.contenu_json.client_roles)) {
-                  detectedParties = loadedContrat.contenu_json.client_roles.slice(0, 5);
-                } else if (loadedContrat.content) {
+                if (loadedContrat.content) {
                   detectedParties = detectContractParties(loadedContrat.content);
                   
-                  // Pour les contrats partagés, sauvegarder aussi si possible (si propriétaire)
+                  // Mettre à jour même pour contrats partagés si propriétaire
                   if (detectedParties.length > 0 && isOwner) {
-                    const updatedContenuJson = {
-                      ...(loadedContrat.contenu_json || {}),
-                      client_roles: detectedParties
-                    };
+                    const existingParties = loadedContrat.contenu_json?.client_roles || [];
+                    const partiesChanged = JSON.stringify(detectedParties) !== JSON.stringify(existingParties);
                     
-                    try {
-                      await supabase
-                        .from('contrats')
-                        .update({ contenu_json: updatedContenuJson })
-                        .eq('id', loadedContrat.id);
+                    if (partiesChanged) {
+                      const updatedContenuJson = {
+                        ...(loadedContrat.contenu_json || {}),
+                        client_roles: detectedParties
+                      };
                       
-                      console.log('[ContratDetail] Auto-saved detected parties (shared contract):', detectedParties);
-                      loadedContrat.contenu_json = updatedContenuJson;
-                    } catch (err) {
-                      console.error('[ContratDetail] Failed to auto-save parties:', err);
+                      try {
+                        await supabase
+                          .from('contrats')
+                          .update({ contenu_json: updatedContenuJson })
+                          .eq('id', loadedContrat.id);
+                        
+                        console.log('[ContratDetail] Updated parties (shared):', existingParties, '→', detectedParties);
+                        loadedContrat.contenu_json = updatedContenuJson;
+                      } catch (err) {
+                        console.error('[ContratDetail] Failed to update parties:', err);
+                      }
                     }
                   }
+                } else if (loadedContrat.contenu_json?.client_roles && Array.isArray(loadedContrat.contenu_json.client_roles)) {
+                  detectedParties = loadedContrat.contenu_json.client_roles.slice(0, 5);
                 }
                 
                 setContractParties(detectedParties);
