@@ -577,9 +577,9 @@ export default function ProfileView() {
                     <CardTitle className="text-sm font-medium text-gray-600">Membres actifs</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold mb-1">{memberCount}</div>
+                    <div className="text-2xl font-bold mb-1">{memberCount}/{maxMembers}</div>
                     <div className="text-sm text-gray-600">
-                      {memberCount > 1 ? 'Membres' : 'Membre'}
+                      Places utilisées
                     </div>
                   </CardContent>
                 </Card>
