@@ -393,7 +393,7 @@ export default function ContratDetail() {
   };
 
   // Fonction pour commencer l'édition des informations
-  const startEditingInfo = () => {
+  const startEditingInfo = async () => {
     if (!contrat) return;
     setEditedName(contrat.name);
     setEditedCategory(contrat.category || "");
@@ -406,9 +406,9 @@ export default function ContratDetail() {
     if (contrat.contenu_json?.client_roles && Array.isArray(contrat.contenu_json.client_roles)) {
       setContractParties(contrat.contenu_json.client_roles.slice(0, 5));
     }
-    // Priorité 2 : Détecter depuis le contenu si disponible
+    // Priorité 2 : Détecter depuis le contenu si disponible (avec IA)
     else if (contrat.content) {
-      const parties = detectContractParties(contrat.content);
+      const parties = await detectContractPartiesAI(contrat.content);
       setContractParties(parties);
     }
     // Priorité 3 : Vide (ancien système avec client_id unique)
@@ -419,14 +419,36 @@ export default function ContratDetail() {
     setEditingInfo(true);
   };
   
-  // Fonction pour détecter les parties du contrat
-  const detectContractParties = (content: string): string[] => {
+  // Fonction pour détecter les parties du contrat via IA
+  const detectContractPartiesAI = async (content: string): Promise<string[]> => {
+    try {
+      console.log('[detectContractPartiesAI] Calling AI...');
+      
+      const { data, error } = await supabase.functions.invoke('detect-contract-parties', {
+        body: { content }
+      });
+
+      if (error) throw error;
+      
+      const parties = data?.parties || [];
+      console.log('[detectContractPartiesAI] AI detected parties:', parties);
+      
+      if (parties.length > 0) {
+        return parties;
+      }
+    } catch (error) {
+      console.error('[detectContractPartiesAI] AI detection failed, using fallback:', error);
+    }
+    
+    // Fallback: détection par regex
+    return detectContractPartiesRegex(content);
+  };
+  
+  // Fonction fallback pour détecter les parties du contrat par regex
+  const detectContractPartiesRegex = (content: string): string[] => {
     const parties: string[] = [];
     
-    console.log('[detectContractParties] Analyzing content:', content.substring(0, 500));
-    
-    // Pattern ULTRA AGRESSIF 1 : Capture entre guillemets avec différents types de guillemets
-    // Supporte: "le Vendeur", «le Vendeur», "l'Acheteur" (avec apostrophe)
+    console.log('[detectContractPartiesRegex] Analyzing content with regex');
     
     // Fonction helper pour formater un rôle (enlever déterminants et capitaliser)
     const formatRole = (role: string): string => {
@@ -537,11 +559,11 @@ export default function ContratDetail() {
     
     // Fallback JSON si toujours vide
     if (parties.length === 0 && contrat?.contenu_json?.client_roles) {
-      console.log('[detectContractParties] Using JSON fallback from contenu_json');
+      console.log('[detectContractPartiesRegex] Using JSON fallback from contenu_json');
       return contrat.contenu_json.client_roles.slice(0, 5);
     }
     
-    console.log('[detectContractParties] Final detected parties:', parties);
+    console.log('[detectContractPartiesRegex] Final detected parties:', parties);
     return parties.slice(0, 5); // Max 5 parties
   };
 
@@ -682,11 +704,11 @@ export default function ContratDetail() {
       
       setContrat(updatedContrat);
       
-      // Recalculer les parties pour l'affichage
+      // Recalculer les parties pour l'affichage (avec IA)
       if (updatedContrat.contenu_json?.client_roles && Array.isArray(updatedContrat.contenu_json.client_roles)) {
         setContractParties(updatedContrat.contenu_json.client_roles.slice(0, 5));
       } else if (updatedContent) {
-        const parties = detectContractParties(updatedContent);
+        const parties = await detectContractPartiesAI(updatedContent);
         setContractParties(parties);
       }
       
@@ -793,12 +815,12 @@ export default function ContratDetail() {
         setContrat(loadedContrat);
         setIsOwner(true); // C'est bien le propriétaire
         
-        // TOUJOURS re-détecter les parties pour mettre à jour avec les nouveaux patterns
+        // TOUJOURS re-détecter les parties avec IA
         let detectedParties: string[] = [];
         
         if (loadedContrat.content) {
-          // Détecter avec les derniers patterns
-          detectedParties = detectContractParties(loadedContrat.content);
+          // Détecter avec IA (fallback sur regex si échec)
+          detectedParties = await detectContractPartiesAI(loadedContrat.content);
           
           if (detectedParties.length > 0) {
             // Comparer avec les parties existantes
@@ -857,7 +879,7 @@ export default function ContratDetail() {
                 let detectedParties: string[] = [];
                 
                 if (loadedContrat.content) {
-                  detectedParties = detectContractParties(loadedContrat.content);
+                  detectedParties = await detectContractPartiesAI(loadedContrat.content);
                   
                   // Mettre à jour même pour contrats partagés si propriétaire
                   if (detectedParties.length > 0 && isOwner) {
