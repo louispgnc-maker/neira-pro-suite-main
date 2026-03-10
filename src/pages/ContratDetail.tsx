@@ -426,14 +426,42 @@ export default function ContratDetail() {
     console.log('[detectContractParties] Analyzing content:', content.substring(0, 500));
     
     // Pattern ULTRA AGRESSIF 1 : Capture entre guillemets avec différents types de guillemets
-    // Supporte: "le Vendeur", «le Vendeur», 'le Vendeur', "le Vendeur"
-    const patternQuotes = /(?:dénommé|désigné)\s+["""«']([^"""«']+)["""«']/gi;
-    const matchesQuotes = content.matchAll(patternQuotes);
-    for (const match of matchesQuotes) {
+    // Supporte: "le Vendeur", «le Vendeur», "l'Acheteur" (avec apostrophe)
+    // Double guillemets anglais
+    const pattern1a = /(?:dénommé|désigné)\s+"([^"]+)"/gi;
+    const matches1a = content.matchAll(pattern1a);
+    for (const match of matches1a) {
       const role = match[1]?.trim();
-      if (role) {
-        console.log('[detectContractParties] Found quoted role:', role);
-        // Capitaliser proprement
+      if (role && role.length > 2) {
+        console.log('[detectContractParties] Found role in double quotes:', role);
+        const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
+        if (!parties.includes(capitalizedRole)) {
+          parties.push(capitalizedRole);
+        }
+      }
+    }
+    
+    // Guillemets français
+    const pattern1b = /(?:dénommé|désigné)\s+«([^»]+)»/gi;
+    const matches1b = content.matchAll(pattern1b);
+    for (const match of matches1b) {
+      const role = match[1]?.trim();
+      if (role && role.length > 2) {
+        console.log('[detectContractParties] Found role in french quotes:', role);
+        const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
+        if (!parties.includes(capitalizedRole)) {
+          parties.push(capitalizedRole);
+        }
+      }
+    }
+    
+    // Guillemets curly/smart
+    const pattern1c = /(?:dénommé|désigné)\s+"([^"]+)"/gi;
+    const matches1c = content.matchAll(pattern1c);
+    for (const match of matches1c) {
+      const role = match[1]?.trim();
+      if (role && role.length > 2) {
+        console.log('[detectContractParties] Found role in curly quotes:', role);
         const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
         if (!parties.includes(capitalizedRole)) {
           parties.push(capitalizedRole);
