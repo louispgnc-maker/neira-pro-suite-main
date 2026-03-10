@@ -787,13 +787,38 @@ export default function ContratDetail() {
         setContrat(loadedContrat);
         setIsOwner(true); // C'est bien le propriétaire
         
-        // Détecter les parties dès le chargement
+        // Détecter les parties dès le chargement et auto-sauvegarder si nécessaire
+        let detectedParties: string[] = [];
+        
         if (loadedContrat.contenu_json?.client_roles && Array.isArray(loadedContrat.contenu_json.client_roles)) {
-          setContractParties(loadedContrat.contenu_json.client_roles.slice(0, 5));
+          // Utiliser les parties déjà sauvegardées
+          detectedParties = loadedContrat.contenu_json.client_roles.slice(0, 5);
         } else if (loadedContrat.content) {
-          const parties = detectContractParties(loadedContrat.content);
-          setContractParties(parties);
+          // Détecter et sauvegarder automatiquement
+          detectedParties = detectContractParties(loadedContrat.content);
+          
+          if (detectedParties.length > 0) {
+            // Sauvegarder les parties détectées dans contenu_json
+            const updatedContenuJson = {
+              ...(loadedContrat.contenu_json || {}),
+              client_roles: detectedParties
+            };
+            
+            try {
+              await supabase
+                .from('contrats')
+                .update({ contenu_json: updatedContenuJson })
+                .eq('id', loadedContrat.id);
+              
+              console.log('[ContratDetail] Auto-saved detected parties:', detectedParties);
+              loadedContrat.contenu_json = updatedContenuJson;
+            } catch (err) {
+              console.error('[ContratDetail] Failed to auto-save parties:', err);
+            }
+          }
         }
+        
+        setContractParties(detectedParties);
       } else {
         // Fallback: maybe this contract was shared to the cabinet. Try cabinet_contrats (visible to active members)
         try {
@@ -817,12 +842,35 @@ export default function ContratDetail() {
                 setContrat(loadedContrat);
                 
                 // Détecter les parties dès le chargement (contrat partagé)
+                let detectedParties: string[] = [];
+                
                 if (loadedContrat.contenu_json?.client_roles && Array.isArray(loadedContrat.contenu_json.client_roles)) {
-                  setContractParties(loadedContrat.contenu_json.client_roles.slice(0, 5));
+                  detectedParties = loadedContrat.contenu_json.client_roles.slice(0, 5);
                 } else if (loadedContrat.content) {
-                  const parties = detectContractParties(loadedContrat.content);
-                  setContractParties(parties);
+                  detectedParties = detectContractParties(loadedContrat.content);
+                  
+                  // Pour les contrats partagés, sauvegarder aussi si possible (si propriétaire)
+                  if (detectedParties.length > 0 && isOwner) {
+                    const updatedContenuJson = {
+                      ...(loadedContrat.contenu_json || {}),
+                      client_roles: detectedParties
+                    };
+                    
+                    try {
+                      await supabase
+                        .from('contrats')
+                        .update({ contenu_json: updatedContenuJson })
+                        .eq('id', loadedContrat.id);
+                      
+                      console.log('[ContratDetail] Auto-saved detected parties (shared contract):', detectedParties);
+                      loadedContrat.contenu_json = updatedContenuJson;
+                    } catch (err) {
+                      console.error('[ContratDetail] Failed to auto-save parties:', err);
+                    }
+                  }
                 }
+                
+                setContractParties(detectedParties);
               } else {
                 // Fallback si le contrat original n'existe plus
                 setContrat({
@@ -874,10 +922,10 @@ export default function ContratDetail() {
     if (!contrat || loading || editingInfo) return;
     
     // Conditions pour ouvrir automatiquement l'interface:
-    // 1. Le contrat a du contenu
-    // 2. Des parties ont été détectées
+    // 1. Le contrat a du contenu OU des parties détectées
+    // 2. Des parties ont été détectées (via contractParties)
     // 3. Mais parties_clients est vide ou incomplet
-    const hasContent = !!contrat.content;
+    const hasContent = !!contrat.content || contractParties.length > 0;
     const hasDetectedParties = contractParties.length > 0;
     const partiesClientsEmpty = !contrat.parties_clients || Object.keys(contrat.parties_clients).length === 0;
     
