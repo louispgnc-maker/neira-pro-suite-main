@@ -444,8 +444,8 @@ export default function ContratDetail() {
       return role.charAt(0).toUpperCase() + role.slice(1);
     };
     
-    // Double guillemets anglais
-    const pattern1a = /(?:dénommé|désigné)\s+"([^"]+)"/gi;
+    // Double guillemets anglais - PRIORITÉ MAXIMALE (féminin/masculin)
+    const pattern1a = /(?:dénommée?s?|désignée?s?)\s+"([^"]+)"/gi;
     const matches1a = content.matchAll(pattern1a);
     for (const match of matches1a) {
       const role = match[1]?.trim();
@@ -459,7 +459,7 @@ export default function ContratDetail() {
     }
     
     // Guillemets français
-    const pattern1b = /(?:dénommé|désigné)\s+«([^»]+)»/gi;
+    const pattern1b = /(?:dénommée?s?|désignée?s?)\s+«([^»]+)»/gi;
     const matches1b = content.matchAll(pattern1b);
     for (const match of matches1b) {
       const role = match[1]?.trim();
@@ -473,7 +473,7 @@ export default function ContratDetail() {
     }
     
     // Guillemets curly/smart
-    const pattern1c = /(?:dénommé|désigné)\s+"([^"]+)"/gi;
+    const pattern1c = /(?:dénommée?s?|désignée?s?)\s+"([^"]+)"/gi;
     const matches1c = content.matchAll(pattern1c);
     for (const match of matches1c) {
       const role = match[1]?.trim();
