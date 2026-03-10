@@ -545,7 +545,7 @@ export default function ProfileView() {
                       
                       <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600">
                         <div>
-                          <span className="capitalize">{subscriptionInfo?.subscription_tier || 'Free'}</span> · {memberCount} {memberCount > 1 ? 'membres' : 'membre'}
+                          <span className="capitalize">{subscriptionInfo?.subscription_tier || 'Free'}</span> · {memberCount}/{maxMembers} membres
                         </div>
                         <div>
                           Prochain prélèvement : <span className="font-semibold text-gray-900">{formatDate(getNextPaymentDate())}</span>
