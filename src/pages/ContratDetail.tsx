@@ -423,61 +423,98 @@ export default function ContratDetail() {
   const detectContractParties = (content: string): string[] => {
     const parties: string[] = [];
     
+    console.log('[detectContractParties] Analyzing content:', content.substring(0, 500));
+    
     // Liste de rôles contractuels connus avec leurs variations
     const knownRoles = [
       'franchiseur', 'franchisé', 'vendeur', 'acquéreur', 'acheteur',
       'bailleur', 'locataire', 'employeur', 'salarié', 'employé',
       'prestataire', 'client', 'donateur', 'donataire', 'cédant', 'cessionnaire',
-      'prêteur', 'emprunteur', 'mandant', 'mandataire', 'propriétaire'
+      'prêteur', 'emprunteur', 'mandant', 'mandataire', 'propriétaire', 'testateur',
+      'légataire', 'débiteur', 'créancier'
     ];
     
-    // Pattern 1 : "D'une part, [ROLE]" ou "D'une part [ROLE]"
-    const pattern1 = /D'une\s+part[,\s:]+(?:\[À COMPLÉTER\][,\s]*(?:ci-après\s+)?(?:dénommé|désigné)\s+"([^"]+)"|(?:le|la)\s+([a-zéèêàâûù]+))/gi;
+    // Pattern ULTRA AGRESSIF 1 : Capture entre guillemets avec différents types de guillemets
+    // Supporte: "le Vendeur", «le Vendeur», 'le Vendeur', "le Vendeur"
+    const patternQuotes = /(?:dénommé|désigné)\s+["""«']([^"""«']+)["""«']/gi;
+    const matchesQuotes = content.matchAll(patternQuotes);
+    for (const match of matchesQuotes) {
+      const role = match[1]?.trim();
+      if (role) {
+        console.log('[detectContractParties] Found quoted role:', role);
+        // Capitaliser proprement
+        const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
+        if (!parties.includes(capitalizedRole)) {
+          parties.push(capitalizedRole);
+        }
+      }
+    }
+    
+    // Pattern 2 : "D'une part, [ROLE]" ou "D'une part [ROLE]"
+    const pattern1 = /D'une\s+part[,\s:]+(?:\[À COMPLÉTER\][,\s]*(?:ci-après\s+)?(?:dénommé|désigné)\s+["""«']?([^"""«',\n]+)["""«']?|(?:le|la|l')\s+([a-zéèêàâûù]+))/gi;
     const matches1 = content.matchAll(pattern1);
     for (const match of matches1) {
       const role = (match[1] || match[2])?.trim().toLowerCase();
-      if (role) {
+      if (role && role.length > 3) {
+        console.log('[detectContractParties] Found D\'une part role:', role);
         // Capitaliser proprement
         const capitalizedRole = role.includes(' ') 
           ? role.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
           : `Le ${role.charAt(0).toUpperCase() + role.slice(1)}`;
         
-        if ((knownRoles.includes(role) || match[1]) && !parties.includes(capitalizedRole)) {
+        if (!parties.includes(capitalizedRole)) {
           parties.push(capitalizedRole);
         }
       }
     }
     
-    // Pattern 2 : "Et d'autre part, [ROLE]"
-    const pattern2 = /Et\s+d'autre\s+part[,\s:]+(?:\[À COMPLÉTER\][,\s]*(?:ci-après\s+)?(?:dénommé|désigné)\s+"([^"]+)"|(?:le|la)\s+([a-zéèêàâûù]+))/gi;
+    // Pattern 3 : "Et d'autre part, [ROLE]"
+    const pattern2 = /Et\s+d'autre\s+part[,\s:]+(?:\[À COMPLÉTER\][,\s]*(?:ci-après\s+)?(?:dénommé|désigné)\s+["""«']?([^"""«',\n]+)["""«']?|(?:le|la|l')\s+([a-zéèêàâûù]+))/gi;
     const matches2 = content.matchAll(pattern2);
     for (const match of matches2) {
       const role = (match[1] || match[2])?.trim().toLowerCase();
-      if (role) {
+      if (role && role.length > 3) {
+        console.log('[detectContractParties] Found Et d\'autre part role:', role);
         const capitalizedRole = role.includes(' ')
           ? role.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
           : `Le ${role.charAt(0).toUpperCase() + role.slice(1)}`;
         
-        if ((knownRoles.includes(role) || match[1]) && !parties.includes(capitalizedRole)) {
+        if (!parties.includes(capitalizedRole)) {
           parties.push(capitalizedRole);
         }
       }
     }
     
-    // Pattern 3 : Détection directe dans le texte (fallback agressif)
+    // Pattern 4 : Détection directe dans le texte (fallback AGRESSIF)
     if (parties.length === 0) {
       const contentLower = content.toLowerCase();
+      console.log('[detectContractParties] Using fallback detection');
+      
       if (contentLower.includes('franchiseur') && contentLower.includes('franchisé')) {
         parties.push('Le Franchiseur', 'Le Franchisé');
       } else if (contentLower.includes('bailleur') && contentLower.includes('locataire')) {
         parties.push('Le Bailleur', 'Le Locataire');
-      } else if (contentLower.includes('employeur') && contentLower.includes('salarié')) {
+      } else if (contentLower.includes('employeur') && (contentLower.includes('salarié') || contentLower.includes('employé'))) {
         parties.push('L\'Employeur', 'Le Salarié');
-      } else if (contentLower.includes('vendeur') && contentLower.includes('acquéreur')) {
-        parties.push('Le Vendeur', 'L\'Acquéreur');
+      } else if (contentLower.includes('vendeur') && (contentLower.includes('acquéreur') || contentLower.includes('acheteur'))) {
+        parties.push('Le Vendeur', 'L\'Acheteur');
       } else if (contentLower.includes('prestataire') && contentLower.includes('client')) {
         parties.push('Le Prestataire', 'Le Client');
+      } else if (contentLower.includes('cédant') && contentLower.includes('cessionnaire')) {
+        parties.push('Le Cédant', 'Le Cessionnaire');
+      } else if (contentLower.includes('prêteur') && contentLower.includes('emprunteur')) {
+        parties.push('Le Prêteur', 'L\'Emprunteur');
+      } else if (contentLower.includes('testateur') && contentLower.includes('légataire')) {
+        parties.push('Le Testateur', 'Le Légataire');
+      } else if (contentLower.includes('débiteur') && contentLower.includes('créancier')) {
+        parties.push('Le Débiteur', 'Le Créancier');
       }
+    }
+    
+    console.log('[detectContractParties] Final detected parties:', parties);
+    
+    return parties.slice(0, 5); // Max 5 parties
+  };
     }
     
     // Fallback JSON si toujours vide
