@@ -22,6 +22,7 @@ type ClientRow = {
   kyc_status: "Complet" | "Partiel" | string;
   missing_info: string | null;
   created_at?: string | null;
+  siret?: string | null;
 };
 
 export default function Clients() {
@@ -199,73 +200,153 @@ export default function Clients() {
             </div>
           </div>
         ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Liste des clients</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="border rounded-lg bg-white p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {clients.map((client) => (
-                    <Card 
-                      key={client.id} 
-                      className="p-4 hover:shadow-md transition-shadow" 
-                    >
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-start justify-between cursor-pointer" onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-lg">{client.name}</h3>
-                            {client.missing_info ? (
-                              <p className="text-xs text-destructive flex items-center gap-1 mt-2 font-semibold">
-                                <AlertCircle className="h-3 w-3" />
-                                Dossier incomplet
-                              </p>
-                            ) : (
-                              <p className="text-xs text-success flex items-center gap-1 mt-2 font-semibold">
-                                <CheckCircle2 className="h-3 w-3" />
-                                Dossier complet
-                              </p>
-                            )}
-                            {client.created_at && (
-                              <p className="text-xs text-gray-600 mt-2">
-                                Ajouté le {new Date(client.created_at).toLocaleDateString()}
-                              </p>
-                            )}
+          <>
+            {/* Clients Particuliers */}
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="text-lg">Clients Particuliers</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {clients.filter(c => !c.siret).length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-4">Aucun client particulier</p>
+                ) : (
+                  <div className="border rounded-lg bg-white p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {clients.filter(c => !c.siret).map((client) => (
+                        <Card 
+                          key={client.id} 
+                          className="p-4 hover:shadow-md transition-shadow" 
+                        >
+                          <div className="flex flex-col gap-3">
+                            <div className="flex items-start justify-between cursor-pointer" onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}>
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-lg">{client.name}</h3>
+                                {client.missing_info ? (
+                                  <p className="text-xs text-destructive flex items-center gap-1 mt-2 font-semibold">
+                                    <AlertCircle className="h-3 w-3" />
+                                    Dossier incomplet
+                                  </p>
+                                ) : (
+                                  <p className="text-xs text-success flex items-center gap-1 mt-2 font-semibold">
+                                    <CheckCircle2 className="h-3 w-3" />
+                                    Dossier complet
+                                  </p>
+                                )}
+                                {client.created_at && (
+                                  <p className="text-xs text-gray-600 mt-2">
+                                    Ajouté le {new Date(client.created_at).toLocaleDateString()}
+                                  </p>
+                                )}
+                              </div>
+                              <Badge
+                                variant="outline"
+                                className={
+                                  client.kyc_status === "Complet"
+                                    ? "bg-success/10 text-success border-success/20"
+                                    : kycPartielColor
+                                }
+                              >
+                                {client.kyc_status}
+                              </Badge>
+                            </div>
+                            
+                            {/* Actions - Espace client et Partage */}
+                            <div className="flex items-center gap-2 pt-2 border-t">
+                              <Button
+                                size="sm"
+                                className={`flex-1 text-xs ${mainButtonColor}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(role === 'notaire' ? `/notaires/client-spaces/${client.id}` : `/avocats/client-spaces/${client.id}`);
+                                }}
+                              >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                Voir son espace
+                              </Button>
+                              <ShareToCollaborativeButton clientId={client.id} clientName={client.name} role={role} />
+                            </div>
                           </div>
-                          <Badge
-                            variant="outline"
-                            className={
-                              client.kyc_status === "Complet"
-                                ? "bg-success/10 text-success border-success/20"
-                                : kycPartielColor
-                            }
-                          >
-                            {client.kyc_status}
-                          </Badge>
-                        </div>
-                        
-                        {/* Actions - Espace client et Partage */}
-                        <div className="flex items-center gap-2 pt-2 border-t">
-                          <Button
-                            size="sm"
-                            className={`flex-1 text-xs ${mainButtonColor}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(role === 'notaire' ? `/notaires/client-spaces/${client.id}` : `/avocats/client-spaces/${client.id}`);
-                            }}
-                          >
-                            <ExternalLink className="h-3 w-3 mr-1" />
-                            Voir son espace
-                          </Button>
-                          <ShareToCollaborativeButton clientId={client.id} clientName={client.name} role={role} />
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Clients Entreprises */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Clients Entreprises</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {clients.filter(c => c.siret).length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-4">Aucune entreprise cliente</p>
+                ) : (
+                  <div className="border rounded-lg bg-white p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {clients.filter(c => c.siret).map((client) => (
+                        <Card 
+                          key={client.id} 
+                          className="p-4 hover:shadow-md transition-shadow" 
+                        >
+                          <div className="flex flex-col gap-3">
+                            <div className="flex items-start justify-between cursor-pointer" onClick={() => navigate(role === 'notaire' ? `/notaires/clients/${client.id}` : `/avocats/clients/${client.id}`)}>
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-lg">{client.name}</h3>
+                                {client.missing_info ? (
+                                  <p className="text-xs text-destructive flex items-center gap-1 mt-2 font-semibold">
+                                    <AlertCircle className="h-3 w-3" />
+                                    Dossier incomplet
+                                  </p>
+                                ) : (
+                                  <p className="text-xs text-success flex items-center gap-1 mt-2 font-semibold">
+                                    <CheckCircle2 className="h-3 w-3" />
+                                    Dossier complet
+                                  </p>
+                                )}
+                                {client.created_at && (
+                                  <p className="text-xs text-gray-600 mt-2">
+                                    Ajouté le {new Date(client.created_at).toLocaleDateString()}
+                                  </p>
+                                )}
+                              </div>
+                              <Badge
+                                variant="outline"
+                                className={
+                                  client.kyc_status === "Complet"
+                                    ? "bg-success/10 text-success border-success/20"
+                                    : kycPartielColor
+                                }
+                              >
+                                {client.kyc_status}
+                              </Badge>
+                            </div>
+                            
+                            {/* Actions - Espace client et Partage */}
+                            <div className="flex items-center gap-2 pt-2 border-t">
+                              <Button
+                                size="sm"
+                                className={`flex-1 text-xs ${mainButtonColor}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(role === 'notaire' ? `/notaires/client-spaces/${client.id}` : `/avocats/client-spaces/${client.id}`);
+                                }}
+                              >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                Voir son espace
+                              </Button>
+                              <ShareToCollaborativeButton clientId={client.id} clientName={client.name} role={role} />
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </>
         )}
       </div>
     </AppLayout>
