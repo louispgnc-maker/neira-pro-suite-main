@@ -93,7 +93,18 @@ export function FicheClientMenu({ variant = 'vertical', colorClass = '', label =
           onClick={() => navigate(role === 'notaire' ? '/notaires/clients/create' : '/avocats/clients/create')}
         >
           <UserPlus className="mr-2 h-4 w-4" />
-          Remplir une fiche client
+          Client particulier
+        </DropdownMenuItem>
+        <DropdownMenuItem 
+          className={
+            `cursor-pointer ${role === 'notaire' 
+              ? 'hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white' 
+              : 'hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white'}`
+          }
+          onClick={() => navigate(role === 'notaire' ? '/notaires/clients/create-entreprise' : '/avocats/clients/create-entreprise')}
+        >
+          <UserPlus className="mr-2 h-4 w-4" />
+          Client entreprise
         </DropdownMenuItem>
         <DropdownMenuItem 
           className={

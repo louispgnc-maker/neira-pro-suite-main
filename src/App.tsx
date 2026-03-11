@@ -27,6 +27,8 @@ import ClientDetail from "@/pages/ClientDetail";
 import EditClient from "@/pages/EditClient";
 import CreateClientAvocat from "./pages/CreateClientAvocat";
 import CreateClientNotaire from "./pages/CreateClientNotaire";
+import CreateClientEntrepriseAvocat from "./pages/CreateClientEntrepriseAvocat";
+import CreateClientEntrepriseNotaire from "./pages/CreateClientEntrepriseNotaire";
 import Tasks from "./pages/Tasks";
 import Contrats from "./pages/Contrats";
 import ContratDetail from "./pages/ContratDetail";
@@ -156,6 +158,7 @@ const App = () => (
             <Route path="/avocats/signatures/:id" element={<RoleProtectedRoute requiredRole="avocat"><SignatureDetail /></RoleProtectedRoute>} />
             <Route path="/avocats/clients" element={<RoleProtectedRoute requiredRole="avocat"><Clients /></RoleProtectedRoute>} />
             <Route path="/avocats/clients/create" element={<RoleProtectedRoute requiredRole="avocat"><CreateClientAvocat /></RoleProtectedRoute>} />
+            <Route path="/avocats/clients/create-entreprise" element={<RoleProtectedRoute requiredRole="avocat"><CreateClientEntrepriseAvocat /></RoleProtectedRoute>} />
             <Route path="/avocats/clients/:id" element={<RoleProtectedRoute requiredRole="avocat"><ClientDetail /></RoleProtectedRoute>} />
             <Route path="/avocats/clients/:id/edit" element={<RoleProtectedRoute requiredRole="avocat"><EditClient /></RoleProtectedRoute>} />
             <Route path="/avocats/client-spaces" element={<RoleProtectedRoute requiredRole="avocat"><ClientSpaces /></RoleProtectedRoute>} />
@@ -190,6 +193,7 @@ const App = () => (
             <Route path="/notaires/signatures/:id" element={<RoleProtectedRoute requiredRole="notaire"><SignatureDetail /></RoleProtectedRoute>} />
             <Route path="/notaires/clients" element={<RoleProtectedRoute requiredRole="notaire"><Clients /></RoleProtectedRoute>} />
             <Route path="/notaires/clients/create" element={<RoleProtectedRoute requiredRole="notaire"><CreateClientNotaire /></RoleProtectedRoute>} />
+            <Route path="/notaires/clients/create-entreprise" element={<RoleProtectedRoute requiredRole="notaire"><CreateClientEntrepriseNotaire /></RoleProtectedRoute>} />
             <Route path="/notaires/clients/:id" element={<RoleProtectedRoute requiredRole="notaire"><ClientDetail /></RoleProtectedRoute>} />
             <Route path="/notaires/clients/:id/edit" element={<RoleProtectedRoute requiredRole="notaire"><EditClient /></RoleProtectedRoute>} />
             <Route path="/notaires/client-spaces" element={<RoleProtectedRoute requiredRole="notaire"><ClientSpaces /></RoleProtectedRoute>} />
