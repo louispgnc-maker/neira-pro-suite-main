@@ -61,7 +61,6 @@ export default function CreateClientNotaire() {
   const [adresseFacturationIdentique, setAdresseFacturationIdentique] = useState(true);
   const [adresseFacturation, setAdresseFacturation] = useState("");
   const [numeroTVA, setNumeroTVA] = useState("");
-  const [siret, setSiret] = useState("");
 
   // 6. Mandat/Représentation
   const [agitNomPropre, setAgitNomPropre] = useState(true);
@@ -203,7 +202,6 @@ export default function CreateClientNotaire() {
         adresse_facturation_identique: adresseFacturationIdentique,
         adresse_facturation: adresseFacturationIdentique ? null : (adresseFacturation || null),
         numero_tva: numeroTVA || null,
-        siret: siret || null,
         agit_nom_propre: agitNomPropre,
         nom_representant: agitNomPropre ? null : (representant || null),
         type_dossier: null,
@@ -539,10 +537,7 @@ export default function CreateClientNotaire() {
                   <Label htmlFor="numeroTVA">Numéro de TVA (si applicable)</Label>
                   <Input id="numeroTVA" value={numeroTVA} onChange={e => setNumeroTVA(e.target.value)} placeholder="FR..." />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="siret">SIRET (si entreprise)</Label>
-                  <Input id="siret" value={siret} onChange={e => setSiret(e.target.value)} placeholder="123 456 789 00012" />
-                </div>
+
               </div>
             </CardContent>
           </Card>
