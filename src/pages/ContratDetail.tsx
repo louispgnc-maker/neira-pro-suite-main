@@ -787,15 +787,22 @@ export default function ContratDetail() {
       // Charger les clients pour la régénération
       // Charger TOUS les clients accessibles (propres + partagés dans le cabinet)
       try {
-        const { data: clientsData } = await supabase
+        console.log('[ContratDetail] Loading clients for user:', user.id, 'role:', role);
+        const { data: clientsData, error: clientsError } = await supabase
           .from('clients')
           .select('*')
           .eq('role', role)
           .order('nom', { ascending: true });
         
+        if (clientsError) {
+          console.error('[ContratDetail] Error loading clients:', clientsError);
+        }
+        
         if (clientsData && mounted) {
-          console.log('[ContratDetail] Clients loaded:', clientsData.length);
+          console.log('[ContratDetail] Clients loaded:', clientsData.length, clientsData);
           setClients(clientsData);
+        } else {
+          console.log('[ContratDetail] No clients found for this user');
         }
       } catch (error) {
         console.error('Erreur chargement clients:', error);
