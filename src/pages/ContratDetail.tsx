@@ -1158,6 +1158,9 @@ export default function ContratDetail() {
                               .map(([_, clientId]) => clientId)
                               .filter(Boolean);
                             
+                            console.log(`[ContratDetail] 🔍 editedPartiesClients for "${party}":`, editedPartiesClients);
+                            console.log(`[ContratDetail] 🔍 assignedClientIds for "${party}":`, assignedClientIds);
+                            
                             const availableClients = clients.filter(
                               client => !assignedClientIds.includes(client.id)
                             );
@@ -1165,7 +1168,8 @@ export default function ContratDetail() {
                             console.log(`[ContratDetail] 🎯 Rendering dropdown for party "${party}":`, {
                               totalClients: clients.length,
                               availableClients: availableClients.length,
-                              clientsList: clients.map(c => `${c.prenom || ''} ${c.nom}`).join(', ')
+                              clientsList: clients.map(c => `${c.prenom || ''} ${c.nom}`).join(', '),
+                              allClientIds: clients.map(c => c.id)
                             });
                             
                             return (
