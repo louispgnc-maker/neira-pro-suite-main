@@ -1152,26 +1152,6 @@ export default function ContratDetail() {
                         <label className="text-sm font-semibold text-gray-700">Clients assignés par partie</label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                           {contractParties.map((party, index) => {
-                            // Filtrer les clients déjà assignés à d'autres parties
-                            const assignedClientIds = Object.entries(editedPartiesClients)
-                              .filter(([p, _]) => p !== party)
-                              .map(([_, clientId]) => clientId)
-                              .filter(Boolean);
-                            
-                            console.log(`[ContratDetail] 🔍 editedPartiesClients for "${party}":`, editedPartiesClients);
-                            console.log(`[ContratDetail] 🔍 assignedClientIds for "${party}":`, assignedClientIds);
-                            
-                            const availableClients = clients.filter(
-                              client => !assignedClientIds.includes(client.id)
-                            );
-                            
-                            console.log(`[ContratDetail] 🎯 Rendering dropdown for party "${party}":`, {
-                              totalClients: clients.length,
-                              availableClients: availableClients.length,
-                              clientsList: clients.map(c => `${c.prenom || ''} ${c.nom}`).join(', '),
-                              allClientIds: clients.map(c => c.id)
-                            });
-                            
                             return (
                               <div key={index}>
                                 <label className="text-sm text-gray-600 mb-1 block">
@@ -1191,7 +1171,7 @@ export default function ContratDetail() {
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="none">— Aucun client —</SelectItem>
-                                    {availableClients.map(client => (
+                                    {clients.map(client => (
                                       <SelectItem key={client.id} value={client.id}>
                                         {client.siret 
                                           ? `🏢 ${client.nom} ${client.email ? '(' + client.email + ')' : ''}` 
