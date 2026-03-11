@@ -793,6 +793,7 @@ export default function ContratDetail() {
         const { data: clientsData, error: clientsError } = await supabase
           .from('clients')
           .select('*')
+          .eq('owner_id', user.id)
           .eq('role', role)
           .order('nom', { ascending: true });
         

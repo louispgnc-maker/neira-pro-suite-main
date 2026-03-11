@@ -36,7 +36,10 @@ async function checkClients() {
   console.log(`✅ ${clients.length} clients trouvés:\n`);
 
   clients.forEach((client, index) => {
-    console.log(`${index + 1}. ${client.name}`);
+    console.log(`${index + 1}. Client:`);
+    console.log(`   - name field: "${client.name || 'NULL'}"`);
+    console.log(`   - prenom: "${client.prenom || 'NULL'}"`);
+    console.log(`   - nom: "${client.nom || 'NULL'}"`);
     console.log(`   - ID: ${client.id}`);
     console.log(`   - Owner ID: ${client.owner_id}`);
     console.log(`   - Role: ${client.role}`);
