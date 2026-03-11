@@ -248,8 +248,7 @@ export default function Clients() {
                         <div className="flex items-center gap-2 pt-2 border-t">
                           <Button
                             size="sm"
-                            variant="outline"
-                            className="flex-1 text-xs"
+                            className={`flex-1 text-xs ${mainButtonColor}`}
                             onClick={(e) => {
                               e.stopPropagation();
                               navigate(role === 'notaire' ? `/notaires/client-spaces/${client.id}` : `/avocats/client-spaces/${client.id}`);
