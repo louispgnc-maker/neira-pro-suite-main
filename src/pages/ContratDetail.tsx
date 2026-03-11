@@ -1162,6 +1162,12 @@ export default function ContratDetail() {
                               client => !assignedClientIds.includes(client.id)
                             );
                             
+                            console.log(`[ContratDetail] 🎯 Rendering dropdown for party "${party}":`, {
+                              totalClients: clients.length,
+                              availableClients: availableClients.length,
+                              clientsList: clients.map(c => `${c.prenom || ''} ${c.nom}`).join(', ')
+                            });
+                            
                             return (
                               <div key={index}>
                                 <label className="text-sm text-gray-600 mb-1 block">
