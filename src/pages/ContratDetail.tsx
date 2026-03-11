@@ -787,7 +787,9 @@ export default function ContratDetail() {
       // Charger les clients pour la régénération
       // Charger TOUS les clients accessibles (propres + partagés dans le cabinet)
       try {
-        console.log('[ContratDetail] Loading clients for user:', user.id, 'role:', role);
+        console.log('[ContratDetail] 🔍 Loading clients for user:', user.id, 'role:', role);
+        console.log('[ContratDetail] 🔍 User email:', user.email);
+        
         const { data: clientsData, error: clientsError } = await supabase
           .from('clients')
           .select('*')
@@ -795,17 +797,25 @@ export default function ContratDetail() {
           .order('nom', { ascending: true });
         
         if (clientsError) {
-          console.error('[ContratDetail] Error loading clients:', clientsError);
+          console.error('[ContratDetail] ❌ Error loading clients:', clientsError);
         }
         
         if (clientsData && mounted) {
-          console.log('[ContratDetail] Clients loaded:', clientsData.length, clientsData);
+          console.log('[ContratDetail] ✅ Clients loaded:', clientsData.length);
+          console.log('[ContratDetail] 📋 Clients detail:', clientsData.map(c => ({
+            id: c.id,
+            nom: c.nom,
+            prenom: c.prenom,
+            email: c.email,
+            owner_id: c.owner_id,
+            siret: c.siret
+          })));
           setClients(clientsData);
         } else {
-          console.log('[ContratDetail] No clients found for this user');
+          console.log('[ContratDetail] ⚠️  No clients found - clientsData:', clientsData);
         }
       } catch (error) {
-        console.error('Erreur chargement clients:', error);
+        console.error('[ContratDetail] 💥 Erreur chargement clients:', error);
       }
 
       // Try loading as owner first
