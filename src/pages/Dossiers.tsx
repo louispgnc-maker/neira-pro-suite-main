@@ -513,9 +513,19 @@ export default function Dossiers() {
                       ) : clients.map((c) => {
                         const checked = selectedClients.includes(c.id);
                         return (
-                          <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                          <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 px-1 py-1 rounded">
                             <input type="checkbox" className="h-4 w-4" checked={checked} onChange={(e) => setSelectedClients((prev) => e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id))} />
-                            <span>{c.name}</span>
+                            {c.name.includes('SIRET:') || (c as any).siret ? (
+                              <span className="flex items-center gap-2">
+                                <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-medium">PRO</span>
+                                <span>{c.name.replace(/\s*\(SIRET:.*?\)/, '')}</span>
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-2">
+                                <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium">PART</span>
+                                <span>{c.name}</span>
+                              </span>
+                            )}
                           </label>
                         );
                       })}
@@ -604,9 +614,19 @@ export default function Dossiers() {
                       ) : clients.map((c) => {
                         const checked = editSelectedClients.includes(c.id);
                         return (
-                          <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                          <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 px-1 py-1 rounded">
                             <input type="checkbox" className="h-4 w-4" checked={checked} onChange={(e) => setEditSelectedClients((prev) => e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id))} />
-                            <span>{c.name}</span>
+                            {c.name.includes('SIRET:') || (c as any).siret ? (
+                              <span className="flex items-center gap-2">
+                                <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-medium">PRO</span>
+                                <span>{c.name.replace(/\s*\(SIRET:.*?\)/, '')}</span>
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-2">
+                                <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium">PART</span>
+                                <span>{c.name}</span>
+                              </span>
+                            )}
                           </label>
                         );
                       })}

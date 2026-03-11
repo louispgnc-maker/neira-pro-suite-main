@@ -1166,7 +1166,18 @@ export default function ContratDetail() {
                                     <SelectItem value="none">— Aucun client —</SelectItem>
                                     {availableClients.map(client => (
                                       <SelectItem key={client.id} value={client.id}>
-                                        {client.prenom || ''} {client.nom || ''} {client.email && `(${client.email})`}
+                                        {client.siret ? (
+                                          <span className="flex items-center gap-2">
+                                            <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">PRO</span>
+                                            <span>{client.nom}</span>
+                                          </span>
+                                        ) : (
+                                          <span className="flex items-center gap-2">
+                                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">PART</span>
+                                            <span>{client.prenom || ''} {client.nom || ''}</span>
+                                          </span>
+                                        )}
+                                        {client.email && <span className="text-gray-500 text-xs ml-2">({client.email})</span>}
                                       </SelectItem>
                                     ))}
                                   </SelectContent>
@@ -1188,7 +1199,17 @@ export default function ContratDetail() {
                             <SelectItem value="none">— Aucun client —</SelectItem>
                             {clients.map(client => (
                               <SelectItem key={client.id} value={client.id}>
-                                {client.nom} {client.prenom || ''}
+                                {client.siret ? (
+                                  <span className="flex items-center gap-2">
+                                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">PRO</span>
+                                    <span>{client.nom}</span>
+                                  </span>
+                                ) : (
+                                  <span className="flex items-center gap-2">
+                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">PART</span>
+                                    <span>{client.prenom || ''} {client.nom || ''}</span>
+                                  </span>
+                                )}
                               </SelectItem>
                             ))}
                           </SelectContent>

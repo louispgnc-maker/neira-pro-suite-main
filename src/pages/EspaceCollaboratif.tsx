@@ -2597,11 +2597,33 @@ export default function EspaceCollaboratif() {
                         : 'hover:bg-blue-50 border-blue-200'
                     } ${sharingToClient ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                   >
-                    <div className="font-medium">
-                      {client.prenom} {client.nom}
-                    </div>
-                    {client.email && (
-                      <div className="text-sm text-gray-600">{client.email}</div>
+                    {client.siret ? (
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-medium">PROFESSIONNEL</span>
+                        </div>
+                        <div className="font-medium">
+                          {client.nom}
+                        </div>
+                        {client.email && (
+                          <div className="text-sm text-gray-600">{client.email}</div>
+                        )}
+                        {client.siret && (
+                          <div className="text-xs text-gray-500 mt-1">SIRET: {client.siret}</div>
+                        )}
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">PARTICULIER</span>
+                        </div>
+                        <div className="font-medium">
+                          {client.prenom} {client.nom}
+                        </div>
+                        {client.email && (
+                          <div className="text-sm text-gray-600">{client.email}</div>
+                        )}
+                      </div>
                     )}
                   </button>
                 ))}

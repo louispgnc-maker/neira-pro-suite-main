@@ -356,9 +356,21 @@ export default function ClientSpaces() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-xl">
-                          {client.prenom} {client.nom}
-                        </CardTitle>
+                        {client.siret ? (
+                          <>
+                            <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-medium">PROFESSIONNEL</span>
+                            <CardTitle className="text-xl">
+                              {client.nom}
+                            </CardTitle>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">PARTICULIER</span>
+                            <CardTitle className="text-xl">
+                              {client.prenom} {client.nom}
+                            </CardTitle>
+                          </>
+                        )}
                         {notificationCounts[client.id] > 0 && (
                           <Badge className="bg-red-600 text-white">
                             !
@@ -376,6 +388,11 @@ export default function ClientSpaces() {
                         {client.telephone && (
                           <div className="flex items-center gap-2">
                             📞 {client.telephone}
+                          </div>
+                        )}
+                        {client.siret && (
+                          <div className="flex items-center gap-2 text-xs">
+                            🏢 SIRET: {client.siret}
                           </div>
                         )}
                         {client.access_code && (
