@@ -173,10 +173,13 @@ export default function DossierDetail() {
         }
         
         // Charger les documents liés depuis client_dossier_documents
-        const { data: docLinks } = await supabase
+        console.log('[DossierDetail] 📄 Loading documents for dossier:', id);
+        const { data: docLinks, error: docLinksError } = await supabase
           .from('client_dossier_documents')
           .select('document_id, document_nom, source')
           .eq('dossier_id', id);
+        
+        console.log('[DossierDetail] 📄 Document links loaded:', { count: docLinks?.length || 0, docLinks, error: docLinksError });
         
         if (docLinks && mounted) {
           // Charger les détails de chaque document selon sa source
@@ -252,6 +255,7 @@ export default function DossierDetail() {
             doc.file_url && 
             doc.file_url.trim() !== ''
           );
+          console.log('[DossierDetail] 📄 Valid documents after filtering:', { total: docList.length, valid: validDocuments.length, validDocuments });
           setDocuments(validDocuments);
         } else {
           // Fallback: essayer l'ancienne table dossier_documents
