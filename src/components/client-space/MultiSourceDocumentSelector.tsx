@@ -66,6 +66,7 @@ export default function MultiSourceDocumentSelector({
   const loadDocuments = async () => {
     try {
       setLoading(true);
+      console.log('📁 [MultiSourceDocumentSelector] Loading documents...', { userId, cabinetId, clientId });
 
       // Load personal documents
       const { data: personalData, error: personalError } = await supabase
@@ -75,6 +76,8 @@ export default function MultiSourceDocumentSelector({
         .order('updated_at', { ascending: false });
 
       if (personalError) throw personalError;
+      
+      console.log('📁 [MultiSourceDocumentSelector] Personal documents:', personalData?.length || 0);
 
       // Générer les URLs publiques pour les documents personnels
       const personalDocsWithUrls = (personalData || []).map((doc) => {
