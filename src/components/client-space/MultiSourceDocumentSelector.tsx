@@ -129,14 +129,23 @@ export default function MultiSourceDocumentSelector({
         };
       });
 
-      // Load cabinet shared documents
-      const { data: cabinetData, error: cabinetError } = await supabase
-        .from('cabinet_documents')
-        .select('id, title, file_name, file_type, file_size, file_url, created_at')
-        .eq('cabinet_id', cabinetId)
-        .order('created_at', { ascending: false });
+      // Load cabinet shared documents (only if cabinetId provided)
+      let cabinetData = [];
+      if (cabinetId) {
+        const { data, error: cabinetError } = await supabase
+          .from('cabinet_documents')
+          .select('id, title, file_name, file_type, file_size, file_url, created_at')
+          .eq('cabinet_id', cabinetId)
+          .order('created_at', { ascending: false });
 
-      if (cabinetError) throw cabinetError;
+        if (cabinetError) {
+          console.error('[MultiSourceDocumentSelector] Error loading cabinet documents:', cabinetError);
+        } else {
+          cabinetData = data || [];
+        }
+      }
+      
+      console.log('📁 [MultiSourceDocumentSelector] Cabinet documents:', cabinetData.length);
 
       // Générer les URLs publiques pour les documents cabinet
       const cabinetDocsWithUrls = (cabinetData || []).map((doc) => {
