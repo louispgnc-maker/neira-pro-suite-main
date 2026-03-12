@@ -71,7 +71,7 @@ export default function MultiSourceDocumentSelector({
       // Load personal documents
       const { data: personalData, error: personalError } = await supabase
         .from('documents')
-        .select('id, name, storage_path, size, updated_at')
+        .select('id, name, storage_path, updated_at')
         .eq('owner_id', userId)
         .order('updated_at', { ascending: false });
 
@@ -86,7 +86,7 @@ export default function MultiSourceDocumentSelector({
           id: doc.id,
           nom: doc.name,
           type: 'application/pdf',
-          taille: doc.size || 0,
+          taille: 0, // La table documents ne stocke pas la taille
           chemin: publicUrl,
           source: 'personal' as const,
           created_at: doc.updated_at
