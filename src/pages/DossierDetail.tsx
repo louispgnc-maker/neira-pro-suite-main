@@ -545,6 +545,7 @@ export default function DossierDetail() {
       }
 
       // Mettre à jour les associations documents pour client_dossiers_new
+      console.log('[DossierDetail] 💾 Saving documents:', { count: editSelectedDocuments.length, documents: editSelectedDocuments });
       await supabase.from('client_dossier_documents').delete().eq('dossier_id', dossier.id);
       if (editSelectedDocuments.length > 0) {
         const docLinks = editSelectedDocuments.map(doc => ({
@@ -556,13 +557,18 @@ export default function DossierDetail() {
           source: doc.source
         }));
         
+        console.log('[DossierDetail] 💾 Inserting document links:', docLinks);
+        
         if (docLinks.length > 0) {
-          const { error: insertError } = await supabase
+          const { error: insertError, data: insertData } = await supabase
             .from('client_dossier_documents')
-            .insert(docLinks);
+            .insert(docLinks)
+            .select();
           
           if (insertError) {
-            console.error('Erreur insertion documents:', insertError);
+            console.error('[DossierDetail] ❌ Error inserting documents:', insertError);
+          } else {
+            console.log('[DossierDetail] ✅ Documents inserted successfully:', insertData);
           }
         }
       }
