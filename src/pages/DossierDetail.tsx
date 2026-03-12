@@ -544,29 +544,31 @@ export default function DossierDetail() {
         toast.error('Erreur lors de l\'association du contrat');
       }
 
-      // Mettre à jour les associations documents pour client_dossiers_new
+      // Mettre à jour les associations documents
+      // Utiliser la bonne table selon la source du dossier
       console.log('[DossierDetail] 💾 Saving documents:', { count: editSelectedDocuments.length, documents: editSelectedDocuments });
-      await supabase.from('client_dossier_documents').delete().eq('dossier_id', dossier.id);
+      
+      // Pour les anciens dossiers (table dossiers), utiliser dossier_documents
+      await supabase.from('dossier_documents').delete().eq('dossier_id', dossier.id);
+      
       if (editSelectedDocuments.length > 0) {
+        // Pour les documents personnels, insérer dans dossier_documents
         const docLinks = editSelectedDocuments.map(doc => ({
           dossier_id: dossier.id,
-          document_id: doc.id,
-          document_nom: doc.nom,
-          document_type: doc.type || 'application/pdf',
-          document_taille: doc.taille || 0,
-          source: doc.source
+          document_id: doc.id
         }));
         
-        console.log('[DossierDetail] 💾 Inserting document links:', docLinks);
+        console.log('[DossierDetail] 💾 Inserting into dossier_documents:', docLinks);
         
         if (docLinks.length > 0) {
           const { error: insertError, data: insertData } = await supabase
-            .from('client_dossier_documents')
+            .from('dossier_documents')
             .insert(docLinks)
             .select();
           
           if (insertError) {
             console.error('[DossierDetail] ❌ Error inserting documents:', insertError);
+            toast.error('Erreur lors de l\'ajout des documents');
           } else {
             console.log('[DossierDetail] ✅ Documents inserted successfully:', insertData);
           }
@@ -577,8 +579,7 @@ export default function DossierDetail() {
       setEditMode(false);
       
       // Recharger les données
-      // window.location.reload(); // TEMPORAIREMENT DÉSACTIVÉ POUR DEBUG
-      console.log('[DossierDetail] ⏸️  Reload désactivé - vérifier les logs ci-dessus');
+      window.location.reload();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       toast.error("Erreur lors de la modification", { description: message });
