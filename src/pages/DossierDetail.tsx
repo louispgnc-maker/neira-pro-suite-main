@@ -172,16 +172,54 @@ export default function DossierDetail() {
           setDossier(dossierData as Dossier);
         }
         
-        // Charger les documents liés depuis client_dossier_documents
+        // Charger les documents liés - essayer dossier_documents (ancienne table) en premier
         console.log('[DossierDetail] 📄 Loading documents for dossier:', id);
-        const { data: docLinks, error: docLinksError } = await supabase
-          .from('client_dossier_documents')
-          .select('document_id, document_nom, source')
+        let { data: docLinks, error: docLinksError } = await supabase
+          .from('dossier_documents')
+          .select('document_id, documents(id, name, storage_path)')
           .eq('dossier_id', id);
         
-        console.log('[DossierDetail] 📄 Document links loaded:', { count: docLinks?.length || 0, docLinks, error: docLinksError });
+        console.log('[DossierDetail] 📄 Document links from dossier_documents:', { count: docLinks?.length || 0, docLinks, error: docLinksError });
         
-        if (docLinks && mounted) {
+        if (docLinks && docLinks.length > 0 && mounted) {
+          // Ancienne table dossier_documents
+          const docList = docLinks.map((link: any) => {
+            const doc = link.documents;
+            let fileUrl = doc.storage_path;
+            if (doc.storage_path && !doc.storage_path.startsWith('http')) {
+              const storagePath = doc.storage_path.replace(/^\/+/, '');
+              const { data: publicData } = supabase.storage.from('documents').getPublicUrl(storagePath);
+              if (publicData?.publicUrl) {
+                fileUrl = publicData.publicUrl;
+              }
+            }
+            return {
+              id: doc.id,
+              name: doc.name,
+              file_url: fileUrl,
+              file_name: doc.name
+            };
+          });
+          
+          const validDocuments = docList.filter(doc => 
+            doc.name && 
+            doc.name.trim() !== '' && 
+            doc.name !== 'Document' && 
+            doc.file_url && 
+            doc.file_url.trim() !== ''
+          );
+          console.log('[DossierDetail] 📄 Valid documents after filtering:', { total: docList.length, valid: validDocuments.length, validDocuments });
+          setDocuments(validDocuments);
+        } else {
+          // Fallback: essayer la nouvelle table client_dossier_documents
+          const { data: newDocLinks } = await supabase
+            .from('client_dossier_documents')
+            .select('document_id, document_nom, source')
+            .eq('dossier_id', id);
+          
+          console.log('[DossierDetail] 📄 Document links from client_dossier_documents:', { count: newDocLinks?.length || 0 });
+          
+          if (newDocLinks && mounted) {
           // Charger les détails de chaque document selon sa source
           const docListPromises = docLinks.map(async (link: any) => {
             let fileUrl = '';
