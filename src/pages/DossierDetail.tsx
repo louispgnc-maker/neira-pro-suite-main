@@ -577,7 +577,8 @@ export default function DossierDetail() {
       setEditMode(false);
       
       // Recharger les données
-      window.location.reload();
+      // window.location.reload(); // TEMPORAIREMENT DÉSACTIVÉ POUR DEBUG
+      console.log('[DossierDetail] ⏸️  Reload désactivé - vérifier les logs ci-dessus');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       toast.error("Erreur lors de la modification", { description: message });
