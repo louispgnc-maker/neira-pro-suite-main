@@ -579,8 +579,40 @@ export default function DossierDetail() {
       toast.success("Dossier modifié avec succès");
       setEditMode(false);
       
-      // Recharger les données
-      window.location.reload();
+      // Recharger les données sans refresh
+      // Recharger les documents
+      const { data: docLinks } = await supabase
+        .from('dossier_documents')
+        .select('document_id, documents(id, name, storage_path)')
+        .eq('dossier_id', dossier.id);
+      
+      if (docLinks) {
+        const docList = docLinks.map((link: any) => {
+          const doc = link.documents;
+          let fileUrl = doc.storage_path;
+          if (doc.storage_path && !doc.storage_path.startsWith('http')) {
+            const storagePath = doc.storage_path.replace(/^\/+/, '');
+            const { data: publicData } = supabase.storage.from('documents').getPublicUrl(storagePath);
+            if (publicData?.publicUrl) {
+              fileUrl = publicData.publicUrl;
+            }
+          }
+          return {
+            id: doc.id,
+            name: doc.name,
+            file_url: fileUrl,
+            file_name: doc.name
+          };
+        });
+        const validDocuments = docList.filter(doc => 
+          doc.name && 
+          doc.name.trim() !== '' && 
+          doc.name !== 'Document' && 
+          doc.file_url && 
+          doc.file_url.trim() !== ''
+        );
+        setDocuments(validDocuments);
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       toast.error("Erreur lors de la modification", { description: message });
