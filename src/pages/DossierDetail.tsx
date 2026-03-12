@@ -555,7 +555,8 @@ export default function DossierDetail() {
         // Pour les documents personnels, insérer dans dossier_documents
         const docLinks = editSelectedDocuments.map(doc => ({
           dossier_id: dossier.id,
-          document_id: doc.id
+          document_id: doc.id,
+          owner_id: user?.id || ''
         }));
         
         console.log('[DossierDetail] 💾 Inserting into dossier_documents:', docLinks);
