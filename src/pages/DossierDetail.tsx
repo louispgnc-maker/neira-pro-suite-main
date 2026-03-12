@@ -1203,19 +1203,17 @@ export default function DossierDetail() {
       </Dialog>
 
       {/* MultiSourceDocumentSelector */}
-      {dossier?.cabinet_id && (
-        <MultiSourceDocumentSelector
-          open={editDocumentSelectorOpen}
-          onClose={() => setEditDocumentSelectorOpen(false)}
-          onSelect={(selectedDocs) => {
-            setEditSelectedDocuments(selectedDocs);
-            setEditDocumentSelectorOpen(false);
-          }}
-          cabinetId={dossier.cabinet_id}
-          userId={user?.id || ''}
-          clientId={dossier.client_id}
-        />
-      )}
+      <MultiSourceDocumentSelector
+        open={editDocumentSelectorOpen}
+        onClose={() => setEditDocumentSelectorOpen(false)}
+        onSelect={(selectedDocs) => {
+          setEditSelectedDocuments(selectedDocs);
+          setEditDocumentSelectorOpen(false);
+        }}
+        cabinetId={dossier?.cabinet_id || ''}
+        userId={user?.id || ''}
+        clientId={dossier?.client_id}
+      />
     </AppLayout>
   );
 }
