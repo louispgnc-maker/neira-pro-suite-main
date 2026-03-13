@@ -237,7 +237,9 @@ export default function EditClient() {
       // Update client
   const updates: Record<string, unknown> = {
         name: `${prenom} ${nom}`,
-        nom, prenom,
+        nom, 
+        prenom,
+        nom_naissance: nomNaissance || null,
         date_naissance: dateNaissance || null,
         lieu_naissance: lieuNaissance || null,
         adresse: adresse || null,
@@ -277,11 +279,17 @@ export default function EditClient() {
       updates.kyc_status = (nom && prenom && email && consentementRGPD) ? 'Complet' : 'Partiel';
       if (idDocPath) updates.id_doc_path = idDocPath;
 
+      console.log('📝 Tentative de mise à jour client avec:', updates);
+
       const { error: upErr } = await supabase
         .from('clients')
         .update(updates)
         .eq('id', id);
-      if (upErr) throw upErr;
+      
+      if (upErr) {
+        console.error('❌ Erreur UPDATE client:', upErr);
+        throw upErr;
+      }
 
       console.log('✅ Client mis à jour:', id);
 
