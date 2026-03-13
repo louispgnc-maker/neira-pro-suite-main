@@ -292,6 +292,8 @@ export default function EditClient() {
 
       console.log('✅ Client mis à jour:', id);
 
+      // TODO: Réactiver la mise à jour d'email quand le bug sera résolu
+      /*
       // Si l'email a changé, mettre à jour l'email dans auth.users
       if (email !== originalEmail && email) {
         // Récupérer le user_id du client
@@ -328,6 +330,7 @@ export default function EditClient() {
           }
         }
       }
+      */
 
       // Reset and reinsert associations (simple approach)
       await supabase
