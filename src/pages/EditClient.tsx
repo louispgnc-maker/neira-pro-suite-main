@@ -106,13 +106,13 @@ export default function EditClient() {
         return;
       }
 
-      // Load client avec le cabinet_id
+      // Load client avec le cabinet_id OU le user_id
       const { data: c, error } = await supabase
         .from('clients')
         .select('*')
-        .eq('owner_id', cabinetMember.cabinet_id)
         .eq('role', role)
         .eq('id', id)
+        .or(`owner_id.eq.${cabinetMember.cabinet_id},owner_id.eq.${user.id}`)
         .maybeSingle();
       if (error) {
         console.error('Erreur chargement client:', error);
@@ -120,6 +120,7 @@ export default function EditClient() {
         return;
       }
       if (c && mounted) {
+        console.log('✅ Client chargé pour édition:', c);
         setNom(c.nom || '');
         setPrenom(c.prenom || '');
         setNomNaissance(c.nom_naissance || '');
@@ -155,15 +156,13 @@ export default function EditClient() {
         }) : []);
   
   // Charger situation_familiale depuis le JSONB
-  if (c.situation_familiale && typeof c.situation_familiale === 'object') {
+  if (c.situation_familiale && typeof c.situation_familiale === 'object' && !Array.isArray(c.situation_familiale)) {
     const sf = c.situation_familiale as any;
     setSituationFamilialeStatus(sf.situation_familiale || '');
     setRegimeMatrimonial(sf.regime_matrimonial || '');
     setNombreEnfants(sf.nombre_enfants || '0');
     setPersonneACharge(sf.personne_a_charge || '');
   }
-  
-  setSituationFamiliale(Array.isArray(c.situation_familiale) ? c.situation_familiale : []);
         setTypeDossier(c.type_dossier || '');
         setContratSouhaite(c.contrat_souhaite || '');
         setHistoriqueLitiges(c.historique_litiges || '');
@@ -281,9 +280,10 @@ export default function EditClient() {
       const { error: upErr } = await supabase
         .from('clients')
         .update(updates)
-        .eq('id', id)
-        .eq('owner_id', cabinetMember.cabinet_id);
+        .eq('id', id);
       if (upErr) throw upErr;
+
+      console.log('✅ Client mis à jour:', id);
 
       // Si l'email a changé, mettre à jour l'email dans auth.users
       if (email !== originalEmail && email) {
