@@ -295,40 +295,6 @@ export default function DossierDetail() {
           );
           console.log('[DossierDetail] 📄 Valid documents after filtering:', { total: docList.length, valid: validDocuments.length, validDocuments });
           setDocuments(validDocuments);
-        } else {
-          // Fallback: essayer l'ancienne table dossier_documents
-          const { data: oldDocLinks } = await supabase
-            .from('dossier_documents')
-            .select('document_id, documents(id, name, storage_path)')
-            .eq('dossier_id', id);
-          
-          if (oldDocLinks && mounted) {
-            const docList = oldDocLinks.map((link: any) => {
-              const doc = link.documents;
-              let fileUrl = doc.storage_path;
-              if (doc.storage_path && !doc.storage_path.startsWith('http')) {
-                const storagePath = doc.storage_path.replace(/^\/+/, '');
-                const { data: publicData } = supabase.storage.from('documents').getPublicUrl(storagePath);
-                if (publicData?.publicUrl) {
-                  fileUrl = publicData.publicUrl;
-                }
-              }
-              return {
-                id: doc.id,
-                name: doc.name,
-                file_url: fileUrl,
-                file_name: doc.name
-              };
-            });
-            // Filtrer les documents qui ont un nom et une URL valides
-            const validDocuments = docList.filter(doc => 
-              doc.name && 
-              doc.name.trim() !== '' && 
-              doc.name !== 'Document' && 
-              doc.file_url && 
-              doc.file_url.trim() !== ''
-            );
-            setDocuments(validDocuments);
           }
         }
 
