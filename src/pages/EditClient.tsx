@@ -239,7 +239,6 @@ export default function EditClient() {
         name: `${prenom} ${nom}`,
         nom, 
         prenom,
-        nom_naissance: nomNaissance || null,
         date_naissance: dateNaissance || null,
         lieu_naissance: lieuNaissance || null,
         adresse: adresse || null,
