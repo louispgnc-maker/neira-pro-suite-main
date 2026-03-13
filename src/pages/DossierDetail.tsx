@@ -221,7 +221,7 @@ export default function DossierDetail() {
           
           if (newDocLinks && mounted) {
           // Charger les détails de chaque document selon sa source
-          const docListPromises = docLinks.map(async (link: any) => {
+          const docListPromises = newDocLinks.map(async (link: any) => {
             let fileUrl = '';
             
             if (link.source === 'personal') {
