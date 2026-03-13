@@ -234,16 +234,50 @@ export default function EditClient() {
         idDocPath = fileName;
       }
 
-      // Update client - VERSION SIMPLIFIÉE POUR DEBUG
+      // Update client - TOUS LES CHAMPS
   const updates: Record<string, unknown> = {
         name: `${prenom} ${nom}`,
         nom: nom || null, 
         prenom: prenom || null,
         email: email || null,
+        telephone: telephone || null,
+        date_naissance: dateNaissance || null,
+        lieu_naissance: lieuNaissance || null,
+        adresse: adresse || null,
+        nationalite: nationalite || null,
+        sexe: sexe || null,
+        etat_civil: etatCivil || null,
+        type_identite: typeIdentite || null,
+        numero_identite: numeroIdentite || null,
+        date_expiration_identite: dateExpiration || null,
+        profession: profession || null,
+        employeur: employeur || null,
+        adresse_professionnelle: adressePro || null,
+        siret: siret || null,
+        situation_fiscale: situationFiscale || null,
+        revenus: revenus || null,
+        justificatifs_financiers: justificatifsFinanciers || null,
+        comptes_bancaires: comptesBancairesRaw.trim() ? comptesBancairesRaw.split(/\n+/).map(l => l.trim()).filter(Boolean) : null,
+        type_dossier: typeDossier || null,
+        contrat_souhaite: contratSouhaite || null,
+        historique_litiges: historiqueLitiges || null,
+        enfants: enfants.filter(e => e.nom && e.prenom && e.date_naissance).length > 0 
+          ? enfants.filter(e => e.nom && e.prenom && e.date_naissance) 
+          : null,
+        situation_familiale: {
+          situation_familiale: situationFamilialeStatus || null,
+          regime_matrimonial: regimeMatrimonial || null,
+          nombre_enfants: nombreEnfants || '0',
+          personne_a_charge: personneACharge || null
+        },
+        consentement_rgpd: consentementRGPD,
+        signature_mandat: signatureMandat,
         kyc_status: (nom && prenom && email && consentementRGPD) ? 'Complet' : 'Partiel'
       };
+      
+      if (idDocPath) updates.id_doc_path = idDocPath;
 
-      console.log('📝 Tentative de mise à jour client avec:', JSON.stringify(updates, null, 2));
+      console.log('📝 Mise à jour client avec tous les champs');
 
       const { error: upErr } = await supabase
         .from('clients')
