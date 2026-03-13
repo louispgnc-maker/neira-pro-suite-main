@@ -3,7 +3,8 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, Home, FileText, Folder, User, Menu, X, FileSignature, MessageSquare } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { LogOut, Home, FileText, Folder, User, Menu, X, FileSignature, MessageSquare, Bell } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ClientLayoutProps {
@@ -16,7 +17,9 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const { user } = useAuth();
   const [clientName, setClientName] = useState<string>('');
   const [cabinetName, setCabinetName] = useState<string>('');
+  const [clientId, setClientId] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   useEffect(() => {
     if (!user) {
@@ -32,13 +35,14 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       // Get client data
       const { data: client, error } = await supabase
         .from('clients')
-        .select('name, owner_id')
+        .select('id, name, owner_id')
         .eq('user_id', user?.id)
         .single();
 
       if (error) throw error;
 
       if (client) {
+        setClientId(client.id);
         setClientName(client.name);
         
         // Get cabinet name separately
@@ -53,11 +57,55 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
             setCabinetName(cabinet.nom);
           }
         }
+        
+        // Load unread notifications count
+        loadUnreadNotifications(client.id);
       }
     } catch (err) {
       console.error('Error loading client data:', err);
     }
   };
+
+  const loadUnreadNotifications = async (clientId: string) => {
+    try {
+      const { count, error } = await supabase
+        .from('client_notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('client_id', clientId)
+        .eq('is_read', false);
+
+      if (!error) {
+        setUnreadNotifications(count || 0);
+      }
+    } catch (err) {
+      console.error('Error loading unread notifications:', err);
+    }
+  };
+
+  // Subscribe to real-time notifications
+  useEffect(() => {
+    if (!clientId) return;
+
+    const channel = supabase
+      .channel(`client-notifications-${clientId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'client_notifications',
+          filter: `client_id=eq.${clientId}`,
+        },
+        () => {
+          loadUnreadNotifications(clientId);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [clientId]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -113,6 +161,19 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                   </Link>
                 );
               })}
+              
+              {/* Notification Bell */}
+              <button
+                onClick={() => navigate('/client-space')}
+                className="relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 hover:shadow-sm transition-all duration-200"
+              >
+                <Bell className="h-3.5 w-3.5 flex-shrink-0" />
+                {unreadNotifications > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] flex items-center justify-center p-0 px-1 text-[10px] bg-red-500 hover:bg-red-500 border-white border-2">
+                    {unreadNotifications}
+                  </Badge>
+                )}
+              </button>
             </nav>
 
             {/* User info & Sign out */}
