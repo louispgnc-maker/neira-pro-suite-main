@@ -239,7 +239,7 @@ export function DashboardAvocat() {
             <span className="text-sm font-medium text-gray-900">Lancer une signature</span>
           </Button>
           <Button
-            onClick={() => navigate('/avocats/cabinet')}
+            onClick={() => navigate('/avocats/espace-collaboratif?tab=dashboard')}
             variant="outline"
             className="h-24 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
           >
