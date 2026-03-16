@@ -24,17 +24,17 @@ const EMAIL_PROVIDERS = [
     logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg',
     color: 'from-red-50 to-red-100',
     hoverColor: 'hover:from-red-100 hover:to-red-200',
-    available: true 
+    available: true,
+    recommended: true 
   },
   { 
     value: 'outlook', 
     label: 'Outlook / Office 365', 
     description: 'Synchronisez vos emails professionnels Outlook ou Microsoft 365 avec Neira.',
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg/512px-Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg.png',
     color: 'from-blue-50 to-blue-100',
     hoverColor: 'hover:from-blue-100 hover:to-blue-200',
-    available: true,
-    recommended: true
+    available: true
   },
   { 
     value: 'sfr', 
