@@ -595,7 +595,7 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
                   <Button 
                     size="sm" 
                     className={colorClass}
-                    onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/espace-collaboratif`)}
+                    onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/espace-collaboratif?tab=dashboard`)}
                   >
                     <ArrowRight className="h-4 w-4 mr-2" />
                     Espace collaboratif
@@ -707,7 +707,7 @@ export function ManageCabinet({ role, userId, cabinetId }: ManageCabinetProps) {
               <Button 
                 size="sm" 
                 className={colorClass}
-                onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/espace-collaboratif`)}
+                onClick={() => navigate(`/${role === 'notaire' ? 'notaires' : 'avocats'}/espace-collaboratif?tab=dashboard`)}
               >
                 <ArrowRight className="h-4 w-4 mr-2" />
                 Espace collaboratif
