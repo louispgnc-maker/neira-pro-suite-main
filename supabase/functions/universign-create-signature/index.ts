@@ -239,6 +239,81 @@ serve(async (req) => {
       );
     }
 
+    // ✅ VÉRIFICATION DE LA LIMITE DE SIGNATURES AVANT DE CRÉER LA TRANSACTION
+    console.log('[Universign] Checking signature limit for user:', ownerId);
+    
+    // Récupérer le cabinet de l'utilisateur
+    const { data: cabinetMember } = await supabase
+      .from('cabinet_members')
+      .select('cabinet_id, signature_addon_quantity, signature_addon_expires_at')
+      .eq('user_id', ownerId)
+      .single();
+
+    if (cabinetMember) {
+      // Récupérer la limite de base du cabinet
+      const { data: cabinet } = await supabase
+        .from('cabinets')
+        .select('max_signatures_per_month')
+        .eq('id', cabinetMember.cabinet_id)
+        .single();
+
+      // Calculer la limite totale (base + addon valide)
+      let addonSignatures = 0;
+      if (cabinetMember.signature_addon_quantity && cabinetMember.signature_addon_expires_at) {
+        const expiresAt = new Date(cabinetMember.signature_addon_expires_at);
+        const now = new Date();
+        if (expiresAt > now) {
+          addonSignatures = cabinetMember.signature_addon_quantity;
+        }
+      } else if (cabinetMember.signature_addon_quantity && !cabinetMember.signature_addon_expires_at) {
+        addonSignatures = cabinetMember.signature_addon_quantity;
+      }
+
+      const baseLimit = cabinet?.max_signatures_per_month || 0;
+      const totalLimit = baseLimit + addonSignatures;
+
+      console.log('[Universign] Signature limits - Base:', baseLimit, 'Addon:', addonSignatures, 'Total:', totalLimit);
+
+      // Compter les signataires déjà utilisés ce mois-ci
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      
+      const { data: existingSignatures } = await supabase
+        .from('signatures')
+        .select('signatories')
+        .eq('owner_id', ownerId)
+        .gte('created_at', firstDayOfMonth);
+
+      let usedSignataires = 0;
+      if (existingSignatures) {
+        existingSignatures.forEach((sig: any) => {
+          if (sig.signatories && Array.isArray(sig.signatories)) {
+            usedSignataires += sig.signatories.length;
+          }
+        });
+      }
+
+      const newSignataires = signatories.length;
+      const totalAfterCreation = usedSignataires + newSignataires;
+
+      console.log('[Universign] Signataires used:', usedSignataires, 'New:', newSignataires, 'Total after:', totalAfterCreation, 'Limit:', totalLimit);
+
+      // Vérifier si on dépasse la limite
+      if (totalLimit > 0 && totalAfterCreation > totalLimit) {
+        console.error('[Universign] Signature limit exceeded!');
+        return new Response(
+          JSON.stringify({ 
+            error: 'Limite de signatures atteinte',
+            details: `Vous avez déjà utilisé ${usedSignataires} signataires sur ${totalLimit} ce mois-ci. Cette demande nécessite ${newSignataires} signataires supplémentaires.`,
+            used: usedSignataires,
+            limit: totalLimit,
+            requested: newSignataires
+          }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     // Convert Blob to base64
     console.log('[Universign] Converting document to base64...');
     const arrayBuffer = await fileData.arrayBuffer();
