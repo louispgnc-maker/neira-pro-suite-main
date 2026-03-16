@@ -282,7 +282,7 @@ export default function Dashboard() {
             })()}
           />
           <StatCard
-            title="Signatures en attente"
+            title="Dossiers en attente de signature"
             value={pendingSigCount}
             icon={PenTool}
             trend={(() => {
