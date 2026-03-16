@@ -249,7 +249,7 @@ export default function EmailIntegration() {
         </div>
 
         {/* Cartes providers améliorées */}
-        <Card className="border-2">
+        <Card className="border-2" data-provider-cards id="connect-email-section">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-2xl">
               <Mail className="h-6 w-6 text-primary" />
@@ -370,7 +370,7 @@ export default function EmailIntegration() {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-4" data-provider-cards>
+            <div className="space-y-4">
               {accounts.map((account) => (
                 <Card key={account.id} className="border-2 shadow-sm hover:shadow-md transition-all">
                   <CardContent className="flex items-center justify-between py-6">
