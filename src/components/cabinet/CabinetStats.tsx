@@ -119,10 +119,28 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           .eq('owner_id', member.user_id)
           .eq('role', role);
 
-        // Récupérer les signatures utilisées et l'addon personnel + date d'expiration
+        // Compter le nombre total de SIGNATAIRES (pas de signatures) pour ce membre
+        // On compte les signataires uniques dans toutes les signatures de ce membre
+        const { data: signaturesData } = await supabase
+          .from('signatures')
+          .select('signataires')
+          .eq('owner_id', member.user_id);
+
+        let totalSignataires = 0;
+        if (signaturesData) {
+          signaturesData.forEach((sig) => {
+            if (sig.signataires && Array.isArray(sig.signataires)) {
+              totalSignataires += sig.signataires.length;
+            }
+          });
+        }
+
+        console.log(`📝 Total signataires for ${member.email}:`, totalSignataires);
+
+        // Récupérer l'addon personnel + date d'expiration
         const { data: memberData } = await supabase
           .from('cabinet_members')
-          .select('signatures_used, signature_addon_quantity, signature_addon_expires_at')
+          .select('signature_addon_quantity, signature_addon_expires_at')
           .eq('user_id', member.user_id)
           .eq('cabinet_id', cabinetId)
           .single();
@@ -160,7 +178,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           nom: displayName,
           dossiers: dossiersCount || 0,
           clients: clientsCount || 0,
-          signatures: memberData?.signatures_used || 0,
+          signatures: totalSignataires, // Nombre de signataires, pas de signatures
           signature_limit: memberSignatureLimit,
           documents: documentsCount || 0
         });
