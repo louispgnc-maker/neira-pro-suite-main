@@ -31,7 +31,7 @@ const EMAIL_PROVIDERS = [
     value: 'outlook', 
     label: 'Outlook / Office 365', 
     description: 'Synchronisez vos emails professionnels Outlook ou Microsoft 365 avec Neira.',
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg/512px-Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg.png',
+    logoUrl: 'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/microsoftoutlook.svg',
     color: 'from-blue-50 to-blue-100',
     hoverColor: 'hover:from-blue-100 hover:to-blue-200',
     available: true
