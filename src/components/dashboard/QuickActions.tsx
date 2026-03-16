@@ -130,9 +130,9 @@ export function QuickActions({ primaryButtonColor, role = 'avocat' }: QuickActio
       navigate('/test-subscription');
       return;
     }
-    // Redirect to collaborative space with absolute URL
-    const prefix = role === 'notaire' ? 'notaires' : 'avocats';
-    window.location.href = `https://www.neira.fr/${prefix}/espace-collaboratif?tab=dashboard`;
+    // Redirect to collaborative space
+    const prefix = role === 'notaire' ? '/notaires' : '/avocats';
+    navigate(`${prefix}/espace-collaboratif?tab=dashboard`);
   };
 
   const hasCollaborative = true; // Available for both avocats and notaires
