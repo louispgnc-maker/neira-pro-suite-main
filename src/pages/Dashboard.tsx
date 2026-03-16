@@ -97,16 +97,16 @@ export default function Dashboard() {
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .in("status", ["pending", "awaiting", "en_attente"])
-        .gte("updated_at", `${yyyy}-${mm}-01`)
-        .lte("updated_at", `${yyyy}-${mm}-31`);
+        .gte("created_at", `${yyyy}-${mm}-01`)
+        .lte("created_at", `${yyyy}-${mm}-31`);
 
       const sigPrevQuery = supabase
         .from("signatures")
         .select("id", { count: "exact", head: true })
         .eq("owner_id", user.id)
         .in("status", ["pending", "awaiting", "en_attente"])
-        .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
-        .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
+        .gte("created_at", `${prevYyyy}-${prevMm}-01`)
+        .lte("created_at", `${prevYyyy}-${prevMm}-31`);
 
       // Clients à relancer (kyc_status = 'Partiel')
       const clientsQuery = supabase
