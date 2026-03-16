@@ -91,22 +91,19 @@ export default function Dashboard() {
         .gte("updated_at", `${prevYyyy}-${prevMm}-01`)
         .lte("updated_at", `${prevYyyy}-${prevMm}-31`);
 
-      // Signatures en attente
-      const sigQuery = supabase
-        .from("signatures")
-        .select("id", { count: "exact", head: true })
-        .eq("owner_id", user.id)
-        .in("status", ["pending", "awaiting", "en_attente"])
-        .gte("created_at", `${yyyy}-${mm}-01`)
-        .lte("created_at", `${yyyy}-${mm}-31`);
+      // Dossiers avec signatures en attente (au lieu de compter toutes les signatures)
+      // On compte les dossiers distincts qui ont au moins une signature pending
+      const sigQuery = supabase.rpc('count_dossiers_with_pending_signatures', {
+        p_owner_id: user.id,
+        p_month_start: `${yyyy}-${mm}-01`,
+        p_month_end: `${yyyy}-${mm}-31`
+      });
 
-      const sigPrevQuery = supabase
-        .from("signatures")
-        .select("id", { count: "exact", head: true })
-        .eq("owner_id", user.id)
-        .in("status", ["pending", "awaiting", "en_attente"])
-        .gte("created_at", `${prevYyyy}-${prevMm}-01`)
-        .lte("created_at", `${prevYyyy}-${prevMm}-31`);
+      const sigPrevQuery = supabase.rpc('count_dossiers_with_pending_signatures', {
+        p_owner_id: user.id,
+        p_month_start: `${prevYyyy}-${prevMm}-01`,
+        p_month_end: `${prevYyyy}-${prevMm}-31`
+      });
 
       // Clients à relancer (kyc_status = 'Partiel')
       const clientsQuery = supabase
@@ -136,8 +133,8 @@ export default function Dashboard() {
       if (!isMounted) return;
       setDocCount(docsRes.status === "fulfilled" && docsRes.value.count ? docsRes.value.count : 0);
       setDocPrevCount(docsPrevRes.status === "fulfilled" && docsPrevRes.value.count ? docsPrevRes.value.count : 0);
-      setPendingSigCount(sigRes.status === "fulfilled" && sigRes.value.count ? sigRes.value.count : 0);
-      setPendingSigPrevCount(sigPrevRes.status === "fulfilled" && sigPrevRes.value.count ? sigPrevRes.value.count : 0);
+      setPendingSigCount(sigRes.status === "fulfilled" && sigRes.value.data ? sigRes.value.data : 0);
+      setPendingSigPrevCount(sigPrevRes.status === "fulfilled" && sigPrevRes.value.data ? sigPrevRes.value.data : 0);
       setClientsToFollow(clientsRes.status === "fulfilled" && clientsRes.value.count ? clientsRes.value.count : 0);
       setTodayTasks(tasksRes.status === "fulfilled" && tasksRes.value.count ? tasksRes.value.count : 0);
     }
