@@ -123,14 +123,14 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
         // On compte les signataires uniques dans toutes les signatures de ce membre
         const { data: signaturesData } = await supabase
           .from('signatures')
-          .select('signataires')
+          .select('signatories')
           .eq('owner_id', member.user_id);
 
         let totalSignataires = 0;
         if (signaturesData) {
           signaturesData.forEach((sig) => {
-            if (sig.signataires && Array.isArray(sig.signataires)) {
-              totalSignataires += sig.signataires.length;
+            if (sig.signatories && Array.isArray(sig.signatories)) {
+              totalSignataires += sig.signatories.length;
             }
           });
         }
