@@ -1,7 +1,8 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Mail, CheckCircle2, AlertCircle, Loader2, Lock, Check, Inbox, Clock, Shield } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,30 +20,40 @@ const EMAIL_PROVIDERS = [
   { 
     value: 'gmail', 
     label: 'Gmail', 
-    icon: '📧', 
-    color: 'bg-red-500',
+    description: 'Synchronisez vos emails Gmail avec vos dossiers Neira.',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg',
+    color: 'from-red-50 to-red-100',
+    hoverColor: 'hover:from-red-100 hover:to-red-200',
     available: true 
   },
   { 
     value: 'outlook', 
     label: 'Outlook / Office 365', 
-    icon: '📨', 
-    color: 'bg-blue-500',
+    description: 'Synchronisez vos emails professionnels Outlook ou Microsoft 365 avec Neira.',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg',
+    color: 'from-blue-50 to-blue-100',
+    hoverColor: 'hover:from-blue-100 hover:to-blue-200',
     available: true,
-    description: 'Comptes @outlook.com, @hotmail.com ou Office 365 uniquement'
+    recommended: true
   },
   { 
     value: 'sfr', 
     label: 'SFR Mail', 
-    icon: '📮', 
-    color: 'bg-rose-500',
+    description: 'Bientôt disponible',
+    logoUrl: '',
+    icon: '📮',
+    color: 'from-gray-50 to-gray-100',
+    hoverColor: '',
     available: false 
   },
   { 
     value: 'yahoo', 
     label: 'Yahoo Mail', 
-    icon: '💌', 
-    color: 'bg-purple-500',
+    description: 'Bientôt disponible',
+    logoUrl: '',
+    icon: '💌',
+    color: 'from-gray-50 to-gray-100',
+    hoverColor: '',
     available: false 
   },
 ];
@@ -228,110 +239,177 @@ export default function EmailIntegration() {
 
   return (
     <AppLayout>
-      <div className="p-6 space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900">Intégration Email</h1>
-          <p className="text-gray-600 mt-1">Connectez vos comptes email professionnels</p>
+      <div className="p-6 space-y-8">
+        {/* Header amélioré */}
+        <div className="space-y-3">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900">Intégration Email</h1>
+          <p className="text-lg text-gray-600 max-w-3xl">
+            Connectez votre messagerie professionnelle pour centraliser les échanges avec vos clients.
+          </p>
         </div>
 
-        <Card>
+        {/* Cartes providers améliorées */}
+        <Card className="border-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-2xl">
+              <Mail className="h-6 w-6 text-primary" />
               Connecter un compte email
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-base">
               Choisissez votre fournisseur d'email pour connecter votre boîte de réception
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {EMAIL_PROVIDERS.map((provider) => (
-                <Card 
+                <div 
                   key={provider.value}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
-                    !provider.available ? 'opacity-60' : ''
-                  }`}
-                  onClick={() => handleConnectProvider(provider.value)}
+                  className="relative"
                 >
-                  <CardContent className="p-6 flex flex-col items-center gap-3">
-                    <div className={`w-16 h-16 ${provider.color} rounded-full flex items-center justify-center text-3xl`}>
-                      {provider.icon}
-                    </div>
-                    <div className="text-center">
-                      <p className="font-medium">{provider.label}</p>
-                      {provider.description && (
-                        <p className="text-xs text-gray-600 mt-1">{provider.description}</p>
-                      )}
-                      {provider.available ? (
+                  {/* Badge recommandé */}
+                  {provider.recommended && (
+                    <Badge className="absolute -top-2 -right-2 z-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 shadow-md text-xs">
+                      Recommandé pour les cabinets
+                    </Badge>
+                  )}
+                  
+                  <Card 
+                    className={`h-full cursor-pointer transition-all duration-300 rounded-2xl shadow-md ${
+                      provider.available 
+                        ? `bg-gradient-to-br ${provider.color} ${provider.hoverColor} hover:shadow-xl hover:scale-105 hover:border-primary/50 border-2 border-transparent` 
+                        : 'opacity-50 cursor-not-allowed'
+                    }`}
+                    onClick={() => provider.available && handleConnectProvider(provider.value)}
+                  >
+                    <CardContent className="p-8 flex flex-col items-center gap-4 h-full">
+                      {/* Logo/Icône */}
+                      <div className="w-20 h-20 flex items-center justify-center">
+                        {provider.logoUrl ? (
+                          <img 
+                            src={provider.logoUrl} 
+                            alt={provider.label}
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <span className="text-5xl">{provider.icon}</span>
+                        )}
+                      </div>
+                      
+                      {/* Nom du provider */}
+                      <div className="text-center space-y-2 flex-1">
+                        <p className="font-bold text-lg text-gray-900">{provider.label}</p>
+                        <p className="text-sm text-gray-700 leading-relaxed">
+                          {provider.description}
+                        </p>
+                      </div>
+                      
+                      {/* Bouton */}
+                      {provider.available && (
                         <Button
-                          size="sm"
-                          className="mt-2 w-full"
+                          size="lg"
+                          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
                           disabled={connectingProvider === provider.value}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleConnectProvider(provider.value);
+                          }}
                         >
                           {connectingProvider === provider.value ? (
                             <>
-                              <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                              Connexion...
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Connexion en cours...
                             </>
                           ) : (
-                            'Connecter'
+                            'Connecter le compte'
                           )}
                         </Button>
-                      ) : (
-                        <p className="text-xs text-gray-600 mt-2">Bientôt disponible</p>
                       )}
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
               ))}
+            </div>
+
+            {/* Note de sécurité */}
+            <div className="mt-8 flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+              <Lock className="h-5 w-5 text-blue-600 flex-shrink-0" />
+              <p className="text-sm text-blue-900">
+                <span className="font-semibold">Connexion sécurisée via OAuth.</span> Neira n'a jamais accès à votre mot de passe.
+              </p>
             </div>
           </CardContent>
         </Card>
 
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Comptes connectés</h2>
+        {/* Section Comptes connectés améliorée */}
+        <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 border-2">
+          <h2 className="text-2xl font-bold mb-6 text-gray-900">Comptes connectés</h2>
           {loading ? (
-            <div className="flex justify-center py-8">
+            <div className="flex justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : accounts.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <AlertCircle className="h-12 w-12 text-gray-600 mb-4" />
-                <p className="text-gray-600">
-                  Aucun compte email connecté
-                </p>
+            <Card className="border-dashed border-2">
+              <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-6">
+                <div className="p-4 bg-gray-100 rounded-full">
+                  <Inbox className="h-12 w-12 text-gray-400" />
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-semibold text-gray-900">Aucun compte email connecté</h3>
+                  <p className="text-gray-600 max-w-md">
+                    Connectez votre messagerie pour centraliser les emails de vos clients directement dans leurs dossiers.
+                  </p>
+                </div>
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg"
+                  onClick={() => document.querySelector<HTMLDivElement>('[data-provider-cards]')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <Mail className="mr-2 h-5 w-5" />
+                  Connecter un compte email
+                </Button>
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4" data-provider-cards>
               {accounts.map((account) => (
-                <Card key={account.id}>
-                  <CardContent className="flex items-center justify-between py-4">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <Card key={account.id} className="border-2 shadow-sm hover:shadow-md transition-all">
+                  <CardContent className="flex items-center justify-between py-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-green-100 rounded-full">
+                        <CheckCircle2 className="h-6 w-6 text-green-600" />
+                      </div>
                       <div>
-                        <p className="font-medium">{account.email}</p>
-                        <p className="text-sm text-gray-600">
+                        <div className="flex items-center gap-3 mb-1">
+                          <p className="font-bold text-lg text-gray-900">
+                            {account.provider === 'gmail' ? 'Gmail' : 'Outlook / Office 365'}
+                          </p>
+                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                            <Check className="mr-1 h-3 w-3" />
+                            Connecté
+                          </Badge>
+                        </div>
+                        <p className="text-gray-900 font-medium">{account.email}</p>
+                        <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
+                          <Clock className="h-3 w-3" />
                           Connecté le {new Date(account.created_at).toLocaleDateString('fr-FR')}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       <Button
                         variant="outline"
-                        size="sm"
+                        size="lg"
                         onClick={() => navigate(`/${role}s/messagerie`)}
-                        className={role === 'notaire' ? 'border-orange-600 text-orange-600 hover:bg-orange-50 hover:!text-black' : 'border-blue-600 text-blue-600 hover:bg-blue-50 hover:!text-black'}
+                        className="border-2 border-primary text-primary hover:bg-primary hover:text-white font-semibold transition-all"
                       >
                         <Mail className="mr-2 h-4 w-4" />
-                        Accéder à la messagerie
+                        Gérer
                       </Button>
                       <Button
-                        variant="destructive"
-                        size="sm"
+                        variant="outline"
+                        size="lg"
                         onClick={() => handleDelete(account.id)}
+                        className="border-2 border-red-500 text-red-600 hover:bg-red-500 hover:text-white font-semibold transition-all"
                       >
                         Déconnecter
                       </Button>
@@ -342,6 +420,55 @@ export default function EmailIntegration() {
             </div>
           )}
         </div>
+
+        {/* Section Pourquoi connecter */}
+        <Card className="border-2 bg-gradient-to-br from-blue-50 to-purple-50">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <Shield className="h-6 w-6 text-primary" />
+              Pourquoi connecter votre messagerie ?
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex gap-4">
+                <div className="p-3 bg-blue-100 rounded-xl h-fit">
+                  <Inbox className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Centralisez vos échanges</h3>
+                  <p className="text-sm text-gray-700">
+                    Retrouvez tous les échanges clients directement dans vos dossiers.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex gap-4">
+                <div className="p-3 bg-purple-100 rounded-xl h-fit">
+                  <CheckCircle2 className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Association automatique</h3>
+                  <p className="text-sm text-gray-700">
+                    Les emails sont automatiquement associés aux dossiers concernés.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex gap-4">
+                <div className="p-3 bg-green-100 rounded-xl h-fit">
+                  <Clock className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Historique complet</h3>
+                  <p className="text-sm text-gray-700">
+                    Retrouvez facilement l'historique de toutes vos communications.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </AppLayout>
   );
