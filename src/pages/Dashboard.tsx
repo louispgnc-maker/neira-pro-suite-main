@@ -34,6 +34,84 @@ export default function Dashboard() {
     return () => window.removeEventListener('subscription-updated', handleRefresh);
   }, []);
 
+  // Listen for realtime changes on relevant tables
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('dashboard-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'signatures',
+          filter: `owner_id=eq.${user.id}`
+        },
+        () => {
+          console.log('📡 Signature changed, refreshing dashboard...');
+          setRefreshTrigger(prev => prev + 1);
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'dossiers',
+          filter: `owner_id=eq.${user.id}`
+        },
+        () => {
+          console.log('📡 Dossier changed, refreshing dashboard...');
+          setRefreshTrigger(prev => prev + 1);
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'documents',
+          filter: `owner_id=eq.${user.id}`
+        },
+        () => {
+          console.log('📡 Document changed, refreshing dashboard...');
+          setRefreshTrigger(prev => prev + 1);
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'clients',
+          filter: `owner_id=eq.${user.id}`
+        },
+        () => {
+          console.log('📡 Client changed, refreshing dashboard...');
+          setRefreshTrigger(prev => prev + 1);
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
+          filter: `owner_id=eq.${user.id}`
+        },
+        () => {
+          console.log('📡 Task changed, refreshing dashboard...');
+          setRefreshTrigger(prev => prev + 1);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   useEffect(() => {
     let isMounted = true;
     async function loadCounts() {
