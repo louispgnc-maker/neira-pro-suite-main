@@ -224,6 +224,9 @@ export default function SignatureDetail() {
     if (statusLower === 'pending' || statusLower === 'en attente') {
       return <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200"><Clock className="h-3 w-3 mr-1" />En attente</Badge>;
     }
+    if (statusLower === 'closed' || statusLower === 'fermée' || statusLower === 'cancelled') {
+      return <Badge className="bg-gray-100 text-gray-700 border-gray-200"><XCircle className="h-3 w-3 mr-1" />Fermée</Badge>;
+    }
     return <Badge variant="outline">{status}</Badge>;
   }
 
@@ -428,7 +431,7 @@ export default function SignatureDetail() {
                     </Button>
                   )}
                   
-                  {signature.transaction_id && signature.status !== 'cancelled' && signature.status !== 'completed' && signature.status !== 'signed' && (
+                  {signature.transaction_id && signature.status !== 'cancelled' && signature.status !== 'closed' && signature.status !== 'completed' && signature.status !== 'signed' && (
                     <Button
                       variant="destructive"
                       className="w-full"

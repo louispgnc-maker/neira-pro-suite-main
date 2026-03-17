@@ -137,7 +137,7 @@ serve(async (req) => {
     const { error: updateError } = await supabase
       .from('signatures')
       .update({
-        status: 'cancelled',
+        status: 'closed',
         closed_at: new Date().toISOString(),
         signed_count: signedCount
       })

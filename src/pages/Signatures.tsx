@@ -289,7 +289,7 @@ export default function Signatures() {
                         : "Jamais"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {sig.transaction_id && sig.status !== 'cancelled' && sig.status !== 'completed' && sig.status !== 'signed' ? (
+                      {sig.transaction_id && sig.status !== 'cancelled' && sig.status !== 'closed' && sig.status !== 'completed' && sig.status !== 'signed' ? (
                         <Button
                           variant="outline"
                           size="sm"
