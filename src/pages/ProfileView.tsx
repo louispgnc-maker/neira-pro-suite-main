@@ -231,56 +231,63 @@ export default function ProfileView() {
 
   const loadSignatureUsage = async (cabinetId: string) => {
     try {
-      // Récupérer la limite de base du cabinet et l'utilisateur actuel
+      // Récupérer la limite de base du cabinet
       const { data: cabinet } = await supabase
         .from('cabinets')
         .select('max_signatures_per_month')
         .eq('id', cabinetId)
         .single();
 
-      const { data: memberData } = await supabase
+      // Récupérer TOUS les membres du cabinet pour calculer la limite totale
+      const { data: allMembers } = await supabase
         .from('cabinet_members')
-        .select('signature_addon_quantity, signature_addon_expires_at')
-        .eq('user_id', user?.id)
-        .eq('cabinet_id', cabinetId)
-        .single();
+        .select('user_id, signature_addon_quantity, signature_addon_expires_at')
+        .eq('cabinet_id', cabinetId);
 
-      // Calculer la limite totale (base + addon valide)
-      let addonSignatures = 0;
-      if (memberData?.signature_addon_quantity && memberData?.signature_addon_expires_at) {
-        const expiresAt = new Date(memberData.signature_addon_expires_at);
-        const now = new Date();
-        if (expiresAt > now) {
-          addonSignatures = memberData.signature_addon_quantity;
-        }
-      } else if (memberData?.signature_addon_quantity && !memberData?.signature_addon_expires_at) {
-        addonSignatures = memberData.signature_addon_quantity;
-      }
-
-      const baseLimit = cabinet?.max_signatures_per_month || 0;
-      const totalLimit = baseLimit + addonSignatures;
-      setSignaturesLimit(totalLimit);
-
-      // Compter les signataires utilisés ce mois-ci
-      const now = new Date();
-      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      
-      const { data: signatures } = await supabase
-        .from('signatures')
-        .select('signatories')
-        .eq('owner_id', user?.id)
-        .gte('created_at', firstDayOfMonth);
-
-      let usedSignataires = 0;
-      if (signatures) {
-        signatures.forEach((sig: any) => {
-          if (sig.signatories && Array.isArray(sig.signatories)) {
-            usedSignataires += sig.signatories.length;
+      // Calculer la limite totale du cabinet (base + tous les addons valides)
+      let totalAddonSignatures = 0;
+      if (allMembers) {
+        allMembers.forEach((member: any) => {
+          if (member.signature_addon_quantity && member.signature_addon_expires_at) {
+            const expiresAt = new Date(member.signature_addon_expires_at);
+            const now = new Date();
+            if (expiresAt > now) {
+              totalAddonSignatures += member.signature_addon_quantity;
+            }
+          } else if (member.signature_addon_quantity && !member.signature_addon_expires_at) {
+            totalAddonSignatures += member.signature_addon_quantity;
           }
         });
       }
 
-      setSignaturesUsed(usedSignataires);
+      const baseLimit = cabinet?.max_signatures_per_month || 0;
+      const totalLimit = baseLimit + totalAddonSignatures;
+      setSignaturesLimit(totalLimit);
+
+      // Compter les signataires utilisés ce mois-ci PAR TOUS LES MEMBRES DU CABINET
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      
+      let totalUsedSignataires = 0;
+      if (allMembers) {
+        for (const member of allMembers) {
+          const { data: signatures } = await supabase
+            .from('signatures')
+            .select('signatories')
+            .eq('owner_id', member.user_id)
+            .gte('created_at', firstDayOfMonth);
+
+          if (signatures) {
+            signatures.forEach((sig: any) => {
+              if (sig.signatories && Array.isArray(sig.signatories)) {
+                totalUsedSignataires += sig.signatories.length;
+              }
+            });
+          }
+        }
+      }
+
+      setSignaturesUsed(totalUsedSignataires);
     } catch (error) {
       console.error('Erreur chargement usage signatures:', error);
     }
