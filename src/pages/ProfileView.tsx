@@ -34,6 +34,8 @@ export default function ProfileView() {
   const [signatureCreditsCount, setSignatureCreditsCount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState<{ last4: string; brand: string } | null>(null);
   const [stripeCustomerId, setStripeCustomerId] = useState<string | null>(null);
+  const [signaturesUsed, setSignaturesUsed] = useState(0);
+  const [signaturesLimit, setSignaturesLimit] = useState(0);
   
   // État pour le formulaire de contact
   const [contactForm, setContactForm] = useState({
@@ -137,6 +139,7 @@ export default function ProfileView() {
             await loadSubscriptionInfo(cabinetData.id);
             await loadMemberCount(cabinetData.id);
             await loadSignatureCredits(cabinetData.id);
+            await loadSignatureUsage(cabinetData.id);
           }
         }
       }
@@ -223,6 +226,63 @@ export default function ProfileView() {
       }
     } catch (error) {
       console.error('Erreur chargement crédits signatures:', error);
+    }
+  };
+
+  const loadSignatureUsage = async (cabinetId: string) => {
+    try {
+      // Récupérer la limite de base du cabinet et l'utilisateur actuel
+      const { data: cabinet } = await supabase
+        .from('cabinets')
+        .select('max_signatures_per_month')
+        .eq('id', cabinetId)
+        .single();
+
+      const { data: memberData } = await supabase
+        .from('cabinet_members')
+        .select('signature_addon_quantity, signature_addon_expires_at')
+        .eq('user_id', user?.id)
+        .eq('cabinet_id', cabinetId)
+        .single();
+
+      // Calculer la limite totale (base + addon valide)
+      let addonSignatures = 0;
+      if (memberData?.signature_addon_quantity && memberData?.signature_addon_expires_at) {
+        const expiresAt = new Date(memberData.signature_addon_expires_at);
+        const now = new Date();
+        if (expiresAt > now) {
+          addonSignatures = memberData.signature_addon_quantity;
+        }
+      } else if (memberData?.signature_addon_quantity && !memberData?.signature_addon_expires_at) {
+        addonSignatures = memberData.signature_addon_quantity;
+      }
+
+      const baseLimit = cabinet?.max_signatures_per_month || 0;
+      const totalLimit = baseLimit + addonSignatures;
+      setSignaturesLimit(totalLimit);
+
+      // Compter les signataires utilisés ce mois-ci
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      
+      const { data: signatures } = await supabase
+        .from('signatures')
+        .select('signatories')
+        .eq('owner_id', user?.id)
+        .gte('created_at', firstDayOfMonth);
+
+      let usedSignataires = 0;
+      if (signatures) {
+        signatures.forEach((sig: any) => {
+          if (sig.signatories && Array.isArray(sig.signatories)) {
+            usedSignataires += sig.signatories.length;
+          }
+        });
+      }
+
+      setSignaturesUsed(usedSignataires);
+    } catch (error) {
+      console.error('Erreur chargement usage signatures:', error);
     }
   };
 
@@ -589,24 +649,12 @@ export default function ProfileView() {
                     <CardTitle className="text-sm font-medium text-gray-600">Signatures</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {subscriptionInfo?.subscription_tier === 'cabinet-plus' ? (
-                      <div className="space-y-1">
-                        <div className="text-2xl font-bold mb-1">Illimitées</div>
-                        <div className="text-sm text-gray-600">
-                          Incluses dans l'abonnement
-                        </div>
+                    <div className="space-y-1">
+                      <div className="text-2xl font-bold mb-1">{signaturesUsed}/{signaturesLimit}</div>
+                      <div className="text-sm text-gray-600">
+                        Signataires ce mois-ci
                       </div>
-                    ) : (
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium">Incluses :</span>
-                          <span className="text-green-600 font-semibold">✔</span>
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Hors forfait : {signatureCreditsTotal > 0 ? `${signatureCreditsTotal} €` : '0 €'}
-                        </div>
-                      </div>
-                    )}
+                    </div>
                   </CardContent>
                 </Card>
               </div>
