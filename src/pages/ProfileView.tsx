@@ -244,8 +244,12 @@ export default function ProfileView() {
         .select('user_id, signature_addon_quantity, signature_addon_expires_at')
         .eq('cabinet_id', cabinetId);
 
-      // Calculer la limite totale du cabinet (base + tous les addons valides)
+      // Calculer la limite totale du cabinet
+      // = (limite de base × nombre de membres) + tous les addons valides
+      const baseLimit = cabinet?.max_signatures_per_month || 0;
+      const numberOfMembers = allMembers?.length || 0;
       let totalAddonSignatures = 0;
+      
       if (allMembers) {
         allMembers.forEach((member: any) => {
           if (member.signature_addon_quantity && member.signature_addon_expires_at) {
@@ -260,8 +264,7 @@ export default function ProfileView() {
         });
       }
 
-      const baseLimit = cabinet?.max_signatures_per_month || 0;
-      const totalLimit = baseLimit + totalAddonSignatures;
+      const totalLimit = (baseLimit * numberOfMembers) + totalAddonSignatures;
       setSignaturesLimit(totalLimit);
 
       // Compter les signataires utilisés ce mois-ci PAR TOUS LES MEMBRES DU CABINET
