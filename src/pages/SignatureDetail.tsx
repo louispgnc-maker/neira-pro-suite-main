@@ -198,7 +198,8 @@ export default function SignatureDetail() {
 
       if (!response.ok) {
         console.error('[CloseTransaction] Error from API:', result);
-        toast.error(result.error || 'Erreur lors de la clôture');
+        const errorMsg = result.details || result.error || 'Erreur lors de la clôture';
+        toast.error(errorMsg);
         setClosingTransaction(false);
         return;
       }
