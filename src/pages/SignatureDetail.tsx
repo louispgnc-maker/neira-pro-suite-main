@@ -2,7 +2,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Download, FileText, User, CheckCircle, Clock, XCircle } from "lucide-react";
+import { ArrowLeft, Download, FileText, User, CheckCircle, Clock, XCircle, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
@@ -39,6 +39,7 @@ export default function SignatureDetail() {
   const [loading, setLoading] = useState(true);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [closingTransaction, setClosingTransaction] = useState(false);
+  const [syncingStatus, setSyncingStatus] = useState(false);
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -151,7 +152,67 @@ export default function SignatureDetail() {
 
     loadSignature();
   }, [id, user]);
+SyncStatus() {
+    if (!signature?.id) {
+      toast.error('Signature non trouvée');
+      return;
+    }
 
+    setSyncingStatus(true);
+    console.log('[SyncStatus] Syncing status for signature:', signature.id);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Session expirée');
+        setSyncingStatus(false);
+        return;
+      }
+
+      const response = await fetch(
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-sync-status',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({
+            signatureId: signature.id
+          })
+        }
+      );
+
+      const result = await response.json();
+      console.log('[SyncStatus] Result:', result);
+
+      if (!response.ok) {
+        toast.error(result.error || 'Erreur lors de la synchronisation');
+        setSyncingStatus(false);
+        return;
+      }
+
+      toast.success('Statuts synchronisés avec Universign');
+      
+      // Reload signature data
+      const { data: updatedSig, error } = await supabase
+        .from('signatures')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (!error && updatedSig) {
+        setSignature(updatedSig);
+      }
+    } catch (error: any) {
+      console.error('[SyncStatus] Error:', error);
+      toast.error('Erreur lors de la synchronisation');
+    } finally {
+      setSyncingStatus(false);
+    }
+  }
+
+  async function handle
   async function handleCloseTransaction() {
     if (!signature?.transaction_id) {
       toast.error('Aucune transaction à clore');
@@ -388,10 +449,21 @@ export default function SignatureDetail() {
           <div className="lg:col-span-1">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <User className="h-5 w-5 mr-2" />
-                  Signataires ({signature.signatories?.length || 0})
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center">
+                    <User className="h-5 w-5 mr-2" />
+                    Signataires ({signature.signatories?.length || 0})
+                  </CardTitle>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSyncStatus}
+                    disabled={syncingStatus}
+                  >
+                    <RefreshCw className={`h-4 w-4 mr-2 ${syncingStatus ? 'animate-spin' : ''}`} />
+                    {syncingStatus ? 'Synchronisation...' : 'Actualiser'}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">

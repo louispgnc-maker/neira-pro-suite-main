@@ -92,23 +92,35 @@ serve(async (req) => {
 
     // Update individual signer status if we have participant info
     if (body.participants && signature.signatories) {
+      console.log('[Universign Webhook] Participants received:', JSON.stringify(body.participants, null, 2));
+      
       const updatedSignatories = signature.signatories.map((signer: any, index: number) => {
         const participant = body.participants.find((p: any) => p.email === signer.email);
         if (participant) {
+          // Map participant status: signed=true means they signed, otherwise pending
+          const signerStatus = participant.signed === true ? 'signed' : 'pending';
+          console.log(`[Universign Webhook] ${signer.email}: signed=${participant.signed} -> status=${signerStatus}`);
           return {
             ...signer,
-            status: participant.status === 'completed' ? 'signed' : participant.status || 'pending'
+            status: signerStatus
           };
         }
-        return signer;
+        return {
+          ...signer,
+          status: 'pending'
+        };
       });
 
-      await supabase
+      const { error: sigUpdateError } = await supabase
         .from('signatures')
         .update({ signatories: updatedSignatories })
         .eq('id', signature.id);
 
-      console.log('[Universign Webhook] Updated individual signer statuses');
+      if (sigUpdateError) {
+        console.error('[Universign Webhook] Failed to update signatories:', sigUpdateError);
+      } else {
+        console.log('[Universign Webhook] Updated individual signer statuses:', updatedSignatories.map(s => ({ email: s.email, status: s.status })));
+      }
     }
 
     // If completed, download and save the signed document
