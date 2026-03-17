@@ -167,14 +167,17 @@ export default function SignatureDetail() {
     if (!confirmClose) return;
 
     setClosingTransaction(true);
+    console.log('[CloseTransaction] Starting closure for:', signature.transaction_id);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         toast.error('Session expirée');
+        setClosingTransaction(false);
         return;
       }
 
+      console.log('[CloseTransaction] Calling Edge Function...');
       const response = await fetch(
         'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-cancel-transaction',
         {
@@ -189,21 +192,26 @@ export default function SignatureDetail() {
         }
       );
 
+      console.log('[CloseTransaction] Response status:', response.status);
       const result = await response.json();
+      console.log('[CloseTransaction] Result:', result);
 
       if (!response.ok) {
+        console.error('[CloseTransaction] Error from API:', result);
         toast.error(result.error || 'Erreur lors de la clôture');
+        setClosingTransaction(false);
         return;
       }
 
       toast.success(`Transaction clôturée - ${result.signedCount || 0} signataire(s) comptabilisé(s)`);
       
       // Recharger la signature pour voir le nouveau statut
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
-      console.error('Erreur clôture:', error);
+      console.error('[CloseTransaction] Exception:', error);
       toast.error('Erreur lors de la clôture de la transaction');
-    } finally {
       setClosingTransaction(false);
     }
   }
