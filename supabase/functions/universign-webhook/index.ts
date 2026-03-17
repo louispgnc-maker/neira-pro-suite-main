@@ -33,8 +33,10 @@ serve(async (req) => {
 
     const { id: transactionId, status, documents } = body;
 
+    console.log('[Universign Webhook] Extracted - transactionId:', transactionId, 'status:', status);
+
     if (!transactionId) {
-      console.error('[Universign Webhook] No transaction ID');
+      console.error('[Universign Webhook] No transaction ID in body:', Object.keys(body));
       return new Response(
         JSON.stringify({ error: 'No transaction ID' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -66,7 +68,7 @@ serve(async (req) => {
     // Map Universign status to our status
     let newStatus = 'pending';
     if (status === 'completed' || status === 'finished') {
-      newStatus = 'signed';
+      newStatus = 'completed';
     } else if (status === 'canceled' || status === 'expired') {
       newStatus = 'cancelled';
     } else if (status === 'failed') {
@@ -80,7 +82,7 @@ serve(async (req) => {
       .from('signatures')
       .update({
         status: newStatus,
-        signed_at: newStatus === 'signed' ? new Date().toISOString() : null
+        signed_at: newStatus === 'completed' ? new Date().toISOString() : null
       })
       .eq('id', signature.id);
 
@@ -110,8 +112,8 @@ serve(async (req) => {
     }
 
     // If completed, download and save the signed document
-    if (newStatus === 'signed' && documents && documents.length > 0) {
-      console.log('[Universign Webhook] Document signed, downloading...');
+    if (newStatus === 'completed' && documents && documents.length > 0) {
+      console.log('[Universign Webhook] Document completed, downloading...');
 
       const universignApiUrl = Deno.env.get('UNIVERSIGN_API_URL') || 'https://api.alpha.universign.com';
       const universignApiKey = Deno.env.get('UNIVERSIGN_API_KEY');
