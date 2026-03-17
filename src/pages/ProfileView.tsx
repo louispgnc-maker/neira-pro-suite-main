@@ -276,14 +276,20 @@ export default function ProfileView() {
         for (const member of allMembers) {
           const { data: signatures } = await supabase
             .from('signatures')
-            .select('signatories')
+            .select('signatories, status, signed_count')
             .eq('owner_id', member.user_id)
             .gte('created_at', firstDayOfMonth);
 
           if (signatures) {
             signatures.forEach((sig: any) => {
               if (sig.signatories && Array.isArray(sig.signatories)) {
-                totalUsedSignataires += sig.signatories.length;
+                // Si la transaction est annulée ou fermée, compter seulement ceux qui ont signé
+                if (sig.status === 'cancelled' || sig.status === 'closed') {
+                  totalUsedSignataires += sig.signed_count || 0;
+                } else {
+                  // Sinon, compter tous les signataires prévus
+                  totalUsedSignataires += sig.signatories.length;
+                }
               }
             });
           }

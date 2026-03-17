@@ -123,14 +123,20 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
         // On compte les signataires uniques dans toutes les signatures de ce membre
         const { data: signaturesData } = await supabase
           .from('signatures')
-          .select('signatories')
+          .select('signatories, status, signed_count')
           .eq('owner_id', member.user_id);
 
         let totalSignataires = 0;
         if (signaturesData) {
-          signaturesData.forEach((sig) => {
+          signaturesData.forEach((sig: any) => {
             if (sig.signatories && Array.isArray(sig.signatories)) {
-              totalSignataires += sig.signatories.length;
+              // Si la transaction est annulée ou fermée, compter seulement ceux qui ont signé
+              if (sig.status === 'cancelled' || sig.status === 'closed') {
+                totalSignataires += sig.signed_count || 0;
+              } else {
+                // Sinon, compter tous les signataires prévus
+                totalSignataires += sig.signatories.length;
+              }
             }
           });
         }

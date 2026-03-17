@@ -2,7 +2,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Download, FileText, User, CheckCircle, Clock } from "lucide-react";
+import { ArrowLeft, Download, FileText, User, CheckCircle, Clock, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
@@ -38,6 +38,7 @@ export default function SignatureDetail() {
   const [signature, setSignature] = useState<SignatureDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [closingTransaction, setClosingTransaction] = useState(false);
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -150,6 +151,62 @@ export default function SignatureDetail() {
 
     loadSignature();
   }, [id, user]);
+
+  async function handleCloseTransaction() {
+    if (!signature?.transaction_id) {
+      toast.error('Aucune transaction à clore');
+      return;
+    }
+
+    const confirmClose = window.confirm(
+      'Êtes-vous sûr de vouloir clore cette transaction ?\n\n' +
+      'Seuls les signataires ayant déjà signé seront comptabilisés dans votre quota mensuel.\n' +
+      'Cette action est irréversible.'
+    );
+
+    if (!confirmClose) return;
+
+    setClosingTransaction(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Session expirée');
+        return;
+      }
+
+      const response = await fetch(
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-cancel-transaction',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({
+            transactionId: signature.transaction_id
+          })
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || 'Erreur lors de la clôture');
+        return;
+      }
+
+      toast.success(`Transaction clôturée - ${result.signedCount || 0} signataire(s) comptabilisé(s)`);
+      
+      // Recharger la signature pour voir le nouveau statut
+      window.location.reload();
+    } catch (error) {
+      console.error('Erreur clôture:', error);
+      toast.error('Erreur lors de la clôture de la transaction');
+    } finally {
+      setClosingTransaction(false);
+    }
+  }
 
   function getStatusBadge(status: string) {
     const statusLower = status.toLowerCase();
@@ -353,14 +410,28 @@ export default function SignatureDetail() {
                   ))}
                 </div>
 
-                {signature.universign_url && (
-                  <Button
-                    className={mainButtonColor + " w-full mt-4"}
-                    onClick={() => window.open(signature.universign_url!, '_blank')}
-                  >
-                    Ouvrir dans Universign
-                  </Button>
-                )}
+                <div className="space-y-2 mt-4">
+                  {signature.universign_url && (
+                    <Button
+                      className={mainButtonColor + " w-full"}
+                      onClick={() => window.open(signature.universign_url!, '_blank')}
+                    >
+                      Ouvrir dans Universign
+                    </Button>
+                  )}
+                  
+                  {signature.transaction_id && signature.status !== 'cancelled' && signature.status !== 'completed' && signature.status !== 'signed' && (
+                    <Button
+                      variant="destructive"
+                      className="w-full"
+                      onClick={handleCloseTransaction}
+                      disabled={closingTransaction}
+                    >
+                      <XCircle className="h-4 w-4 mr-2" />
+                      {closingTransaction ? 'Clôture en cours...' : 'Clore la transaction'}
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
 

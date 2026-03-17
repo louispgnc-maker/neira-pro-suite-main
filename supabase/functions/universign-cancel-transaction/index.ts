@@ -112,12 +112,34 @@ serve(async (req) => {
     const result = await cancelResponse.json();
     console.log('[Universign] Transaction cancelled successfully:', result);
 
+    // Count how many signatories actually signed before cancellation
+    let signedCount = 0;
+    if (signature.signatories && Array.isArray(signature.signatories)) {
+      // Check transaction status to count who signed
+      const statusEndpoint = `${universignApiUrl}/v1/transactions/${transactionId}`;
+      try {
+        const statusResponse = await fetch(statusEndpoint, { method: 'GET', headers });
+        if (statusResponse.ok) {
+          const transactionData = await statusResponse.json();
+          // Count participants who have signed
+          if (transactionData.participants && Array.isArray(transactionData.participants)) {
+            signedCount = transactionData.participants.filter((p: any) => p.signed === true).length;
+          }
+        }
+      } catch (error) {
+        console.error('[Universign] Could not fetch transaction status to count signed participants:', error);
+      }
+    }
+
+    console.log('[Universign] Signed count before cancellation:', signedCount);
+
     // Update signature status in database
     const { error: updateError } = await supabase
       .from('signatures')
       .update({
         status: 'cancelled',
-        cancelled_at: new Date().toISOString()
+        cancelled_at: new Date().toISOString(),
+        signed_count: signedCount
       })
       .eq('id', signature.id);
 

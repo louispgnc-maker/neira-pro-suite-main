@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus } from "lucide-react";
+import { Plus, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,6 +19,7 @@ import { ResourceCounter } from "@/components/subscription/ResourceCounter";
 import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
 import { getCurrentBillingCycleStart } from "@/lib/billingCycle";
 import { SignatureDialog } from "@/components/dashboard/SignatureDialog";
+import { toast } from "sonner";
 
 type SignatureRow = {
   id: string;
@@ -27,6 +28,7 @@ type SignatureRow = {
   status: string;
   last_reminder_at?: string | null;
   created_at?: string;
+  transaction_id?: string | null;
 };
 
 export default function Signatures() {
@@ -37,6 +39,7 @@ export default function Signatures() {
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
   const [signatureDialogOpen, setSignatureDialogOpen] = useState(false);
+  const [closingTransactionId, setClosingTransactionId] = useState<string | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(search.trim()), 300);
@@ -79,7 +82,7 @@ export default function Signatures() {
 
       let query = supabase
         .from("signatures")
-        .select("id,signer_name,document_name,status,last_reminder_at,created_at")
+        .select("id,signer_name,document_name,status,last_reminder_at,created_at,transaction_id")
         .eq("owner_id", user.id)
         .eq("role", role)
         .gte("created_at", cycleStartDate.toISOString()) // Filtrer par cycle actuel
@@ -102,6 +105,55 @@ export default function Signatures() {
       isMounted = false;
     };
   }, [user, role, debounced, refreshTrigger]);
+
+  async function handleCloseTransaction(e: React.MouseEvent, transactionId: string, signatureId: string) {
+    e.stopPropagation(); // Empêcher la navigation
+
+    const confirmClose = window.confirm(
+      'Êtes-vous sûr de vouloir clore cette transaction ?\n\n' +
+      'Seuls les signataires ayant déjà signé seront comptabilisés.\n' +
+      'Cette action est irréversible.'
+    );
+
+    if (!confirmClose) return;
+
+    setClosingTransactionId(signatureId);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Session expirée');
+        return;
+      }
+
+      const response = await fetch(
+        'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/universign-cancel-transaction',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({ transactionId })
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || 'Erreur lors de la clôture');
+        return;
+      }
+
+      toast.success(`Transaction clôturée - ${result.signedCount || 0} signataire(s) comptabilisé(s)`);
+      setRefreshTrigger(prev => prev + 1); // Recharger la liste
+    } catch (error) {
+      console.error('Erreur clôture:', error);
+      toast.error('Erreur lors de la clôture');
+    } finally {
+      setClosingTransactionId(null);
+    }
+  }
 
   // Couleur du bouton principal
   const mainButtonColor = role === 'notaire'
@@ -209,6 +261,7 @@ export default function Signatures() {
                   <TableHead>Statut</TableHead>
                   <TableHead>Date de création</TableHead>
                   <TableHead>Dernier rappel</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -234,6 +287,22 @@ export default function Signatures() {
                       {sig.last_reminder_at
                         ? new Date(sig.last_reminder_at).toLocaleDateString('fr-FR')
                         : "Jamais"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {sig.transaction_id && sig.status !== 'cancelled' && sig.status !== 'completed' && sig.status !== 'signed' ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => handleCloseTransaction(e, sig.transaction_id!, sig.id)}
+                          disabled={closingTransactionId === sig.id}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <XCircle className="h-4 w-4 mr-1" />
+                          {closingTransactionId === sig.id ? 'Clôture...' : 'Clore'}
+                        </Button>
+                      ) : (
+                        <span className="text-sm text-gray-400">—</span>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
