@@ -30,7 +30,7 @@ serve(async (req) => {
     const { data: signature, error: sigError } = await supabase
       .from('signatures')
       .select('*')
-      .eq('universign_transaction_id', transactionId)
+      .or(`transaction_id.eq.${transactionId},universign_transaction_id.eq.${transactionId}`)
       .single();
 
     if (sigError || !signature) {
@@ -138,7 +138,7 @@ serve(async (req) => {
       .from('signatures')
       .update({
         status: 'cancelled',
-        cancelled_at: new Date().toISOString(),
+        closed_at: new Date().toISOString(),
         signed_count: signedCount
       })
       .eq('id', signature.id);
@@ -152,6 +152,7 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true,
         transactionId: transactionId,
+        signedCount: signedCount,
         message: 'Transaction cancelled successfully'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
