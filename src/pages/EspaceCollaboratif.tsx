@@ -62,6 +62,7 @@ interface SharedDocument {
   file_url: string | null;
   file_name: string | null;
   file_type: string | null;
+  file_size?: number | null;
   shared_at: string;
   shared_by: string;
   document_id: string;
@@ -141,6 +142,7 @@ interface Client {
   nom: string;
   prenom: string;
   email?: string;
+  siret?: string;
 }
 
 type CombinedActivity = (SharedDocument & { type: 'Document' }) | (SharedDossier & { type: 'Dossier' }) | (SharedContrat & { type: 'Contrat' });
