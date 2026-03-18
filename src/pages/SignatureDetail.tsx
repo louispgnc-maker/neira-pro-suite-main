@@ -152,7 +152,8 @@ export default function SignatureDetail() {
 
     loadSignature();
   }, [id, user]);
-SyncStatus() {
+
+  async function handleSyncStatus() {
     if (!signature?.id) {
       toast.error('Signature non trouvée');
       return;
@@ -212,7 +213,6 @@ SyncStatus() {
     }
   }
 
-  async function handle
   async function handleCloseTransaction() {
     if (!signature?.transaction_id) {
       toast.error('Aucune transaction à clore');
