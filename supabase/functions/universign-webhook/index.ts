@@ -66,13 +66,13 @@ serve(async (req) => {
     console.log('[Universign Webhook] Found signature:', signature.id, 'current status:', signature.status);
 
     // Map Universign status to our status
-    let newStatus = 'pending';
+    let newStatus = 'en_attente';
     if (status === 'completed' || status === 'finished') {
-      newStatus = 'completed';
+      newStatus = 'signee';
     } else if (status === 'canceled' || status === 'expired') {
-      newStatus = 'cancelled';
+      newStatus = 'annulee';
     } else if (status === 'failed') {
-      newStatus = 'failed';
+      newStatus = 'echec';
     }
 
     console.log('[Universign Webhook] Status:', status, '-> mapped to:', newStatus);
@@ -82,7 +82,7 @@ serve(async (req) => {
       .from('signatures')
       .update({
         status: newStatus,
-        signed_at: newStatus === 'completed' ? new Date().toISOString() : null
+        signed_at: newStatus === 'signee' ? new Date().toISOString() : null
       })
       .eq('id', signature.id);
 
@@ -98,7 +98,7 @@ serve(async (req) => {
         const participant = body.participants.find((p: any) => p.email === signer.email);
         if (participant) {
           // Map participant status: signed=true means they signed, otherwise pending
-          const signerStatus = participant.signed === true ? 'signed' : 'pending';
+          const signerStatus = participant.signed === true ? 'signe' : 'en_attente';
           console.log(`[Universign Webhook] ${signer.email}: signed=${participant.signed} -> status=${signerStatus}`);
           return {
             ...signer,
@@ -107,7 +107,7 @@ serve(async (req) => {
         }
         return {
           ...signer,
-          status: 'pending'
+          status: 'en_attente'
         };
       });
 
@@ -124,7 +124,7 @@ serve(async (req) => {
     }
 
     // If completed, download and save the signed document
-    if (newStatus === 'completed' && documents && documents.length > 0) {
+    if (newStatus === 'signee' && documents && documents.length > 0) {
       console.log('[Universign Webhook] Document completed, downloading...');
 
       const universignApiUrl = Deno.env.get('UNIVERSIGN_API_URL') || 'https://api.alpha.universign.com';

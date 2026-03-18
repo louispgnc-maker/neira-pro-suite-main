@@ -131,7 +131,7 @@ export function CabinetStats({ cabinetId, subscriptionPlan, role, members }: Cab
           signaturesData.forEach((sig: any) => {
             if (sig.signatories && Array.isArray(sig.signatories)) {
               // Si la transaction est annulée ou fermée, compter seulement ceux qui ont signé
-              if (sig.status === 'cancelled' || sig.status === 'closed') {
+              if (sig.status === 'cancelled' || sig.status === 'closed' || sig.status === 'annulee' || sig.status === 'fermee') {
                 totalSignataires += sig.signed_count || 0;
               } else {
                 // Sinon, compter tous les signataires prévus

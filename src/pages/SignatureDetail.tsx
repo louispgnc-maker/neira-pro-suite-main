@@ -71,7 +71,7 @@ export default function SignatureDetail() {
         setSignature(data as SignatureDetail);
 
         // Si le document est signé et qu'on a le chemin du document signé, l'utiliser
-        if (data.status === 'signed' && data.signed_document_path) {
+        if (data.status === 'signed' || data.status === 'signee' || data.status === 'signe' && data.signed_document_path) {
           console.log('[SignatureDetail] Chargement du document signé:', data.signed_document_path);
           const { data: urlData } = supabase.storage
             .from('documents')
@@ -280,13 +280,13 @@ SyncStatus() {
 
   function getStatusBadge(status: string) {
     const statusLower = status.toLowerCase();
-    if (statusLower === 'signed' || statusLower === 'completed' || statusLower === 'signé') {
+    if (statusLower === 'signed' || statusLower === 'completed' || statusLower === 'signé' || statusLower === 'signee' || statusLower === 'signe') {
       return <Badge className="bg-green-100 text-green-700 border-green-200"><CheckCircle className="h-3 w-3 mr-1" />Signé</Badge>;
     }
-    if (statusLower === 'pending' || statusLower === 'en attente') {
+    if (statusLower === 'pending' || statusLower === 'en attente' || statusLower === 'en_attente') {
       return <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200"><Clock className="h-3 w-3 mr-1" />En attente</Badge>;
     }
-    if (statusLower === 'closed' || statusLower === 'fermée' || statusLower === 'cancelled') {
+    if (statusLower === 'closed' || statusLower === 'fermée' || statusLower === 'fermee' || statusLower === 'cancelled' || statusLower === 'annulee' || statusLower === 'annulée') {
       return <Badge className="bg-gray-100 text-gray-700 border-gray-200"><XCircle className="h-3 w-3 mr-1" />Fermée</Badge>;
     }
     return <Badge variant="outline">{status}</Badge>;

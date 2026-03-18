@@ -498,7 +498,7 @@ serve(async (req) => {
         universign_url: signatureUrl,
         document_name: documentName,
         signer_name: `${firstSigner.firstName} ${firstSigner.lastName}`,
-        status: 'pending',
+        status: 'en_attente',
         owner_id: ownerId,
         role: role,
         signatories: signatories,

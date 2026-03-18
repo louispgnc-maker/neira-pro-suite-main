@@ -96,11 +96,11 @@ serve(async (req) => {
     // Map overall transaction status
     let newStatus = signature.status;
     if (transactionData.state === 'completed' || transactionData.state === 'finished') {
-      newStatus = 'completed';
+      newStatus = 'signee';
     } else if (transactionData.state === 'canceled' || transactionData.state === 'expired') {
-      newStatus = 'cancelled';
+      newStatus = 'annulee';
     } else if (transactionData.state === 'failed') {
-      newStatus = 'failed';
+      newStatus = 'echec';
     }
 
     // Update individual signer statuses
@@ -109,7 +109,7 @@ serve(async (req) => {
       if (participant) {
         // If transaction is completed, all participants have signed
         // Otherwise check participant.signed field
-        const signerStatus = (transactionData.state === 'completed' || participant.signed === true) ? 'signed' : 'pending';
+        const signerStatus = (transactionData.state === 'completed' || participant.signed === true) ? 'signe' : 'en_attente';
         console.log(`[Universign Sync] ${signer.email}: state=${transactionData.state}, signed=${participant.signed} -> status=${signerStatus}`);
         return {
           ...signer,
@@ -118,7 +118,7 @@ serve(async (req) => {
       }
       return {
         ...signer,
-        status: transactionData.state === 'completed' ? 'signed' : 'pending'
+        status: transactionData.state === 'completed' ? 'signe' : 'en_attente'
       };
     });
 
@@ -128,7 +128,7 @@ serve(async (req) => {
       signatories: updatedSignatories
     };
 
-    if (newStatus === 'completed') {
+    if (newStatus === 'signee') {
       updateData.signed_at = new Date().toISOString();
     }
 

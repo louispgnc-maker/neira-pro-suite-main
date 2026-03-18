@@ -167,11 +167,14 @@ export default function Signatures() {
         ? 'bg-orange-100 text-orange-600 border-orange-200'
         : 'bg-blue-100 text-blue-600 border-blue-200';
     }
-    if (status.toLowerCase() === 'signé' || status.toLowerCase() === 'signed' || status.toLowerCase() === 'completed') {
+    if (status.toLowerCase() === 'signé' || status.toLowerCase() === 'signed' || status.toLowerCase() === 'signee' || status.toLowerCase() === 'signe' || status.toLowerCase() === 'completed') {
       return 'bg-success/10 text-success border-success/20';
     }
-    if (status.toLowerCase() === 'en attente' || status.toLowerCase() === 'pending' || status.toLowerCase() === 'awaiting') {
+    if (status.toLowerCase() === 'en attente' || status.toLowerCase() === 'en_attente' || status.toLowerCase() === 'pending' || status.toLowerCase() === 'awaiting') {
       return 'bg-warning/10 text-warning border-warning/20';
+    }
+    if (status.toLowerCase() === 'fermee' || status.toLowerCase() === 'fermée' || status.toLowerCase() === 'closed' || status.toLowerCase() === 'annulee' || status.toLowerCase() === 'annulée' || status.toLowerCase() === 'cancelled') {
+      return 'bg-gray-100 text-gray-700 border-gray-200';
     }
     if (status.toLowerCase() === 'brouillon') {
       return 'bg-muted text-gray-900 border-border';

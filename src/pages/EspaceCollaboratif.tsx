@@ -22,7 +22,8 @@ import {
   ArrowRight,
   Settings,
   Crown,
-  User
+  User,
+  Users
 } from 'lucide-react';
 import { Trash2, UploadCloud, Share2, Building2 } from 'lucide-react';
 import SharedCalendar from '@/components/collaborative/SharedCalendar';
@@ -216,6 +217,7 @@ export default function EspaceCollaboratif() {
   const [clients, setClients] = useState<Client[]>([]);
   const [clientSearch, setClientSearch] = useState('');
   const [sharingToClient, setSharingToClient] = useState(false);
+  const [membersDialogOpen, setMembersDialogOpen] = useState(false);
   
   // Load collaborative tasks from cabinet_tasks
   useEffect(() => {
@@ -1580,15 +1582,56 @@ export default function EspaceCollaboratif() {
                 <p className="text-xs text-gray-900">dossiers partagés</p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Membres du cabinet</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{members.length}</div>
-                <p className="text-xs text-gray-900">membres au total</p>
-              </CardContent>
-            </Card>
+            <Dialog open={membersDialogOpen} onOpenChange={setMembersDialogOpen}>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium">Membres du cabinet</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{members.length}</div>
+                    <p className="text-xs text-gray-900">membres au total</p>
+                  </CardContent>
+                </Card>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Membres du cabinet
+                  </DialogTitle>
+                  <DialogDescription>
+                    Liste de tous les membres avec leurs rôles
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                  {members.map((member) => (
+                    <div key={member.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                          {member.email.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">
+                            {member.nom || member.email}
+                          </div>
+                          <div className="text-xs text-gray-500">{member.email}</div>
+                        </div>
+                      </div>
+                      <Badge 
+                        variant={member.role_cabinet === 'fondateur' ? 'default' : 'outline'}
+                        className={member.role_cabinet === 'fondateur' ? 'bg-amber-500 text-white' : ''}
+                      >
+                        {member.role_cabinet === 'fondateur' && <Crown className="h-3 w-3 mr-1" />}
+                        {member.role_cabinet === 'fondateur' ? 'Fondateur' : 
+                         member.role_cabinet === 'membre' ? 'Membre' : 
+                         member.role_cabinet}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <Card>

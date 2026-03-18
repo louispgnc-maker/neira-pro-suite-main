@@ -41,7 +41,7 @@ serve(async (req) => {
     }
 
     // Check if signature can be cancelled
-    if (signature.status === 'completed') {
+    if (signature.status === 'signee') {
       return new Response(
         JSON.stringify({ 
           error: 'Cannot cancel completed signature',
@@ -51,10 +51,10 @@ serve(async (req) => {
       );
     }
 
-    if (signature.status === 'cancelled') {
+    if (signature.status === 'annulee' || signature.status === 'fermee') {
       return new Response(
         JSON.stringify({ 
-          error: 'Signature already cancelled',
+          error: 'Signature already cancelled or closed',
           status: signature.status
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -137,7 +137,7 @@ serve(async (req) => {
     const { error: updateError } = await supabase
       .from('signatures')
       .update({
-        status: 'closed',
+        status: 'fermee',
         closed_at: new Date().toISOString(),
         signed_count: signedCount
       })
