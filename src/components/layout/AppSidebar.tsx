@@ -356,13 +356,19 @@ export function AppSidebar() {
       loadUnreadCount();
     };
 
+    const handleCabinetNotificationsUpdated = () => {
+      loadCabinetNotificationsCount();
+    };
+
     window.addEventListener('cabinet-conversation-read', handleConversationRead);
+    window.addEventListener('cabinet-notifications-updated', handleCabinetNotificationsUpdated);
 
     return () => {
       supabase.removeChannel(channel);
       supabase.removeChannel(notifChannel);
       supabase.removeChannel(cabinetNotifChannel);
       window.removeEventListener('cabinet-conversation-read', handleConversationRead);
+      window.removeEventListener('cabinet-notifications-updated', handleCabinetNotificationsUpdated);
     };
   }, [user, currentCabinetId, loadUnreadCount, loadClientNotificationsCount, loadCabinetNotificationsCount]);
 

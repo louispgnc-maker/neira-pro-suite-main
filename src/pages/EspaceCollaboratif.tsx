@@ -1251,6 +1251,9 @@ export default function EspaceCollaboratif() {
       } else {
         // Recharger les compteurs après marquage pour mise à jour immédiate
         loadNotificationCounts();
+        
+        // Notifier la sidebar pour qu'elle rafraîchisse son compteur
+        window.dispatchEvent(new CustomEvent('cabinet-notifications-updated'));
       }
     } catch (error) {
       console.error('Error marking notifications as read:', error);
@@ -1261,7 +1264,10 @@ export default function EspaceCollaboratif() {
     setSelectedTab(value);
     
     // Mark relevant notifications as read based on tab
-    if (value === 'documents') {
+    if (value === 'dashboard') {
+      // Marquer TOUTES les notifications cabinet comme lues quand on visite le dashboard
+      markNotificationsAsRead(['cabinet_document', 'cabinet_contrat', 'cabinet_dossier', 'cabinet_client', 'cabinet_message']);
+    } else if (value === 'documents') {
       markNotificationsAsRead(['cabinet_document', 'cabinet_contrat']);
     } else if (value === 'dossiers') {
       markNotificationsAsRead(['cabinet_dossier']);
