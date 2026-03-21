@@ -1593,10 +1593,11 @@ export default function EspaceCollaboratif() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{members.length}</div>
-                    <p className="text-xs text-gray-900 flex items-center gap-1">
-                      membres au total
-                      <Eye className="h-3 w-3 text-gray-400" />
-                    </p>
+                    <p className="text-xs text-gray-900">membres au total</p>
+                    <div className="flex items-center gap-1 mt-2 text-blue-600 text-xs font-medium">
+                      <Eye className="h-4 w-4" />
+                      <span>Cliquer pour voir</span>
+                    </div>
                   </CardContent>
                 </Card>
               </DialogTrigger>
