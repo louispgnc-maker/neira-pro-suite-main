@@ -52,6 +52,8 @@ interface CabinetMember {
   user_id?: string;
   email: string;
   nom?: string;
+  first_name?: string;
+  last_name?: string;
   role_cabinet: string;
   status: string;
 }
@@ -774,10 +776,33 @@ export default function EspaceCollaboratif() {
         const { data: membersData, error: membersError } = await supabase.rpc('get_cabinet_members_simple', { cabinet_id_param: userCabinet?.id });
         if (!membersError && Array.isArray(membersData)) {
           const arr = membersData as unknown[];
-          const mappedMembers = arr.map(m => {
+          let mappedMembers = arr.map(m => {
             const mm = m as { id: string; user_id?: string; email: string; nom?: string; role_cabinet: string; status: string };
             return { id: mm.id, user_id: mm.user_id, email: mm.email, nom: mm.nom || undefined, role_cabinet: mm.role_cabinet, status: mm.status };
           });
+          
+          // Récupérer les profiles séparément
+          const userIds = mappedMembers.map(m => m.user_id).filter(Boolean) as string[];
+          if (userIds.length > 0) {
+            const { data: profilesData } = await supabase
+              .from('profiles')
+              .select('id, first_name, last_name')
+              .in('id', userIds);
+            
+            if (profilesData) {
+              const profilesMap: Record<string, {first_name?: string; last_name?: string}> = {};
+              profilesData.forEach((p: any) => {
+                profilesMap[p.id] = { first_name: p.first_name, last_name: p.last_name };
+              });
+              
+              mappedMembers = mappedMembers.map(m => ({
+                ...m,
+                first_name: m.user_id ? profilesMap[m.user_id]?.first_name : undefined,
+                last_name: m.user_id ? profilesMap[m.user_id]?.last_name : undefined,
+              }));
+            }
+          }
+          
           setMembers(mappedMembers);
           
           // Set current user's role
@@ -788,10 +813,33 @@ export default function EspaceCollaboratif() {
           const { data: membersTable } = await supabase.from('cabinet_members').select('id,user_id,email,nom,role_cabinet,status').eq('cabinet_id', userCabinet?.id);
           if (Array.isArray(membersTable)) {
             const arr = membersTable as unknown[];
-            const mappedMembers = arr.map(m => {
+            let mappedMembers = arr.map(m => {
               const mm = m as { id: string; user_id?: string; email: string; nom?: string; role_cabinet: string; status: string };
               return { id: mm.id, user_id: mm.user_id, email: mm.email, nom: mm.nom || undefined, role_cabinet: mm.role_cabinet, status: mm.status };
             });
+            
+            // Récupérer les profiles séparément
+            const userIds = mappedMembers.map(m => m.user_id).filter(Boolean) as string[];
+            if (userIds.length > 0) {
+              const { data: profilesData } = await supabase
+                .from('profiles')
+                .select('id, first_name, last_name')
+                .in('id', userIds);
+              
+              if (profilesData) {
+                const profilesMap: Record<string, {first_name?: string; last_name?: string}> = {};
+                profilesData.forEach((p: any) => {
+                  profilesMap[p.id] = { first_name: p.first_name, last_name: p.last_name };
+                });
+                
+                mappedMembers = mappedMembers.map(m => ({
+                  ...m,
+                  first_name: m.user_id ? profilesMap[m.user_id]?.first_name : undefined,
+                  last_name: m.user_id ? profilesMap[m.user_id]?.last_name : undefined,
+                }));
+              }
+            }
+            
             setMembers(mappedMembers);
             
             // Set current user's role
@@ -1620,7 +1668,9 @@ export default function EspaceCollaboratif() {
                         </div>
                         <div>
                           <div className="font-medium text-sm">
-                            {member.nom || member.email}
+                            {member.first_name || member.last_name 
+                              ? `${member.first_name || ''} ${member.last_name || ''}`.trim() 
+                              : member.nom || member.email}
                           </div>
                           <div className="text-xs text-gray-500">{member.email}</div>
                         </div>
