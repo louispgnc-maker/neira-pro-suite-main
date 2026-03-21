@@ -463,8 +463,9 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
           .limit(1)
           .maybeSingle();
 
-        // Only show conversation if there's at least one message
-        if (directLastMsg) {
+        // Show conversation if there's at least one message OR if it's the currently selected conversation
+        const isCurrentlySelected = selectedConversation === `direct-${member.user_id}`;
+        if (directLastMsg || isCurrentlySelected) {
           // Get base display name
           let displayName = getDisplayName(member.profile);
           if (displayName === 'Inconnu') {
@@ -483,7 +484,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
             is_group: false,
             member_ids: [user.id, member.user_id],
             member_profiles: [member.profile] as any,
-            last_message_at: directLastMsg.created_at
+            last_message_at: directLastMsg?.created_at || new Date().toISOString()
           });
         }
       }
@@ -502,7 +503,7 @@ export function CabinetChat({ cabinetId, role }: CabinetChatProps) {
     };
 
     loadConversations();
-  }, [cabinetId, user, members]);
+  }, [cabinetId, user, members, selectedConversation]);
 
   // Load messages
   useEffect(() => {
