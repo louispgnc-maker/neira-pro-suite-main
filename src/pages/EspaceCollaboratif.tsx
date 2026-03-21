@@ -23,7 +23,8 @@ import {
   Settings,
   Crown,
   User,
-  Users
+  Users,
+  Eye
 } from 'lucide-react';
 import { Trash2, UploadCloud, Share2, Building2 } from 'lucide-react';
 import SharedCalendar from '@/components/collaborative/SharedCalendar';
@@ -1592,7 +1593,10 @@ export default function EspaceCollaboratif() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{members.length}</div>
-                    <p className="text-xs text-gray-900">membres au total</p>
+                    <p className="text-xs text-gray-900 flex items-center gap-1">
+                      membres au total
+                      <Eye className="h-3 w-3 text-gray-400" />
+                    </p>
                   </CardContent>
                 </Card>
               </DialogTrigger>
