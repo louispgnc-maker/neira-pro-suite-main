@@ -295,6 +295,22 @@ export default function SignatureDetail() {
     }
   }
 
+  // Badge pour le statut GLOBAL de la transaction
+  function getGlobalStatusBadge(status: string) {
+    const statusLower = status.toLowerCase();
+    if (statusLower === 'signed' || statusLower === 'completed' || statusLower === 'signé' || statusLower === 'signee' || statusLower === 'signe') {
+      return <Badge className="bg-green-100 text-green-700 border-green-200"><CheckCircle className="h-3 w-3 mr-1" />Signé</Badge>;
+    }
+    if (statusLower === 'pending' || statusLower === 'en attente' || statusLower === 'en_attente') {
+      return <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200"><Clock className="h-3 w-3 mr-1" />En attente</Badge>;
+    }
+    if (statusLower === 'closed' || statusLower === 'fermée' || statusLower === 'fermee' || statusLower === 'cancelled' || statusLower === 'annulee' || statusLower === 'annulée') {
+      return <Badge className="bg-gray-100 text-gray-700 border-gray-200"><XCircle className="h-3 w-3 mr-1" />Fermée</Badge>;
+    }
+    return <Badge variant="outline">{status}</Badge>;
+  }
+
+  // Badge pour le statut d'un SIGNATAIRE
   function getStatusBadge(status: string) {
     const statusLower = status.toLowerCase();
     if (statusLower === 'signed' || statusLower === 'completed' || statusLower === 'signé' || statusLower === 'signee' || statusLower === 'signe') {
@@ -384,7 +400,7 @@ export default function SignatureDetail() {
               </p>
             </div>
             <div>
-              {getStatusBadge(signature.status)}
+              {getGlobalStatusBadge(signature.status)}
             </div>
           </div>
         </div>
