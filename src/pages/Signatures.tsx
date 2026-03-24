@@ -10,11 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, XCircle } from "lucide-react";
+import { Plus, XCircle, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ResourceCounter } from "@/components/subscription/ResourceCounter";
 import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
 import { getCurrentBillingCycleStart } from "@/lib/billingCycle";
@@ -34,6 +34,7 @@ type SignatureRow = {
 export default function Signatures() {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [signatures, setSignatures] = useState<SignatureRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -174,12 +175,36 @@ export default function Signatures() {
       return 'bg-warning/10 text-warning border-warning/20';
     }
     if (status.toLowerCase() === 'fermee' || status.toLowerCase() === 'fermée' || status.toLowerCase() === 'closed' || status.toLowerCase() === 'annulee' || status.toLowerCase() === 'annulée' || status.toLowerCase() === 'cancelled') {
-      return 'bg-gray-100 text-gray-700 border-gray-200';
+      return 'bg-red-100 text-red-700 border-red-200';
     }
     if (status.toLowerCase() === 'brouillon') {
       return 'bg-muted text-gray-900 border-border';
     }
     return 'bg-muted text-gray-900 border-border';
+  }
+
+  // Normaliser l'affichage du statut
+  function getStatusLabel(status: string) {
+    const statusLower = status.toLowerCase();
+    if (statusLower === 'signed' || statusLower === 'completed' || statusLower === 'signé' || statusLower === 'signee' || statusLower === 'signe') {
+      return 'Signé';
+    }
+    if (statusLower === 'pending' || statusLower === 'en attente' || statusLower === 'en_attente' || statusLower === 'awaiting') {
+      return 'En attente';
+    }
+    if (statusLower === 'fermee' || statusLower === 'fermée' || statusLower === 'closed') {
+      return 'Fermée';
+    }
+    if (statusLower === 'cancelled' || statusLower === 'annulee' || statusLower === 'annulée') {
+      return 'Annulée';
+    }
+    if (statusLower === 'en cours') {
+      return 'En cours';
+    }
+    if (statusLower === 'brouillon') {
+      return 'Brouillon';
+    }
+    return status;
   }
 
   return (
@@ -278,7 +303,7 @@ export default function Signatures() {
                     <TableCell>{sig.document_name}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={getStatusClass(sig.status)}>
-                        {sig.status}
+                        {getStatusLabel(sig.status)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-gray-900 text-sm">
@@ -292,20 +317,29 @@ export default function Signatures() {
                         : "Jamais"}
                     </TableCell>
                     <TableCell className="text-right">
-                      {sig.transaction_id && sig.status !== 'cancelled' && sig.status !== 'closed' && sig.status !== 'completed' && sig.status !== 'signed' ? (
+                      <div className="flex items-center justify-end gap-2">
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
-                          onClick={(e) => handleCloseTransaction(e, sig.transaction_id!, sig.id)}
-                          disabled={closingTransactionId === sig.id}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => navigate(`/${role}s/signatures/${sig.id}`)}
+                          className="text-primary hover:text-primary/80 hover:bg-primary/10"
                         >
-                          <XCircle className="h-4 w-4 mr-1" />
-                          {closingTransactionId === sig.id ? 'Clôture...' : 'Clore'}
+                          <Eye className="h-4 w-4 mr-1" />
+                          Voir
                         </Button>
-                      ) : (
-                        <span className="text-sm text-gray-400">—</span>
-                      )}
+                        {sig.transaction_id && sig.status !== 'cancelled' && sig.status !== 'closed' && sig.status !== 'completed' && sig.status !== 'signed' && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => handleCloseTransaction(e, sig.transaction_id!, sig.id)}
+                            disabled={closingTransactionId === sig.id}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <XCircle className="h-4 w-4 mr-1" />
+                            {closingTransactionId === sig.id ? 'Clôture...' : 'Clore'}
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
