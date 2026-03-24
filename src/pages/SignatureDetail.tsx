@@ -76,6 +76,7 @@ export default function SignatureDetail() {
         }
 
         // Si le document est signé et qu'on a le chemin du document signé, l'utiliser
+        let foundPdf = false;
         if (data.status === 'signed' || data.status === 'signee' || data.status === 'signe' && data.signed_document_path) {
           console.log('[SignatureDetail] Chargement du document signé:', data.signed_document_path);
           const { data: urlData } = supabase.storage
@@ -84,12 +85,12 @@ export default function SignatureDetail() {
           
           if (urlData?.publicUrl) {
             setPdfUrl(urlData.publicUrl);
-            return; // On a le document signé, pas besoin de charger l'original
+            foundPdf = true;
           }
         }
 
         // Charger le PDF si c'est un document stocké
-        if (data.item_type === 'document' && data.item_id) {
+        if (!foundPdf && data.item_type === 'document' && data.item_id) {
           const { data: doc } = await supabase
             .from('documents')
             .select('storage_path')
@@ -103,13 +104,13 @@ export default function SignatureDetail() {
             
             if (urlData?.publicUrl) {
               setPdfUrl(urlData.publicUrl);
+              foundPdf = true;
             }
           }
-        } else if (data.document_url) {
-          // Fallback: utiliser document_url si disponible
-          console.log('[SignatureDetail] Using document_url:', data.document_url);
-          setPdfUrl(data.document_url);
-        } else if (data.item_type === 'contrat' && data.item_id) {
+        }
+        
+        // Générer le PDF du contrat si besoin
+        if (!foundPdf && data.item_type === 'contrat' && data.item_id) {
           // Générer le PDF du contrat
           const { data: contrat } = await supabase
             .from('contrats')
@@ -147,10 +148,17 @@ export default function SignatureDetail() {
                   const blob = new Blob([byteArray], { type: 'application/pdf' });
                   const url = URL.createObjectURL(blob);
                   setPdfUrl(url);
+                  foundPdf = true;
                 }
               }
             }
           }
+        }
+        
+        // Fallback final: utiliser document_url si disponible et qu'aucun PDF n'a été chargé
+        if (!foundPdf && data.document_url) {
+          console.log('[SignatureDetail] Using document_url fallback:', data.document_url);
+          setPdfUrl(data.document_url);
         }
       } catch (error) {
         console.error('Erreur:', error);
@@ -295,10 +303,33 @@ export default function SignatureDetail() {
     if (statusLower === 'pending' || statusLower === 'en attente' || statusLower === 'en_attente') {
       return <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200"><Clock className="h-3 w-3 mr-1" />En attente</Badge>;
     }
-    if (statusLower === 'closed' || statusLower === 'fermée' || statusLower === 'fermee' || statusLower === 'cancelled' || statusLower === 'annulee' || statusLower === 'annulée') {
-      return <Badge className="bg-gray-100 text-gray-700 border-gray-200"><XCircle className="h-3 w-3 mr-1" />Fermée</Badge>;
+    if (statusLower === 'closed' || statusLower === 'fermée' || statusLower === 'fermee' || statusLower === 'cancelled' || statusLower === 'annulee' || statusLower === 'annulée' || statusLower === 'expired' || statusLower === 'expiré' || statusLower === 'non_signe' || statusLower === 'non signé') {
+      return <Badge className="bg-gray-100 text-gray-700 border-gray-200"><XCircle className="h-3 w-3 mr-1" />Non signé</Badge>;
     }
     return <Badge variant="outline">{status}</Badge>;
+  }
+
+  // Fonction pour déterminer le statut d'un signataire en fonction du statut global
+  function getSignerDisplayStatus(signerStatus: string | undefined, globalStatus: string): string {
+    const globalLower = globalStatus.toLowerCase();
+    const isTransactionClosed = globalLower === 'closed' || globalLower === 'fermée' || globalLower === 'fermee' || globalLower === 'cancelled' || globalLower === 'annulee' || globalLower === 'annulée';
+    
+    // Si le signataire a un statut spécifique, l'utiliser
+    if (signerStatus) {
+      const signerLower = signerStatus.toLowerCase();
+      // Si le signataire a signé, toujours afficher "signé"
+      if (signerLower === 'signed' || signerLower === 'completed' || signerLower === 'signé' || signerLower === 'signee' || signerLower === 'signe') {
+        return signerStatus;
+      }
+    }
+    
+    // Si la transaction est fermée et que le signataire n'a pas signé, afficher "non_signe"
+    if (isTransactionClosed) {
+      return 'non_signe';
+    }
+    
+    // Sinon, utiliser le statut du signataire ou "en_attente" par défaut
+    return signerStatus || 'en_attente';
   }
 
   const mainButtonColor = role === 'notaire'
@@ -478,14 +509,7 @@ export default function SignatureDetail() {
                           <p className="text-sm text-gray-600 mt-1">{signer.email}</p>
                         </div>
                         <div className="ml-2">
-                          {signer.status ? (
-                            getStatusBadge(signer.status)
-                          ) : (
-                            <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-200">
-                              <Clock className="h-3 w-3 mr-1" />
-                              En attente
-                            </Badge>
-                          )}
+                          {getStatusBadge(getSignerDisplayStatus(signer.status, signature.status))}
                         </div>
                       </div>
                     </div>
