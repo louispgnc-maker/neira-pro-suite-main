@@ -2,7 +2,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Download, FileText, User, CheckCircle, Clock, XCircle, RefreshCw } from "lucide-react";
+import { ArrowLeft, Download, FileText, User, CheckCircle, Clock, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
@@ -39,7 +39,6 @@ export default function SignatureDetail() {
   const [loading, setLoading] = useState(true);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [closingTransaction, setClosingTransaction] = useState(false);
-  const [syncingStatus, setSyncingStatus] = useState(false);
 
   // Détecte le rôle depuis l'URL
   let role: 'avocat' | 'notaire' = 'avocat';
@@ -69,6 +68,12 @@ export default function SignatureDetail() {
 
         console.log('[SignatureDetail] Données chargées:', data);
         setSignature(data as SignatureDetail);
+
+        // Synchroniser automatiquement le statut avec Universign si la transaction n'est pas fermée
+        if (data.transaction_id && data.status !== 'cancelled' && data.status !== 'closed' && data.status !== 'completed' && data.status !== 'signed') {
+          console.log('[SignatureDetail] Auto-sync status with Universign...');
+          syncStatusWithUniversign(id);
+        }
 
         // Si le document est signé et qu'on a le chemin du document signé, l'utiliser
         if (data.status === 'signed' || data.status === 'signee' || data.status === 'signe' && data.signed_document_path) {
@@ -100,6 +105,10 @@ export default function SignatureDetail() {
               setPdfUrl(urlData.publicUrl);
             }
           }
+        } else if (data.document_url) {
+          // Fallback: utiliser document_url si disponible
+          console.log('[SignatureDetail] Using document_url:', data.document_url);
+          setPdfUrl(data.document_url);
         } else if (data.item_type === 'contrat' && data.item_id) {
           // Générer le PDF du contrat
           const { data: contrat } = await supabase
@@ -153,20 +162,14 @@ export default function SignatureDetail() {
     loadSignature();
   }, [id, user]);
 
-  async function handleSyncStatus() {
-    if (!signature?.id) {
-      toast.error('Signature non trouvée');
-      return;
-    }
-
-    setSyncingStatus(true);
-    console.log('[SyncStatus] Syncing status for signature:', signature.id);
+  // Fonction de synchronisation avec Universign
+  async function syncStatusWithUniversign(signatureId: string) {
+    console.log('[SyncStatus] Syncing status for signature:', signatureId);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast.error('Session expirée');
-        setSyncingStatus(false);
+        console.error('[SyncStatus] No session');
         return;
       }
 
@@ -179,7 +182,7 @@ export default function SignatureDetail() {
             'Authorization': `Bearer ${session.access_token}`
           },
           body: JSON.stringify({
-            signatureId: signature.id
+            signatureId: signatureId
           })
         }
       );
@@ -187,29 +190,35 @@ export default function SignatureDetail() {
       const result = await response.json();
       console.log('[SyncStatus] Result:', result);
 
-      if (!response.ok) {
-        toast.error(result.error || 'Erreur lors de la synchronisation');
-        setSyncingStatus(false);
-        return;
-      }
+      if (response.ok) {
+        console.log('[SyncStatus] Status synchronized successfully');
+        
+        // Reload signature data
+        const { data: updatedSig, error } = await supabase
+          .from('signatures')
+          .select('*')
+          .eq('id', signatureId)
+          .single();
 
-      toast.success('Statuts synchronisés avec Universign');
-      
-      // Reload signature data
-      const { data: updatedSig, error } = await supabase
-        .from('signatures')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (!error && updatedSig) {
-        setSignature(updatedSig);
+        if (!error && updatedSig) {
+          setSignature(updatedSig);
+          
+          // Si le document est maintenant signé, charger le document signé
+          if ((updatedSig.status === 'signed' || updatedSig.status === 'signee' || updatedSig.status === 'signe') && updatedSig.signed_document_path) {
+            const { data: urlData } = supabase.storage
+              .from('documents')
+              .getPublicUrl(updatedSig.signed_document_path);
+            
+            if (urlData?.publicUrl) {
+              setPdfUrl(urlData.publicUrl);
+            }
+          }
+        }
+      } else {
+        console.error('[SyncStatus] Sync failed:', result.error);
       }
     } catch (error: any) {
       console.error('[SyncStatus] Error:', error);
-      toast.error('Erreur lors de la synchronisation');
-    } finally {
-      setSyncingStatus(false);
     }
   }
 
@@ -449,21 +458,10 @@ export default function SignatureDetail() {
           <div className="lg:col-span-1">
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center">
-                    <User className="h-5 w-5 mr-2" />
-                    Signataires ({signature.signatories?.length || 0})
-                  </CardTitle>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleSyncStatus}
-                    disabled={syncingStatus}
-                  >
-                    <RefreshCw className={`h-4 w-4 mr-2 ${syncingStatus ? 'animate-spin' : ''}`} />
-                    {syncingStatus ? 'Synchronisation...' : 'Actualiser'}
-                  </Button>
-                </div>
+                <CardTitle className="flex items-center">
+                  <User className="h-5 w-5 mr-2" />
+                  Signataires ({signature.signatories?.length || 0})
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
