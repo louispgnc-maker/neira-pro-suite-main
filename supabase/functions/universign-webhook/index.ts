@@ -189,22 +189,9 @@ serve(async (req) => {
             console.error('[Universign Webhook] Signature update error:', sigUpdateError);
           }
 
-          // Update document record with signed version
-          if (signature.document_id) {
-            const { error: docUpdateError } = await supabase
-              .from('documents')
-              .update({
-                storage_path: fileName,
-                signed_at: new Date().toISOString()
-              })
-              .eq('id', signature.document_id);
-
-            if (docUpdateError) {
-              console.error('[Universign Webhook] Document update error:', docUpdateError);
-            } else {
-              console.log('[Universign Webhook] Document updated with signed version');
-            }
-          }
+          // NOTE: Ne PAS écraser le document original dans la table documents!
+          // Le document signé est stocké dans signatures.signed_document_path uniquement
+          console.log('[Universign Webhook] Document original préservé - version signée dans signatures.signed_document_path');
         }
       }
     }
