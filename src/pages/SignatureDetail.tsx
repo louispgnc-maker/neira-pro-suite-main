@@ -67,6 +67,9 @@ export default function SignatureDetail() {
         }
 
         console.log('[SignatureDetail] Données chargées:', data);
+        console.log('[SignatureDetail] item_type:', data.item_type, 'item_id:', data.item_id);
+        console.log('[SignatureDetail] document_url:', data.document_url);
+        console.log('[SignatureDetail] signed_document_path:', data.signed_document_path);
         setSignature(data as SignatureDetail);
 
         // Synchroniser automatiquement le statut avec Universign si la transaction n'est pas fermée
@@ -77,13 +80,14 @@ export default function SignatureDetail() {
 
         // Si le document est signé et qu'on a le chemin du document signé, l'utiliser
         let foundPdf = false;
-        if (data.status === 'signed' || data.status === 'signee' || data.status === 'signe' && data.signed_document_path) {
+        if ((data.status === 'signed' || data.status === 'signee' || data.status === 'signe') && data.signed_document_path) {
           console.log('[SignatureDetail] Chargement du document signé:', data.signed_document_path);
           const { data: urlData } = supabase.storage
             .from('documents')
             .getPublicUrl(data.signed_document_path);
           
           if (urlData?.publicUrl) {
+            console.log('[SignatureDetail] PDF URL signed doc:', urlData.publicUrl);
             setPdfUrl(urlData.publicUrl);
             foundPdf = true;
           }
@@ -91,18 +95,21 @@ export default function SignatureDetail() {
 
         // Charger le PDF si c'est un document stocké
         if (!foundPdf && data.item_type === 'document' && data.item_id) {
+          console.log('[SignatureDetail] Chargement document from documents table, item_id:', data.item_id);
           const { data: doc } = await supabase
             .from('documents')
             .select('storage_path')
             .eq('id', data.item_id)
             .single();
 
+          console.log('[SignatureDetail] Document trouvé:', doc);
           if (doc?.storage_path) {
             const { data: urlData } = supabase.storage
               .from('documents')
               .getPublicUrl(doc.storage_path);
             
             if (urlData?.publicUrl) {
+              console.log('[SignatureDetail] PDF URL from documents:', urlData.publicUrl);
               setPdfUrl(urlData.publicUrl);
               foundPdf = true;
             }
@@ -111,12 +118,15 @@ export default function SignatureDetail() {
         
         // Générer le PDF du contrat si besoin
         if (!foundPdf && data.item_type === 'contrat' && data.item_id) {
+          console.log('[SignatureDetail] Génération PDF contrat, item_id:', data.item_id);
           // Générer le PDF du contrat
           const { data: contrat } = await supabase
             .from('contrats')
             .select('content, name')
             .eq('id', data.item_id)
             .single();
+
+          console.log('[SignatureDetail] Contrat trouvé:', contrat?.name);
 
           if (contrat) {
             const { data: { session } } = await supabase.auth.getSession();
@@ -159,7 +169,10 @@ export default function SignatureDetail() {
         if (!foundPdf && data.document_url) {
           console.log('[SignatureDetail] Using document_url fallback:', data.document_url);
           setPdfUrl(data.document_url);
+          foundPdf = true;
         }
+        
+        console.log('[SignatureDetail] foundPdf final:', foundPdf, 'pdfUrl sera:', foundPdf ? 'set' : 'null');
       } catch (error) {
         console.error('Erreur:', error);
       } finally {
