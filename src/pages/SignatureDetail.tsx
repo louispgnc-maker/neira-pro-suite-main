@@ -495,7 +495,13 @@ export default function SignatureDetail() {
                       <Download className="h-4 w-4 mr-2" />
                       Télécharger le document original
                     </Button>
-                    {signature.signed_document_path && (signature.status === 'signed' || signature.status === 'signee' || signature.status === 'signe' || signature.status === 'completed') && (
+                    {signature.signed_document_path && (
+                      signature.status === 'signed' || 
+                      signature.status === 'signee' || 
+                      signature.status === 'signe' || 
+                      signature.status === 'completed' ||
+                      (signature.status === 'fermee' && (signature.signed_count || 0) > 0)
+                    ) && (
                       <Button 
                         className={mainButtonColor + " w-full"}
                         onClick={async () => {
