@@ -6,8 +6,13 @@ export function MobileBlocker({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const checkMobile = () => {
-      // Mobile = largeur < 768px (breakpoint sm de Tailwind)
-      setIsMobile(window.innerWidth < 768);
+      // Détection combinée: largeur ET type d'appareil via User Agent
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isSmallScreen = window.innerWidth < 768;
+      
+      // Bloquer seulement si c'est un vrai appareil mobile avec petit écran
+      // OU un iPhone/Android même avec écran plus grand
+      setIsMobile((isMobileDevice && isSmallScreen) || (/iPhone|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 1024));
     };
 
     checkMobile();
