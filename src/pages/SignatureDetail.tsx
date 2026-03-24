@@ -495,58 +495,21 @@ export default function SignatureDetail() {
                       <Download className="h-4 w-4 mr-2" />
                       Télécharger le document original
                     </Button>
-                    {signature.transaction_id && (
+                    {signature.signed_document_path && (signature.status === 'signed' || signature.status === 'signee' || signature.status === 'signe' || signature.status === 'completed') && (
                       <Button 
                         className={mainButtonColor + " w-full"}
                         onClick={async () => {
                           try {
-                            const { data: { session } } = await supabase.auth.getSession();
-                            if (!session) {
-                              toast.error('Session expirée');
-                              return;
-                            }
-
-                            const response = await fetch(
-                              'https://elysrdqujzlbvnjfilvh.supabase.co/functions/v1/download-signed-document',
-                              {
-                                method: 'POST',
-                                headers: {
-                                  'Content-Type': 'application/json',
-                                  'Authorization': `Bearer ${session.access_token}`
-                                },
-                                body: JSON.stringify({
-                                  transactionId: signature.transaction_id
-                                })
-                              }
-                            );
-
-                            if (!response.ok) {
-                              toast.error('Erreur lors du téléchargement');
-                              return;
-                            }
-
-                            const result = await response.json();
-                            if (result.success && result.pdfBase64) {
-                              // Convertir base64 en blob et télécharger
-                              const byteCharacters = atob(result.pdfBase64);
-                              const byteNumbers = new Array(byteCharacters.length);
-                              for (let i = 0; i < byteCharacters.length; i++) {
-                                byteNumbers[i] = byteCharacters.charCodeAt(i);
-                              }
-                              const byteArray = new Uint8Array(byteNumbers);
-                              const blob = new Blob([byteArray], { type: 'application/pdf' });
-                              const url = URL.createObjectURL(blob);
-                              
-                              // Télécharger
-                              const a = document.createElement('a');
-                              a.href = url;
-                              a.download = result.filename || 'document_signe.pdf';
-                              document.body.appendChild(a);
-                              a.click();
-                              document.body.removeChild(a);
-                              URL.revokeObjectURL(url);
-                              
-                              toast.success('Document signé téléchargé');
+                            // Télécharger directement depuis Supabase Storage
+                            const { data: urlData } = supabase.storage
+                              .from('documents')
+                              .getPublicUrl(signature.signed_document_path!);
+                            
+                            if (urlData?.publicUrl) {
+                              window.open(urlData.publicUrl, '_blank');
+                              toast.success('Téléchargement du document signé');
+                            } else {
+                              toast.error('Document signé non trouvé');
                             }
                           } catch (error) {
                             console.error('Download error:', error);
