@@ -115,6 +115,60 @@ export default function SignatureDetail() {
             }
           }
         }
+
+        // Charger le PDF si c'est un dossier
+        if (!foundPdf && data.item_type === 'dossier' && data.item_id) {
+          console.log('[SignatureDetail] Chargement documents from dossier, item_id:', data.item_id);
+          
+          // Essayer d'abord la table dossier_documents (ancienne structure)
+          let { data: docLinks } = await supabase
+            .from('dossier_documents')
+            .select('document_id, documents(id, name, storage_path)')
+            .eq('dossier_id', data.item_id);
+          
+          console.log('[SignatureDetail] Documents du dossier trouvés:', docLinks?.length || 0);
+          
+          if (!docLinks || docLinks.length === 0) {
+            // Fallback: essayer la nouvelle table client_dossier_documents
+            const { data: newDocLinks } = await supabase
+              .from('client_dossier_documents')
+              .select('document_id, document_nom, source, storage_path')
+              .eq('dossier_id', data.item_id);
+            
+            console.log('[SignatureDetail] Documents du dossier (client_dossier_documents):', newDocLinks?.length || 0);
+            
+            if (newDocLinks && newDocLinks.length > 0) {
+              // Prendre le premier document avec storage_path
+              const firstDoc = newDocLinks.find(d => d.storage_path);
+              if (firstDoc?.storage_path) {
+                const { data: urlData } = supabase.storage
+                  .from('documents')
+                  .getPublicUrl(firstDoc.storage_path);
+                
+                if (urlData?.publicUrl) {
+                  console.log('[SignatureDetail] PDF URL from dossier (new):', urlData.publicUrl);
+                  setPdfUrl(urlData.publicUrl);
+                  foundPdf = true;
+                }
+              }
+            }
+          } else if (docLinks && docLinks.length > 0) {
+            // Prendre le premier document
+            const firstDoc = docLinks[0].documents;
+            if (firstDoc && (firstDoc as any).storage_path) {
+              const storagePath = (firstDoc as any).storage_path.replace(/^\/+/, '');
+              const { data: urlData } = supabase.storage
+                .from('documents')
+                .getPublicUrl(storagePath);
+              
+              if (urlData?.publicUrl) {
+                console.log('[SignatureDetail] PDF URL from dossier (old):', urlData.publicUrl);
+                setPdfUrl(urlData.publicUrl);
+                foundPdf = true;
+              }
+            }
+          }
+        }
         
         // Générer le PDF du contrat si besoin
         if (!foundPdf && data.item_type === 'contrat' && data.item_id) {
