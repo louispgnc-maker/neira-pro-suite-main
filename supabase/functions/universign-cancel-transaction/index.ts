@@ -133,13 +133,100 @@ serve(async (req) => {
 
     console.log('[Universign] Signed count before cancellation:', signedCount);
 
+    // Get complete transaction data with participants to update signer statuses
+    let updatedSignatories = signature.signatories;
+    let transactionData = null;
+    
+    try {
+      const statusEndpoint = `${universignApiUrl}/v1/transactions/${transactionId}`;
+      const statusResponse = await fetch(statusEndpoint, { method: 'GET', headers });
+      
+      if (statusResponse.ok) {
+        transactionData = await statusResponse.json();
+        console.log('[Universign] Transaction data retrieved:', JSON.stringify(transactionData, null, 2));
+        
+        // Update individual signer statuses
+        if (transactionData.participants && signature.signatories) {
+          updatedSignatories = signature.signatories.map((signer: any) => {
+            const participant = transactionData.participants.find((p: any) => p.email === signer.email);
+            if (participant) {
+              // If they signed before closure, mark as "signe", otherwise "non_signe"
+              const signerStatus = participant.signed === true ? 'signe' : 'non_signe';
+              console.log(`[Universign] ${signer.email}: signed=${participant.signed} -> status=${signerStatus}`);
+              return {
+                ...signer,
+                status: signerStatus
+              };
+            }
+            return {
+              ...signer,
+              status: 'non_signe' // Default to not signed if not found
+            };
+          });
+          console.log('[Universign] Updated signatories:', updatedSignatories);
+        }
+      }
+    } catch (error) {
+      console.error('[Universign] Could not fetch transaction status for signer updates:', error);
+    }
+
+    // Download signed document if any signatures were collected
+    let signedDocumentPath = null;
+    if (signedCount > 0 && transactionData && transactionData.documents && transactionData.documents.length > 0) {
+      console.log('[Universign] Downloading partial signed document...');
+      
+      try {
+        const documentId = transactionData.documents[0].id;
+        const downloadUrl = `${universignApiUrl}/v1/documents/${documentId}/download`;
+        
+        console.log('[Universign] Downloading from:', downloadUrl);
+        
+        const downloadResponse = await fetch(downloadUrl, {
+          method: 'GET',
+          headers
+        });
+
+        if (downloadResponse.ok) {
+          const signedPdfBlob = await downloadResponse.blob();
+          console.log('[Universign] Downloaded partial signed PDF, size:', signedPdfBlob.size);
+
+          // Upload to Storage
+          const timestamp = Date.now();
+          const fileName = `signed/${signature.id}_${timestamp}.pdf`;
+          
+          console.log('[Universign] Uploading to Storage:', fileName);
+
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('documents')
+            .upload(fileName, signedPdfBlob, {
+              contentType: 'application/pdf',
+              upsert: true
+            });
+
+          if (uploadError) {
+            console.error('[Universign] Upload error:', uploadError);
+          } else {
+            console.log('[Universign] Partial signed document uploaded:', fileName);
+            signedDocumentPath = fileName;
+          }
+        } else {
+          const errorText = await downloadResponse.text();
+          console.error('[Universign] Download failed:', errorText);
+        }
+      } catch (downloadError) {
+        console.error('[Universign] Error downloading signed document:', downloadError);
+      }
+    }
+
     // Update signature status in database
     const { error: updateError } = await supabase
       .from('signatures')
       .update({
         status: 'fermee',
         closed_at: new Date().toISOString(),
-        signed_count: signedCount
+        signed_count: signedCount,
+        signatories: updatedSignatories,
+        signed_document_path: signedDocumentPath
       })
       .eq('id', signature.id);
 
